@@ -1,4 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import type { NextRequest } from "next/server";
+import type { NextFetchEvent } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -15,25 +17,15 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks(.*)",
 ]);
 
-const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
-
-const handler = clerkMiddleware(async (auth, req) => {
+const clerkHandler = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
-
-  if (isAdminRoute(req)) {
-    const { sessionClaims } = await auth();
-    const metadata = sessionClaims?.metadata as Record<string, string> | undefined;
-    if (metadata?.role !== "admin") {
-      return Response.redirect(new URL("/dashboard", req.url));
-    }
-  }
 });
 
-// Next.js 16 uses "proxy" instead of "middleware"
-export const proxy = handler;
-export default handler;
+export function proxy(request: NextRequest, event: NextFetchEvent) {
+  return clerkHandler(request, event);
+}
 
 export const config = {
   matcher: [
