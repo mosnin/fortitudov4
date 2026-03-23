@@ -168,6 +168,94 @@ export const revisionRequests = pgTable("revision_requests", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Notifications
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "phase_update",
+  "message_received",
+  "revision_response",
+  "payment_confirmed",
+  "project_completed",
+  "file_uploaded",
+  "comment_added",
+  "survey_request",
+]);
+
+export const notifications = pgTable("notifications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  projectId: uuid("project_id").references(() => projects.id),
+  type: notificationTypeEnum("type").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  body: text("body"),
+  read: boolean("read").notNull().default(false),
+  actionUrl: varchar("action_url", { length: 500 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Project comments (thread-based)
+export const projectComments = pgTable("project_comments", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id)
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  parentId: uuid("parent_id"),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Client satisfaction surveys
+export const satisfactionSurveys = pgTable("satisfaction_surveys", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id)
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  score: integer("score").notNull(), // 1-10 NPS
+  feedback: text("feedback"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Invoices
+export const invoices = pgTable("invoices", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  paymentId: uuid("payment_id")
+    .references(() => payments.id)
+    .notNull(),
+  projectId: uuid("project_id")
+    .references(() => projects.id)
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  invoiceNumber: varchar("invoice_number", { length: 50 }).notNull(),
+  items: jsonb("items").notNull(),
+  subtotal: integer("subtotal").notNull(),
+  tax: integer("tax").notNull().default(0),
+  total: integer("total").notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("paid"),
+  issuedAt: timestamp("issued_at").defaultNow().notNull(),
+});
+
+// Analytics events (client-facing)
+export const analyticsEvents = pgTable("analytics_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id)
+    .notNull(),
+  event: varchar("event", { length: 100 }).notNull(),
+  value: integer("value"),
+  metadata: jsonb("metadata"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -179,3 +267,8 @@ export type File = typeof files.$inferSelect;
 export type RevisionRequest = typeof revisionRequests.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
+export type Notification = typeof notifications.$inferSelect;
+export type ProjectComment = typeof projectComments.$inferSelect;
+export type SatisfactionSurvey = typeof satisfactionSurveys.$inferSelect;
+export type Invoice = typeof invoices.$inferSelect;
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;

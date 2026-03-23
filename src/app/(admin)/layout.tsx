@@ -2,6 +2,9 @@ import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import Image from "next/image";
 import { AdminNav } from "@/components/dashboard/admin-nav";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
+import { GlobalSearch } from "@/components/dashboard/global-search";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function AdminLayout({
   children,
@@ -9,7 +12,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-charcoal-dark">
+    <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-4">
@@ -28,7 +31,12 @@ export default function AdminLayout({
             </Link>
             <AdminNav />
           </div>
-          <UserButton />
+          <div className="flex items-center gap-2">
+            <GlobalSearch />
+            <NotificationBell />
+            <ThemeToggle />
+            <UserButton />
+          </div>
         </div>
       </header>
 

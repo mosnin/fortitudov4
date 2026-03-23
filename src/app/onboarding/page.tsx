@@ -10,11 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { services, type ServiceType } from "@/lib/services";
+import { getTemplatesForService } from "@/lib/project-templates";
 import {
   ArrowRight,
   ArrowLeft,
   Check,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 
 const steps = [
@@ -206,6 +208,43 @@ function OnboardingContent() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Template picker */}
+                {formData.serviceType && (
+                  (() => {
+                    const templates = getTemplatesForService(formData.serviceType as ServiceType);
+                    if (templates.length === 0) return null;
+                    return (
+                      <div className="rounded-xl border border-orange/20 bg-orange/5 p-4 space-y-3">
+                        <div className="flex items-center gap-2 text-sm font-medium">
+                          <Sparkles className="h-4 w-4 text-orange" />
+                          Quick Start Templates
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          {templates.map((template) => (
+                            <button
+                              key={template.name}
+                              onClick={() => {
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  industry: template.suggestedFields.industry,
+                                  description: template.suggestedFields.description,
+                                  targetAudience: template.suggestedFields.targetAudience,
+                                  timeline: template.suggestedFields.timeline,
+                                  budget: template.suggestedFields.budget,
+                                }));
+                              }}
+                              className="text-left rounded-lg border border-border p-3 hover:border-orange/50 hover:bg-orange/5 transition-all cursor-pointer"
+                            >
+                              <p className="text-sm font-medium">{template.name}</p>
+                              <p className="text-xs text-muted-foreground mt-0.5">{template.description}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()
+                )}
+
                 <div>
                   <label className="text-sm font-medium mb-1.5 block">
                     Business Name <span className="text-destructive">*</span>
