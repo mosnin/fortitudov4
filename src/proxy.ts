@@ -17,7 +17,7 @@ const isPublicRoute = createRouteMatcher([
 
 const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
-export default clerkMiddleware(async (auth, req) => {
+const handler = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
@@ -30,6 +30,10 @@ export default clerkMiddleware(async (auth, req) => {
     }
   }
 });
+
+// Next.js 16 uses "proxy" instead of "middleware"
+export const proxy = handler;
+export default handler;
 
 export const config = {
   matcher: [
