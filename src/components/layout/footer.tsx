@@ -1,13 +1,35 @@
 import Link from "next/link";
 import Image from "next/image";
 
+const footerLinks = {
+  services: [
+    { label: "Web Applications", href: "/services#web-application" },
+    { label: "Ecommerce Stores", href: "/services#ecommerce-store" },
+    { label: "Funnels", href: "/services#funnels" },
+    { label: "AI Automation", href: "/services#ai-automation" },
+    { label: "Open Claw Deployment", href: "/services#open-claw-deployment" },
+  ],
+  company: [
+    { label: "About Us", href: "/about" },
+    { label: "Portfolio", href: "/portfolio" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Contact", href: "/contact" },
+    { label: "FAQ", href: "/faq" },
+  ],
+  legal: [
+    { label: "Privacy Policy", href: "/privacy" },
+    { label: "Terms of Service", href: "/terms" },
+    { label: "Client Login", href: "/sign-in" },
+  ],
+};
+
 export function Footer() {
   return (
     <footer className="border-t border-border bg-charcoal-dark">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand */}
-          <div className="space-y-4">
+          <div className="col-span-2 md:col-span-1 space-y-4">
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
@@ -19,36 +41,70 @@ export function Footer() {
               <span className="text-lg font-bold">Fortitudo</span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Digital solutions built for growth. We help businesses launch web
-              apps, stores, funnels, and AI automation.
+              Digital solutions built for growth. Transparent process, real-time
+              tracking, and direct collaboration.
             </p>
           </div>
 
-          {/* Links */}
+          {/* Services */}
           <div>
             <h4 className="text-sm font-semibold mb-4">Services</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#services" className="hover:text-foreground transition-colors">Web Applications</a></li>
-              <li><a href="#services" className="hover:text-foreground transition-colors">Ecommerce Stores</a></li>
-              <li><a href="#services" className="hover:text-foreground transition-colors">Funnels</a></li>
-              <li><a href="#services" className="hover:text-foreground transition-colors">AI Automation</a></li>
-              <li><a href="#services" className="hover:text-foreground transition-colors">Open Claw Deployment</a></li>
+            <ul className="space-y-2.5">
+              {footerLinks.services.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           {/* Company */}
           <div>
             <h4 className="text-sm font-semibold mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#about" className="hover:text-foreground transition-colors">About</a></li>
-              <li><a href="#how-it-works" className="hover:text-foreground transition-colors">How It Works</a></li>
-              <li><Link href="/sign-in" className="hover:text-foreground transition-colors">Client Login</Link></li>
+            <ul className="space-y-2.5">
+              {footerLinks.company.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="text-sm font-semibold mb-4">Legal</h4>
+            <ul className="space-y-2.5">
+              {footerLinks.legal.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} Fortitudo Agency. All rights reserved.
+        <div className="mt-12 border-t border-border pt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Fortitudo Agency. All rights reserved.
+          </p>
+          <p className="text-xs text-muted-foreground">
+            foritudo.agency
+          </p>
         </div>
       </div>
     </footer>
