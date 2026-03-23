@@ -25,81 +25,84 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-charcoal-dark">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          {/* Brand */}
-          <div className="col-span-2 md:col-span-1 space-y-4">
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
-                alt="Fortitudo Agency"
-                width={32}
-                height={32}
-                className="rounded-md"
-              />
-              <span className="text-lg font-bold">Fortitudo</span>
-            </Link>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Digital solutions built for growth. Transparent process, real-time
-              tracking, and direct collaboration.
-            </p>
-          </div>
+    <footer className="px-4 pb-4 sm:px-6 sm:pb-6">
+      <div className="mx-auto max-w-7xl rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm overflow-hidden">
+        <div className="px-6 py-10 sm:px-8 sm:py-12 lg:px-12">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1 space-y-4">
+              <Link href="/" className="flex items-center gap-2">
+                <Image
+                  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
+                  alt="Fortitudo Agency"
+                  width={32}
+                  height={32}
+                  className="rounded-md"
+                />
+                <span className="text-lg font-bold">Fortitudo</span>
+              </Link>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Digital solutions built for growth. Transparent process,
+                real-time tracking, and direct collaboration.
+              </p>
+            </div>
 
-          {/* Services */}
-          <div>
-            <h4 className="text-sm font-semibold mb-4">Services</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.services.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Services */}
+            <div>
+              <h4 className="text-sm font-semibold mb-4">Services</h4>
+              <ul className="space-y-2.5">
+                {footerLinks.services.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Company */}
-          <div>
-            <h4 className="text-sm font-semibold mb-4">Company</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.company.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            {/* Company */}
+            <div>
+              <h4 className="text-sm font-semibold mb-4">Company</h4>
+              <ul className="space-y-2.5">
+                {footerLinks.company.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Legal */}
-          <div>
-            <h4 className="text-sm font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2.5">
-              {footerLinks.legal.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {/* Legal */}
+            <div>
+              <h4 className="text-sm font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2.5">
+                {footerLinks.legal.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="mt-12 border-t border-border pt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <p className="text-sm text-muted-foreground">
+        {/* Bottom bar */}
+        <div className="border-t border-border/50 px-6 py-4 sm:px-8 lg:px-12 flex flex-col items-center gap-2 sm:flex-row sm:justify-between">
+          <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Fortitudo Agency. All rights reserved.
           </p>
           <p className="text-xs text-muted-foreground">

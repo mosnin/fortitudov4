@@ -3,12 +3,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-16">
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-20">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-charcoal-dark" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.15),transparent_50%)]" />
@@ -53,12 +54,12 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col items-center gap-4 sm:flex-row">
-            <Button variant="glow" size="xl" asChild>
-              <Link href="#services">
+            <RainbowButton className="h-14 px-10 text-base rounded-xl" asChild>
+              <Link href="/services">
                 View Services
-                <ArrowRight className="ml-1 h-5 w-5" />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
-            </Button>
+            </RainbowButton>
             <Button variant="outline" size="lg" asChild>
               <Link href="/sign-in">Client Login</Link>
             </Button>

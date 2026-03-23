@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { RainbowButton } from "@/components/ui/rainbow-button";
 import { ArrowRight } from "lucide-react";
 
 export function CTASection() {
@@ -15,12 +16,12 @@ export function CTASection() {
           with full visibility every step of the way.
         </p>
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Button variant="glow" size="xl" asChild>
+          <RainbowButton className="h-14 px-10 text-base rounded-xl" asChild>
             <Link href="/services">
               View Services
-              <ArrowRight className="ml-1 h-5 w-5" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
-          </Button>
+          </RainbowButton>
           <Button variant="outline" size="lg" asChild>
             <Link href="/contact">Talk to Us</Link>
           </Button>
