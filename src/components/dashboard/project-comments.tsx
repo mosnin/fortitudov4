@@ -1,65 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Reply, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface Comment {
+interface CommentData {
+  id: string;
+  userId: string;
+  parentId: string | null;
+  content: string;
+  createdAt: string;
+}
+
+interface CommentTree {
   id: string;
   userName: string;
   role: "client" | "admin";
   content: string;
   createdAt: string;
-  replies: Comment[];
+  replies: CommentTree[];
 }
 
-const demoComments: Comment[] = [
-  {
-    id: "1",
-    userName: "Fortitudo Team",
-    role: "admin",
-    content: "The homepage hero section is ready for review. Let us know your thoughts on the layout and CTA placement.",
-    createdAt: "Mar 18, 2026 10:00 AM",
-    replies: [
-      {
-        id: "1-1",
-        userName: "You",
-        role: "client",
-        content: "Looks great! Can we make the CTA button larger and more prominent?",
-        createdAt: "Mar 18, 2026 2:30 PM",
-        replies: [],
-      },
-      {
-        id: "1-2",
-        userName: "Fortitudo Team",
-        role: "admin",
-        content: "Sure! I'll bump it up to a larger size with more padding. Will push the update today.",
-        createdAt: "Mar 18, 2026 3:15 PM",
-        replies: [],
-      },
-    ],
-  },
-  {
-    id: "2",
-    userName: "You",
-    role: "client",
-    content: "For the product catalog page, can we add a grid/list view toggle? Some customers prefer a compact view.",
-    createdAt: "Mar 19, 2026 9:00 AM",
-    replies: [],
-  },
-];
+interface ProjectCommentsProps {
+  projectId: string;
+}
+
+function buildTree(comments: CommentData[]): CommentTree[] {
+  const map = new Map<string, CommentTree>();
+  const roots: CommentTree[] = [];
+
+  // First pass — create nodes
+  for (const c of comments) {
+    map.set(c.id, {
+      id: c.id,
+      userName: "User", // We don't have user names from API, will show role
+      role: "client",
+      content: c.content,
+      createdAt: new Date(c.createdAt).toLocaleString(),
+      replies: [],
+    });
+  }
+
+  // Second pass — wire parent/child
+  for (const c of comments) {
+    const node = map.get(c.id)!;
+    if (c.parentId && map.has(c.parentId)) {
+      map.get(c.parentId)!.replies.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
 
 function CommentItem({
   comment,
   depth = 0,
+  projectId,
+  onReplyPosted,
 }: {
-  comment: Comment;
+  comment: CommentTree;
   depth?: number;
+  projectId: string;
+  onReplyPosted: () => void;
 }) {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleReply = async () => {
+    if (!replyText.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId,
+          content: replyText,
+          parentId: comment.id,
+        }),
+      });
+      if (res.ok) {
+        setReplyText("");
+        setReplyOpen(false);
+        onReplyPosted();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className={cn("space-y-3", depth > 0 && "ml-8 pl-4 border-l-2 border-border")}>
@@ -105,11 +138,8 @@ function CommentItem({
             />
             <Button
               size="sm"
-              disabled={!replyText.trim()}
-              onClick={() => {
-                setReplyText("");
-                setReplyOpen(false);
-              }}
+              disabled={!replyText.trim() || submitting}
+              onClick={handleReply}
               className="shrink-0 self-end"
             >
               <Send className="h-3 w-3" />
@@ -119,14 +149,59 @@ function CommentItem({
       </div>
 
       {comment.replies.map((reply) => (
-        <CommentItem key={reply.id} comment={reply} depth={depth + 1} />
+        <CommentItem
+          key={reply.id}
+          comment={reply}
+          depth={depth + 1}
+          projectId={projectId}
+          onReplyPosted={onReplyPosted}
+        />
       ))}
     </div>
   );
 }
 
-export function ProjectComments() {
+export function ProjectComments({ projectId }: ProjectCommentsProps) {
+  const [comments, setComments] = useState<CommentData[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const fetchComments = () => {
+    fetch(`/api/comments?projectId=${projectId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setComments(data);
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchComments();
+  }, [projectId]);
+
+  const handleNewComment = async () => {
+    if (!newComment.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId,
+          content: newComment,
+        }),
+      });
+      if (res.ok) {
+        setNewComment("");
+        fetchComments();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const tree = buildTree(comments);
 
   return (
     <div className="space-y-4">
@@ -139,18 +214,36 @@ export function ProjectComments() {
           onChange={(e) => setNewComment(e.target.value)}
         />
         <div className="flex justify-end">
-          <Button disabled={!newComment.trim()} onClick={() => setNewComment("")}>
+          <Button
+            disabled={!newComment.trim() || submitting}
+            onClick={handleNewComment}
+          >
             <MessageCircle className="mr-1 h-4 w-4" />
-            Comment
+            {submitting ? "Posting..." : "Comment"}
           </Button>
         </div>
       </div>
 
       {/* Comments list */}
       <div className="space-y-4">
-        {demoComments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
-        ))}
+        {loading ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Loading comments...
+          </p>
+        ) : tree.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            No comments yet. Be the first to comment!
+          </p>
+        ) : (
+          tree.map((comment) => (
+            <CommentItem
+              key={comment.id}
+              comment={comment}
+              projectId={projectId}
+              onReplyPosted={fetchComments}
+            />
+          ))
+        )}
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -21,21 +21,11 @@ interface Notification {
   id: string;
   type: string;
   title: string;
-  body?: string;
+  body?: string | null;
   read: boolean;
-  actionUrl?: string;
+  actionUrl?: string | null;
   createdAt: string;
-  date: string;
 }
-
-const demoNotifications: Notification[] = [
-  { id: "1", type: "phase_update", title: "Development phase started", body: "Your project 'My Web Application' has moved to the Development phase.", read: false, actionUrl: "/projects/demo", createdAt: "2 hours ago", date: "Today" },
-  { id: "2", type: "message_received", title: "New message from Fortitudo Team", body: "Hey! The wireframes are ready for review.", read: false, actionUrl: "/messages", createdAt: "5 hours ago", date: "Today" },
-  { id: "3", type: "file_uploaded", title: "File uploaded to your project", body: "wireframes-v2.pdf was uploaded by the team.", read: true, actionUrl: "/projects/demo", createdAt: "1 day ago", date: "Yesterday" },
-  { id: "4", type: "payment_confirmed", title: "Payment confirmed", body: "Your payment of $2,500 has been processed successfully.", read: true, actionUrl: "/settings", createdAt: "3 days ago", date: "Mar 20, 2026" },
-  { id: "5", type: "comment_added", title: "New comment on your project", body: "Fortitudo Team commented on the homepage design.", read: true, actionUrl: "/projects/demo", createdAt: "4 days ago", date: "Mar 19, 2026" },
-  { id: "6", type: "survey_request", title: "How was your experience?", body: "Your project is nearing completion. We'd love your feedback!", read: true, actionUrl: "/projects/demo", createdAt: "5 days ago", date: "Mar 18, 2026" },
-];
 
 const typeIcons: Record<string, React.ElementType> = {
   phase_update: FolderKanban,
@@ -46,20 +36,78 @@ const typeIcons: Record<string, React.ElementType> = {
   survey_request: Star,
 };
 
+function formatRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
+
+function getDateGroup(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 86400000);
+  const notifDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+  if (notifDate.getTime() === today.getTime()) return "Today";
+  if (notifDate.getTime() === yesterday.getTime()) return "Yesterday";
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(demoNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/notifications")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setNotifications(data);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAllRead = () => {
+  const markAllRead = async () => {
+    const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notificationIds: unreadIds }),
+    });
   };
 
   // Group by date
   const grouped = notifications.reduce<Record<string, Notification[]>>((acc, n) => {
-    if (!acc[n.date]) acc[n.date] = [];
-    acc[n.date].push(n);
+    const group = getDateGroup(n.createdAt);
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(n);
     return acc;
   }, {});
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl font-bold sm:text-3xl">Notifications</h1>
+          <p className="text-muted-foreground mt-1">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -80,52 +128,66 @@ export default function NotificationsPage() {
         )}
       </div>
 
-      <div className="space-y-6">
-        {Object.entries(grouped).map(([date, items]) => (
-          <div key={date}>
-            <h3 className="text-sm font-medium text-muted-foreground mb-3">{date}</h3>
-            <Card>
-              <CardContent className="p-0 divide-y divide-border">
-                {items.map((notification) => {
-                  const Icon = typeIcons[notification.type] || Bell;
-                  return (
-                    <Link
-                      key={notification.id}
-                      href={notification.actionUrl || "#"}
-                      className={cn(
-                        "flex gap-4 px-4 py-4 transition-colors hover:bg-muted",
-                        !notification.read && "bg-orange/5"
-                      )}
-                    >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                        <Icon className="h-5 w-5 text-orange" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <p className={cn("text-sm", !notification.read && "font-semibold")}>
-                            {notification.title}
-                          </p>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-xs text-muted-foreground">{notification.createdAt}</span>
-                            {!notification.read && (
-                              <span className="h-2 w-2 rounded-full bg-orange" />
-                            )}
-                          </div>
-                        </div>
-                        {notification.body && (
-                          <p className="text-sm text-muted-foreground mt-0.5">
-                            {notification.body}
-                          </p>
+      {notifications.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+            <p className="font-semibold">No notifications</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              You&apos;ll see updates about your projects here.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-6">
+          {Object.entries(grouped).map(([date, items]) => (
+            <div key={date}>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">{date}</h3>
+              <Card>
+                <CardContent className="p-0 divide-y divide-border">
+                  {items.map((notification) => {
+                    const Icon = typeIcons[notification.type] || Bell;
+                    return (
+                      <Link
+                        key={notification.id}
+                        href={notification.actionUrl || "#"}
+                        className={cn(
+                          "flex gap-4 px-4 py-4 transition-colors hover:bg-muted",
+                          !notification.read && "bg-orange/5"
                         )}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-      </div>
+                      >
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
+                          <Icon className="h-5 w-5 text-orange" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className={cn("text-sm", !notification.read && "font-semibold")}>
+                              {notification.title}
+                            </p>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <span className="text-xs text-muted-foreground">
+                                {formatRelativeTime(notification.createdAt)}
+                              </span>
+                              {!notification.read && (
+                                <span className="h-2 w-2 rounded-full bg-orange" />
+                              )}
+                            </div>
+                          </div>
+                          {notification.body && (
+                            <p className="text-sm text-muted-foreground mt-0.5">
+                              {notification.body}
+                            </p>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

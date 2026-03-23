@@ -8,19 +8,36 @@ import { Star, Send, CheckCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface NPSSurveyProps {
+  projectId: string;
   projectName: string;
   onDismiss: () => void;
 }
 
-export function NPSSurvey({ projectName, onDismiss }: NPSSurveyProps) {
+export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps) {
   const [score, setScore] = useState<number | null>(null);
   const [feedback, setFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (score === null) return;
-    // In production: POST to /api/surveys
-    setSubmitted(true);
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/surveys", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId,
+          score,
+          feedback: feedback || null,
+        }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      }
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -100,10 +117,10 @@ export function NPSSurvey({ projectName, onDismiss }: NPSSurveyProps) {
           variant="glow"
           className="w-full"
           onClick={handleSubmit}
-          disabled={score === null}
+          disabled={score === null || submitting}
         >
           <Send className="mr-1 h-4 w-4" />
-          Submit Feedback
+          {submitting ? "Submitting..." : "Submit Feedback"}
         </Button>
       </CardContent>
     </Card>

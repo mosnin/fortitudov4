@@ -1,90 +1,130 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3, TrendingUp, Eye, MousePointer, Clock, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { BarChart3, Eye, MousePointer } from "lucide-react";
 
-interface Metric {
-  label: string;
-  value: string;
-  change: string;
-  trend: "up" | "down";
-  icon: React.ElementType;
+interface AnalyticsEvent {
+  id: string;
+  event: string;
+  value: number | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
 }
 
-const metrics: Metric[] = [
-  { label: "Page Views", value: "12,458", change: "+24%", trend: "up", icon: Eye },
-  { label: "Unique Visitors", value: "3,842", change: "+18%", trend: "up", icon: MousePointer },
-  { label: "Avg. Session", value: "2m 34s", change: "+8%", trend: "up", icon: Clock },
-  { label: "Bounce Rate", value: "34%", change: "-5%", trend: "down", icon: TrendingUp },
-];
+interface AnalyticsOverviewProps {
+  projectId: string;
+}
 
-const pageViews = [
-  { page: "/", views: 4520, percentage: 100 },
-  { page: "/products", views: 2830, percentage: 63 },
-  { page: "/cart", views: 1240, percentage: 27 },
-  { page: "/checkout", views: 890, percentage: 20 },
-  { page: "/about", views: 640, percentage: 14 },
-];
+export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
+  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
-const recentEvents = [
-  { event: "Form submission", count: 23, date: "Today" },
-  { event: "Button click: Buy Now", count: 156, date: "Today" },
-  { event: "Newsletter signup", count: 12, date: "Today" },
-  { event: "Contact form", count: 8, date: "Yesterday" },
-  { event: "Download: Brochure", count: 34, date: "Yesterday" },
-];
+  useEffect(() => {
+    fetch(`/api/analytics?projectId=${projectId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setEvents(data);
+      })
+      .finally(() => setLoading(false));
+  }, [projectId]);
 
-export function AnalyticsOverview() {
+  if (loading) {
+    return (
+      <div className="text-sm text-muted-foreground text-center py-8">
+        Loading analytics...
+      </div>
+    );
+  }
+
+  if (events.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-8 text-center">
+          <BarChart3 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="font-semibold">No analytics data yet</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Analytics will appear here once your project is launched and tracking events.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Aggregate events by type
+  const eventCounts = events.reduce<Record<string, { count: number; totalValue: number }>>((acc, e) => {
+    if (!acc[e.event]) acc[e.event] = { count: 0, totalValue: 0 };
+    acc[e.event].count++;
+    acc[e.event].totalValue += e.value || 0;
+    return acc;
+  }, {});
+
+  const sortedEvents = Object.entries(eventCounts)
+    .sort(([, a], [, b]) => b.count - a.count);
+
+  const maxCount = sortedEvents[0]?.[1].count || 1;
+
+  // Recent events (last 10)
+  const recentEvents = [...events]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 10);
+
   return (
     <div className="space-y-6">
-      {/* Metric cards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        {metrics.map((metric) => {
-          const Icon = metric.icon;
-          const TrendIcon = metric.trend === "up" ? ArrowUpRight : ArrowDownRight;
-          return (
-            <Card key={metric.label}>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                  <span
-                    className={`flex items-center gap-0.5 text-xs font-medium ${
-                      metric.trend === "up" ? "text-success" : "text-destructive"
-                    }`}
-                  >
-                    <TrendIcon className="h-3 w-3" />
-                    {metric.change}
-                  </span>
-                </div>
-                <p className="text-2xl font-bold">{metric.value}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{metric.label}</p>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Summary metrics */}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <BarChart3 className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-2xl font-bold">{events.length}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Total Events</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <Eye className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-2xl font-bold">{sortedEvents.length}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Event Types</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between mb-2">
+              <MousePointer className="h-4 w-4 text-muted-foreground" />
+            </div>
+            <p className="text-2xl font-bold">
+              {events.reduce((sum, e) => sum + (e.value || 0), 0).toLocaleString()}
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">Total Value</p>
+          </CardContent>
+        </Card>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Top pages */}
+        {/* Event breakdown */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
               <BarChart3 className="h-4 w-4 text-orange" />
-              Top Pages
+              Event Breakdown
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {pageViews.map((page) => (
-              <div key={page.page}>
+            {sortedEvents.slice(0, 8).map(([event, data]) => (
+              <div key={event}>
                 <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="font-mono text-muted-foreground">{page.page}</span>
-                  <span className="font-medium">{page.views.toLocaleString()}</span>
+                  <span className="font-mono text-muted-foreground truncate">{event}</span>
+                  <span className="font-medium">{data.count}</span>
                 </div>
                 <div className="h-2 rounded-full bg-muted overflow-hidden">
                   <div
                     className="h-full rounded-full bg-orange transition-all"
-                    style={{ width: `${page.percentage}%` }}
+                    style={{ width: `${(data.count / maxCount) * 100}%` }}
                   />
                 </div>
               </div>
@@ -102,16 +142,20 @@ export function AnalyticsOverview() {
           </CardHeader>
           <CardContent>
             <div className="space-y-0">
-              {recentEvents.map((event, i) => (
+              {recentEvents.map((event) => (
                 <div
-                  key={i}
+                  key={event.id}
                   className="flex items-center justify-between py-2.5 border-b border-border last:border-0"
                 >
                   <div>
                     <p className="text-sm font-medium">{event.event}</p>
-                    <p className="text-xs text-muted-foreground">{event.date}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(event.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
-                  <Badge variant="secondary">{event.count}</Badge>
+                  {event.value !== null && (
+                    <Badge variant="secondary">{event.value}</Badge>
+                  )}
                 </div>
               ))}
             </div>

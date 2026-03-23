@@ -22,27 +22,8 @@ interface InvoiceData {
   clientName: string;
 }
 
-const demoInvoice: InvoiceData = {
-  invoiceNumber: "INV-2026-001",
-  date: "March 10, 2026",
-  status: "paid",
-  projectName: "My Web Application",
-  clientName: "John Doe",
-  items: [
-    { description: "Web Application - Professional Plan", amount: "$2,500.00" },
-    { description: "Custom design & development", amount: "Included" },
-    { description: "Testing & QA", amount: "Included" },
-    { description: "Deployment & launch", amount: "Included" },
-    { description: "30-day post-launch support", amount: "Included" },
-  ],
-  subtotal: "$2,500.00",
-  tax: "$0.00",
-  total: "$2,500.00",
-};
-
-export function InvoiceCard({ invoice = demoInvoice }: { invoice?: InvoiceData }) {
+export function InvoiceCard({ invoice }: { invoice: InvoiceData }) {
   const handleDownload = () => {
-    // In production, generate and download a PDF invoice
     const invoiceContent = `
 INVOICE: ${invoice.invoiceNumber}
 Date: ${invoice.date}

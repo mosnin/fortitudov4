@@ -1,26 +1,61 @@
+import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
-import { Plus, ArrowRight } from "lucide-react";
+import { Plus, ArrowRight, FolderKanban } from "lucide-react";
+import { db } from "@/db";
+import { projects, projectPhases, users } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
 
-const demoProject = {
-  id: "demo",
-  name: "My Web Application",
-  serviceType: "Web Application",
-  status: "in_progress" as const,
-  phases: [
-    { id: "1", name: "Discovery", status: "completed" as const, order: 0 },
-    { id: "2", name: "Design", status: "completed" as const, order: 1 },
-    { id: "3", name: "Development", status: "in_progress" as const, order: 2 },
-    { id: "4", name: "Testing", status: "pending" as const, order: 3 },
-    { id: "5", name: "Review", status: "pending" as const, order: 4 },
-    { id: "6", name: "Launch", status: "pending" as const, order: 5 },
-  ] satisfies Phase[],
+const statusLabels: Record<string, string> = {
+  onboarding: "Onboarding",
+  payment_pending: "Payment Pending",
+  in_progress: "In Progress",
+  revision: "Revision",
+  completed: "Completed",
+  cancelled: "Cancelled",
 };
 
-export default function ProjectsPage() {
+const statusVariants: Record<string, "orange" | "success" | "secondary"> = {
+  in_progress: "orange",
+  completed: "success",
+};
+
+const serviceLabels: Record<string, string> = {
+  web_application: "Web Application",
+  ecommerce_store: "E-Commerce Store",
+  funnels: "Funnels",
+  ai_automation: "AI Automation",
+  open_claw_deployment: "Open Claw Deployment",
+};
+
+export default async function ProjectsPage() {
+  const { userId } = await auth();
+  if (!userId) return null;
+
+  const [dbUser] = await db
+    .select()
+    .from(users)
+    .where(eq(users.clerkId, userId));
+
+  if (!dbUser) return null;
+
+  const userProjects =
+    dbUser.role === "admin"
+      ? await db.select().from(projects)
+      : await db.select().from(projects).where(eq(projects.userId, dbUser.id));
+
+  const projectIds = userProjects.map((p) => p.id);
+  const allPhases =
+    projectIds.length > 0
+      ? await db
+          .select()
+          .from(projectPhases)
+          .where(inArray(projectPhases.projectId, projectIds))
+      : [];
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -38,31 +73,66 @@ export default function ProjectsPage() {
         </Button>
       </div>
 
-      {/* Project list */}
-      <div className="space-y-4">
-        <Card className="hover:border-orange/30 transition-colors">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div>
-              <CardTitle>{demoProject.name}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">
-                {demoProject.serviceType}
-              </p>
-            </div>
-            <Badge variant="orange">In Progress</Badge>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <PhaseTrackerHorizontal phases={demoProject.phases} />
-            <div className="flex justify-end">
-              <Button variant="outline" size="sm" asChild>
-                <Link href={`/projects/${demoProject.id}`}>
-                  View Project
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
+      {userProjects.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center">
+            <FolderKanban className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+            <p className="font-semibold">No projects yet</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Start your first project to get going.
+            </p>
+            <Button variant="glow" asChild className="mt-4">
+              <Link href="/onboarding">
+                <Plus className="mr-1 h-4 w-4" />
+                New Project
+              </Link>
+            </Button>
           </CardContent>
         </Card>
-      </div>
+      ) : (
+        <div className="space-y-4">
+          {userProjects.map((project) => {
+            const phases = allPhases
+              .filter((p) => p.projectId === project.id)
+              .sort((a, b) => a.order - b.order)
+              .map((p) => ({
+                id: p.id,
+                name: p.name,
+                status: p.status,
+                order: p.order,
+              })) satisfies Phase[];
+
+            return (
+              <Card key={project.id} className="hover:border-orange/30 transition-colors">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle>{project.name}</CardTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {serviceLabels[project.serviceType] || project.serviceType}
+                    </p>
+                  </div>
+                  <Badge variant={statusVariants[project.status] || "orange"}>
+                    {statusLabels[project.status] || project.status}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {phases.length > 0 && (
+                    <PhaseTrackerHorizontal phases={phases} />
+                  )}
+                  <div className="flex justify-end">
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href={`/projects/${project.id}`}>
+                        View Project
+                        <ArrowRight className="ml-1 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

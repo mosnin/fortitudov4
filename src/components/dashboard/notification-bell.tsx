@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bell, Check, MessageSquare, CreditCard, FolderKanban, Upload, FileText } from "lucide-react";
+import { Bell, MessageSquare, CreditCard, FolderKanban, Upload, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -9,50 +9,11 @@ interface NotificationItem {
   id: string;
   type: string;
   title: string;
-  body?: string;
+  body?: string | null;
   read: boolean;
-  actionUrl?: string;
+  actionUrl?: string | null;
   createdAt: string;
 }
-
-const demoNotifications: NotificationItem[] = [
-  {
-    id: "1",
-    type: "phase_update",
-    title: "Development phase started",
-    body: "Your project 'My Web Application' has moved to the Development phase.",
-    read: false,
-    actionUrl: "/projects/demo",
-    createdAt: "2 hours ago",
-  },
-  {
-    id: "2",
-    type: "message_received",
-    title: "New message from Fortitudo Team",
-    body: "Hey! The wireframes are ready for review.",
-    read: false,
-    actionUrl: "/messages",
-    createdAt: "5 hours ago",
-  },
-  {
-    id: "3",
-    type: "file_uploaded",
-    title: "File uploaded to your project",
-    body: "wireframes-v2.pdf was uploaded by the team.",
-    read: true,
-    actionUrl: "/projects/demo",
-    createdAt: "1 day ago",
-  },
-  {
-    id: "4",
-    type: "payment_confirmed",
-    title: "Payment confirmed",
-    body: "Your payment of $2,500 has been processed successfully.",
-    read: true,
-    actionUrl: "/settings",
-    createdAt: "3 days ago",
-  },
-];
 
 const typeIcons: Record<string, React.ElementType> = {
   phase_update: FolderKanban,
@@ -62,12 +23,37 @@ const typeIcons: Record<string, React.ElementType> = {
   comment_added: FileText,
 };
 
+function formatRelativeTime(dateStr: string): string {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
+
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState(demoNotifications);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Fetch notifications on mount
+  useEffect(() => {
+    fetch("/api/notifications")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setNotifications(data.slice(0, 10));
+      })
+      .finally(() => setLoaded(true));
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -81,14 +67,29 @@ export function NotificationBell() {
     }
   }, [open]);
 
-  const markAllRead = () => {
+  const markAllRead = async () => {
+    const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
+    if (unreadIds.length === 0) return;
+
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notificationIds: unreadIds }),
+    });
   };
 
-  const markRead = (id: string) => {
+  const markRead = async (id: string) => {
     setNotifications((prev) =>
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
+
+    await fetch("/api/notifications", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ notificationIds: [id] }),
+    });
   };
 
   return (
@@ -123,7 +124,11 @@ export function NotificationBell() {
 
           {/* List */}
           <div className="max-h-80 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {!loaded ? (
+              <div className="p-6 text-center text-sm text-muted-foreground">
+                Loading...
+              </div>
+            ) : notifications.length === 0 ? (
               <div className="p-6 text-center text-sm text-muted-foreground">
                 No notifications yet
               </div>
@@ -161,7 +166,7 @@ export function NotificationBell() {
                         </p>
                       )}
                       <p className="text-xs text-muted-foreground mt-1">
-                        {notification.createdAt}
+                        {formatRelativeTime(notification.createdAt)}
                       </p>
                     </div>
                   </Link>
