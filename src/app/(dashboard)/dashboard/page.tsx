@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
 import { FolderKanban, MessageSquare, Upload, Plus } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/db";
 import { projects, projectPhases, messages, files, users } from "@/db/schema";
 import { eq, count, and, inArray } from "drizzle-orm";
@@ -154,19 +155,19 @@ export default async function DashboardPage() {
       {/* Active Projects */}
       {activeProjects.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <FolderKanban className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="font-semibold">No active projects yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Start a new project to get going.
-            </p>
-            <Button variant="glow" asChild className="mt-4">
-              <Link href="/onboarding">
-                <Plus className="mr-1 h-4 w-4" />
-                New Project
-              </Link>
-            </Button>
-          </CardContent>
+          <EmptyState
+            icon={FolderKanban}
+            title="No active projects yet"
+            description="Start a new project and we'll track your progress right here."
+            action={
+              <Button variant="glow" asChild>
+                <Link href="/onboarding">
+                  <Plus className="mr-1 h-4 w-4" />
+                  New Project
+                </Link>
+              </Button>
+            }
+          />
         </Card>
       ) : (
         activeProjects.map((project) => {

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
 import { BarChart3 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface Project {
   id: string;
@@ -41,13 +42,11 @@ export default function AnalyticsPage() {
         <p className="text-sm text-muted-foreground">Loading...</p>
       ) : projects.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <BarChart3 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="font-semibold">No projects yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Analytics will appear here once you have a project.
-            </p>
-          </CardContent>
+          <EmptyState
+            icon={BarChart3}
+            title="No analytics yet"
+            description="Analytics will appear here once you have an active project."
+          />
         </Card>
       ) : (
         <>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BarChart3, Eye, MousePointer } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 
 interface AnalyticsEvent {
   id: string;
@@ -32,22 +33,24 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
 
   if (loading) {
     return (
-      <div className="text-sm text-muted-foreground text-center py-8">
-        Loading analytics...
-      </div>
+      <Card>
+        <EmptyState
+          icon={BarChart3}
+          title="Loading analytics..."
+          description=""
+        />
+      </Card>
     );
   }
 
   if (events.length === 0) {
     return (
       <Card>
-        <CardContent className="p-8 text-center">
-          <BarChart3 className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-          <p className="font-semibold">No analytics data yet</p>
-          <p className="text-sm text-muted-foreground mt-1">
-            Analytics will appear here once your project is launched and tracking events.
-          </p>
-        </CardContent>
+        <EmptyState
+          icon={BarChart3}
+          title="No analytics data yet"
+          description="Once your project is live and tracking events, metrics will appear here."
+        />
       </Card>
     );
   }

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Reply, MessageCircle } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 interface CommentData {
@@ -227,13 +228,17 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
       {/* Comments list */}
       <div className="space-y-4">
         {loading ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            Loading comments...
-          </p>
+          <div className="py-6">
+            <EmptyState icon={MessageCircle} title="Loading comments..." description="" />
+          </div>
         ) : tree.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            No comments yet. Be the first to comment!
-          </p>
+          <div className="py-2">
+            <EmptyState
+              icon={MessageCircle}
+              title="No comments yet"
+              description="Leave a comment above to start the conversation with the team."
+            />
+          </div>
         ) : (
           tree.map((comment) => (
             <CommentItem

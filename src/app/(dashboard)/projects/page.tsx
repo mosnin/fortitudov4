@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
 import { Plus, ArrowRight, FolderKanban } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/db";
 import { projects, projectPhases, users } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
@@ -75,19 +76,19 @@ export default async function ProjectsPage() {
 
       {userProjects.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <FolderKanban className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="font-semibold">No projects yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Start your first project to get going.
-            </p>
-            <Button variant="glow" asChild className="mt-4">
-              <Link href="/onboarding">
-                <Plus className="mr-1 h-4 w-4" />
-                New Project
-              </Link>
-            </Button>
-          </CardContent>
+          <EmptyState
+            icon={FolderKanban}
+            title="No projects yet"
+            description="Start your first project and we'll build something great together."
+            action={
+              <Button variant="glow" asChild>
+                <Link href="/onboarding">
+                  <Plus className="mr-1 h-4 w-4" />
+                  New Project
+                </Link>
+              </Button>
+            }
+          />
         </Card>
       ) : (
         <div className="space-y-4">

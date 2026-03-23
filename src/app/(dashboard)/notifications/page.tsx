@@ -15,6 +15,7 @@ import {
   FileText,
   Star,
 } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 interface Notification {
@@ -130,13 +131,11 @@ export default function NotificationsPage() {
 
       {notifications.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <Bell className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="font-semibold">No notifications</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              You&apos;ll see updates about your projects here.
-            </p>
-          </CardContent>
+          <EmptyState
+            icon={Bell}
+            title="You're all caught up"
+            description="Project updates, messages, and payment confirmations will show up here."
+          />
         </Card>
       ) : (
         <div className="space-y-6">

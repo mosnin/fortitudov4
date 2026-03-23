@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Send, MessageSquare } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -109,13 +110,11 @@ export default function MessagesPage() {
 
       {projects.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <MessageSquare className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
-            <p className="font-semibold">No projects yet</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Create a project to start messaging with the team.
-            </p>
-          </CardContent>
+          <EmptyState
+            icon={MessageSquare}
+            title="No messages yet"
+            description="Once you have an active project, you can chat directly with the Fortitudo team here."
+          />
         </Card>
       ) : (
         <>
@@ -146,9 +145,11 @@ export default function MessagesPage() {
             <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center h-full">
-                  <p className="text-sm text-muted-foreground">
-                    No messages yet. Start the conversation!
-                  </p>
+                  <div className="text-center">
+                    <MessageSquare className="h-8 w-8 text-orange/30 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No messages yet.</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">Send one below to get started.</p>
+                  </div>
                 </div>
               ) : (
                 messages.map((message) => (
