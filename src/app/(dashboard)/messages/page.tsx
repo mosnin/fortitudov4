@@ -29,6 +29,7 @@ export default function MessagesPage() {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch projects
@@ -40,6 +41,10 @@ export default function MessagesPage() {
           setProjects(data);
           if (data.length > 0) setSelectedProjectId(data[0].id);
         }
+      })
+      .catch(() => {
+        setError("Failed to load projects. Please try again.");
+        setLoading(false);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -54,6 +59,9 @@ export default function MessagesPage() {
         if (Array.isArray(data)) {
           setMessages(data);
         }
+      })
+      .catch(() => {
+        setMessages([]);
       });
   }, [selectedProjectId]);
 
@@ -81,6 +89,8 @@ export default function MessagesPage() {
         setMessages((prev) => [...prev, msg]);
         setNewMessage("");
       }
+    } catch {
+      window.alert("Failed to send message. Please try again.");
     } finally {
       setSending(false);
     }

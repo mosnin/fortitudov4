@@ -28,6 +28,9 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
       .then((data) => {
         if (Array.isArray(data)) setEvents(data);
       })
+      .catch(() => {
+        setEvents([]);
+      })
       .finally(() => setLoading(false));
   }, [projectId]);
 

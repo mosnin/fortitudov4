@@ -73,6 +73,9 @@ export default function NotificationsPage() {
       .then((data) => {
         if (Array.isArray(data)) setNotifications(data);
       })
+      .catch(() => {
+        setNotifications([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 

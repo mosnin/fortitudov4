@@ -1,34 +1,25 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { notifications, users } from "@/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { notifications } from "@/db/schema";
+import { eq, desc, and } from "drizzle-orm";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { z } from "zod";
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const [dbUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.clerkId, userId));
-
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const user = await getAuthenticatedUser();
 
     const userNotifications = await db
       .select()
       .from(notifications)
-      .where(eq(notifications.userId, dbUser.id))
+      .where(eq(notifications.userId, user.id))
       .orderBy(desc(notifications.createdAt))
       .limit(50);
 
     return NextResponse.json(userNotifications);
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error("Notifications error:", error);
     return NextResponse.json(
       { error: "Failed to fetch notifications" },
@@ -37,35 +28,37 @@ export async function GET() {
   }
 }
 
+const patchSchema = z.object({
+  notificationIds: z.array(z.string().uuid()).max(100),
+});
+
 export async function PATCH(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const [dbUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.clerkId, userId));
+    const user = await getAuthenticatedUser();
 
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const rateLimit = checkRateLimit(user.id + ":notifications", 30);
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
-    const { notificationIds } = await req.json();
+    const body = await req.json();
+    const parsed = patchSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
+    }
 
-    if (notificationIds && Array.isArray(notificationIds)) {
-      for (const id of notificationIds) {
-        await db
-          .update(notifications)
-          .set({ read: true })
-          .where(eq(notifications.id, id));
-      }
+    const { notificationIds } = parsed.data;
+
+    for (const id of notificationIds) {
+      await db
+        .update(notifications)
+        .set({ read: true })
+        .where(and(eq(notifications.id, id), eq(notifications.userId, user.id)));
     }
 
     return NextResponse.json({ success: true });
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error("Mark read error:", error);
     return NextResponse.json(
       { error: "Failed to update notifications" },

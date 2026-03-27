@@ -43,6 +43,7 @@ function OnboardingContent() {
 
   const [currentStep, setCurrentStep] = useState(preselectedService ? 1 : 0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     serviceType: preselectedService || ("" as ServiceType | ""),
     businessName: "",
@@ -75,6 +76,7 @@ function OnboardingContent() {
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
       const res = await fetch("/api/onboarding", {
         method: "POST",
@@ -87,6 +89,7 @@ function OnboardingContent() {
       const data = await res.json();
       router.push(`/checkout?projectId=${data.projectId}`);
     } catch {
+      setSubmitError("Something went wrong. Please try again.");
       setIsSubmitting(false);
     }
   };
@@ -421,7 +424,11 @@ function OnboardingContent() {
           )}
 
           {/* Navigation buttons */}
-          <div className="flex items-center justify-between p-6 pt-0">
+          <div className="flex flex-col gap-3 p-6 pt-0">
+            {submitError && (
+              <p className="text-sm text-destructive text-center">{submitError}</p>
+            )}
+            <div className="flex items-center justify-between">
             <Button
               variant="outline"
               onClick={() => setCurrentStep((s) => s - 1)}
@@ -452,6 +459,7 @@ function OnboardingContent() {
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
             )}
+            </div>
           </div>
         </Card>
       </div>

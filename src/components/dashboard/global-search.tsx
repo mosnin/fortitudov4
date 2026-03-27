@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, FolderKanban, MessageSquare, FileText } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Search, X, FolderKanban, MessageSquare, FileText, Loader2, AlertCircle } from "lucide-react";
 
 interface SearchResult {
   id: string;
@@ -13,34 +12,113 @@ interface SearchResult {
   href: string;
 }
 
-const demoResults: SearchResult[] = [
-  { id: "1", type: "project", title: "My Web Application", subtitle: "Web Application · In Progress", href: "/projects/demo" },
-  { id: "2", type: "message", title: "Hey! The wireframes are ready", subtitle: "From Fortitudo Team · Mar 15", href: "/messages" },
-  { id: "3", type: "file", title: "brand-guide.pdf", subtitle: "2.4 MB · Mar 15", href: "/projects/demo" },
-  { id: "4", type: "file", title: "logo-assets.zip", subtitle: "8.1 MB · Mar 14", href: "/projects/demo" },
-  { id: "5", type: "message", title: "Can we add a wishlist feature?", subtitle: "From You · Mar 15", href: "/messages" },
-];
-
 const typeIcons = {
   project: FolderKanban,
   message: MessageSquare,
   file: FileText,
 };
 
+const typeLabels: Record<SearchResult["type"], string> = {
+  project: "Projects",
+  message: "Messages",
+  file: "Files",
+};
+
+function groupByType(results: SearchResult[]) {
+  const groups: Partial<Record<SearchResult["type"], SearchResult[]>> = {};
+  for (const r of results) {
+    if (!groups[r.type]) groups[r.type] = [];
+    groups[r.type]!.push(r);
+  }
+  return groups;
+}
+
 export function GlobalSearch() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
 
-  const filtered = query.trim()
-    ? demoResults.filter(
-        (r) =>
-          r.title.toLowerCase().includes(query.toLowerCase()) ||
-          r.subtitle.toLowerCase().includes(query.toLowerCase())
-      )
-    : [];
+  const fetchResults = useCallback(async (searchQuery: string) => {
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    if (searchQuery.trim().length < 2) {
+      setResults([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/search?q=${encodeURIComponent(searchQuery.trim())}`,
+        { signal: controller.signal }
+      );
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `Search failed (${res.status})`);
+      }
+
+      const data: SearchResult[] = await res.json();
+      setResults(data);
+    } catch (err: unknown) {
+      if (err instanceof DOMException && err.name === "AbortError") {
+        return; // Request was cancelled, ignore
+      }
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setResults([]);
+    } finally {
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
+    }
+  }, []);
+
+  // Debounced search
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    if (!query.trim()) {
+      setResults([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    if (query.trim().length < 2) {
+      setResults([]);
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    debounceRef.current = setTimeout(() => {
+      fetchResults(query);
+    }, 300);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [query, fetchResults]);
 
   // Keyboard shortcut: Cmd/Ctrl + K
   useEffect(() => {
@@ -62,6 +140,13 @@ export function GlobalSearch() {
       inputRef.current?.focus();
     } else {
       setQuery("");
+      setResults([]);
+      setError(null);
+      setLoading(false);
+      // Cancel any pending request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     }
   }, [open]);
 
@@ -76,6 +161,10 @@ export function GlobalSearch() {
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [open]);
+
+  const grouped = groupByType(results);
+  const hasResults = results.length > 0;
+  const showNoResults = query.trim().length >= 2 && !loading && !error && !hasResults;
 
   return (
     <>
@@ -98,7 +187,11 @@ export function GlobalSearch() {
           <div ref={containerRef} className="relative w-full max-w-lg mx-4 rounded-xl border border-border bg-card shadow-2xl overflow-hidden animate-fade-in">
             {/* Search input */}
             <div className="flex items-center gap-3 border-b border-border px-4">
-              <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+              {loading ? (
+                <Loader2 className="h-4 w-4 text-muted-foreground shrink-0 animate-spin" />
+              ) : (
+                <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+              )}
               <input
                 ref={inputRef}
                 type="text"
@@ -116,37 +209,66 @@ export function GlobalSearch() {
 
             {/* Results */}
             <div className="max-h-72 overflow-y-auto">
-              {query.trim() && filtered.length === 0 ? (
-                <div className="p-6 text-center text-sm text-muted-foreground">
-                  No results for &ldquo;{query}&rdquo;
+              {/* Error state */}
+              {error && (
+                <div className="p-6 flex flex-col items-center gap-2 text-center text-sm text-destructive">
+                  <AlertCircle className="h-5 w-5" />
+                  <p>{error}</p>
                 </div>
-              ) : (
-                filtered.map((result) => {
-                  const Icon = typeIcons[result.type];
-                  return (
-                    <button
-                      key={result.id}
-                      onClick={() => {
-                        setOpen(false);
-                        router.push(result.href);
-                      }}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors cursor-pointer"
-                    >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                        <Icon className="h-4 w-4 text-orange" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{result.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
-                      </div>
-                      <span className="text-[10px] uppercase text-muted-foreground shrink-0">
-                        {result.type}
-                      </span>
-                    </button>
-                  );
-                })
               )}
-              {!query.trim() && (
+
+              {/* No results */}
+              {showNoResults && (
+                <div className="p-6 text-center text-sm text-muted-foreground">
+                  No results found for &ldquo;{query}&rdquo;
+                </div>
+              )}
+
+              {/* Grouped results */}
+              {hasResults && !error && (
+                <>
+                  {(["project", "message", "file"] as const).map((type) => {
+                    const items = grouped[type];
+                    if (!items || items.length === 0) return null;
+                    return (
+                      <div key={type}>
+                        <div className="px-4 pt-3 pb-1">
+                          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                            {typeLabels[type]}
+                          </p>
+                        </div>
+                        {items.map((result) => {
+                          const Icon = typeIcons[result.type];
+                          return (
+                            <button
+                              key={result.id}
+                              onClick={() => {
+                                setOpen(false);
+                                router.push(result.href);
+                              }}
+                              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors cursor-pointer"
+                            >
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange/10">
+                                <Icon className="h-4 w-4 text-orange" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium truncate">{result.title}</p>
+                                <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                              </div>
+                              <span className="text-[10px] uppercase text-muted-foreground shrink-0">
+                                {result.type}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+
+              {/* Empty state */}
+              {!query.trim() && !error && (
                 <div className="p-6 text-center text-sm text-muted-foreground">
                   Type to search across projects, messages, and files
                 </div>

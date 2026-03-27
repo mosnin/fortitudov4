@@ -174,6 +174,9 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
       .then((data) => {
         if (Array.isArray(data)) setComments(data);
       })
+      .catch(() => {
+        setComments([]);
+      })
       .finally(() => setLoading(false));
   };
 

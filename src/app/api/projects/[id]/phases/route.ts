@@ -1,21 +1,19 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { projectPhases, users } from "@/db/schema";
+import { projectPhases } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
+import { z } from "zod";
 
 export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { id } = await params;
-
   try {
+    const user = await getAuthenticatedUser();
+    const { id } = await params;
+    await verifyProjectAccess(id, user.id, user.role);
+
     const phases = await db
       .select()
       .from(projectPhases)
@@ -23,6 +21,7 @@ export async function GET(
 
     return NextResponse.json(phases);
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error("Phases error:", error);
     return NextResponse.json(
       { error: "Failed to fetch phases" },
@@ -31,29 +30,31 @@ export async function GET(
   }
 }
 
+const patchSchema = z.object({
+  phaseId: z.string().uuid(),
+  status: z.enum(["pending", "in_progress", "completed"]),
+});
+
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // Only admins can update phases
-  const [dbUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkId, userId));
-
-  if (!dbUser || dbUser.role !== "admin") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  }
-
-  const { id } = await params;
-
   try {
-    const { phaseId, status } = await req.json();
+    const user = await getAuthenticatedUser();
+
+    if (user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { id } = await params;
+
+    const body = await req.json();
+    const parsed = patchSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
+    }
+
+    const { phaseId, status } = parsed.data;
 
     const [updated] = await db
       .update(projectPhases)
@@ -72,6 +73,7 @@ export async function PATCH(
 
     return NextResponse.json(updated);
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error("Phase update error:", error);
     return NextResponse.json(
       { error: "Failed to update phase" },

@@ -1,32 +1,43 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { satisfactionSurveys, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { satisfactionSurveys } from "@/db/schema";
+import { z } from "zod";
+import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+const createSurveySchema = z.object({
+  projectId: z.string().uuid(),
+  score: z.number().int().min(1).max(10),
+  feedback: z.string().max(2000).nullable().optional(),
+});
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
-    const [dbUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.clerkId, userId));
+    const user = await getAuthenticatedUser();
 
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const body = await req.json();
+    const parsed = createSurveySchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid input", details: parsed.error.flatten() },
+        { status: 400 }
+      );
     }
 
-    const { projectId, score, feedback } = await req.json();
+    const { projectId, score, feedback } = parsed.data;
+
+    await verifyProjectAccess(projectId, user.id, user.role);
+
+    const rateLimit = checkRateLimit(user.id + ":surveys", 5);
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
 
     const [survey] = await db
       .insert(satisfactionSurveys)
       .values({
         projectId,
-        userId: dbUser.id,
+        userId: user.id,
         score,
         feedback,
       })
@@ -34,6 +45,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json(survey);
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error("Survey error:", error);
     return NextResponse.json(
       { error: "Failed to submit survey" },

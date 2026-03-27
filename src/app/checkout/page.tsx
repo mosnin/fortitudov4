@@ -15,18 +15,46 @@ export default function CheckoutPage() {
   );
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId");
+  const creemCheckoutUrl = process.env.NEXT_PUBLIC_CREEM_CHECKOUT_URL;
+
+  const isValidProjectId = projectId && UUID_REGEX.test(projectId);
 
   const handlePayment = () => {
-    // In production, this would create a Creem.io checkout session
-    // and redirect to the Creem checkout URL
-    const creemCheckoutUrl = process.env.NEXT_PUBLIC_CREEM_CHECKOUT_URL;
-    if (creemCheckoutUrl) {
-      window.location.href = `${creemCheckoutUrl}?metadata[projectId]=${projectId}`;
-    }
+    if (!creemCheckoutUrl) return;
+    if (!isValidProjectId) return;
+    window.location.href = `${creemCheckoutUrl}?metadata[projectId]=${projectId}`;
   };
+
+  if (!isValidProjectId) {
+    return (
+      <div className="min-h-screen bg-charcoal-dark flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center space-y-2">
+            <p className="text-destructive font-semibold">Invalid or missing project ID.</p>
+            <p className="text-sm text-muted-foreground">Please use a valid checkout link.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!creemCheckoutUrl) {
+    return (
+      <div className="min-h-screen bg-charcoal-dark flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6 text-center space-y-2">
+            <p className="text-destructive font-semibold">Payment is not configured.</p>
+            <p className="text-sm text-muted-foreground">Please contact support.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-charcoal-dark flex items-center justify-center p-4">

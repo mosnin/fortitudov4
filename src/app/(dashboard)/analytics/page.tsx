@@ -26,6 +26,9 @@ export default function AnalyticsPage() {
           if (data.length > 0) setSelectedProjectId(data[0].id);
         }
       })
+      .catch(() => {
+        setProjects([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 

@@ -1,16 +1,33 @@
 import { UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { AdminNav } from "@/components/dashboard/admin-nav";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { userId } = await auth();
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.clerkId, userId),
+  });
+
+  if (!user || user.role !== "admin") {
+    redirect("/dashboard");
+  }
   return (
     <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">

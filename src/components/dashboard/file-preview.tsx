@@ -12,9 +12,13 @@ interface FilePreviewProps {
   size?: string;
 }
 
-function getFileCategory(name: string, type?: string): "image" | "pdf" | "other" {
+function getFileCategory(name: string, type?: string): "image" | "pdf" | "svg" | "other" {
   const ext = name.split(".").pop()?.toLowerCase();
-  if (type?.startsWith("image/") || ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext || "")) {
+  // SVG files can contain embedded scripts — never render them inline.
+  if (ext === "svg" || type === "image/svg+xml") {
+    return "svg";
+  }
+  if (type?.startsWith("image/") || ["png", "jpg", "jpeg", "gif", "webp"].includes(ext || "")) {
     return "image";
   }
   if (type === "application/pdf" || ext === "pdf") {
@@ -23,10 +27,11 @@ function getFileCategory(name: string, type?: string): "image" | "pdf" | "other"
   return "other";
 }
 
-function getFileIcon(category: "image" | "pdf" | "other") {
+function getFileIcon(category: "image" | "pdf" | "svg" | "other") {
   switch (category) {
     case "image": return FileImage;
     case "pdf": return FileText;
+    case "svg": return FileImage;
     default: return FileIcon;
   }
 }
@@ -35,7 +40,7 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const category = getFileCategory(name, type);
   const Icon = getFileIcon(category);
-  const canPreview = category === "image" || category === "pdf";
+  const canPreview = (category === "image" || category === "pdf");
 
   return (
     <>

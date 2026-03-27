@@ -1,59 +1,76 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import { projects, messages, files, users } from "@/db/schema";
-import { eq, ilike, or } from "drizzle-orm";
+import { projects, messages, files } from "@/db/schema";
+import { eq, ilike, and, inArray } from "drizzle-orm";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export async function GET(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(req.url);
-  const q = searchParams.get("q");
-  if (!q || q.trim().length < 2) {
-    return NextResponse.json([]);
-  }
-
   try {
-    const [dbUser] = await db
-      .select()
-      .from(users)
-      .where(eq(users.clerkId, userId));
+    const user = await getAuthenticatedUser();
 
-    if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const rateLimit = checkRateLimit(user.id + ":search", 30);
+    if (!rateLimit.success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const q = searchParams.get("q");
+    if (!q || q.trim().length < 2 || q.length > 100) {
+      return NextResponse.json([]);
     }
 
     const pattern = `%${q}%`;
+
+    // Get accessible project IDs based on role
+    const accessibleProjects = await db
+      .select({ id: projects.id })
+      .from(projects)
+      .where(
+        user.role === "admin" ? undefined : eq(projects.userId, user.id)
+      );
+    const accessibleProjectIds = accessibleProjects.map((p) => p.id);
+
+    if (accessibleProjectIds.length === 0) {
+      return NextResponse.json([]);
+    }
 
     // Search projects
     const projectResults = await db
       .select()
       .from(projects)
       .where(
-        dbUser.role === "admin"
+        user.role === "admin"
           ? ilike(projects.name, pattern)
-          : or(
-              eq(projects.userId, dbUser.id),
+          : and(
+              eq(projects.userId, user.id),
               ilike(projects.name, pattern)
-            ) ?? ilike(projects.name, pattern)
+            )
       )
       .limit(5);
 
-    // Search messages
+    // Search messages - filtered by accessible projects
     const messageResults = await db
       .select()
       .from(messages)
-      .where(ilike(messages.content, pattern))
+      .where(
+        and(
+          ilike(messages.content, pattern),
+          inArray(messages.projectId, accessibleProjectIds)
+        )
+      )
       .limit(5);
 
-    // Search files
+    // Search files - filtered by accessible projects
     const fileResults = await db
       .select()
       .from(files)
-      .where(ilike(files.name, pattern))
+      .where(
+        and(
+          ilike(files.name, pattern),
+          inArray(files.projectId, accessibleProjectIds)
+        )
+      )
       .limit(5);
 
     const results = [
@@ -82,6 +99,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json(results);
   } catch (error) {
+    if (error instanceof NextResponse) return error;
     console.error("Search error:", error);
     return NextResponse.json(
       { error: "Failed to search" },

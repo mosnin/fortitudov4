@@ -5,7 +5,13 @@ import * as schema from "./schema";
 let _db: ReturnType<typeof createDb> | null = null;
 
 function createDb() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error(
+      "DATABASE_URL environment variable is not set. Please configure it in your .env file."
+    );
+  }
+  const sql = neon(databaseUrl);
   return drizzle(sql, { schema });
 }
 

@@ -52,6 +52,9 @@ export function NotificationBell() {
       .then((data) => {
         if (Array.isArray(data)) setNotifications(data.slice(0, 10));
       })
+      .catch(() => {
+        setLoaded(true);
+      })
       .finally(() => setLoaded(true));
   }, []);
 
@@ -73,11 +76,18 @@ export function NotificationBell() {
 
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
 
-    await fetch("/api/notifications", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notificationIds: unreadIds }),
-    });
+    try {
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationIds: unreadIds }),
+      });
+    } catch {
+      // Revert optimistic update on failure
+      setNotifications((prev) =>
+        prev.map((n) => (unreadIds.includes(n.id) ? { ...n, read: false } : n))
+      );
+    }
   };
 
   const markRead = async (id: string) => {
@@ -85,11 +95,18 @@ export function NotificationBell() {
       prev.map((n) => (n.id === id ? { ...n, read: true } : n))
     );
 
-    await fetch("/api/notifications", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notificationIds: [id] }),
-    });
+    try {
+      await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationIds: [id] }),
+      });
+    } catch {
+      // Revert optimistic update on failure
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, read: false } : n))
+      );
+    }
   };
 
   return (
