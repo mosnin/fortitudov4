@@ -1,13 +1,24 @@
 import type { NextConfig } from "next";
 
+// Clerk loads clerk-js / ui.browser.js from its Frontend API host. In production
+// that is the custom domain (clerk.<your-domain>); in dev/preview it is
+// *.clerk.accounts.dev. These must be allowed in script/connect/frame-src or the
+// SignIn/SignUp components silently fail to mount and the pages render blank.
+const clerkOrigins = [
+  "https://clerk.fortitudo.agency",
+  "https://*.clerk.accounts.dev",
+  "https://*.clerk.com",
+];
+
 const cspHeader = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://blogger.googleusercontent.com https://img.clerk.com https://utfs.io",
   "font-src 'self'",
-  "connect-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev https://checkout.creem.io",
-  "frame-src 'self' https://*.clerk.dev https://*.clerk.accounts.dev",
+  `connect-src 'self' ${clerkOrigins.join(" ")} https://checkout.creem.io`,
+  `frame-src 'self' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
+  "worker-src 'self' blob:",
 ].join("; ");
 
 const nextConfig: NextConfig = {
