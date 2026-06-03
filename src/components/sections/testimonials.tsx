@@ -1,36 +1,37 @@
 "use client";
 
-import { Star } from "lucide-react";
+import Link from "next/link";
+import { Star, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const testimonials = [
   {
     quote:
-      "Fortitudo shipped our commerce platform in three weeks and our conversion rate tripled. The real-time tracker meant I always knew exactly where the build stood.",
-    name: "Sarah Mitchell",
-    role: "Founder, Maison Noir",
+      "We needed AI agents to touch sensitive context without ever silently mutating it. Fortitudo built the trust gate — read via MCP, every write a reviewable diff, full audit trail and rollback. Exactly the architecture we needed.",
+    name: "Poggle",
+    role: "AI governance platform · poggle.xyz",
     rating: 5,
   },
   {
     quote:
-      "Best studio experience I've had. No back-and-forth, no mystery timelines — everything lived in the dashboard. Our SaaS launched on time and on budget.",
-    name: "David Chen",
-    role: "CTO, DataPulse",
+      "They shipped our storefront end-to-end — product pages, subscriptions, a checkout built to convert. It's live, it's fast, and it sells.",
+    name: "NeverAge",
+    role: "DTC supplements · neverage.co",
     rating: 5,
   },
   {
     quote:
-      "The AI agent they built saves us 20+ hours a week. They actually understood our workflow and architected exactly what we needed.",
-    name: "Maria Gonzalez",
-    role: "Operations Lead, HelpStream",
+      "Our online ordering looks as good as the cookies taste. Fortitudo turned a storefront into something people actually want to check out from.",
+    name: "Two Cookies NYC",
+    role: "NYC bakery · twocookiesnyc.com",
     rating: 5,
   },
   {
     quote:
-      "They re-architected our infrastructure and our deploys went from hours to minutes. Genuine builders who care about what's under the hood.",
-    name: "James Okafor",
-    role: "CEO, GrowthForge",
+      "Across a portfolio of brands, Fortitudo built the operating infrastructure we run on — brand systems, fulfillment tooling, and architecture that scales with us.",
+    name: "Fortitudo Group",
+    role: "Multi-brand commerce · fortitudogroup.com",
     rating: 5,
   },
 ];
@@ -72,6 +73,16 @@ export function TestimonialsSection() {
               </SpotlightCard>
             </motion.div>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <Link
+            href="/portfolio"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-white/80 transition-colors hover:text-orange"
+          >
+            See the work
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </section>

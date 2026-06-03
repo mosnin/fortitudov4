@@ -4,68 +4,52 @@ import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { MarketingHero } from "@/components/layout/marketing-hero";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 
+// Real builds — each links to the live product (proof beats prose).
 const caseStudies = [
   {
-    title: "Luxury Fashion Store",
-    client: "Maison Noir",
-    service: "Ecommerce Store",
-    result: "3x conversion rate increase",
-    description: "Built a high-end ecommerce platform with custom product visualization, seamless checkout, and inventory management for a luxury fashion brand.",
-    tags: ["Ecommerce", "Shopify", "Custom Design"],
+    client: "Poggle",
+    href: "https://poggle.xyz",
+    domain: "poggle.xyz",
+    discipline: "AI",
+    description:
+      "An AI-governance platform: a trust gate between agents and your knowledge base. Agents read via MCP but every write lands as a reviewable diff — with an append-only audit trail, full version history, and one-click rollback.",
+    outcome: "Live · read freely, write never",
+    tags: ["AI", "MCP", "SaaS"],
   },
   {
-    title: "SaaS Analytics Platform",
-    client: "DataPulse",
-    service: "Web Application",
-    result: "10K+ users in 3 months",
-    description: "Full-stack SaaS application with real-time analytics dashboards, user management, billing integration, and API access for enterprise clients.",
-    tags: ["SaaS", "Dashboard", "API"],
+    client: "NeverAge",
+    href: "https://neverage.co",
+    domain: "neverage.co",
+    discipline: "Commerce",
+    description:
+      "A direct-to-consumer storefront for clinically-dosed creatine gummies aimed at active adults 50+ — conversion-focused product pages, subscriptions, and a checkout built to convert.",
+    outcome: "Live DTC storefront",
+    tags: ["Commerce", "Storefront", "Subscriptions"],
   },
   {
-    title: "Lead Generation System",
-    client: "GrowthForge",
-    service: "Funnels",
-    result: "450% ROI on ad spend",
-    description: "Multi-step sales funnel with A/B testing, email sequences, CRM integration, and detailed conversion tracking for a B2B marketing agency.",
-    tags: ["Funnel", "CRM", "Email"],
+    client: "Two Cookies NYC",
+    href: "https://twocookiesnyc.com",
+    domain: "twocookiesnyc.com",
+    discipline: "Commerce",
+    description:
+      "An online ordering experience for a New York City cookie shop — a fast, mouth-watering storefront with pickup and ordering that turns cravings into checkout.",
+    outcome: "Live · online ordering",
+    tags: ["Commerce", "Storefront", "Ordering"],
   },
   {
-    title: "Customer Support AI",
-    client: "HelpStream",
-    service: "AI Automation",
-    result: "70% ticket deflection",
-    description: "AI-powered chatbot and workflow automation system that handles customer inquiries, routes complex issues, and generates support documentation.",
-    tags: ["AI", "Chatbot", "Automation"],
+    client: "Fortitudo Group",
+    href: "https://fortitudogroup.com",
+    domain: "fortitudogroup.com",
+    discipline: "Infrastructure",
+    description:
+      "The operating infrastructure behind a holding company of DTC brands — brand systems, supply-chain and fulfillment tooling, and the scalable architecture a multi-brand portfolio runs on.",
+    outcome: "Powering a brand portfolio",
+    tags: ["Infrastructure", "Commerce", "Brand"],
   },
-  {
-    title: "Infrastructure Deployment",
-    client: "CloudScale Labs",
-    service: "Open Claw Deployment",
-    result: "99.9% uptime achieved",
-    description: "Full Open Claw deployment with custom configuration, monitoring dashboards, auto-scaling infrastructure, and 24/7 alert systems.",
-    tags: ["DevOps", "Monitoring", "Infrastructure"],
-  },
-  {
-    title: "Restaurant Ordering Platform",
-    client: "TasteHub",
-    service: "Web Application",
-    result: "200+ restaurants onboarded",
-    description: "Multi-tenant ordering platform with restaurant dashboards, real-time order tracking, payment processing, and delivery management.",
-    tags: ["Marketplace", "Real-time", "Payments"],
-  },
-];
-
-const stats = [
-  { value: "50+", label: "Projects Delivered" },
-  { value: "98%", label: "Client Satisfaction" },
-  { value: "35+", label: "Happy Clients" },
-  { value: "4.9★", label: "Average Rating" },
 ];
 
 export default function PortfolioPage() {
@@ -74,91 +58,80 @@ export default function PortfolioPage() {
       <Header />
       <main className="flex-1">
         <MarketingHero
-          eyebrow="Work"
-          title={<>Work that speaks <span className="text-gradient-orange">for itself</span></>}
-          subtitle="A look at what we've designed, built, and shipped for teams like yours."
+          eyebrow="Selected work"
+          title={<>Built, shipped, <span className="text-gradient-orange">live.</span></>}
+          subtitle="A look at things we've designed and built — each one in production right now. Click through and see for yourself."
         />
 
-        {/* Stats Band */}
-        <section className="py-12 border-y border-border bg-card/50">
-          <div className="mx-auto max-w-5xl px-4 flex flex-wrap justify-center gap-12 sm:gap-16">
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-3xl font-bold text-orange sm:text-4xl">{stat.value}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Case Studies Grid */}
-        <section className="py-20 sm:py-28">
+        <section className="bg-charcoal-dark py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {caseStudies.map((study, index) => {
-                return (
-                  <motion.div
-                    key={study.title}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: index * 0.08 }}
-                  >
-                    <Card className="group h-full hover:border-orange/40 transition-all duration-300">
-                      <CardContent className="p-6 flex flex-col h-full">
-                        <div className="flex items-start justify-end mb-4">
-                          <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-
-                        <Badge variant="secondary" className="w-fit mb-3 text-xs">
-                          {study.service}
-                        </Badge>
-
-                        <h3 className="text-lg font-semibold">{study.title}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {study.client}
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              {caseStudies.map((study, index) => (
+                <motion.div
+                  key={study.client}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.08 }}
+                >
+                  <SpotlightCard className="h-full p-7">
+                    <a
+                      href={study.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-full flex-col"
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-xs uppercase tracking-[0.2em] text-orange/80">
+                          {study.discipline}
                         </p>
+                        <ArrowUpRight className="h-5 w-5 text-white/40 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-orange" />
+                      </div>
 
-                        <p className="text-sm text-muted-foreground mt-3 flex-1">
-                          {study.description}
-                        </p>
+                      <h3 className="font-brand mt-3 text-2xl text-white">{study.client}</h3>
+                      <p className="mt-2 flex-1 text-sm leading-relaxed text-white/60">
+                        {study.description}
+                      </p>
 
-                        <div className="mt-4 pt-4 border-t border-border">
-                          <p className="text-sm font-semibold text-orange">{study.result}</p>
-                          <div className="flex flex-wrap gap-1.5 mt-2">
-                            {study.tags.map((tag) => (
-                              <span
-                                key={tag}
-                                className="text-xs px-2 py-0.5 rounded-md bg-muted text-muted-foreground"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+                      <div className="mt-5 border-t border-white/10 pt-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-brand text-sm text-orange">{study.outcome}</span>
+                          <span className="font-mono text-xs text-white/40">{study.domain}</span>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {study.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 text-xs text-white/60"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </a>
+                  </SpotlightCard>
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* CTA */}
-        <section className="py-24 sm:py-32 bg-charcoal-dark/30">
-          <div className="mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-3xl font-bold sm:text-4xl">
-              Ready to be our next success story?
+        <section className="bg-charcoal-dark px-4 pb-24 sm:pb-32">
+          <div className="mx-auto max-w-3xl text-center">
+            <h2 className="font-brand text-3xl text-white sm:text-4xl">
+              Want yours <span className="text-gradient-orange">in this list?</span>
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Let&apos;s discuss your project and create something amazing together.
+            <p className="mt-4 text-lg text-white/60">
+              Start a Brief and we&apos;ll scope it into a bespoke Blueprint.
             </p>
-            <Button variant="glow" size="lg" className="mt-8" asChild>
-              <Link href="/contact">
-                Start Your Project <ArrowRight className="ml-1 h-5 w-5" />
-              </Link>
-            </Button>
+            <Link
+              href="/sign-up"
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-orange px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-orange/25 transition-all hover:bg-orange-dark hover:shadow-orange/40"
+            >
+              Start a Brief <ArrowRight className="h-5 w-5" />
+            </Link>
           </div>
         </section>
       </main>

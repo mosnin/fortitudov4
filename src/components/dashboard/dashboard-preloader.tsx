@@ -20,9 +20,18 @@ const taglines = [
 
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
+const SEEN_KEY = "ftd_preloader_seen";
+
 export function DashboardPreloader({ name }: { name: string }) {
   const reduce = useReducedMotion();
-  const [show, setShow] = useState(true);
+  // Show once per browser session — not on every dashboard visit.
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(SEEN_KEY)) return;
+    sessionStorage?.setItem(SEEN_KEY, "1");
+    setShow(true);
+  }, []);
 
   // Picked once per mount → a different saying each time you arrive.
   const { greeting, tagline } = useMemo(
