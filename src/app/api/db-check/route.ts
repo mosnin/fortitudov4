@@ -22,9 +22,8 @@ export async function GET() {
   ];
 
   const envVarsPresent = Object.fromEntries(named.map(([k, v]) => [k, Boolean(v)]));
-  const candidates = named.filter((e): e is [string, string] => Boolean(e[1]));
-  const chosen =
-    candidates.find(([, v]) => !v.includes("neon.tech")) ?? candidates[0];
+  // Same priority order the app uses (src/db/index.ts).
+  const chosen = named.find((e): e is [string, string] => Boolean(e[1]));
 
   if (!chosen) {
     return NextResponse.json({
@@ -36,7 +35,7 @@ export async function GET() {
 
   const [usingEnvVar, url] = chosen;
   const host = hostOf(url);
-  const isNeon = url.includes("neon.tech");
+  const isNeon = host.includes("neon.tech");
 
   let usersTableExists: boolean | null = null;
   let connectError: string | undefined;
