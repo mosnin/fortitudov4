@@ -13,9 +13,10 @@ const clerkOrigins = [
 const cspHeader = [
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
-  "style-src 'self' 'unsafe-inline'",
+  // Google Fonts: stylesheet from fonts.googleapis.com, font files from fonts.gstatic.com.
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://blogger.googleusercontent.com https://img.clerk.com https://utfs.io",
-  "font-src 'self'",
+  "font-src 'self' https://fonts.gstatic.com",
   `connect-src 'self' ${clerkOrigins.join(" ")} https://checkout.creem.io`,
   `frame-src 'self' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
   "worker-src 'self' blob:",
