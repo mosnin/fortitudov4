@@ -90,7 +90,9 @@ export function AppDock() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-medium transition-colors duration-200",
+                    // On desktop the top bar owns navigation, so the dock drops
+                    // these links and becomes a New Brief + Apps action cluster.
+                    "relative flex items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-medium transition-colors duration-200 md:hidden",
                     active ? "text-orange" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
