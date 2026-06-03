@@ -37,12 +37,12 @@ export default function PrivacyPage() {
 
               <div>
                 <h2 className="text-lg font-semibold text-foreground">4. Data Storage</h2>
-                <p>Your data is stored on secure servers provided by Neon (PostgreSQL) and Vercel. We retain your data for as long as your account is active or as needed to provide services. You may request deletion of your data at any time.</p>
+                <p>Your data is stored on secure servers provided by Supabase (PostgreSQL) and Vercel. We retain your data for as long as your account is active or as needed to provide services. You may request deletion of your data at any time.</p>
               </div>
 
               <div>
                 <h2 className="text-lg font-semibold text-foreground">5. Third-Party Services</h2>
-                <p>We use third-party services including Clerk (authentication), Creem.io (payments), Neon (database), Vercel (hosting), and Uploadthing (file uploads). Each service has its own privacy policy governing their use of your data.</p>
+                <p>We use third-party services including Clerk (authentication), Creem.io (payments), Supabase (database), Vercel (hosting), and Uploadthing (file uploads). Each service has its own privacy policy governing their use of your data.</p>
               </div>
 
               <div>
