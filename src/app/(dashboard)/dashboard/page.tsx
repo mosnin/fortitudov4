@@ -1,15 +1,35 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
-import { FolderKanban, MessageSquare, Upload, Plus } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/db";
-import { projects, projectPhases, messages, files, users } from "@/db/schema";
-import { eq, count, and, inArray } from "drizzle-orm";
+import {
+  projects,
+  projectPhases,
+  decisionRequests,
+  blueprints,
+  deliverables as deliverablesTable,
+  teamMembers,
+  users,
+} from "@/db/schema";
+import { eq, inArray, desc, and } from "drizzle-orm";
+import { AsciiField } from "@/components/dashboard/ascii-field";
+import { formatPrice } from "@/lib/catalog";
+import {
+  Plus,
+  ArrowRight,
+  ShieldQuestion,
+  Sparkles,
+  Layers,
+  MessageSquare,
+  ExternalLink,
+  Check,
+} from "lucide-react";
 
+const disciplineLabels: Record<string, string> = {
+  software: "Software",
+  commerce: "Commerce",
+  ai: "AI",
+  infrastructure: "Infrastructure",
+};
 const statusLabels: Record<string, string> = {
   onboarding: "Onboarding",
   payment_pending: "Payment Pending",
@@ -19,207 +39,274 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-const serviceLabels: Record<string, string> = {
-  web_application: "Web Application",
-  ecommerce_store: "E-Commerce Store",
-  funnels: "Funnels",
-  ai_automation: "AI Automation",
-  open_claw_deployment: "Open Claw Deployment",
-};
+function greeting() {
+  const h = new Date().getHours();
+  if (h < 12) return "Good morning";
+  if (h < 18) return "Good afternoon";
+  return "Good evening";
+}
+
+const card = "rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl p-5";
 
 export default async function DashboardPage() {
   const user = await currentUser();
   if (!user) return null;
 
-  // Get the DB user
-  const [dbUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkId, user.id));
+  const [dbUser] = await db.select().from(users).where(eq(users.clerkId, user.id));
+  const firstName = user.firstName || "there";
 
   if (!dbUser) {
     return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">
-            Welcome, {user.firstName || "there"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Your account is being set up. Please refresh in a moment.
-          </p>
-        </div>
+      <div className={card}>
+        <h1 className="text-2xl font-bold">Welcome, {firstName}</h1>
+        <p className="text-muted-foreground mt-1">Your account is being set up — refresh in a moment.</p>
       </div>
     );
   }
 
-  // Fetch user's projects
-  const userProjects =
-    dbUser.role === "admin"
-      ? await db.select().from(projects)
-      : await db.select().from(projects).where(eq(projects.userId, dbUser.id));
+  const userProjects = await db
+    .select()
+    .from(projects)
+    .where(eq(projects.userId, dbUser.id))
+    .orderBy(desc(projects.createdAt));
 
-  const activeProjects = userProjects.filter(
-    (p) => p.status !== "completed" && p.status !== "cancelled"
-  );
+  const active = userProjects.filter((p) => p.status !== "completed" && p.status !== "cancelled");
+  const ids = userProjects.map((p) => p.id);
+  const lead = active[0];
 
-  // Fetch phases for active projects
-  const projectIds = activeProjects.map((p) => p.id);
-  const allPhases =
-    projectIds.length > 0
-      ? await db
-          .select()
-          .from(projectPhases)
-          .where(inArray(projectPhases.projectId, projectIds))
-      : [];
+  // Parallel detail fetches, guarded against empty IN ()
+  const [latestBp, latestDeliverable, leadPhases, architect, openDecisionList] = await Promise.all([
+    ids.length
+      ? db.select().from(blueprints).where(inArray(blueprints.projectId, ids)).orderBy(desc(blueprints.createdAt)).limit(1).then((r) => r[0])
+      : Promise.resolve(undefined),
+    ids.length
+      ? db.select().from(deliverablesTable).where(inArray(deliverablesTable.projectId, ids)).orderBy(desc(deliverablesTable.releasedAt)).limit(1).then((r) => r[0])
+      : Promise.resolve(undefined),
+    lead
+      ? db.select().from(projectPhases).where(eq(projectPhases.projectId, lead.id))
+      : Promise.resolve([] as (typeof projectPhases.$inferSelect)[]),
+    lead?.architectId
+      ? db.select().from(teamMembers).where(eq(teamMembers.id, lead.architectId)).then((r) => r[0])
+      : Promise.resolve(undefined),
+    getOpenDecisions(ids),
+  ]);
 
-  // Count messages across all user projects
-  const allProjectIds = userProjects.map((p) => p.id);
-  const messageCount =
-    allProjectIds.length > 0
-      ? (
-          await db
-            .select({ value: count() })
-            .from(messages)
-            .where(inArray(messages.projectId, allProjectIds))
-        )[0]?.value ?? 0
-      : 0;
+  const sortedLeadPhases = leadPhases.slice().sort((a, b) => a.order - b.order);
+  const completed = sortedLeadPhases.filter((p) => p.status === "completed").length;
+  const pct = sortedLeadPhases.length ? Math.round((completed / sortedLeadPhases.length) * 100) : 0;
+  const currentPhase = sortedLeadPhases.find((p) => p.status === "in_progress")?.name ?? (pct === 100 ? "Complete" : "Not started");
 
-  // Count files across all user projects
-  const fileCount =
-    allProjectIds.length > 0
-      ? (
-          await db
-            .select({ value: count() })
-            .from(files)
-            .where(inArray(files.projectId, allProjectIds))
-        )[0]?.value ?? 0
-      : 0;
+  const decisionCount = openDecisionList.length;
+
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("en-US", { day: "2-digit" });
+  const monthStr = now.toLocaleDateString("en-US", { month: "long" });
+  const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="space-y-8">
-      {/* Welcome */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">
-            Welcome back, {user.firstName || "there"}
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Here&apos;s an overview of your projects.
-          </p>
+    <div className="grid grid-cols-12 gap-4">
+      {/* ── Signature ASCII hero ── */}
+      <section className="col-span-12 lg:col-span-4 relative overflow-hidden rounded-3xl border border-border/60 bg-charcoal-dark min-h-[340px] flex flex-col justify-between p-6">
+        <AsciiField className="absolute inset-0 h-full w-full opacity-70" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(249,115,22,0.18),transparent_60%)]" />
+        <div className="relative z-10">
+          <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Studio</p>
+          <h1 className="mt-2 text-2xl font-bold">{greeting()},<br />{firstName}.</h1>
         </div>
-        <Button variant="glow" asChild>
-          <Link href="/onboarding">
-            <Plus className="mr-1 h-4 w-4" />
-            New Project
+        <div className="relative z-10">
+          <p className="text-5xl font-bold tabular-nums">{active.length}</p>
+          <p className="text-sm text-muted-foreground">active {active.length === 1 ? "build" : "builds"}</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link href="/onboarding" className="inline-flex items-center gap-1.5 rounded-xl bg-orange px-3.5 py-2 text-sm font-medium text-white hover:bg-orange-dark transition-colors">
+              <Plus className="h-4 w-4" /> New Brief
+            </Link>
+            {lead && (
+              <Link href={`/projects/${lead.id}`} className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-card/60 px-3.5 py-2 text-sm font-medium hover:border-orange/50 transition-colors">
+                Open Studio
+              </Link>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Your builds ── */}
+      <section className={`col-span-12 lg:col-span-5 ${card} min-h-[340px] flex flex-col`}>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-sm text-muted-foreground">Your builds</p>
+            <p className="mt-1 text-3xl font-bold">{dateStr}</p>
+            <p className="text-sm text-muted-foreground">{monthStr} · {timeStr}</p>
+          </div>
+          <Link href="/onboarding" className="flex h-10 w-10 items-center justify-center rounded-full bg-orange text-white hover:bg-orange-dark transition-colors" aria-label="New brief">
+            <Plus className="h-5 w-5" />
           </Link>
-        </Button>
-      </div>
+        </div>
+        <div className="mt-5 space-y-2 overflow-y-auto">
+          {active.length === 0 ? (
+            <div className="flex h-full flex-col items-center justify-center py-8 text-center">
+              <Sparkles className="h-7 w-7 text-orange mb-2" />
+              <p className="text-sm font-medium">Nothing in build yet</p>
+              <p className="text-xs text-muted-foreground mt-1">Start a Brief and we&apos;ll architect it into a Blueprint.</p>
+            </div>
+          ) : (
+            active.slice(0, 4).map((p) => (
+              <Link key={p.id} href={`/projects/${p.id}`} className="flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/40 p-3 hover:border-orange/40 transition-colors">
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium">{p.name}</p>
+                  <p className="text-xs text-muted-foreground">{disciplineLabels[p.serviceType] ?? p.serviceType}</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-orange/10 px-2.5 py-1 text-[11px] font-medium text-orange">
+                  {statusLabels[p.status] ?? p.status}
+                </span>
+              </Link>
+            ))
+          )}
+        </div>
+      </section>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <FolderKanban className="h-6 w-6 text-orange" />
-            </div>
+      {/* ── Latest Blueprint (gradient spotlight) ── */}
+      <section className="col-span-12 sm:col-span-6 lg:col-span-3 min-h-[340px] rounded-3xl p-6 flex flex-col justify-between bg-gradient-to-br from-orange via-orange to-amber-400 text-charcoal-dark">
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-medium opacity-80">Latest Blueprint</p>
+          <Layers className="h-5 w-5 opacity-80" />
+        </div>
+        {latestBp ? (
+          <>
             <div>
-              <p className="text-2xl font-bold">{activeProjects.length}</p>
-              <p className="text-sm text-muted-foreground">Active Projects</p>
+              <p className="text-4xl font-bold tabular-nums">{formatPrice(latestBp.total)}</p>
+              <p className="mt-1 text-sm font-medium line-clamp-2">{latestBp.title}</p>
+              <p className="text-xs opacity-70 capitalize mt-1">{latestBp.status}</p>
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <MessageSquare className="h-6 w-6 text-orange" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{messageCount}</p>
-              <p className="text-sm text-muted-foreground">Messages</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <Upload className="h-6 w-6 text-orange" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">{fileCount}</p>
-              <p className="text-sm text-muted-foreground">Files Uploaded</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Link href={`/blueprint/${latestBp.id}`} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-charcoal-dark px-4 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-opacity">
+              Review Blueprint <ArrowRight className="h-4 w-4" />
+            </Link>
+          </>
+        ) : (
+          <div>
+            <p className="text-lg font-semibold">No Blueprint yet</p>
+            <p className="text-sm opacity-80 mt-1">Start a Brief to get a bespoke proposal with a price.</p>
+            <Link href="/onboarding" className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-charcoal-dark px-4 py-2.5 text-sm font-medium text-white">
+              Start a Brief <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        )}
+      </section>
 
-      {/* Active Projects */}
-      {activeProjects.length === 0 ? (
-        <Card>
-          <EmptyState
-            icon={FolderKanban}
-            title="No active projects yet"
-            description="Start a new project and we'll track your progress right here."
-            action={
-              <Button variant="glow" asChild>
-                <Link href="/onboarding">
-                  <Plus className="mr-1 h-4 w-4" />
-                  New Project
+      {/* ── Build progress ── */}
+      <section className={`col-span-12 sm:col-span-6 lg:col-span-4 ${card}`}>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">Build progress</p>
+          {lead && <span className="text-xs text-muted-foreground truncate max-w-[50%]">{lead.name}</span>}
+        </div>
+        <p className="mt-3 text-4xl font-bold tabular-nums">{pct}<span className="text-xl text-muted-foreground">%</span></p>
+        <p className="text-sm text-muted-foreground">{currentPhase}</p>
+        <div className="mt-4 h-2.5 w-full rounded-full bg-background/60 overflow-hidden">
+          <div className="h-full rounded-full bg-gradient-to-r from-orange to-amber-400" style={{ width: `${pct}%` }} />
+        </div>
+        {/* momentum bars per phase */}
+        {sortedLeadPhases.length > 0 && (
+          <div className="mt-4 flex items-end gap-1.5 h-16">
+            {sortedLeadPhases.map((ph) => {
+              const hPct = ph.status === "completed" ? 100 : ph.status === "in_progress" ? 55 : 22;
+              return (
+                <div key={ph.id} className="flex-1 rounded-t-md bg-gradient-to-t from-orange/30 to-amber-400/80" style={{ height: `${hPct}%` }} title={ph.name} />
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* ── Needs you (decision loop) ── */}
+      <section className={`col-span-12 sm:col-span-6 lg:col-span-4 ${card}`}>
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">Needs you</p>
+          <ShieldQuestion className="h-5 w-5 text-orange" />
+        </div>
+        {decisionCount === 0 ? (
+          <div className="mt-6 flex flex-col items-center text-center py-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/10 mb-2">
+              <Check className="h-5 w-5 text-success" />
+            </div>
+            <p className="text-sm font-medium">All clear</p>
+            <p className="text-xs text-muted-foreground mt-1">We&apos;ll reach out only when a decision is needed.</p>
+          </div>
+        ) : (
+          <>
+            <p className="mt-3 text-4xl font-bold tabular-nums">{decisionCount}</p>
+            <p className="text-sm text-muted-foreground">thing{decisionCount > 1 ? "s" : ""} need{decisionCount > 1 ? "" : "s"} your input</p>
+            <div className="mt-3 space-y-1.5">
+              {openDecisionList.slice(0, 2).map((d) => (
+                <Link key={d.id} href={`/projects/${d.projectId}#decisions`} className="flex items-center justify-between gap-2 rounded-xl border border-orange/30 bg-orange/[0.04] px-3 py-2 text-xs hover:bg-orange/10 transition-colors">
+                  <span className="truncate">{d.title}</span>
+                  <ArrowRight className="h-3.5 w-3.5 text-orange shrink-0" />
                 </Link>
-              </Button>
-            }
-          />
-        </Card>
-      ) : (
-        activeProjects.map((project) => {
-          const phases = allPhases
-            .filter((p) => p.projectId === project.id)
-            .sort((a, b) => a.order - b.order)
-            .map((p) => ({
-              id: p.id,
-              name: p.name,
-              status: p.status,
-              order: p.order,
-            })) satisfies Phase[];
+              ))}
+            </div>
+          </>
+        )}
+      </section>
 
-          return (
-            <Card key={project.id}>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl">{project.name}</CardTitle>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {serviceLabels[project.serviceType] || project.serviceType}
-                  </p>
-                </div>
-                <Badge variant="orange">
-                  {statusLabels[project.status] || project.status}
-                </Badge>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {phases.length > 0 && (
-                  <PhaseTrackerHorizontal phases={phases} />
-                )}
-                <div className="flex flex-wrap gap-3 pt-4 border-t border-border">
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/projects/${project.id}`}>View Details</Link>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href="/messages">
-                      <MessageSquare className="mr-1 h-4 w-4" />
-                      Messages
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="sm" asChild>
-                    <Link href={`/projects/${project.id}`}>
-                      <Upload className="mr-1 h-4 w-4" />
-                      Upload Files
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })
-      )}
+      {/* ── Your architect (gradient spotlight) ── */}
+      <section className="col-span-12 sm:col-span-6 lg:col-span-4 rounded-3xl p-6 flex flex-col justify-between bg-gradient-to-br from-lime-200 via-emerald-200 to-teal-200 text-charcoal-dark min-h-[180px]">
+        <p className="text-sm font-medium opacity-70">Your architect</p>
+        {architect ? (
+          <>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-charcoal-dark text-white font-semibold">
+                {architect.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold truncate">{architect.name}</p>
+                {architect.title && <p className="text-xs opacity-70 truncate">{architect.title}</p>}
+              </div>
+            </div>
+            {lead && (
+              <Link href={`/projects/${lead.id}#messages`} className="inline-flex items-center gap-1.5 text-sm font-medium hover:underline">
+                <MessageSquare className="h-4 w-4" /> Message
+              </Link>
+            )}
+          </>
+        ) : (
+          <p className="text-sm opacity-80">An architect is assigned when your build begins.</p>
+        )}
+      </section>
+
+      {/* ── Latest deliverable ── */}
+      <section className={`col-span-12 lg:col-span-8 ${card} flex items-center justify-between gap-4`}>
+        <div className="min-w-0">
+          <p className="text-sm text-muted-foreground">Latest deliverable</p>
+          {latestDeliverable ? (
+            <>
+              <p className="mt-1 text-lg font-semibold truncate">{latestDeliverable.title}</p>
+              <p className="text-xs text-muted-foreground capitalize">{latestDeliverable.kind.replace("_", " ")}</p>
+            </>
+          ) : (
+            <p className="mt-1 text-sm text-muted-foreground">Deliverables land here as your build progresses.</p>
+          )}
+        </div>
+        {latestDeliverable?.url && (
+          <a href={latestDeliverable.url} target="_blank" rel="noopener noreferrer" className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border border-border bg-background/40 px-4 py-2.5 text-sm font-medium hover:border-orange/50 transition-colors">
+            <ExternalLink className="h-4 w-4" /> Open
+          </a>
+        )}
+      </section>
+
+      {/* ── Quick start ── */}
+      <Link href="/onboarding" className="col-span-12 lg:col-span-4 rounded-3xl border border-dashed border-orange/40 bg-orange/[0.03] p-6 flex flex-col items-center justify-center text-center hover:bg-orange/[0.06] transition-colors">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange/10 mb-2">
+          <Plus className="h-5 w-5 text-orange" />
+        </div>
+        <p className="font-semibold">Build something new</p>
+        <p className="text-xs text-muted-foreground mt-1">Software · Commerce · AI · Infrastructure</p>
+      </Link>
     </div>
   );
+}
+
+async function getOpenDecisions(ids: string[]) {
+  if (!ids.length) return [] as { id: string; title: string; projectId: string }[];
+  return db
+    .select({ id: decisionRequests.id, title: decisionRequests.title, projectId: decisionRequests.projectId })
+    .from(decisionRequests)
+    .where(and(inArray(decisionRequests.projectId, ids), eq(decisionRequests.status, "open")));
 }

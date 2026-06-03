@@ -1,5 +1,5 @@
-import { neon } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-http";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
 
 let _db: ReturnType<typeof createDb> | null = null;
@@ -11,8 +11,10 @@ function createDb() {
       "DATABASE_URL environment variable is not set. Please configure it in your .env file."
     );
   }
-  const sql = neon(databaseUrl);
-  return drizzle(sql, { schema });
+  // Supabase's transaction-mode pooler (Supavisor, port 6543) does not support
+  // prepared statements, so disable them on the postgres.js client.
+  const client = postgres(databaseUrl, { prepare: false });
+  return drizzle(client, { schema });
 }
 
 export const db = new Proxy({} as ReturnType<typeof createDb>, {

@@ -25,7 +25,7 @@ export default function DashboardLayout({
                 height={32}
                 className="rounded-md"
               />
-              <span className="font-bold hidden sm:inline">Fortitudo</span>
+              <span className="font-brand font-bold hidden sm:inline">Fortitudo</span>
             </Link>
             <DashboardNav />
           </div>

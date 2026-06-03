@@ -64,7 +64,7 @@ export default function ServicesPage() {
                       {service.description}
                     </p>
                     <ul className="mt-6 space-y-3">
-                      {service.features.map((feature) => (
+                      {service.capabilities.map((feature) => (
                         <li key={feature} className="flex items-center gap-3">
                           <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange/10">
                             <Check className="h-3.5 w-3.5 text-orange" />
@@ -74,8 +74,8 @@ export default function ServicesPage() {
                       ))}
                     </ul>
                     <Button variant="glow" size="lg" className="mt-8" asChild>
-                      <Link href={`/sign-up?service=${service.id}`}>
-                        Get Started with {service.name}
+                      <Link href={`/onboarding?discipline=${service.id}`}>
+                        Start a {service.name} Brief
                         <ArrowRight className="ml-1 h-5 w-5" />
                       </Link>
                     </Button>

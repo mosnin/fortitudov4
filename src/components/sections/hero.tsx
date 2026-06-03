@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { AsciiField } from "@/components/dashboard/ascii-field";
 import { ArrowDown, ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -12,6 +13,8 @@ export function HeroSection() {
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden pt-20">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-charcoal-dark" />
+      {/* Signature ASCII field */}
+      <AsciiField className="absolute inset-0 h-full w-full opacity-20" cell={14} />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.15),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(249,115,22,0.08),transparent_50%)]" />
 

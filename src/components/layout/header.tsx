@@ -12,7 +12,6 @@ import {
   X,
   Globe,
   ShoppingCart,
-  TrendingUp,
   Bot,
   Server,
   ChevronDown,
@@ -36,11 +35,10 @@ interface MegaMenuItem {
 }
 
 const servicesItems: MegaMenuItem[] = [
-  { label: "Web Applications", href: "/services#web-application", icon: Globe, description: "Custom web apps built to scale" },
-  { label: "Ecommerce Stores", href: "/services#ecommerce-store", icon: ShoppingCart, description: "High-converting online stores" },
-  { label: "Funnels", href: "/services#funnels", icon: TrendingUp, description: "Sales funnels that convert" },
-  { label: "AI Automation", href: "/services#ai-automation", icon: Bot, description: "Automate with AI workflows" },
-  { label: "Open Claw Deployment", href: "/services#open-claw-deployment", icon: Server, description: "Deploy & manage Open Claw" },
+  { label: "Software", href: "/services#software", icon: Globe, description: "Web apps, SaaS & internal tools" },
+  { label: "Commerce", href: "/services#commerce", icon: ShoppingCart, description: "Storefronts & commerce systems" },
+  { label: "AI", href: "/services#ai", icon: Bot, description: "AI-native software & agents" },
+  { label: "Infrastructure", href: "/services#infrastructure", icon: Server, description: "Cloud, deployment & architecture" },
 ];
 
 const companyItems: MegaMenuItem[] = [
@@ -151,7 +149,7 @@ export function Header() {
                 height={32}
                 className="rounded-md"
               />
-              <span className="text-base font-bold text-foreground hidden sm:inline">
+              <span className="font-brand text-base font-bold text-foreground hidden sm:inline">
                 Fortitudo
               </span>
             </Link>
@@ -253,7 +251,7 @@ export function Header() {
                   height={28}
                   className="rounded-md"
                 />
-                <span className="font-bold">Fortitudo</span>
+                <span className="font-brand font-bold">Fortitudo</span>
               </Link>
               <button
                 className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted transition-colors cursor-pointer"

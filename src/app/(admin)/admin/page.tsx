@@ -1,116 +1,147 @@
+import Link from "next/link";
+import { db } from "@/db";
+import { projects, users, payments, decisionRequests } from "@/db/schema";
+import { sql, eq, desc, ne } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, FolderKanban, CreditCard, MessageSquare, TrendingUp } from "lucide-react";
+import { Users, FolderKanban, CreditCard, ShieldQuestion, TrendingUp } from "lucide-react";
 
-export default function AdminDashboardPage() {
+const disciplineLabels: Record<string, string> = {
+  software: "Software",
+  commerce: "Commerce",
+  ai: "AI",
+  infrastructure: "Infrastructure",
+};
+
+function formatUsd(cents: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(cents / 100);
+}
+
+export default async function AdminDashboardPage() {
+  const [clientCount, activeCount, revenueRow, openDecisionCount, recent] = await Promise.all([
+    db.select({ c: sql<number>`count(*)::int` }).from(users).where(ne(users.role, "admin")),
+    db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(projects)
+      .where(eq(projects.status, "in_progress")),
+    db
+      .select({ total: sql<number>`coalesce(sum(${payments.amount}), 0)::int` })
+      .from(payments)
+      .where(eq(payments.status, "completed")),
+    db
+      .select({ c: sql<number>`count(*)::int` })
+      .from(decisionRequests)
+      .where(eq(decisionRequests.status, "open")),
+    db
+      .select({
+        id: projects.id,
+        name: projects.name,
+        serviceType: projects.serviceType,
+        status: projects.status,
+        currentPhase: projects.currentPhase,
+        clientFirst: users.firstName,
+        clientLast: users.lastName,
+        clientEmail: users.email,
+      })
+      .from(projects)
+      .leftJoin(users, eq(projects.userId, users.id))
+      .orderBy(desc(projects.createdAt))
+      .limit(8),
+  ]);
+
+  const stats = [
+    { label: "Clients", value: String(clientCount[0]?.c ?? 0), icon: Users },
+    { label: "Active Builds", value: String(activeCount[0]?.c ?? 0), icon: FolderKanban },
+    { label: "Revenue", value: formatUsd(revenueRow[0]?.total ?? 0), icon: CreditCard },
+    { label: "Open Decisions", value: String(openDecisionCount[0]?.c ?? 0), icon: ShieldQuestion },
+  ];
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">Agency Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Overview of all clients, projects, and payments.
-        </p>
+        <h1 className="text-2xl font-bold sm:text-3xl">Studio</h1>
+        <p className="text-muted-foreground mt-1">Every client, build, and decision in one place.</p>
       </div>
 
-      {/* Stats grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <Users className="h-6 w-6 text-orange" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">12</p>
-              <p className="text-sm text-muted-foreground">Total Clients</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <FolderKanban className="h-6 w-6 text-orange" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">8</p>
-              <p className="text-sm text-muted-foreground">Active Projects</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <CreditCard className="h-6 w-6 text-orange" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">$24,500</p>
-              <p className="text-sm text-muted-foreground">Revenue</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-6">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-              <MessageSquare className="h-6 w-6 text-orange" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold">5</p>
-              <p className="text-sm text-muted-foreground">Unread Messages</p>
-            </div>
-          </CardContent>
-        </Card>
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.label}>
+              <CardContent className="flex items-center gap-4 p-6">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
+                  <Icon className="h-6 w-6 text-orange" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{s.value}</p>
+                  <p className="text-sm text-muted-foreground">{s.label}</p>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      {/* Recent projects */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-orange" />
-            Recent Projects
+            Recent Builds
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="pb-3 font-medium">Client</th>
-                  <th className="pb-3 font-medium">Project</th>
-                  <th className="pb-3 font-medium">Service</th>
-                  <th className="pb-3 font-medium">Status</th>
-                  <th className="pb-3 font-medium">Phase</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {[
-                  { client: "John Doe", project: "E-commerce Platform", service: "Ecommerce Store", status: "in_progress", phase: "Development" },
-                  { client: "Jane Smith", project: "Lead Gen Funnel", service: "Funnels", status: "in_progress", phase: "Design" },
-                  { client: "Bob Wilson", project: "AI Chatbot", service: "AI Automation", status: "payment_pending", phase: "Discovery" },
-                  { client: "Sarah Lee", project: "Company Website", service: "Web Application", status: "completed", phase: "Launch" },
-                  { client: "Mike Chen", project: "Open Claw Setup", service: "Open Claw Deployment", status: "in_progress", phase: "Testing" },
-                ].map((project, i) => (
-                  <tr key={i} className="hover:bg-muted/50">
-                    <td className="py-3">{project.client}</td>
-                    <td className="py-3 font-medium">{project.project}</td>
-                    <td className="py-3 text-muted-foreground">{project.service}</td>
-                    <td className="py-3">
-                      <Badge
-                        variant={
-                          project.status === "completed"
-                            ? "success"
-                            : project.status === "payment_pending"
-                            ? "warning"
-                            : "orange"
-                        }
-                      >
-                        {project.status.replace("_", " ")}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-muted-foreground">{project.phase}</td>
+          {recent.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No projects yet.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border text-left text-muted-foreground">
+                    <th className="pb-3 font-medium">Client</th>
+                    <th className="pb-3 font-medium">Project</th>
+                    <th className="pb-3 font-medium">Discipline</th>
+                    <th className="pb-3 font-medium">Status</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {recent.map((p) => {
+                    const client =
+                      `${p.clientFirst ?? ""} ${p.clientLast ?? ""}`.trim() || p.clientEmail || "—";
+                    return (
+                      <tr key={p.id} className="hover:bg-muted/50">
+                        <td className="py-3">{client}</td>
+                        <td className="py-3 font-medium">
+                          <Link href={`/admin/projects/${p.id}`} className="hover:text-orange">
+                            {p.name}
+                          </Link>
+                        </td>
+                        <td className="py-3 text-muted-foreground">
+                          {disciplineLabels[p.serviceType] ?? p.serviceType}
+                        </td>
+                        <td className="py-3">
+                          <Badge
+                            variant={
+                              p.status === "completed"
+                                ? "success"
+                                : p.status === "payment_pending"
+                                ? "warning"
+                                : "orange"
+                            }
+                          >
+                            {p.status.replace("_", " ")}
+                          </Badge>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
