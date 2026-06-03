@@ -4,7 +4,7 @@ import { AuthShell } from "@/components/layout/auth-shell";
 export default function SignUpPage() {
   return (
     <AuthShell tagline="Describe it. We'll build it.">
-      <SignUp />
+      <SignUp forceRedirectUrl="/welcome" />
     </AuthShell>
   );
 }

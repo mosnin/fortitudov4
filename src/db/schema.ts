@@ -480,3 +480,33 @@ export type Blueprint = typeof blueprints.$inferSelect;
 export type DecisionRequest = typeof decisionRequests.$inferSelect;
 export type Deliverable = typeof deliverables.$inferSelect;
 export type ApiKey = typeof apiKeys.$inferSelect;
+
+// Business profile — captured at onboarding so the studio (and our agents)
+// understand who the client is. One per user; prefills future Briefs.
+export const businessStageEnum = pgEnum("business_stage", [
+  "idea",
+  "early",
+  "growing",
+  "established",
+]);
+
+export const businessProfiles = pgTable("business_profiles", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull()
+    .unique(),
+  name: varchar("name", { length: 255 }).notNull(),
+  industry: varchar("industry", { length: 255 }),
+  website: varchar("website", { length: 500 }),
+  description: text("description").notNull(),
+  targetMarket: text("target_market"),
+  stage: businessStageEnum("stage"),
+  teamSize: varchar("team_size", { length: 50 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_business_profiles_user_id").on(table.userId),
+]);
+
+export type BusinessProfile = typeof businessProfiles.$inferSelect;
