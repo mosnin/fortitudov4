@@ -12,7 +12,6 @@ import {
   X,
   Globe,
   ShoppingCart,
-  TrendingUp,
   Bot,
   Server,
   ChevronDown,
@@ -36,11 +35,10 @@ interface MegaMenuItem {
 }
 
 const servicesItems: MegaMenuItem[] = [
-  { label: "Web Applications", href: "/services#web-application", icon: Globe, description: "Custom web apps built to scale" },
-  { label: "Ecommerce Stores", href: "/services#ecommerce-store", icon: ShoppingCart, description: "High-converting online stores" },
-  { label: "Funnels", href: "/services#funnels", icon: TrendingUp, description: "Sales funnels that convert" },
-  { label: "AI Automation", href: "/services#ai-automation", icon: Bot, description: "Automate with AI workflows" },
-  { label: "Open Claw Deployment", href: "/services#open-claw-deployment", icon: Server, description: "Deploy & manage Open Claw" },
+  { label: "Software", href: "/services#software", icon: Globe, description: "Web apps, SaaS & internal tools" },
+  { label: "Commerce", href: "/services#commerce", icon: ShoppingCart, description: "Storefronts & commerce systems" },
+  { label: "AI", href: "/services#ai", icon: Bot, description: "AI-native software & agents" },
+  { label: "Infrastructure", href: "/services#infrastructure", icon: Server, description: "Cloud, deployment & architecture" },
 ];
 
 const companyItems: MegaMenuItem[] = [
