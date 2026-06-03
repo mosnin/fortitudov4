@@ -61,7 +61,7 @@ async function sendEmail(args: NotifyArgs): Promise<void> {
         <div style="font-family:Inter,system-ui,sans-serif;max-width:480px;margin:0 auto">
           <p style="font-size:16px;color:#1C1C1C">${escapeHtml(args.title)}</p>
           ${args.body ? `<p style="font-size:14px;color:#525252">${escapeHtml(args.body)}</p>` : ""}
-          ${link ? `<a href="${link}" style="display:inline-block;margin-top:12px;background:#F97316;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:14px">Open in Fortitudo</a>` : ""}
+          ${link ? `<a href="${escapeHtml(link)}" style="display:inline-block;margin-top:12px;background:#F97316;color:#fff;padding:10px 18px;border-radius:10px;text-decoration:none;font-size:14px">Open in Fortitudo</a>` : ""}
         </div>
       `,
     }),
