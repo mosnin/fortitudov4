@@ -100,6 +100,9 @@ export default async function ProjectDetailPage({
       order: p.order,
     }));
 
+  // Hide internal agent drafts from the client until an architect publishes them.
+  const clientDeliverables = projectDeliverables.filter((d) => d.status !== "draft");
+
   const fileData = projectFiles.map((f) => ({
     name: f.name,
     url: f.url,
@@ -179,11 +182,11 @@ export default async function ProjectDetailPage({
           </Link>
         )}
 
-        {projectDeliverables.length > 0 && (
+        {clientDeliverables.length > 0 && (
           <div className="rounded-2xl border border-border bg-card p-5">
             <p className="text-sm font-medium mb-3">Deliverables</p>
             <ul className="space-y-2">
-              {projectDeliverables.map((d) => (
+              {clientDeliverables.map((d) => (
                 <DeliverableReview
                   key={d.id}
                   id={d.id}

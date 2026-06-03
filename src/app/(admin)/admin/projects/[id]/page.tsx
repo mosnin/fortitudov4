@@ -98,7 +98,7 @@ export default async function AdminProjectDetailPage({
         projectId={project.id}
         phases={sortedPhases}
         decisions={decisions.map((d) => ({ id: d.id, kind: d.kind, title: d.title, status: d.status }))}
-        deliverables={deliverables.map((d) => ({ id: d.id, kind: d.kind, title: d.title, url: d.url, status: d.status }))}
+        deliverables={deliverables.map((d) => ({ id: d.id, kind: d.kind, title: d.title, url: d.url, status: d.status, description: d.description }))}
       />
 
       <EstimatePanel
