@@ -77,27 +77,26 @@ export async function POST(req: Request) {
     const { event, data } = body;
 
     if (event === "payment.completed" || event === "checkout.completed") {
-      const projectId = data.metadata?.projectId;
-      const creemPaymentId = data.id;
+      // The checkout URL is built with metadata[projectId] and
+      // metadata[paymentId], so resolve the specific payment row to settle.
+      const projectId: string | undefined = data.metadata?.projectId;
+      const paymentId: string | undefined = data.metadata?.paymentId;
+      const creemPaymentId: string | undefined = data.id;
 
       if (!projectId) {
         return NextResponse.json({ received: true, skipped: "no projectId" });
       }
 
-      // Idempotency check: skip if this payment is already completed
+      // Idempotency: if we've already settled this Creem payment, ack and stop.
+      // Keyed on the unique creemPaymentId so a redelivered webhook is a no-op.
       if (creemPaymentId) {
-        const existing = await db
+        const [already] = await db
           .select({ id: payments.id })
           .from(payments)
-          .where(
-            and(
-              eq(payments.creemPaymentId, creemPaymentId),
-              eq(payments.status, "completed")
-            )
-          )
+          .where(eq(payments.creemPaymentId, creemPaymentId))
           .limit(1);
 
-        if (existing.length > 0) {
+        if (already) {
           return NextResponse.json({
             received: true,
             skipped: "already processed",
@@ -105,16 +104,37 @@ export async function POST(req: Request) {
         }
       }
 
-      // Update payment and project in a transaction-like pattern
+      // Resolve the exact payment to settle. Prefer the paymentId carried in
+      // metadata; fall back to the project's pending payment. We must NOT update
+      // by projectId alone — that would stamp every payment for the project with
+      // the same creemPaymentId and violate its unique constraint.
+      const [payment] = paymentId
+        ? await db
+            .select({ id: payments.id })
+            .from(payments)
+            .where(and(eq(payments.id, paymentId), eq(payments.projectId, projectId)))
+            .limit(1)
+        : await db
+            .select({ id: payments.id })
+            .from(payments)
+            .where(and(eq(payments.projectId, projectId), eq(payments.status, "pending")))
+            .limit(1);
+
+      if (!payment) {
+        // Nothing to settle (already done or unknown) — ack so Creem stops retrying.
+        return NextResponse.json({ received: true, skipped: "no matching payment" });
+      }
+
+      // Update the specific payment, then advance the project.
       try {
         await db
           .update(payments)
           .set({
             status: "completed",
-            creemPaymentId: creemPaymentId,
+            creemPaymentId: creemPaymentId ?? null,
             updatedAt: new Date(),
           })
-          .where(eq(payments.projectId, projectId));
+          .where(eq(payments.id, payment.id));
 
         await db
           .update(projects)
@@ -128,6 +148,7 @@ export async function POST(req: Request) {
           "Creem webhook: failed to update payment/project",
           {
             projectId,
+            paymentId: payment.id,
             creemPaymentId,
             error: dbError instanceof Error ? dbError.message : dbError,
           }
