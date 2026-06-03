@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AsciiField } from "@/components/dashboard/ascii-field";
-import { ArrowRight, Loader2, Building2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 const stages = [
   { id: "idea", label: "Just an idea" },
@@ -70,9 +70,6 @@ export default function WelcomePage() {
 
       <div className="relative z-10 mx-auto flex min-h-screen max-w-2xl flex-col justify-center px-4 py-12">
         <div className="mb-6">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange/10">
-            <Building2 className="h-6 w-6 text-orange" />
-          </div>
           <p className="text-xs uppercase tracking-[0.2em] text-orange/80">
             {user?.firstName ? `Welcome, ${user.firstName}` : "Welcome"}
           </p>

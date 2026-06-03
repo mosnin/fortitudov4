@@ -101,9 +101,7 @@ function MegaMenuDropdown({
               onClick={onClose}
               className="flex items-start gap-3 rounded-xl p-3 transition-colors hover:bg-muted group"
             >
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange/10 group-hover:bg-orange/20 transition-colors">
-                <Icon className="h-4 w-4 text-orange" />
-              </div>
+              <Icon className="mt-0.5 h-4 w-4 shrink-0 text-orange" />
               <div>
                 <p className="text-sm font-medium">{item.label}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>

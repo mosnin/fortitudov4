@@ -167,9 +167,7 @@ export default async function ProjectDetailPage({
             className="rounded-2xl border border-border bg-card p-5 hover:border-orange/50 transition-colors flex items-center justify-between gap-4"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-orange/10">
-                <FileText className="h-5 w-5 text-orange" />
-              </div>
+              <FileText className="h-5 w-5 shrink-0 text-orange" />
               <div>
                 <p className="text-sm font-medium">Blueprint</p>
                 <p className="text-xs text-muted-foreground capitalize">{latestBlueprint.status}</p>

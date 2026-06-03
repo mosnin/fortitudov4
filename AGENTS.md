@@ -3,3 +3,7 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+# Icons — keep it tasteful
+
+Do NOT use the "icon inside a tinted rounded box/circle" badge pattern (e.g. a `bg-orange/10` rounded square wrapping a single lucide icon). It looks generic and "vibe-coded." Use clean typography and layout instead; use icons sparingly and only as functional affordances inside buttons, nav/dock items, and compact list rows — never as decorative chips above headings or beside stats.

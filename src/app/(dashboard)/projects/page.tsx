@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
-import { Plus, ArrowRight, FolderKanban } from "lucide-react";
+import { Plus, ArrowRight } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { db } from "@/db";
@@ -74,7 +74,6 @@ export default async function ProjectsPage() {
       {userProjects.length === 0 ? (
         <Card>
           <EmptyState
-            icon={FolderKanban}
             title="No projects yet"
             description="Start your first project and we'll build something great together."
             action={

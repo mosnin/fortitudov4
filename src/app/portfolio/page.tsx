@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, ArrowUpRight, Globe, ShoppingCart, TrendingUp, Bot, Server } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { motion } from "motion/react";
 
 const caseStudies = [
@@ -14,7 +14,6 @@ const caseStudies = [
     title: "Luxury Fashion Store",
     client: "Maison Noir",
     service: "Ecommerce Store",
-    icon: ShoppingCart,
     result: "3x conversion rate increase",
     description: "Built a high-end ecommerce platform with custom product visualization, seamless checkout, and inventory management for a luxury fashion brand.",
     tags: ["Ecommerce", "Shopify", "Custom Design"],
@@ -23,7 +22,6 @@ const caseStudies = [
     title: "SaaS Analytics Platform",
     client: "DataPulse",
     service: "Web Application",
-    icon: Globe,
     result: "10K+ users in 3 months",
     description: "Full-stack SaaS application with real-time analytics dashboards, user management, billing integration, and API access for enterprise clients.",
     tags: ["SaaS", "Dashboard", "API"],
@@ -32,7 +30,6 @@ const caseStudies = [
     title: "Lead Generation System",
     client: "GrowthForge",
     service: "Funnels",
-    icon: TrendingUp,
     result: "450% ROI on ad spend",
     description: "Multi-step sales funnel with A/B testing, email sequences, CRM integration, and detailed conversion tracking for a B2B marketing agency.",
     tags: ["Funnel", "CRM", "Email"],
@@ -41,7 +38,6 @@ const caseStudies = [
     title: "Customer Support AI",
     client: "HelpStream",
     service: "AI Automation",
-    icon: Bot,
     result: "70% ticket deflection",
     description: "AI-powered chatbot and workflow automation system that handles customer inquiries, routes complex issues, and generates support documentation.",
     tags: ["AI", "Chatbot", "Automation"],
@@ -50,7 +46,6 @@ const caseStudies = [
     title: "Infrastructure Deployment",
     client: "CloudScale Labs",
     service: "Open Claw Deployment",
-    icon: Server,
     result: "99.9% uptime achieved",
     description: "Full Open Claw deployment with custom configuration, monitoring dashboards, auto-scaling infrastructure, and 24/7 alert systems.",
     tags: ["DevOps", "Monitoring", "Infrastructure"],
@@ -59,7 +54,6 @@ const caseStudies = [
     title: "Restaurant Ordering Platform",
     client: "TasteHub",
     service: "Web Application",
-    icon: Globe,
     result: "200+ restaurants onboarded",
     description: "Multi-tenant ordering platform with restaurant dashboards, real-time order tracking, payment processing, and delivery management.",
     tags: ["Marketplace", "Real-time", "Payments"],
@@ -112,7 +106,6 @@ export default function PortfolioPage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {caseStudies.map((study, index) => {
-                const Icon = study.icon;
                 return (
                   <motion.div
                     key={study.title}
@@ -123,10 +116,7 @@ export default function PortfolioPage() {
                   >
                     <Card className="group h-full hover:border-orange/40 transition-all duration-300">
                       <CardContent className="p-6 flex flex-col h-full">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange/10">
-                            <Icon className="h-5 w-5 text-orange" />
-                          </div>
+                        <div className="flex items-start justify-end mb-4">
                           <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
 

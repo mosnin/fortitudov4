@@ -3,22 +3,19 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Zap, Shield, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
 const values = [
   {
-    icon: Zap,
     title: "Speed & Quality",
     description: "We deliver fast without cutting corners. Every project goes through rigorous testing before launch.",
   },
   {
-    icon: Shield,
     title: "Transparency",
     description: "Track every phase of your build. No black boxes — you always know exactly where your project stands.",
   },
   {
-    icon: Users,
     title: "Partnership",
     description: "We're not just builders — we're partners. Direct communication, revision support, and ongoing collaboration.",
   },
@@ -57,7 +54,6 @@ export function AboutSection() {
           {/* Values */}
           <div className="space-y-6">
             {values.map((value, index) => {
-              const Icon = value.icon;
               return (
                 <motion.div
                   key={value.title}
@@ -65,17 +61,12 @@ export function AboutSection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="flex gap-4 rounded-xl border border-border bg-card p-6"
+                  className="rounded-xl border border-border bg-card p-6"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                    <Icon className="h-5 w-5 text-orange" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold">{value.title}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {value.description}
-                    </p>
-                  </div>
+                  <h3 className="font-semibold">{value.title}</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {value.description}
+                  </p>
                 </motion.div>
               );
             })}

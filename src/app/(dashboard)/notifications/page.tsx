@@ -135,7 +135,6 @@ export default function NotificationsPage() {
       {notifications.length === 0 ? (
         <Card>
           <EmptyState
-            icon={Bell}
             title="You're all caught up"
             description="Project updates, messages, and payment confirmations will show up here."
           />
@@ -158,9 +157,7 @@ export default function NotificationsPage() {
                           !notification.read && "bg-orange/5"
                         )}
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                          <Icon className="h-5 w-5 text-orange" />
-                        </div>
+                        <Icon className="mt-0.5 h-5 w-5 shrink-0 text-orange" />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
                             <p className={cn("text-sm", !notification.read && "font-semibold")}>

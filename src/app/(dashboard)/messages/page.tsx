@@ -121,7 +121,6 @@ export default function MessagesPage() {
       {projects.length === 0 ? (
         <Card>
           <EmptyState
-            icon={MessageSquare}
             title="No messages yet"
             description="Once you have an active project, you can chat directly with the Fortitudo team here."
           />
