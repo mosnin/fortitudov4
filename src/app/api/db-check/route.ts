@@ -4,8 +4,9 @@ import { resolveConnectionString } from "@/db";
 
 export const dynamic = "force-dynamic";
 
-// Diagnostic: which DB the live deployment connects to and whether the schema
-// is applied. Exposes only the host (no credentials).
+// Diagnostic: which DB the live deployment connects to, whether the schema is
+// applied, and what Postgres URLs / DB-related vars exist (names + hosts only,
+// never credentials).
 function hostOf(url: string): string {
   try {
     return new URL(url).host;
@@ -13,12 +14,23 @@ function hostOf(url: string): string {
     return "unparseable";
   }
 }
+const isPgUrl = (v: string | undefined): v is string =>
+  !!v && /^postgres(?:ql)?:\/\//.test(v);
 
 export async function GET() {
+  // Every env var that holds a Postgres URL — name + host only.
+  const postgresUrlVars = Object.entries(process.env)
+    .filter(([, v]) => isPgUrl(v))
+    .map(([name, v]) => ({ name, host: hostOf(v as string) }));
+
+  // Names of any DB-related env vars (to spot integration-set names).
+  const dbRelatedEnvKeys = Object.keys(process.env)
+    .filter((k) => /supabase|postgres|database|neon|_db_|pg_/i.test(k))
+    .sort();
+
   let host: string | null = null;
   let usersTableExists: boolean | null = null;
   let error: string | undefined;
-
   try {
     const url = resolveConnectionString();
     host = hostOf(url);
@@ -30,21 +42,13 @@ export async function GET() {
     error = e instanceof Error ? e.message : String(e);
   }
 
-  const isSupabase = host?.includes("supabase.co") ?? false;
-
   return NextResponse.json({
     ok: error === undefined,
-    host,
-    isSupabase,
+    connectingToHost: host,
+    isSupabase: host?.includes("supabase.co") ?? false,
     usersTableExists,
     error,
-    status:
-      error?.includes("DATABASE_URL is not set")
-        ? "No DATABASE_URL is set on this deployment. Add it (your Supabase pooler URL) and redeploy."
-        : usersTableExists === false
-        ? `Connected to ${host}, but the schema is missing. Run \`pnpm db:push\`.`
-        : usersTableExists
-        ? `Connected to ${host} and the users table exists — auth should work.`
-        : undefined,
+    postgresUrlVars,
+    dbRelatedEnvKeys,
   });
 }

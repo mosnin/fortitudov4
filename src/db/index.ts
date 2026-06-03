@@ -2,19 +2,26 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
+const isPgUrl = (v: string | undefined): v is string =>
+  !!v && /^postgres(?:ql)?:\/\//.test(v);
+
 /**
- * The Postgres connection. Set `DATABASE_URL` to your Supabase pooler URL.
- * (`POSTGRES_URL` is also accepted, since Vercel's Supabase integration sets
- * that name.)
+ * Resolve the Postgres connection string from the environment. The Vercel
+ * Supabase integration sets this automatically (commonly POSTGRES_URL), so we
+ * accept the standard names and, failing that, use any Postgres URL present in
+ * the environment — the exact variable name is managed by Vercel, not us.
  */
 export function resolveConnectionString(): string {
-  const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
-  if (!url) {
-    throw new Error(
-      "DATABASE_URL is not set. Point it at your Supabase pooler connection string."
-    );
+  const preferred = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
+  if (isPgUrl(preferred)) return preferred;
+
+  for (const value of Object.values(process.env)) {
+    if (isPgUrl(value)) return value;
   }
-  return url;
+
+  throw new Error(
+    "No Postgres connection string found in the environment. Connect Supabase in Vercel and redeploy."
+  );
 }
 
 let _db: ReturnType<typeof createDb> | null = null;
