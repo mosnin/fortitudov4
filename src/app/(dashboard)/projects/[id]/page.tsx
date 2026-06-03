@@ -16,7 +16,8 @@ import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { ProjectDetailClient } from "./client";
 import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
 import { formatPrice } from "@/lib/catalog";
-import { ExternalLink, FileText } from "lucide-react";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion";
+import { ExternalLink, FileText, ArrowRight } from "lucide-react";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -132,76 +133,88 @@ export default async function ProjectDetailPage({
     <div className="space-y-6">
       {/* Your architect — a real human owns this build. */}
       {architect && (
-        <div className="rounded-2xl border border-border bg-card p-5 flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange/10 text-orange font-semibold">
+        <Reveal className="relative overflow-hidden rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl p-5 flex items-center gap-4">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,rgba(249,115,22,0.1),transparent_55%)]" />
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-charcoal-dark text-white font-semibold">
             {architect.name
               .split(" ")
               .map((n) => n[0])
               .slice(0, 2)
               .join("")}
           </div>
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">Your architect</p>
-            <p className="font-semibold">{architect.name}</p>
+          <div className="relative min-w-0">
+            <p className="text-xs uppercase tracking-[0.18em] text-orange/80">Your architect</p>
+            <p className="font-semibold mt-0.5">{architect.name}</p>
             {architect.title && (
               <p className="text-xs text-muted-foreground truncate">{architect.title}</p>
             )}
           </div>
           <a
             href={`/projects/${project.id}#messages`}
-            className="ml-auto text-sm font-medium text-orange hover:underline whitespace-nowrap"
+            className="relative ml-auto inline-flex items-center gap-1.5 rounded-xl border border-border bg-background/40 px-3.5 py-2 text-sm font-medium transition-colors hover:border-orange/50 whitespace-nowrap"
           >
             Message
           </a>
-        </div>
+        </Reveal>
       )}
 
       {/* The Decision Loop — the studio only interrupts you when it must. */}
-      <DecisionLoop decisions={decisionItems} />
+      <Reveal delay={0.05}>
+        <DecisionLoop decisions={decisionItems} />
+      </Reveal>
 
       {/* Blueprint + deliverables surfaces */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {latestBlueprint && (
-          <Link
-            href={`/blueprint/${latestBlueprint.id}`}
-            className="rounded-2xl border border-border bg-card p-5 hover:border-orange/50 transition-colors flex items-center justify-between gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 shrink-0 text-orange" />
-              <div>
-                <p className="text-sm font-medium">Blueprint</p>
-                <p className="text-xs text-muted-foreground capitalize">{latestBlueprint.status}</p>
-              </div>
-            </div>
-            <span className="text-lg font-bold text-orange">{formatPrice(latestBlueprint.total)}</span>
-          </Link>
-        )}
+      {(latestBlueprint || projectDeliverables.length > 0) && (
+        <RevealGroup className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {latestBlueprint && (
+            <RevealItem className="h-full">
+              <Link
+                href={`/blueprint/${latestBlueprint.id}`}
+                className="group h-full rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl p-6 hover:border-orange/40 transition-colors flex items-center justify-between gap-4"
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-5 w-5 shrink-0 text-orange" />
+                  <div>
+                    <p className="text-sm font-medium">Blueprint</p>
+                    <p className="text-xs text-muted-foreground capitalize">{latestBlueprint.status}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-bold text-orange">{formatPrice(latestBlueprint.total)}</span>
+                  <ArrowRight className="h-4 w-4 text-orange transition-transform group-hover:translate-x-0.5" />
+                </div>
+              </Link>
+            </RevealItem>
+          )}
 
-        {projectDeliverables.length > 0 && (
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <p className="text-sm font-medium mb-3">Deliverables</p>
-            <ul className="space-y-2">
-              {projectDeliverables.map((d) => (
-                <li key={d.id}>
-                  {d.url ? (
-                    <a
-                      href={d.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-orange hover:underline"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      {d.title}
-                    </a>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">{d.title}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
+          {projectDeliverables.length > 0 && (
+            <RevealItem className="h-full">
+              <div className="h-full rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl p-6">
+                <p className="text-sm font-medium mb-3">Deliverables</p>
+                <ul className="space-y-2">
+                  {projectDeliverables.map((d) => (
+                    <li key={d.id}>
+                      {d.url ? (
+                        <a
+                          href={d.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 text-sm text-orange hover:underline"
+                        >
+                          <ExternalLink className="h-3.5 w-3.5" />
+                          {d.title}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-muted-foreground">{d.title}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </RevealItem>
+          )}
+        </RevealGroup>
+      )}
 
       <ProjectDetailClient
         project={{
