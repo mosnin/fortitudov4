@@ -134,7 +134,7 @@ async function DashboardBody() {
           <p className="text-5xl font-bold tabular-nums">{active.length}</p>
           <p className="text-sm text-muted-foreground">active {active.length === 1 ? "build" : "builds"}</p>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Link href="/onboarding" className="inline-flex items-center gap-1.5 rounded-xl bg-orange px-3.5 py-2 text-sm font-medium text-white hover:bg-orange-dark transition-colors">
+            <Link href="/brief" className="inline-flex items-center gap-1.5 rounded-xl bg-orange px-3.5 py-2 text-sm font-medium text-white hover:bg-orange-dark transition-colors">
               <Plus className="h-4 w-4" /> New Brief
             </Link>
             {lead && (
@@ -154,7 +154,7 @@ async function DashboardBody() {
             <p className="mt-1 text-3xl font-bold">{dateStr}</p>
             <p className="text-sm text-muted-foreground">{monthStr} · {timeStr}</p>
           </div>
-          <Link href="/onboarding" className="flex h-10 w-10 items-center justify-center rounded-full bg-orange text-white hover:bg-orange-dark transition-colors" aria-label="New brief">
+          <Link href="/brief" className="flex h-10 w-10 items-center justify-center rounded-full bg-orange text-white hover:bg-orange-dark transition-colors" aria-label="New brief">
             <Plus className="h-5 w-5" />
           </Link>
         </div>
@@ -202,7 +202,7 @@ async function DashboardBody() {
           <div>
             <p className="text-lg font-semibold">No Blueprint yet</p>
             <p className="text-sm opacity-80 mt-1">Start a Brief to get a bespoke proposal with a price.</p>
-            <Link href="/onboarding" className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-charcoal-dark px-4 py-2.5 text-sm font-medium text-white">
+            <Link href="/brief" className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-charcoal-dark px-4 py-2.5 text-sm font-medium text-white">
               Start a Brief <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -306,7 +306,7 @@ async function DashboardBody() {
       </section>
 
       {/* ── Quick start ── */}
-      <Link href="/onboarding" className="col-span-12 lg:col-span-4 rounded-3xl border border-dashed border-orange/40 bg-orange/[0.03] p-6 flex flex-col items-center justify-center text-center hover:bg-orange/[0.06] transition-colors">
+      <Link href="/brief" className="col-span-12 lg:col-span-4 rounded-3xl border border-dashed border-orange/40 bg-orange/[0.03] p-6 flex flex-col items-center justify-center text-center hover:bg-orange/[0.06] transition-colors">
         <p className="font-semibold">Build something new</p>
         <p className="text-xs text-muted-foreground mt-1">Software · Commerce · AI · Infrastructure</p>
       </Link>

@@ -22,8 +22,8 @@ import {
 } from "lucide-react";
 
 // ── Dock items ──────────────────────────────────────────────────────────────
-// Real routes only. Verified to exist under src/app/(dashboard)/ and
-// src/app/onboarding. The center "New Brief" is the prominent orange action.
+// Real routes only. Verified to exist under src/app/(dashboard)/. The center
+// "New Brief" is the prominent orange action — the conversational intake.
 type DockItem = {
   label: string;
   href: string;
@@ -34,7 +34,7 @@ type DockItem = {
 const dockItems: DockItem[] = [
   { label: "Home", href: "/dashboard", icon: Home },
   { label: "Builds", href: "/projects", icon: FolderKanban },
-  { label: "New Brief", href: "/onboarding", icon: Plus, accent: true },
+  { label: "New Brief", href: "/brief", icon: Plus, accent: true },
   { label: "Messages", href: "/messages", icon: MessageSquare },
 ];
 
@@ -63,7 +63,7 @@ const launchpadTiles: Tile[] = [
   },
   {
     label: "New Brief",
-    href: "/onboarding",
+    href: "/brief",
     icon: Plus,
     description: "Start something new — we turn it into a Blueprint.",
     highlight: true,

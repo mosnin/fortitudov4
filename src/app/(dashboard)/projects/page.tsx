@@ -64,7 +64,7 @@ export default async function ProjectsPage() {
           </p>
         </div>
         <Button variant="glow" asChild>
-          <Link href="/onboarding">
+          <Link href="/brief">
             <Plus className="mr-1 h-4 w-4" />
             New Project
           </Link>
@@ -78,7 +78,7 @@ export default async function ProjectsPage() {
             description="Start your first project and we'll build something great together."
             action={
               <Button variant="glow" asChild>
-                <Link href="/onboarding">
+                <Link href="/brief">
                   <Plus className="mr-1 h-4 w-4" />
                   New Project
                 </Link>
