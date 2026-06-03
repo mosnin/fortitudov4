@@ -1,6 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
+import { ApiKeysManager } from "@/components/dashboard/api-keys-manager";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -54,6 +57,21 @@ export default async function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <ApiKeysManager />
+
+      <Link
+        href="/developers"
+        className="flex items-center justify-between gap-4 rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl transition-colors hover:border-orange/40"
+      >
+        <div>
+          <p className="font-medium">Agent API docs</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Drive the studio programmatically — brief, buy, and steer builds via the API.
+          </p>
+        </div>
+        <ArrowRight className="h-5 w-5 shrink-0 text-orange" />
+      </Link>
     </div>
   );
 }
