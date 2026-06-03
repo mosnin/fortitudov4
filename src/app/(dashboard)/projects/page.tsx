@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,9 +5,13 @@ import { Badge } from "@/components/ui/badge";
 import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
 import { Plus, ArrowRight, FolderKanban } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { db } from "@/db";
-import { projects, projectPhases, users } from "@/db/schema";
+import { projects, projectPhases } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
+
+// Per-user authed data — always render on demand.
+export const dynamic = "force-dynamic";
 
 const statusLabels: Record<string, string> = {
   onboarding: "Onboarding",
@@ -24,23 +27,17 @@ const statusVariants: Record<string, "orange" | "success" | "secondary"> = {
   completed: "success",
 };
 
+// Disciplines, matching the service_type enum (software/commerce/ai/infrastructure).
 const serviceLabels: Record<string, string> = {
-  web_application: "Web Application",
-  ecommerce_store: "E-Commerce Store",
-  funnels: "Funnels",
-  ai_automation: "AI Automation",
-  open_claw_deployment: "Open Claw Deployment",
+  software: "Software",
+  commerce: "Commerce",
+  ai: "AI",
+  infrastructure: "Infrastructure",
 };
 
 export default async function ProjectsPage() {
-  const { userId } = await auth();
-  if (!userId) return null;
-
-  const [dbUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkId, userId));
-
+  // Provision the user row on first visit — never depend on the Clerk webhook.
+  const dbUser = await getOrCreateCurrentUser();
   if (!dbUser) return null;
 
   const userProjects =

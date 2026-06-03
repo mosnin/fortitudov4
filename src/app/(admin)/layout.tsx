@@ -1,31 +1,29 @@
 import { UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { AdminNav } from "@/components/dashboard/admin-nav";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+
+// Per-user authed data — always render on demand.
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await auth();
-  if (!userId) {
+  // Provision the user row on first visit, then gate on role — never depend on
+  // the Clerk webhook for the row to exist.
+  const user = await getOrCreateCurrentUser();
+  if (!user) {
     redirect("/sign-in");
   }
 
-  const user = await db.query.users.findFirst({
-    where: eq(users.clerkId, userId),
-  });
-
-  if (!user || user.role !== "admin") {
+  if (user.role !== "admin") {
     redirect("/dashboard");
   }
   return (

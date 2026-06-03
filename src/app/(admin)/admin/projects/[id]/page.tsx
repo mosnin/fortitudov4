@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { auth } from "@clerk/nextjs/server";
 import { db } from "@/db";
 import {
   projects,
@@ -12,11 +11,15 @@ import {
   teamMembers,
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { AdminProjectConsole } from "@/components/dashboard/admin-project-console";
+
+// Per-user authed data — always render on demand.
+export const dynamic = "force-dynamic";
 
 const disciplineLabels: Record<string, string> = {
   software: "Software",
@@ -39,11 +42,10 @@ export default async function AdminProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId: clerkId } = await auth();
-  if (!clerkId) redirect("/sign-in");
-
-  const [me] = await db.select().from(users).where(eq(users.clerkId, clerkId));
-  if (!me || me.role !== "admin") notFound();
+  // Provision the user row on first visit, then gate on role.
+  const me = await getOrCreateCurrentUser();
+  if (!me) redirect("/sign-in");
+  if (me.role !== "admin") notFound();
 
   const [project] = await db.select().from(projects).where(eq(projects.id, id));
   if (!project) notFound();

@@ -1,13 +1,16 @@
-import { auth } from "@clerk/nextjs/server";
 import { redirect, notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { blueprints, projects, users } from "@/db/schema";
+import { blueprints, projects } from "@/db/schema";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { formatPrice } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowRight, Clock, FileText, Layers } from "lucide-react";
 import Link from "next/link";
 import { AcceptBlueprintButton } from "./accept-button";
+
+// Per-user authed data — always render on demand.
+export const dynamic = "force-dynamic";
 
 export default async function BlueprintPage({
   params,
@@ -15,11 +18,9 @@ export default async function BlueprintPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId: clerkId } = await auth();
-  if (!clerkId) redirect("/sign-in");
-
-  const [dbUser] = await db.select().from(users).where(eq(users.clerkId, clerkId));
-  if (!dbUser) redirect("/dashboard");
+  // Provision the user row on first visit — never depend on the Clerk webhook.
+  const dbUser = await getOrCreateCurrentUser();
+  if (!dbUser) redirect("/sign-in");
 
   const [blueprint] = await db.select().from(blueprints).where(eq(blueprints.id, id));
   if (!blueprint) notFound();
@@ -29,6 +30,9 @@ export default async function BlueprintPage({
   if (project.userId !== dbUser.id && dbUser.role !== "admin") notFound();
 
   const accepted = blueprint.status === "accepted";
+  // jsonb columns; guard against legacy rows where they may be null.
+  const scope = blueprint.scope ?? [];
+  const lineItems = blueprint.lineItems ?? [];
 
   return (
     <div className="min-h-screen bg-charcoal-dark py-10 px-4">
@@ -58,7 +62,7 @@ export default async function BlueprintPage({
             <h2 className="font-semibold">What we&apos;ll build</h2>
           </div>
           <ul className="space-y-3">
-            {blueprint.scope.map((item, i) => (
+            {scope.map((item, i) => (
               <li key={i} className="flex items-start gap-3">
                 <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange/10">
                   <Check className="h-3 w-3 text-orange" />
@@ -87,7 +91,7 @@ export default async function BlueprintPage({
         <section className="rounded-2xl border border-border bg-card p-6 mb-6">
           <h2 className="font-semibold mb-4">Investment</h2>
           <div className="space-y-3">
-            {blueprint.lineItems.map((li, i) => (
+            {lineItems.map((li, i) => (
               <div key={i} className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-sm font-medium">{li.label}</p>
