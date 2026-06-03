@@ -1,4 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { db } from "@/db";
@@ -7,17 +6,20 @@ import {
   projectPhases,
   files as filesTable,
   invoices,
-  users,
   decisionRequests,
   deliverables as deliverablesTable,
   blueprints,
   teamMembers,
 } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { ProjectDetailClient } from "./client";
 import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
 import { formatPrice } from "@/lib/catalog";
 import { ExternalLink, FileText } from "lucide-react";
+
+// Per-user authed data — always render on demand.
+export const dynamic = "force-dynamic";
 
 const serviceLabels: Record<string, string> = {
   software: "Software",
@@ -41,13 +43,8 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const { userId } = await auth();
-  if (!userId) return null;
-
-  const [dbUser] = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkId, userId));
+  // Provision the user row on first visit — never depend on the Clerk webhook.
+  const dbUser = await getOrCreateCurrentUser();
   if (!dbUser) return null;
 
   // Fetch project
