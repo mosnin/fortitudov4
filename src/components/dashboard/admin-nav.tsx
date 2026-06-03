@@ -35,10 +35,10 @@ export function AdminNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+              "flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors",
               isActive
-                ? "bg-orange/10 text-orange font-medium"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "bg-orange/15 text-orange font-medium ring-1 ring-inset ring-orange/30"
+                : "text-white/60 hover:text-white hover:bg-white/5"
             )}
           >
             <Icon className="h-4 w-4" />

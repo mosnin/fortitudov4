@@ -28,20 +28,20 @@ export default async function AdminLayout({
   }
   return (
     <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-charcoal/80 backdrop-blur-2xl">
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-4">
             <Link href="/admin" className="flex items-center gap-2">
               <Image
                 src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
                 alt="Fortitudo"
-                width={32}
-                height={32}
-                className="rounded-md"
+                width={30}
+                height={30}
+                className="rounded-full"
               />
-              <span className="font-bold hidden sm:inline">Fortitudo</span>
-              <span className="rounded bg-orange/10 px-2 py-0.5 text-xs font-medium text-orange">
-                Admin
+              <span className="font-brand font-bold text-white hidden sm:inline">Fortitudo</span>
+              <span className="rounded-full border border-orange/30 bg-orange/10 px-2 py-0.5 text-[11px] font-medium text-orange">
+                Studio
               </span>
             </Link>
             <AdminNav />

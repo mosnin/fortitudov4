@@ -1,57 +1,76 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Users } from "lucide-react";
+import { db } from "@/db";
+import { users, projects } from "@/db/schema";
+import { sql, eq, ne, desc } from "drizzle-orm";
+import { AdminMast, DataTable, StatusPill, type Column } from "@/components/admin/ascii-table";
 
-const demoClients = [
-  { name: "John Doe", email: "john@example.com", projects: 2, joined: "Feb 10, 2026" },
-  { name: "Jane Smith", email: "jane@example.com", projects: 1, joined: "Feb 22, 2026" },
-  { name: "Bob Wilson", email: "bob@example.com", projects: 1, joined: "Mar 1, 2026" },
-  { name: "Sarah Lee", email: "sarah@example.com", projects: 3, joined: "Jan 15, 2026" },
-  { name: "Mike Chen", email: "mike@example.com", projects: 1, joined: "Mar 5, 2026" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminClientsPage() {
+type ClientRow = {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string;
+  type: string;
+  projectCount: number;
+  createdAt: Date;
+};
+
+function fmtDate(d: Date): string {
+  return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+export default async function AdminClientsPage() {
+  const rows = (await db
+    .select({
+      id: users.id,
+      firstName: users.firstName,
+      lastName: users.lastName,
+      email: users.email,
+      type: users.type,
+      projectCount: sql<number>`count(${projects.id})::int`,
+      createdAt: users.createdAt,
+    })
+    .from(users)
+    .leftJoin(projects, eq(projects.userId, users.id))
+    .where(ne(users.role, "admin"))
+    .groupBy(users.id)
+    .orderBy(desc(users.createdAt))) as ClientRow[];
+
+  const columns: Column<ClientRow>[] = [
+    {
+      header: "Name",
+      cell: (c) => (
+        <span className="font-medium text-foreground">
+          {`${c.firstName ?? ""} ${c.lastName ?? ""}`.trim() || "—"}
+        </span>
+      ),
+    },
+    { header: "Email", cell: (c) => <span className="text-muted-foreground">{c.email}</span> },
+    {
+      header: "Type",
+      cell: (c) => (
+        <StatusPill tone={c.type === "agent" ? "orange" : "muted"}>{c.type}</StatusPill>
+      ),
+    },
+    { header: "Builds", align: "right", cell: (c) => c.projectCount },
+    {
+      header: "Joined",
+      align: "right",
+      cell: (c) => <span className="text-muted-foreground">{fmtDate(c.createdAt)}</span>,
+    },
+  ];
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">Clients</h1>
-        <p className="text-muted-foreground mt-1">Manage all registered clients.</p>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-orange" />
-            All Clients
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="pb-3 font-medium">Name</th>
-                  <th className="pb-3 font-medium">Email</th>
-                  <th className="pb-3 font-medium">Projects</th>
-                  <th className="pb-3 font-medium">Joined</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {demoClients.map((client, i) => (
-                  <tr key={i} className="hover:bg-muted/50">
-                    <td className="py-3 font-medium">{client.name}</td>
-                    <td className="py-3 text-muted-foreground">{client.email}</td>
-                    <td className="py-3">
-                      <Badge variant="secondary">{client.projects}</Badge>
-                    </td>
-                    <td className="py-3 text-muted-foreground">{client.joined}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-5">
+      <AdminMast eyebrow="Clients" title="Everyone you build for" subtitle="Humans and agents on the platform." />
+      <DataTable
+        title="All clients"
+        count={rows.length}
+        columns={columns}
+        rows={rows}
+        getKey={(c) => c.id}
+        empty="No clients yet."
+      />
     </div>
   );
 }
