@@ -1,10 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { PhaseTrackerHorizontal, type Phase } from "@/components/dashboard/phase-tracker";
-import { Plus, ArrowRight } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
+import { Plus, ArrowRight, Sparkles } from "lucide-react";
+import { Reveal, RevealGroup, RevealLift } from "@/components/ui/motion";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { db } from "@/db";
 import { projects, projectPhases } from "@/db/schema";
@@ -22,9 +18,14 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-const statusVariants: Record<string, "orange" | "success" | "secondary"> = {
-  in_progress: "orange",
-  completed: "success",
+// Status chip accent — kept tasteful, orange-leaning with a few semantic tones.
+const statusChip: Record<string, string> = {
+  in_progress: "border-orange/30 bg-orange/10 text-orange",
+  completed: "border-success/30 bg-success/10 text-success",
+  revision: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+  payment_pending: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+  onboarding: "border-border/60 bg-background/40 text-muted-foreground",
+  cancelled: "border-border/60 bg-background/40 text-muted-foreground",
 };
 
 // Disciplines, matching the service_type enum (software/commerce/ai/infrastructure).
@@ -34,6 +35,8 @@ const serviceLabels: Record<string, string> = {
   ai: "AI",
   infrastructure: "Infrastructure",
 };
+
+const card = "rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl";
 
 export default async function ProjectsPage() {
   // Provision the user row on first visit — never depend on the Clerk webhook.
@@ -56,79 +59,105 @@ export default async function ProjectsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <Reveal className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Projects</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage and track all your projects.
+          <p className="text-xs uppercase tracking-[0.2em] text-orange/80">
+            Fortitudo // Studio
+          </p>
+          <h1 className="font-brand mt-2 text-3xl sm:text-4xl">Projects</h1>
+          <p className="text-muted-foreground mt-2">
+            Every build you&apos;ve commissioned, in one place.
           </p>
         </div>
-        <Button variant="glow" asChild>
-          <Link href="/onboarding">
-            <Plus className="mr-1 h-4 w-4" />
-            New Project
-          </Link>
-        </Button>
-      </div>
+        <Link
+          href="/onboarding"
+          className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-orange px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-dark"
+        >
+          <Plus className="h-4 w-4" /> New Project
+        </Link>
+      </Reveal>
 
       {userProjects.length === 0 ? (
-        <Card>
-          <EmptyState
-            title="No projects yet"
-            description="Start your first project and we'll build something great together."
-            action={
-              <Button variant="glow" asChild>
-                <Link href="/onboarding">
-                  <Plus className="mr-1 h-4 w-4" />
-                  New Project
-                </Link>
-              </Button>
-            }
-          />
-        </Card>
+        <Reveal
+          delay={0.1}
+          className={`${card} flex flex-col items-center justify-center px-6 py-20 text-center`}
+        >
+          <Sparkles className="mb-3 h-8 w-8 text-orange" />
+          <h2 className="text-lg font-semibold">No projects yet</h2>
+          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
+            Start your first Brief and we&apos;ll architect it into a Blueprint,
+            then build it together.
+          </p>
+          <Link
+            href="/onboarding"
+            className="mt-6 inline-flex items-center gap-1.5 rounded-xl bg-orange px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-dark"
+          >
+            <Plus className="h-4 w-4" /> New Project
+          </Link>
+        </Reveal>
       ) : (
-        <div className="space-y-4">
+        <RevealGroup className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {userProjects.map((project) => {
             const phases = allPhases
               .filter((p) => p.projectId === project.id)
-              .sort((a, b) => a.order - b.order)
-              .map((p) => ({
-                id: p.id,
-                name: p.name,
-                status: p.status,
-                order: p.order,
-              })) satisfies Phase[];
+              .sort((a, b) => a.order - b.order);
+            const total = phases.length;
+            const completed = phases.filter((p) => p.status === "completed").length;
+            const pct = total ? Math.round((completed / total) * 100) : 0;
+            const currentPhase =
+              phases.find((p) => p.status === "in_progress")?.name ??
+              (pct === 100 ? "Complete" : total ? "Not started" : "Awaiting kickoff");
 
             return (
-              <Card key={project.id} className="hover:border-orange/30 transition-colors">
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle>{project.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {serviceLabels[project.serviceType] || project.serviceType}
-                    </p>
+              <RevealLift key={project.id}>
+                <Link
+                  href={`/projects/${project.id}`}
+                  className={`group flex h-full flex-col ${card} p-6 transition-colors hover:border-orange/40`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                        {serviceLabels[project.serviceType] || project.serviceType}
+                      </p>
+                      <h2 className="mt-1.5 truncate text-lg font-semibold">
+                        {project.name}
+                      </h2>
+                    </div>
+                    <span
+                      className={`shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
+                        statusChip[project.status] ?? statusChip.onboarding
+                      }`}
+                    >
+                      {statusLabels[project.status] || project.status}
+                    </span>
                   </div>
-                  <Badge variant={statusVariants[project.status] || "orange"}>
-                    {statusLabels[project.status] || project.status}
-                  </Badge>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {phases.length > 0 && (
-                    <PhaseTrackerHorizontal phases={phases} />
-                  )}
-                  <div className="flex justify-end">
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/projects/${project.id}`}>
-                        View Project
-                        <ArrowRight className="ml-1 h-4 w-4" />
-                      </Link>
-                    </Button>
+
+                  <div className="mt-auto pt-6">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="truncate text-muted-foreground">
+                        {currentPhase}
+                      </span>
+                      <span className="tabular-nums font-medium text-muted-foreground">
+                        {pct}%
+                      </span>
+                    </div>
+                    <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-background/60">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-orange to-amber-400 transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
+
+                  <div className="mt-5 flex items-center gap-1.5 text-sm font-medium text-orange">
+                    View Project
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </div>
+                </Link>
+              </RevealLift>
             );
           })}
-        </div>
+        </RevealGroup>
       )}
     </div>
   );
