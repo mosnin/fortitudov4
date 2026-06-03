@@ -49,7 +49,7 @@ export function ServicesSection() {
                   </CardHeader>
                   <CardContent className="flex flex-col gap-4">
                     <ul className="space-y-2">
-                      {service.features.map((feature) => (
+                      {service.capabilities.map((feature) => (
                         <li
                           key={feature}
                           className="flex items-center gap-2 text-sm text-muted-foreground"
@@ -64,8 +64,8 @@ export function ServicesSection() {
                         {service.startingPrice}
                       </p>
                       <Button variant="glow" className="w-full" asChild>
-                        <Link href={`/sign-up?service=${service.id}`}>
-                          Get Started
+                        <Link href={`/onboarding?discipline=${service.id}`}>
+                          Start a Brief
                           <ArrowRight className="ml-1 h-4 w-4" />
                         </Link>
                       </Button>

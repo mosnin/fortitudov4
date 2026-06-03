@@ -1,111 +1,103 @@
 import {
-  Globe,
+  Code2,
   ShoppingCart,
-  TrendingUp,
   Bot,
   Server,
   type LucideIcon,
 } from "lucide-react";
 
-export type ServiceType =
-  | "web_application"
-  | "ecommerce_store"
-  | "funnels"
-  | "ai_automation"
-  | "open_claw_deployment";
+// The four building disciplines. We are builders — we make digital assets and
+// architecture. No marketing, no SEO, no funnels.
+export type ServiceType = "software" | "commerce" | "ai" | "infrastructure";
 
 export interface Service {
   id: ServiceType;
   name: string;
+  tagline: string;
   description: string;
   icon: LucideIcon;
-  features: string[];
+  capabilities: string[];
   startingPrice: string;
 }
 
 export const services: Service[] = [
   {
-    id: "web_application",
-    name: "Web Application",
+    id: "software",
+    name: "Software",
+    tagline: "Web apps, SaaS, internal tools",
     description:
-      "Custom web applications built to scale. From SaaS platforms to internal tools, we bring your vision to life.",
-    icon: Globe,
-    features: [
-      "Custom UI/UX design",
-      "Responsive & mobile-first",
-      "Database & API integration",
-      "User authentication",
-      "Deployment & hosting",
+      "Custom software built to last — web applications, SaaS platforms, internal tools, and the systems your business runs on.",
+    icon: Code2,
+    capabilities: [
+      "Web & SaaS applications",
+      "Internal tools & dashboards",
+      "Auth, billing & multi-tenancy",
+      "APIs & integrations",
+      "Performance & scale",
     ],
-    startingPrice: "Starting at $2,500",
+    startingPrice: "from $2,500",
   },
   {
-    id: "ecommerce_store",
-    name: "Ecommerce Store",
+    id: "commerce",
+    name: "Commerce",
+    tagline: "Storefronts & commerce systems",
     description:
-      "High-converting online stores with seamless checkout, inventory management, and analytics.",
+      "Commerce architecture that converts — storefronts, checkout, inventory, and the order systems behind them.",
     icon: ShoppingCart,
-    features: [
-      "Product catalog setup",
-      "Payment processing",
-      "Inventory management",
-      "Order tracking",
-      "SEO optimization",
+    capabilities: [
+      "Custom storefronts",
+      "Checkout & payments",
+      "Inventory & fulfillment",
+      "Order management",
+      "Headless commerce",
     ],
-    startingPrice: "Starting at $1,800",
+    startingPrice: "from $1,800",
   },
   {
-    id: "funnels",
-    name: "Funnels",
+    id: "ai",
+    name: "AI",
+    tagline: "AI-native software & agents",
     description:
-      "High-performance sales funnels designed to convert visitors into customers at every stage.",
-    icon: TrendingUp,
-    features: [
-      "Landing page design",
-      "A/B testing ready",
-      "Email capture & sequences",
-      "Analytics & tracking",
-      "CRM integration",
-    ],
-    startingPrice: "Starting at $1,200",
-  },
-  {
-    id: "ai_automation",
-    name: "AI Automation",
-    description:
-      "Leverage AI to automate workflows, generate content, and streamline your business operations.",
+      "AI woven into the product, not bolted on — agents, automation pipelines, and AI-native applications.",
     icon: Bot,
-    features: [
-      "Custom AI workflows",
-      "Chatbot integration",
-      "Content generation",
-      "Data processing pipelines",
-      "API integrations",
+    capabilities: [
+      "AI-native applications",
+      "Autonomous agents",
+      "Automation pipelines",
+      "RAG & knowledge systems",
+      "Model & tool integration",
     ],
-    startingPrice: "Starting at $3,000",
+    startingPrice: "from $3,000",
   },
   {
-    id: "open_claw_deployment",
-    name: "Open Claw Deployment",
+    id: "infrastructure",
+    name: "Infrastructure",
+    tagline: "Cloud, deployment & architecture",
     description:
-      "Deploy and manage Open Claw instances with full configuration, monitoring, and support.",
+      "The foundation everything stands on — cloud architecture, deployment pipelines, data systems, and Open Claw deployments.",
     icon: Server,
-    features: [
-      "Instance setup & config",
-      "Custom deployment pipeline",
-      "Monitoring & alerts",
-      "Scaling infrastructure",
-      "Ongoing support",
+    capabilities: [
+      "Cloud architecture",
+      "Deployment pipelines",
+      "Data pipelines & warehouses",
+      "Open Claw deployments",
+      "Monitoring & reliability",
     ],
-    startingPrice: "Starting at $2,000",
+    startingPrice: "from $2,000",
   },
 ];
 
+export function getService(id: ServiceType): Service | undefined {
+  return services.find((s) => s.id === id);
+}
+
+// Default build phases. Per-project phases are stored in the DB and can be
+// tailored; these are the studio's standard rhythm for a build.
 export const projectPhaseNames = [
   "Discovery",
-  "Design",
-  "Development",
-  "Testing",
+  "Architecture",
+  "Build",
+  "Integration",
   "Review",
   "Launch",
 ];

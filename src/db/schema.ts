@@ -12,12 +12,13 @@ import {
 } from "drizzle-orm/pg-core";
 
 // Enums
+// The four building disciplines. We are builders — software, commerce, AI, and
+// infrastructure. No marketing/SEO/funnels.
 export const serviceTypeEnum = pgEnum("service_type", [
-  "web_application",
-  "ecommerce_store",
-  "funnels",
-  "ai_automation",
-  "open_claw_deployment",
+  "software",
+  "commerce",
+  "ai",
+  "infrastructure",
 ]);
 
 export const projectStatusEnum = pgEnum("project_status", [
@@ -53,6 +54,9 @@ export const users = pgTable("users", {
   lastName: varchar("last_name", { length: 255 }),
   imageUrl: text("image_url"),
   role: varchar("role", { length: 50 }).notNull().default("client"),
+  // Principal type: a human client, an autonomous agent, or an organization.
+  // Agents authenticate via api_keys and ride the same domain core as humans.
+  type: varchar("type", { length: 20 }).notNull().default("human"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -67,6 +71,14 @@ export const projects = pgTable("projects", {
   serviceType: serviceTypeEnum("service_type").notNull(),
   status: projectStatusEnum("status").notNull().default("onboarding"),
   currentPhase: integer("current_phase").notNull().default(0),
+  // The productized starting point this project was bought from, if any.
+  catalogItemId: uuid("catalog_item_id").references(() => catalogItems.id, {
+    onDelete: "set null",
+  }),
+  // The architect leading this build.
+  architectId: uuid("architect_id").references(() => teamMembers.id, {
+    onDelete: "set null",
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -299,3 +311,172 @@ export type ProjectComment = typeof projectComments.$inferSelect;
 export type SatisfactionSurvey = typeof satisfactionSurveys.$inferSelect;
 export type Invoice = typeof invoices.$inferSelect;
 export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+
+// ---------------------------------------------------------------------------
+// Studio core: catalog, blueprints, decision loop, deliverables, agents, team
+// ---------------------------------------------------------------------------
+
+// Team / architects — the humans (and the studio's identity) behind the build.
+export const teamMembers = pgTable("team_members", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  // Optional link to a Clerk-synced user (architects who also log in).
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  title: varchar("title", { length: 255 }),
+  discipline: serviceTypeEnum("discipline"),
+  bio: text("bio"),
+  imageUrl: text("image_url"),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Catalog — the productized "starting points" (the hybrid model's on-ramp).
+// Directly purchasable by humans and agents; anything beyond becomes a Blueprint.
+export const catalogItems = pgTable("catalog_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  slug: varchar("slug", { length: 100 }).notNull().unique(),
+  discipline: serviceTypeEnum("discipline").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  summary: varchar("summary", { length: 500 }),
+  description: text("description"),
+  // Price in cents. fixedPrice=false means this is a "from" / starting price.
+  fromPrice: integer("from_price").notNull(),
+  fixedPrice: boolean("fixed_price").notNull().default(false),
+  // Whether an autonomous agent may purchase this without a human in the loop.
+  agentPurchasable: boolean("agent_purchasable").notNull().default(true),
+  features: jsonb("features").$type<string[]>(),
+  estimatedTimeline: varchar("estimated_timeline", { length: 100 }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  active: boolean("active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_catalog_discipline").on(table.discipline),
+]);
+
+// Blueprint — the bespoke proposal. Scope + architecture + price, signable.
+export const blueprintStatusEnum = pgEnum("blueprint_status", [
+  "draft",
+  "sent",
+  "accepted",
+  "declined",
+  "expired",
+]);
+
+export type BlueprintLineItem = { label: string; description?: string; amount: number };
+export type BlueprintScopeItem = { title: string; detail?: string };
+
+export const blueprints = pgTable("blueprints", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  summary: text("summary"),
+  scope: jsonb("scope").$type<BlueprintScopeItem[]>().notNull(),
+  architectureNotes: text("architecture_notes"),
+  lineItems: jsonb("line_items").$type<BlueprintLineItem[]>().notNull(),
+  subtotal: integer("subtotal").notNull(),
+  total: integer("total").notNull(),
+  currency: varchar("currency", { length: 10 }).notNull().default("usd"),
+  estimatedTimeline: varchar("estimated_timeline", { length: 100 }),
+  status: blueprintStatusEnum("status").notNull().default("draft"),
+  validUntil: timestamp("valid_until"),
+  acceptedAt: timestamp("accepted_at"),
+  acceptedBy: uuid("accepted_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_blueprints_project_id").on(table.projectId),
+]);
+
+// Decision loop — the spine. The project only interrupts the client (or their
+// agent) when a human-judgment decision, asset, or credential is needed.
+export const decisionKindEnum = pgEnum("decision_kind", [
+  "info",
+  "asset",
+  "credential",
+  "approval",
+  "choice",
+]);
+
+export const decisionStatusEnum = pgEnum("decision_status", [
+  "open",
+  "answered",
+  "cancelled",
+]);
+
+export const decisionRequests = pgTable("decision_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  kind: decisionKindEnum("kind").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  prompt: text("prompt").notNull(),
+  // For "choice": { options: string[] }. For "info": { fields: [...] }. Etc.
+  schema: jsonb("schema").$type<Record<string, unknown>>(),
+  status: decisionStatusEnum("status").notNull().default("open"),
+  // Whether it blocks build progress until answered.
+  blocking: boolean("blocking").notNull().default(true),
+  response: jsonb("response").$type<Record<string, unknown>>(),
+  respondedBy: uuid("responded_by").references(() => users.id, { onDelete: "set null" }),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  dueAt: timestamp("due_at"),
+  answeredAt: timestamp("answered_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_decisions_project_id").on(table.projectId),
+  index("idx_decisions_status").on(table.status),
+]);
+
+// Deliverables — the actual digital assets, surfaced as they land.
+export const deliverableKindEnum = pgEnum("deliverable_kind", [
+  "preview",
+  "repo",
+  "deploy_url",
+  "design",
+  "document",
+  "other",
+]);
+
+export const deliverables = pgTable("deliverables", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  kind: deliverableKindEnum("kind").notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  url: text("url"),
+  description: text("description"),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  releasedAt: timestamp("released_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_deliverables_project_id").on(table.projectId),
+]);
+
+// API keys — how autonomous agents authenticate to the agent API.
+export const apiKeys = pgTable("api_keys", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  // Shown-once display prefix (e.g. "ftd_live_ab12") for identification.
+  prefix: varchar("prefix", { length: 32 }).notNull(),
+  // SHA-256 of the full key; the raw key is never stored.
+  hashedKey: varchar("hashed_key", { length: 128 }).notNull().unique(),
+  lastUsedAt: timestamp("last_used_at"),
+  revokedAt: timestamp("revoked_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_api_keys_user_id").on(table.userId),
+  index("idx_api_keys_hashed").on(table.hashedKey),
+]);
+
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type CatalogItem = typeof catalogItems.$inferSelect;
+export type Blueprint = typeof blueprints.$inferSelect;
+export type DecisionRequest = typeof decisionRequests.$inferSelect;
+export type Deliverable = typeof deliverables.$inferSelect;
+export type ApiKey = typeof apiKeys.$inferSelect;
