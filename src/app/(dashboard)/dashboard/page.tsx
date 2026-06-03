@@ -10,6 +10,8 @@ import {
 } from "@/db/schema";
 import { eq, inArray, desc, and } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
+import { WelcomeRotator } from "@/components/dashboard/welcome-rotator";
+import { Reveal } from "@/components/ui/motion";
 import { AsciiField } from "@/components/dashboard/ascii-field";
 import { formatPrice } from "@/lib/catalog";
 import {
@@ -39,13 +41,6 @@ const statusLabels: Record<string, string> = {
   completed: "Completed",
   cancelled: "Cancelled",
 };
-
-function greeting() {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
-}
 
 const card = "rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl p-5";
 
@@ -126,14 +121,14 @@ async function DashboardBody() {
   const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="grid grid-cols-12 gap-4">
+    <Reveal className="grid grid-cols-12 gap-4">
       {/* ── Signature ASCII hero ── */}
       <section className="col-span-12 lg:col-span-4 relative overflow-hidden rounded-3xl border border-border/60 bg-charcoal-dark min-h-[340px] flex flex-col justify-between p-6">
         <AsciiField className="absolute inset-0 h-full w-full opacity-70" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(249,115,22,0.18),transparent_60%)]" />
         <div className="relative z-10">
           <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Studio</p>
-          <h1 className="mt-2 text-2xl font-bold">{greeting()},<br />{firstName}.</h1>
+          <WelcomeRotator name={firstName} className="mt-2 text-2xl font-bold" />
         </div>
         <div className="relative z-10">
           <p className="text-5xl font-bold tabular-nums">{active.length}</p>
@@ -315,7 +310,7 @@ async function DashboardBody() {
         <p className="font-semibold">Build something new</p>
         <p className="text-xs text-muted-foreground mt-1">Software · Commerce · AI · Infrastructure</p>
       </Link>
-    </div>
+    </Reveal>
   );
 }
 
