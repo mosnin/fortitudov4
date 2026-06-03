@@ -4,6 +4,7 @@ import type { AgentInputItem } from "@openai/agents";
 import { z } from "zod";
 import { createProjectFromBrief } from "./studio";
 import { OFFERINGS } from "./offerings";
+import { hasTavily, tavilySearch, tavilyExtract } from "./tavily";
 
 // Context carried through a run; the tool writes the created proposal here so
 // the route can return its ids after the turn completes.
@@ -33,6 +34,12 @@ ${OFFERINGS}
 - We ONLY build digital assets & architecture in four disciplines: software, commerce, AI, infrastructure. We do NOT do marketing, SEO, ads, content, or social.
 - If the request clearly fits, keep interviewing until you have enough to scope it well, then call the submit_proposal tool.
 - If it does NOT fit, kindly and specifically explain that we focus on building digital products/architecture, and (if possible) suggest the closest thing we COULD build for them. Do not call the tool.
+
+# Research (use it to be genuinely helpful)
+You have two research tools. Use them naturally, not robotically — to understand the client better and to brainstorm a stronger build with them.
+- analyze_website: when the client mentions or shares a URL (their existing site, app, or store), read it to understand what they already have. Reference specifics ("I saw your storefront runs on…") so your questions land.
+- web_research: study competitors, the market, or technical approaches to help them think bigger. Great for "who else does this well?" and "what would set yours apart?".
+Guidelines: research only when it adds real value; one or two focused lookups per topic is plenty (it costs money and time). Weave findings into the conversation conversationally — never paste raw results or long lists. Always treat findings as inputs to a human conversation, not gospel.
 
 # Creating the proposal
 - When you have enough, call submit_proposal with your best structured summary: the discipline, the business name, a clear description of what to build (incorporate the key capabilities they mentioned), and any features/timeline/budget you learned.
@@ -86,11 +93,71 @@ function buildAgent() {
     },
   });
 
+  // Research tools (Tavily). Only exposed to the model when an API key is
+  // configured, so the agent never offers a capability it can't deliver.
+  const researchEnabled = hasTavily();
+
+  const webResearch = tool({
+    name: "web_research",
+    description:
+      "Research the web for competitor analysis, market context, or technical approaches to help brainstorm a stronger build. Returns a synthesized answer plus a few ranked sources.",
+    parameters: z.object({
+      query: z.string().describe("A focused research question or search query."),
+      topic: z
+        .enum(["general", "news"])
+        .nullable()
+        .describe("Use 'news' for recent/current events, otherwise 'general'."),
+    }),
+    isEnabled: researchEnabled,
+    timeoutMs: 25_000,
+    errorFunction: () =>
+      "Research is temporarily unavailable; continue the conversation without it.",
+    execute: async (input) => {
+      const { answer, results } = await tavilySearch({
+        query: input.query,
+        topic: input.topic ?? "general",
+      });
+      const sources = results
+        .map((r, i) => `${i + 1}. ${r.title} — ${r.url}\n   ${r.content}`)
+        .join("\n");
+      return [
+        answer ? `Summary: ${answer}` : "",
+        sources ? `Sources:\n${sources}` : "No relevant sources found.",
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+    },
+  });
+
+  const analyzeWebsite = tool({
+    name: "analyze_website",
+    description:
+      "Deep-read one or more URLs (e.g. the client's existing website, app, or store) to understand what they already have. Returns the main text content of each page.",
+    parameters: z.object({
+      urls: z.array(z.string()).describe("Absolute URLs to read (max 5)."),
+    }),
+    isEnabled: researchEnabled,
+    timeoutMs: 25_000,
+    errorFunction: () =>
+      "Couldn't read that site right now; ask the client to describe it instead.",
+    execute: async (input) => {
+      const pages = await tavilyExtract(input.urls);
+      if (!pages.length) return "No readable content was found at those URLs.";
+      return pages
+        .map((p) => `URL: ${p.url}\n${p.content || "(no extractable text)"}`)
+        .join("\n\n---\n\n");
+    },
+  });
+
+  const tools = researchEnabled
+    ? [submitProposal, webResearch, analyzeWebsite]
+    : [submitProposal];
+
   return new Agent<BriefContext>({
     name: "Fortitudo Brief",
     instructions: INSTRUCTIONS,
     model: MODEL,
-    tools: [submitProposal],
+    tools,
     modelSettings: {
       // Prompt caching: the instructions+offerings prefix is identical on every
       // request, so we keep it cached to cut token costs. A stable cache key
