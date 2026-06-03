@@ -5,6 +5,7 @@ import { DashboardNav } from "@/components/dashboard/nav";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AppDock } from "@/components/dashboard/app-dock";
 
 export default function DashboardLayout({
   children,
@@ -38,9 +39,13 @@ export default function DashboardLayout({
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+      {/* Extra bottom padding so content clears the floating dock. */}
+      <main className="mx-auto max-w-7xl p-4 pb-32 sm:p-6 sm:pb-32 lg:p-8 lg:pb-36">
         {children}
       </main>
+
+      {/* Persistent bottom dock + full-page launchpad (client component). */}
+      <AppDock />
     </div>
   );
 }
