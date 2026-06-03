@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs/server";
 import { db } from "@/db";
-import { users, businessProfiles } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { businessProfiles } from "@/db/schema";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { z } from "zod";
 
 const schema = z.object({
@@ -15,33 +14,9 @@ const schema = z.object({
   teamSize: z.string().max(50).optional(),
 });
 
-// Resolve the DB user, creating it from the Clerk session if the webhook
-// hasn't synced it yet (avoids a race right after sign-up).
-async function ensureUser(): Promise<{ id: string } | null> {
-  const cu = await currentUser();
-  if (!cu) return null;
-  const [existing] = await db.select({ id: users.id }).from(users).where(eq(users.clerkId, cu.id));
-  if (existing) return existing;
-  const email = cu.emailAddresses?.[0]?.emailAddress ?? "";
-  const [created] = await db
-    .insert(users)
-    .values({
-      clerkId: cu.id,
-      email,
-      firstName: cu.firstName,
-      lastName: cu.lastName,
-      imageUrl: cu.imageUrl,
-    })
-    .onConflictDoNothing()
-    .returning({ id: users.id });
-  if (created) return created;
-  const [again] = await db.select({ id: users.id }).from(users).where(eq(users.clerkId, cu.id));
-  return again ?? null;
-}
-
 export async function POST(req: Request) {
   try {
-    const user = await ensureUser();
+    const user = await getOrCreateCurrentUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();

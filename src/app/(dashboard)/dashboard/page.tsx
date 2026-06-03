@@ -1,4 +1,3 @@
-import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { db } from "@/db";
 import {
@@ -8,9 +7,9 @@ import {
   blueprints,
   deliverables as deliverablesTable,
   teamMembers,
-  users,
 } from "@/db/schema";
 import { eq, inArray, desc, and } from "drizzle-orm";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { AsciiField } from "@/components/dashboard/ascii-field";
 import { formatPrice } from "@/lib/catalog";
 import {
@@ -83,20 +82,10 @@ export default async function DashboardPage() {
 }
 
 async function DashboardBody() {
-  const user = await currentUser();
-  if (!user) return null;
-
-  const [dbUser] = await db.select().from(users).where(eq(users.clerkId, user.id));
-  const firstName = user.firstName || "there";
-
-  if (!dbUser) {
-    return (
-      <div className={card}>
-        <h1 className="text-2xl font-bold">Welcome, {firstName}</h1>
-        <p className="text-muted-foreground mt-1">Your account is being set up — refresh in a moment.</p>
-      </div>
-    );
-  }
+  // Provision the user row on first visit — never depend on the Clerk webhook.
+  const dbUser = await getOrCreateCurrentUser();
+  if (!dbUser) return null;
+  const firstName = dbUser.firstName || "there";
 
   const userProjects = await db
     .select()
