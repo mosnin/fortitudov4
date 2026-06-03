@@ -63,17 +63,34 @@ export async function POST(req: Request) {
     const { type, data } = payload;
 
     if (type === "user.created") {
-      await db.insert(users).values({
-        clerkId: data.id as string,
-        email:
-          (
-            data.email_addresses as Array<{ email_address: string }>
-          )?.[0]?.email_address ?? "",
-        firstName: data.first_name as string | undefined,
-        lastName: data.last_name as string | undefined,
-        imageUrl: data.image_url as string | undefined,
-        role: "client",
-      });
+      // The webhook is a best-effort sync — on-demand provisioning in
+      // auth-utils may have already created this row. Upsert so a duplicate
+      // delivery (or a row provisioned first by a request) never 500s and
+      // triggers endless Clerk retries.
+      const email =
+        (
+          data.email_addresses as Array<{ email_address: string }>
+        )?.[0]?.email_address ?? "";
+      await db
+        .insert(users)
+        .values({
+          clerkId: data.id as string,
+          email,
+          firstName: data.first_name as string | undefined,
+          lastName: data.last_name as string | undefined,
+          imageUrl: data.image_url as string | undefined,
+          role: "client",
+        })
+        .onConflictDoUpdate({
+          target: users.clerkId,
+          set: {
+            email,
+            firstName: data.first_name as string | undefined,
+            lastName: data.last_name as string | undefined,
+            imageUrl: data.image_url as string | undefined,
+            updatedAt: new Date(),
+          },
+        });
     }
 
     if (type === "user.updated") {
