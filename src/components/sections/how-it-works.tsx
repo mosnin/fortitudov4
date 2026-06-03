@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const steps = [
   {
@@ -47,13 +48,15 @@ export function HowItWorksSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="rounded-3xl border border-white/10 bg-white/[0.03] p-6"
+              className="h-full"
             >
-              <span className="font-brand text-3xl text-orange tabular-nums">
-                0{index + 1}
-              </span>
-              <h3 className="font-brand mt-3 text-xl text-white">{step.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/55">{step.description}</p>
+              <SpotlightCard className="h-full p-6">
+                <span className="font-brand text-3xl text-orange tabular-nums">
+                  0{index + 1}
+                </span>
+                <h3 className="font-brand mt-3 text-xl text-white">{step.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-white/55">{step.description}</p>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>

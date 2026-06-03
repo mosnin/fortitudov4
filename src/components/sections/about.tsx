@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const values = [
   {
@@ -60,10 +61,11 @@ export function AboutSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.08 }}
-                className="rounded-3xl border border-white/10 bg-white/[0.03] p-6"
               >
-                <h3 className="font-brand text-lg text-white">{value.title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-white/55">{value.description}</p>
+                <SpotlightCard className="p-6">
+                  <h3 className="font-brand text-lg text-white">{value.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-white/55">{value.description}</p>
+                </SpotlightCard>
               </motion.div>
             ))}
           </div>

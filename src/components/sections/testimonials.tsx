@@ -2,6 +2,7 @@
 
 import { Star } from "lucide-react";
 import { motion } from "motion/react";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 
 const testimonials = [
   {
@@ -53,20 +54,22 @@ export function TestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="rounded-3xl border border-white/10 bg-white/[0.03] p-6 sm:p-8"
+              className="h-full"
             >
-              <div className="mb-4 flex gap-1">
-                {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-orange text-orange" />
-                ))}
-              </div>
-              <blockquote className="text-base leading-relaxed text-white/80">
-                &ldquo;{testimonial.quote}&rdquo;
-              </blockquote>
-              <div className="mt-5 border-t border-white/10 pt-4">
-                <p className="text-sm font-semibold text-white">{testimonial.name}</p>
-                <p className="text-xs text-white/50">{testimonial.role}</p>
-              </div>
+              <SpotlightCard className="h-full p-6 sm:p-8">
+                <div className="mb-4 flex gap-1">
+                  {Array.from({ length: testimonial.rating }).map((_, i) => (
+                    <Star key={i} className="h-4 w-4 fill-orange text-orange" />
+                  ))}
+                </div>
+                <blockquote className="text-base leading-relaxed text-white/80">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </blockquote>
+                <div className="mt-5 border-t border-white/10 pt-4">
+                  <p className="text-sm font-semibold text-white">{testimonial.name}</p>
+                  <p className="text-xs text-white/50">{testimonial.role}</p>
+                </div>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>
