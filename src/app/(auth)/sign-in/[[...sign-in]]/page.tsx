@@ -4,7 +4,7 @@ import { AuthShell } from "@/components/layout/auth-shell";
 export default function SignInPage() {
   return (
     <AuthShell tagline="Welcome back to your Studio.">
-      <SignIn />
+      <SignIn fallbackRedirectUrl="/dashboard" />
     </AuthShell>
   );
 }

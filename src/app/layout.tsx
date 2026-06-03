@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   title: "Fortitudo Agency | Digital Solutions Built for Growth",
   description:
     "Web applications, ecommerce stores, funnels, AI automation, and more. Choose your service and watch your project come to life.",
-  metadataBase: new URL("https://foritudo.agency"),
+  metadataBase: new URL("https://fortitudo.agency"),
   openGraph: {
     title: "Fortitudo Agency | Digital Solutions Built for Growth",
     description:
       "Web applications, ecommerce stores, funnels, AI automation, and more.",
-    url: "https://foritudo.agency",
+    url: "https://fortitudo.agency",
     siteName: "Fortitudo Agency",
     type: "website",
   },
