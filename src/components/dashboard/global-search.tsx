@@ -171,13 +171,10 @@ export function GlobalSearch() {
       {/* Trigger button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted transition-colors cursor-pointer"
+        aria-label="Search"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 text-muted-foreground backdrop-blur-md hover:bg-muted transition-colors cursor-pointer"
       >
-        <Search className="h-3.5 w-3.5" />
-        <span className="hidden sm:inline">Search...</span>
-        <kbd className="hidden sm:inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 text-[10px] font-mono text-muted-foreground">
-          ⌘K
-        </kbd>
+        <Search className="h-4 w-4" />
       </button>
 
       {/* Modal overlay */}
