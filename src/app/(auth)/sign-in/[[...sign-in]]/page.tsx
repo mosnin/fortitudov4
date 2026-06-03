@@ -1,9 +1,10 @@
 import { SignIn } from "@clerk/nextjs";
+import { AuthShell } from "@/components/layout/auth-shell";
 
 export default function SignInPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-charcoal-dark">
+    <AuthShell tagline="Welcome back to your Studio.">
       <SignIn />
-    </div>
+    </AuthShell>
   );
 }

@@ -149,7 +149,7 @@ export function Header() {
                 height={32}
                 className="rounded-md"
               />
-              <span className="text-base font-bold text-foreground hidden sm:inline">
+              <span className="font-brand text-base font-bold text-foreground hidden sm:inline">
                 Fortitudo
               </span>
             </Link>
@@ -251,7 +251,7 @@ export function Header() {
                   height={28}
                   className="rounded-md"
                 />
-                <span className="font-bold">Fortitudo</span>
+                <span className="font-brand font-bold">Fortitudo</span>
               </Link>
               <button
                 className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted transition-colors cursor-pointer"

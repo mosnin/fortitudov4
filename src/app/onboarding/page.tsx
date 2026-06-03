@@ -113,7 +113,7 @@ function BriefContent() {
               height={32}
               className="rounded-md"
             />
-            <span className="font-bold">Fortitudo</span>
+            <span className="font-brand font-bold">Fortitudo</span>
           </div>
           <span className="text-sm text-muted-foreground">
             {user?.firstName ? `Welcome, ${user.firstName}` : "New Brief"}
