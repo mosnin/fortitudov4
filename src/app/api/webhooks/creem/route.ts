@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { db } from "@/db";
-import { payments, projects } from "@/db/schema";
+import { payments, projects, milestones } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
 
@@ -81,6 +81,7 @@ export async function POST(req: Request) {
       // metadata[paymentId], so resolve the specific payment row to settle.
       const projectId: string | undefined = data.metadata?.projectId;
       const paymentId: string | undefined = data.metadata?.paymentId;
+      const milestoneId: string | undefined = data.metadata?.milestoneId;
       const creemPaymentId: string | undefined = data.id;
 
       if (!projectId) {
@@ -143,6 +144,14 @@ export async function POST(req: Request) {
             updatedAt: new Date(),
           })
           .where(eq(projects.id, projectId));
+
+        // If this payment settled a milestone, mark it paid too.
+        if (milestoneId) {
+          await db
+            .update(milestones)
+            .set({ status: "paid", paidAt: new Date(), paymentId: payment.id })
+            .where(eq(milestones.id, milestoneId));
+        }
       } catch (dbError) {
         console.error(
           "Creem webhook: failed to update payment/project",

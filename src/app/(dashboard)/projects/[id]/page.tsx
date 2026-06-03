@@ -10,13 +10,15 @@ import {
   deliverables as deliverablesTable,
   blueprints,
   teamMembers,
+  milestones as milestonesTable,
 } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, asc } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { ProjectDetailClient } from "./client";
 import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
 import { DeliverableReview } from "@/components/dashboard/deliverable-review";
 import { FileUpload } from "@/components/dashboard/file-upload";
+import { MilestonesClient } from "@/components/dashboard/milestones-client";
 import { formatPrice } from "@/lib/catalog";
 import { FileText } from "lucide-react";
 
@@ -61,7 +63,7 @@ export default async function ProjectDetailPage({
   if (dbUser.role !== "admin" && project.userId !== dbUser.id) notFound();
 
   // Fetch related data in parallel
-  const [phases, projectFiles, projectInvoices, openDecisions, projectDeliverables, projectBlueprints] =
+  const [phases, projectFiles, projectInvoices, openDecisions, projectDeliverables, projectBlueprints, projectMilestones] =
     await Promise.all([
       db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
       db.select().from(filesTable).where(eq(filesTable.projectId, id)),
@@ -72,6 +74,7 @@ export default async function ProjectDetailPage({
         .where(and(eq(decisionRequests.projectId, id), eq(decisionRequests.status, "open"))),
       db.select().from(deliverablesTable).where(eq(deliverablesTable.projectId, id)),
       db.select().from(blueprints).where(eq(blueprints.projectId, id)),
+      db.select().from(milestonesTable).where(eq(milestonesTable.projectId, id)).orderBy(asc(milestonesTable.order)),
     ]);
 
   const decisionItems: DecisionItem[] = openDecisions.map((d) => ({
@@ -216,6 +219,17 @@ export default async function ProjectDetailPage({
         files={fileData}
         invoice={invoiceData}
         showSurvey={showSurvey}
+      />
+
+      <MilestonesClient
+        milestones={projectMilestones.map((m) => ({
+          id: m.id,
+          label: m.label,
+          description: m.description,
+          amount: m.amount,
+          status: m.status,
+          dueAt: m.dueAt ? m.dueAt.toISOString() : null,
+        }))}
       />
 
       <div className="rounded-2xl border border-border bg-card p-5">

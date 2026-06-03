@@ -9,8 +9,9 @@ import {
   decisionRequests,
   deliverables as deliverablesTable,
   teamMembers,
+  milestones as milestonesTable,
 } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ import { ArrowLeft } from "lucide-react";
 import { AdminProjectConsole } from "@/components/dashboard/admin-project-console";
 import { GeneratePlanButton } from "@/components/dashboard/generate-plan-button";
 import { EstimatePanel } from "@/components/dashboard/estimate-panel";
+import { MilestonesAdmin } from "@/components/dashboard/milestones-admin";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -52,7 +54,7 @@ export default async function AdminProjectDetailPage({
   const [project] = await db.select().from(projects).where(eq(projects.id, id));
   if (!project) notFound();
 
-  const [client, brief, phases, decisions, deliverables, architect] = await Promise.all([
+  const [client, brief, phases, decisions, deliverables, architect, projectMilestones] = await Promise.all([
     db.select().from(users).where(eq(users.id, project.userId)).then((r) => r[0]),
     db.select().from(onboardingSubmissions).where(eq(onboardingSubmissions.projectId, id)).then((r) => r[0]),
     db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
@@ -61,6 +63,7 @@ export default async function AdminProjectDetailPage({
     project.architectId
       ? db.select().from(teamMembers).where(eq(teamMembers.id, project.architectId)).then((r) => r[0])
       : Promise.resolve(undefined),
+    db.select().from(milestonesTable).where(eq(milestonesTable.projectId, id)).orderBy(asc(milestonesTable.order)),
   ]);
 
   const sortedPhases = phases
@@ -105,6 +108,17 @@ export default async function AdminProjectDetailPage({
         projectId={project.id}
         estimatedHours={project.estimatedHours}
         actualHours={project.actualHours}
+      />
+
+      <MilestonesAdmin
+        projectId={project.id}
+        milestones={projectMilestones.map((m) => ({
+          id: m.id,
+          label: m.label,
+          amount: m.amount,
+          status: m.status,
+          dueAt: m.dueAt ? m.dueAt.toISOString() : null,
+        }))}
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

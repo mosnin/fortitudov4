@@ -146,6 +146,25 @@ export const payments = pgTable("payments", {
   index("idx_payments_user_id").on(table.userId),
 ]);
 
+// Milestones — phase-gated billing. Each is its own payable slice of a build.
+export const milestones = pgTable("milestones", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  label: varchar("label", { length: 255 }).notNull(),
+  description: text("description"),
+  amount: integer("amount").notNull(), // cents
+  order: integer("order").notNull().default(0),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending | paid
+  dueAt: timestamp("due_at"),
+  paidAt: timestamp("paid_at"),
+  paymentId: uuid("payment_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_milestones_project_id").on(table.projectId),
+]);
+
 // Messages
 export const messages = pgTable("messages", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -308,6 +327,7 @@ export type Message = typeof messages.$inferSelect;
 export type File = typeof files.$inferSelect;
 export type RevisionRequest = typeof revisionRequests.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
+export type Milestone = typeof milestones.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ProjectComment = typeof projectComments.$inferSelect;
