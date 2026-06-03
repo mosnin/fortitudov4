@@ -15,8 +15,9 @@ import { eq, and } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { ProjectDetailClient } from "./client";
 import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
+import { DeliverableReview } from "@/components/dashboard/deliverable-review";
 import { formatPrice } from "@/lib/catalog";
-import { ExternalLink, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -182,21 +183,13 @@ export default async function ProjectDetailPage({
             <p className="text-sm font-medium mb-3">Deliverables</p>
             <ul className="space-y-2">
               {projectDeliverables.map((d) => (
-                <li key={d.id}>
-                  {d.url ? (
-                    <a
-                      href={d.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-orange hover:underline"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      {d.title}
-                    </a>
-                  ) : (
-                    <span className="text-sm text-muted-foreground">{d.title}</span>
-                  )}
-                </li>
+                <DeliverableReview
+                  key={d.id}
+                  id={d.id}
+                  title={d.title}
+                  url={d.url}
+                  status={d.status}
+                />
               ))}
             </ul>
           </div>

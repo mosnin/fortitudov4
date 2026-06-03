@@ -79,6 +79,9 @@ export const projects = pgTable("projects", {
   architectId: uuid("architect_id").references(() => teamMembers.id, {
     onDelete: "set null",
   }),
+  // Estimation loop: scoped vs. actual effort (hours) to sharpen pricing over time.
+  estimatedHours: integer("estimated_hours"),
+  actualHours: integer("actual_hours"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -449,6 +452,10 @@ export const deliverables = pgTable("deliverables", {
   url: text("url"),
   description: text("description"),
   metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  // Client review: pending → approved | changes_requested.
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  reviewedAt: timestamp("reviewed_at"),
+  clientNote: text("client_note"),
   releasedAt: timestamp("released_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [

@@ -25,6 +25,7 @@ interface DeliverableRow {
   kind: string;
   title: string;
   url: string | null;
+  status: string;
 }
 
 const decisionKinds = ["info", "asset", "credential", "approval", "choice"] as const;
@@ -63,6 +64,7 @@ export function AdminProjectConsole({
   const [dTitle, setDTitle] = useState("");
   const [dPrompt, setDPrompt] = useState("");
   const [dOptions, setDOptions] = useState("");
+  const [dDue, setDDue] = useState("");
 
   const createDecision = async () => {
     if (!dTitle.trim() || !dPrompt.trim()) return;
@@ -80,11 +82,14 @@ export function AdminProjectConsole({
             dKind === "choice" && dOptions.trim()
               ? dOptions.split(",").map((s) => s.trim()).filter(Boolean)
               : undefined,
+          // datetime-local has no timezone; treat as local and send ISO.
+          dueAt: dDue ? new Date(dDue).toISOString() : undefined,
         }),
       });
       setDTitle("");
       setDPrompt("");
       setDOptions("");
+      setDDue("");
       router.refresh();
     } finally {
       setBusy(false);
@@ -169,6 +174,15 @@ export function AdminProjectConsole({
           {dKind === "choice" && (
             <Input placeholder="Options, comma-separated" value={dOptions} onChange={(e) => setDOptions(e.target.value)} />
           )}
+          <label className="flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="shrink-0">Due (optional)</span>
+            <input
+              type="datetime-local"
+              value={dDue}
+              onChange={(e) => setDDue(e.target.value)}
+              className={selectClass + " flex-1"}
+            />
+          </label>
           <Button size="sm" disabled={busy || !dTitle.trim() || !dPrompt.trim()} onClick={createDecision}>
             <Send className="mr-1 h-4 w-4" /> Send decision request
           </Button>
@@ -208,9 +222,23 @@ export function AdminProjectConsole({
           {deliverables.length > 0 && (
             <div className="pt-2 border-t border-border grid grid-cols-1 gap-1 sm:grid-cols-2">
               {deliverables.map((d) => (
-                <div key={d.id} className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Package className="h-3 w-3 text-orange" />
-                  <span className="truncate">{d.title}</span>
+                <div key={d.id} className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <Package className="h-3 w-3 shrink-0 text-orange" />
+                    <span className="truncate">{d.title}</span>
+                  </span>
+                  <Badge
+                    variant={
+                      d.status === "approved"
+                        ? "success"
+                        : d.status === "changes_requested"
+                          ? "warning"
+                          : "secondary"
+                    }
+                    className="text-[10px] capitalize"
+                  >
+                    {d.status.replace("_", " ")}
+                  </Badge>
                 </div>
               ))}
             </div>

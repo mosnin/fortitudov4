@@ -13,6 +13,7 @@ const schema = z.object({
   prompt: z.string().min(1).max(2000),
   options: z.array(z.string().max(120)).max(8).optional(),
   blocking: z.boolean().optional(),
+  dueAt: z.string().datetime().optional(),
 });
 
 // Admin raises a decision request — the studio asking the client for something.
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const { projectId, kind, title, prompt, options, blocking } = parsed.data;
+    const { projectId, kind, title, prompt, options, blocking, dueAt } = parsed.data;
 
     const [project] = await db.select().from(projects).where(eq(projects.id, projectId));
     if (!project) {
@@ -47,6 +48,7 @@ export async function POST(req: Request) {
       prompt,
       schema: options && options.length ? { options } : undefined,
       blocking,
+      dueAt: dueAt ? new Date(dueAt) : undefined,
       createdBy: user.id,
     });
 

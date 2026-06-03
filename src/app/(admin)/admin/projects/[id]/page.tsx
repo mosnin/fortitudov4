@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { AdminProjectConsole } from "@/components/dashboard/admin-project-console";
 import { GeneratePlanButton } from "@/components/dashboard/generate-plan-button";
+import { EstimatePanel } from "@/components/dashboard/estimate-panel";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -97,7 +98,13 @@ export default async function AdminProjectDetailPage({
         projectId={project.id}
         phases={sortedPhases}
         decisions={decisions.map((d) => ({ id: d.id, kind: d.kind, title: d.title, status: d.status }))}
-        deliverables={deliverables.map((d) => ({ id: d.id, kind: d.kind, title: d.title, url: d.url }))}
+        deliverables={deliverables.map((d) => ({ id: d.id, kind: d.kind, title: d.title, url: d.url, status: d.status }))}
+      />
+
+      <EstimatePanel
+        projectId={project.id}
+        estimatedHours={project.estimatedHours}
+        actualHours={project.actualHours}
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
