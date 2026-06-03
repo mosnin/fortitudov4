@@ -62,14 +62,21 @@ export default async function DashboardPage() {
     // so the framework can handle them; only show the card for real failures.
     if (error && typeof (error as { digest?: unknown }).digest === "string") throw error;
     console.error("Dashboard failed to load:", error);
+    const detail = error instanceof Error ? error.message : String(error);
     return (
       <div className={card}>
         <h1 className="text-xl font-bold">We couldn&apos;t load your dashboard</h1>
         <p className="text-muted-foreground mt-2 text-sm">
           This usually means the database schema is out of date. Reconcile it with{" "}
           <code className="rounded bg-background/60 px-1.5 py-0.5 text-xs">pnpm db:push</code>{" "}
-          (or apply the latest migration) against your Supabase database, then refresh.
+          (or run the latest migration SQL) against your Supabase database, then refresh.
         </p>
+        <details className="mt-3">
+          <summary className="cursor-pointer text-xs text-muted-foreground">Technical details</summary>
+          <pre className="mt-2 whitespace-pre-wrap break-words rounded-lg bg-background/60 p-3 text-xs text-destructive">
+            {detail}
+          </pre>
+        </details>
       </div>
     );
   }
