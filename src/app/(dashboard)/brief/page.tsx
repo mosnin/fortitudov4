@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowRight, ArrowUp, Loader2 } from "lucide-react";
 import { AsciiField } from "@/components/dashboard/ascii-field";
+import { AgentActivity, type AgentStatus } from "@/components/dashboard/agent-activity";
 import { Reveal } from "@/components/ui/motion";
 
 type Msg = { role: "user" | "assistant"; content: string };
@@ -31,6 +32,7 @@ export default function BriefChatPage() {
   ]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activity, setActivity] = useState<AgentStatus>("thinking");
   const [error, setError] = useState<string | null>(null);
   const [proposal, setProposal] = useState<Proposal>(null);
 
@@ -58,6 +60,7 @@ export default function BriefChatPage() {
     setMessages(next);
     setDraft("");
     setError(null);
+    setActivity("thinking");
     setLoading(true);
 
     try {
@@ -66,10 +69,46 @@ export default function BriefChatPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: next }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error ?? "Something went wrong. Please try again.");
-      if (data.reply) setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
-      if (data.proposal) setProposal(data.proposal);
+
+      // Pre-flight failures (401/429/400/503) come back as JSON, not a stream.
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error ?? "Something went wrong. Please try again.");
+      }
+
+      // Read the NDJSON stream: live status lines, then a final done/error event.
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let nl: number;
+        while ((nl = buffer.indexOf("\n")) >= 0) {
+          const line = buffer.slice(0, nl).trim();
+          buffer = buffer.slice(nl + 1);
+          if (!line) continue;
+
+          const evt = JSON.parse(line) as
+            | { type: "status"; status: AgentStatus }
+            | { type: "done"; reply: string; proposal: Proposal }
+            | { type: "error"; error: string };
+
+          if (evt.type === "status") {
+            setActivity(evt.status);
+          } else if (evt.type === "done") {
+            if (evt.reply) {
+              setMessages((prev) => [...prev, { role: "assistant", content: evt.reply }]);
+            }
+            if (evt.proposal) setProposal(evt.proposal);
+          } else if (evt.type === "error") {
+            setError(evt.error);
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
@@ -150,10 +189,7 @@ export default function BriefChatPage() {
 
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-            <div className="flex items-center gap-2 rounded-3xl rounded-bl-lg border border-border/60 bg-muted px-4 py-3 text-sm text-muted-foreground">
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-orange" />
-              Thinking…
-            </div>
+            <AgentActivity status={activity} />
           </motion.div>
         )}
 

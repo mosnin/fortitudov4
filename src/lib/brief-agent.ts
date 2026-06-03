@@ -168,23 +168,26 @@ function buildAgent() {
   });
 }
 
-/** Run one assistant turn given the full conversation. */
-export async function runBriefTurn(
-  userId: string,
-  messages: ChatMessage[]
-): Promise<{ reply: string; proposal: BriefContext["proposal"] }> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error("OPENAI_API_KEY is not set.");
+// Live status the UI shows while the agent works. Driven by real tool calls.
+export type BriefStatus = "thinking" | "searching" | "reviewing" | "building" | "writing";
+
+function toolToStatus(name?: string): BriefStatus {
+  switch (name) {
+    case "web_research":
+      return "searching";
+    case "analyze_website":
+      return "reviewing";
+    case "submit_proposal":
+      return "building";
+    default:
+      return "thinking";
   }
-  setDefaultOpenAIKey(apiKey);
+}
 
-  const agent = buildAgent();
-  const context: BriefContext = { userId, proposal: null };
-
-  // Map our simple chat shape to the SDK's input items. Assistant content must
-  // be an array of output_text parts; user content can be a plain string.
-  const input: AgentInputItem[] = messages.map((m) =>
+// Map our simple chat shape to the SDK's input items. Assistant content must be
+// an array of output_text parts; user content can be a plain string.
+function toInputItems(messages: ChatMessage[]): AgentInputItem[] {
+  return messages.map((m) =>
     m.role === "assistant"
       ? {
           role: "assistant" as const,
@@ -193,8 +196,55 @@ export async function runBriefTurn(
         }
       : { role: "user" as const, content: m.content }
   );
+}
 
-  const result = await run(agent, input, { context });
+function requireApiKey() {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY is not set.");
+  setDefaultOpenAIKey(apiKey);
+}
+
+/** Run one assistant turn given the full conversation. */
+export async function runBriefTurn(
+  userId: string,
+  messages: ChatMessage[]
+): Promise<{ reply: string; proposal: BriefContext["proposal"] }> {
+  requireApiKey();
+  const agent = buildAgent();
+  const context: BriefContext = { userId, proposal: null };
+  const result = await run(agent, toInputItems(messages), { context });
+  return { reply: result.finalOutput ?? "", proposal: context.proposal };
+}
+
+/**
+ * Stream one assistant turn, reporting live status (thinking → searching →
+ * reviewing → building → writing) as the agent actually calls its tools, so the
+ * UI can reflect what it's really doing. Resolves with the final reply + proposal.
+ */
+export async function streamBriefTurn(
+  userId: string,
+  messages: ChatMessage[],
+  onStatus: (status: BriefStatus) => void
+): Promise<{ reply: string; proposal: BriefContext["proposal"] }> {
+  requireApiKey();
+  const agent = buildAgent();
+  const context: BriefContext = { userId, proposal: null };
+
+  const result = await run(agent, toInputItems(messages), { context, stream: true });
+
+  for await (const event of result) {
+    if (event.type !== "run_item_stream_event") continue;
+    if (event.name === "tool_called") {
+      const raw = (event.item as { rawItem?: { name?: string } }).rawItem;
+      onStatus(toolToStatus(raw?.name));
+    } else if (event.name === "tool_output") {
+      // A tool just finished; the agent reasons over the result next.
+      onStatus("thinking");
+    } else if (event.name === "message_output_created") {
+      onStatus("writing");
+    }
+  }
+  await result.completed;
 
   return { reply: result.finalOutput ?? "", proposal: context.proposal };
 }
