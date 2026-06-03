@@ -4,7 +4,7 @@ import { projects, users, payments, decisionRequests } from "@/db/schema";
 import { sql, eq, desc, ne } from "drizzle-orm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, FolderKanban, CreditCard, ShieldQuestion, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 const disciplineLabels: Record<string, string> = {
   software: "Software",
@@ -54,10 +54,10 @@ export default async function AdminDashboardPage() {
   ]);
 
   const stats = [
-    { label: "Clients", value: String(clientCount[0]?.c ?? 0), icon: Users },
-    { label: "Active Builds", value: String(activeCount[0]?.c ?? 0), icon: FolderKanban },
-    { label: "Revenue", value: formatUsd(revenueRow[0]?.total ?? 0), icon: CreditCard },
-    { label: "Open Decisions", value: String(openDecisionCount[0]?.c ?? 0), icon: ShieldQuestion },
+    { label: "Clients", value: String(clientCount[0]?.c ?? 0) },
+    { label: "Active Builds", value: String(activeCount[0]?.c ?? 0) },
+    { label: "Revenue", value: formatUsd(revenueRow[0]?.total ?? 0) },
+    { label: "Open Decisions", value: String(openDecisionCount[0]?.c ?? 0) },
   ];
 
   return (
@@ -68,22 +68,14 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((s) => {
-          const Icon = s.icon;
-          return (
-            <Card key={s.label}>
-              <CardContent className="flex items-center gap-4 p-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-                  <Icon className="h-6 w-6 text-orange" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{s.value}</p>
-                  <p className="text-sm text-muted-foreground">{s.label}</p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+        {stats.map((s) => (
+          <Card key={s.label}>
+            <CardContent className="p-6">
+              <p className="text-2xl font-bold">{s.value}</p>
+              <p className="text-sm text-muted-foreground">{s.label}</p>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <Card>

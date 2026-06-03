@@ -28,7 +28,6 @@ export function ServicesSection() {
         {/* Service cards grid */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {services.map((service, index) => {
-            const Icon = service.icon;
             return (
               <motion.div
                 key={service.id}
@@ -39,9 +38,6 @@ export function ServicesSection() {
               >
                 <Card className="group relative h-full overflow-hidden transition-all duration-300 hover:border-orange/50 hover:shadow-lg hover:shadow-orange-glow/10">
                   <CardHeader>
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-orange/10">
-                      <Icon className="h-6 w-6 text-orange" />
-                    </div>
                     <CardTitle className="text-xl">{service.name}</CardTitle>
                     <CardDescription className="text-sm">
                       {service.description}

@@ -165,9 +165,7 @@ export function NotificationBell() {
                       !notification.read && "bg-orange/5"
                     )}
                   >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                      <Icon className="h-4 w-4 text-orange" />
-                    </div>
+                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-orange" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <p className={cn("text-sm", !notification.read && "font-medium")}>

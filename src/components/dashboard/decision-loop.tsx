@@ -100,10 +100,7 @@ function DecisionCard({ decision }: { decision: DecisionItem }) {
 export function DecisionLoop({ decisions }: { decisions: DecisionItem[] }) {
   if (decisions.length === 0) {
     return (
-      <div id="decisions" className="rounded-2xl border border-border bg-card p-5 flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-success/10">
-          <Check className="h-5 w-5 text-success" />
-        </div>
+      <div id="decisions" className="rounded-2xl border border-border bg-card p-5">
         <div>
           <p className="font-medium text-sm">Nothing needs your attention</p>
           <p className="text-xs text-muted-foreground">Your build is progressing. We&apos;ll reach out only when a decision is needed.</p>

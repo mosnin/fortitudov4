@@ -164,7 +164,6 @@ function BriefContent() {
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {services.map((service) => {
-                    const Icon = service.icon;
                     const isSelected = form.discipline === service.id;
                     return (
                       <button
@@ -179,9 +178,6 @@ function BriefContent() {
                             : "border-border hover:border-orange/30"
                         }`}
                       >
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange/10">
-                          <Icon className="h-5 w-5 text-orange" />
-                        </div>
                         <div>
                           <p className="font-semibold">{service.name}</p>
                           <p className="text-xs text-muted-foreground mt-1">{service.tagline}</p>

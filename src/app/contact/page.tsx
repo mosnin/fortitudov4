@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Send, Mail, MapPin, Clock, Loader2, CheckCircle } from "lucide-react";
+import { Send, Loader2, CheckCircle } from "lucide-react";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -170,42 +170,27 @@ export default function ContactPage() {
               {/* Contact Info */}
               <div className="lg:col-span-2 space-y-6">
                 <Card>
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                      <Mail className="h-5 w-5 text-orange" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Email</h3>
-                      <p className="text-sm text-muted-foreground mt-1">hello@foritudo.agency</p>
-                    </div>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold">Email</h3>
+                    <p className="text-sm text-muted-foreground mt-1">hello@foritudo.agency</p>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                      <Clock className="h-5 w-5 text-orange" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Response Time</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        We typically respond within 24 hours during business days.
-                      </p>
-                    </div>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold">Response Time</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      We typically respond within 24 hours during business days.
+                    </p>
                   </CardContent>
                 </Card>
 
                 <Card>
-                  <CardContent className="p-6 flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                      <MapPin className="h-5 w-5 text-orange" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Location</h3>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Remote-first agency serving clients worldwide.
-                      </p>
-                    </div>
+                  <CardContent className="p-6">
+                    <h3 className="font-semibold">Location</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Remote-first agency serving clients worldwide.
+                    </p>
                   </CardContent>
                 </Card>
 

@@ -33,7 +33,6 @@ export default function ServicesPage() {
 
         {/* Service detail sections */}
         {services.map((service, index) => {
-          const Icon = service.icon;
           const isEven = index % 2 === 0;
           return (
             <section
@@ -53,10 +52,7 @@ export default function ServicesPage() {
                 >
                   {/* Text */}
                   <div className={!isEven ? "lg:order-2" : ""}>
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange/10">
-                        <Icon className="h-6 w-6 text-orange" />
-                      </div>
+                    <div className="mb-4">
                       <Badge variant="orange">{service.startingPrice}</Badge>
                     </div>
                     <h2 className="text-3xl font-bold sm:text-4xl">{service.name}</h2>
@@ -66,9 +62,7 @@ export default function ServicesPage() {
                     <ul className="mt-6 space-y-3">
                       {service.capabilities.map((feature) => (
                         <li key={feature} className="flex items-center gap-3">
-                          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-orange/10">
-                            <Check className="h-3.5 w-3.5 text-orange" />
-                          </div>
+                          <Check className="h-4 w-4 shrink-0 text-orange" />
                           <span className="text-muted-foreground">{feature}</span>
                         </li>
                       ))}

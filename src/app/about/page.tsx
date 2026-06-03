@@ -6,37 +6,31 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Zap, Shield, Users, Eye, Target, Heart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
 const values = [
   {
-    icon: Eye,
     title: "Transparency",
     description: "You see every step of the build process. No black boxes, no mystery timelines. Real-time visibility from day one.",
   },
   {
-    icon: Zap,
     title: "Speed Without Shortcuts",
     description: "We deliver fast because we have battle-tested processes — not because we cut corners. Quality is non-negotiable.",
   },
   {
-    icon: Target,
     title: "Results-Driven",
     description: "Every decision we make is geared toward your business outcomes. Beautiful design means nothing without conversions.",
   },
   {
-    icon: Shield,
     title: "Reliability",
     description: "We stand behind our work with post-launch support and a structured revision process. We're here for the long haul.",
   },
   {
-    icon: Heart,
     title: "Partnership",
     description: "We're not just vendors — we're invested in your success. Direct communication, honest feedback, and genuine care.",
   },
   {
-    icon: Users,
     title: "Client-First",
     description: "Your needs drive every project. We listen carefully, ask the right questions, and build exactly what you envision.",
   },
@@ -124,7 +118,6 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {values.map((value, index) => {
-                const Icon = value.icon;
                 return (
                   <motion.div
                     key={value.title}
@@ -134,9 +127,6 @@ export default function AboutPage() {
                     transition={{ duration: 0.4, delay: index * 0.08 }}
                     className="rounded-xl border border-border bg-card p-6"
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange/10 mb-4">
-                      <Icon className="h-5 w-5 text-orange" />
-                    </div>
                     <h3 className="font-semibold text-lg">{value.title}</h3>
                     <p className="mt-2 text-sm text-muted-foreground">{value.description}</p>
                   </motion.div>

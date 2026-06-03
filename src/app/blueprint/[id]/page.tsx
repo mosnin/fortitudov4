@@ -60,9 +60,7 @@ export default async function BlueprintPage({
           <ul className="space-y-3">
             {blueprint.scope.map((item, i) => (
               <li key={i} className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-orange/10">
-                  <Check className="h-3 w-3 text-orange" />
-                </div>
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-orange" />
                 <div>
                   <p className="text-sm font-medium">{item.title}</p>
                   {item.detail && <p className="text-xs text-muted-foreground mt-0.5">{item.detail}</p>}

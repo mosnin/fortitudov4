@@ -21,7 +21,6 @@ import {
   Layers,
   MessageSquare,
   ExternalLink,
-  Check,
 } from "lucide-react";
 
 // Per-user authed data — always render on demand.
@@ -258,9 +257,6 @@ async function DashboardBody() {
         </div>
         {decisionCount === 0 ? (
           <div className="mt-6 flex flex-col items-center text-center py-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-success/10 mb-2">
-              <Check className="h-5 w-5 text-success" />
-            </div>
             <p className="text-sm font-medium">All clear</p>
             <p className="text-xs text-muted-foreground mt-1">We&apos;ll reach out only when a decision is needed.</p>
           </div>
@@ -327,9 +323,6 @@ async function DashboardBody() {
 
       {/* ── Quick start ── */}
       <Link href="/onboarding" className="col-span-12 lg:col-span-4 rounded-3xl border border-dashed border-orange/40 bg-orange/[0.03] p-6 flex flex-col items-center justify-center text-center hover:bg-orange/[0.06] transition-colors">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-orange/10 mb-2">
-          <Plus className="h-5 w-5 text-orange" />
-        </div>
         <p className="font-semibold">Build something new</p>
         <p className="text-xs text-muted-foreground mt-1">Software · Commerce · AI · Infrastructure</p>
       </Link>

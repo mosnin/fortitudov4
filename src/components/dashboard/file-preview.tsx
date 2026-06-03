@@ -54,9 +54,7 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
             <Image src={url} alt={name} fill className="object-cover" sizes="40px" />
           </div>
         ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-orange/10">
-            <Icon className="h-5 w-5 text-orange" />
-          </div>
+          <Icon className="h-10 w-10 shrink-0 p-2.5 text-orange" />
         )}
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium truncate">{name}</p>

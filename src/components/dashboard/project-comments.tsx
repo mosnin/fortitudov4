@@ -232,12 +232,11 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
       <div className="space-y-4">
         {loading ? (
           <div className="py-6">
-            <EmptyState icon={MessageCircle} title="Loading comments..." description="" />
+            <EmptyState title="Loading comments..." description="" />
           </div>
         ) : tree.length === 0 ? (
           <div className="py-2">
             <EmptyState
-              icon={MessageCircle}
               title="No comments yet"
               description="Leave a comment above to start the conversation with the team."
             />

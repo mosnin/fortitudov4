@@ -248,9 +248,7 @@ export function GlobalSearch() {
                               }}
                               className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors cursor-pointer"
                             >
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                                <Icon className="h-4 w-4 text-orange" />
-                              </div>
+                              <Icon className="h-4 w-4 shrink-0 text-orange" />
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium truncate">{result.title}</p>
                                 <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>

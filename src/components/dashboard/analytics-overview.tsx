@@ -38,7 +38,6 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
     return (
       <Card>
         <EmptyState
-          icon={BarChart3}
           title="Loading analytics..."
           description=""
         />
@@ -50,7 +49,6 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
     return (
       <Card>
         <EmptyState
-          icon={BarChart3}
           title="No analytics data yet"
           description="Once your project is live and tracking events, metrics will appear here."
         />

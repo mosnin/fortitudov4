@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
-import { BarChart3 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 
@@ -46,7 +45,6 @@ export default function AnalyticsPage() {
       ) : projects.length === 0 ? (
         <Card>
           <EmptyState
-            icon={BarChart3}
             title="No analytics yet"
             description="Analytics will appear here once you have an active project."
           />
