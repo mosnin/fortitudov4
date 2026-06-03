@@ -2,9 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { motion } from "motion/react";
 import {
   Bell,
   Check,
@@ -15,7 +13,7 @@ import {
   FileText,
   Star,
 } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
+import { Reveal, RevealGroup, RevealItem } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
 
 interface Notification {
@@ -36,6 +34,8 @@ const typeIcons: Record<string, React.ElementType> = {
   comment_added: FileText,
   survey_request: Star,
 };
+
+const card = "rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl";
 
 function formatRelativeTime(dateStr: string): string {
   const date = new Date(dateStr);
@@ -106,8 +106,9 @@ export default function NotificationsPage() {
     return (
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Notifications</h1>
-          <p className="text-muted-foreground mt-1">Loading...</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Activity</p>
+          <h1 className="mt-2 text-2xl font-brand sm:text-3xl">Notifications</h1>
+          <p className="text-muted-foreground mt-1">Loading…</p>
         </div>
       </div>
     );
@@ -115,9 +116,10 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <Reveal className="flex items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Notifications</h1>
+          <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Activity</p>
+          <h1 className="mt-2 text-2xl font-brand sm:text-3xl">Notifications</h1>
           <p className="text-muted-foreground mt-1">
             {unreadCount > 0
               ? `You have ${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
@@ -125,64 +127,77 @@ export default function NotificationsPage() {
           </p>
         </div>
         {unreadCount > 0 && (
-          <Button variant="outline" size="sm" onClick={markAllRead}>
-            <Check className="mr-1 h-4 w-4" />
+          <button
+            type="button"
+            onClick={markAllRead}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/60 bg-card/60 px-4 py-2 text-sm font-medium transition-colors hover:border-orange/50"
+          >
+            <Check className="h-4 w-4" />
             Mark all read
-          </Button>
+          </button>
         )}
-      </div>
+      </Reveal>
 
       {notifications.length === 0 ? (
-        <Card>
-          <EmptyState
-            title="You're all caught up"
-            description="Project updates, messages, and payment confirmations will show up here."
-          />
-        </Card>
+        <Reveal delay={0.1} className={cn(card, "flex flex-col items-center justify-center px-6 py-16 text-center")}>
+          <Bell className="h-8 w-8 text-orange/40" />
+          <p className="mt-4 text-base font-medium">You&apos;re all caught up</p>
+          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
+            Project updates, messages, and payment confirmations will show up here.
+          </p>
+        </Reveal>
       ) : (
         <div className="space-y-6">
           {Object.entries(grouped).map(([date, items]) => (
             <div key={date}>
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">{date}</h3>
-              <Card>
-                <CardContent className="p-0 divide-y divide-border">
-                  {items.map((notification) => {
-                    const Icon = typeIcons[notification.type] || Bell;
-                    return (
-                      <Link
-                        key={notification.id}
-                        href={notification.actionUrl || "#"}
-                        className={cn(
-                          "flex gap-4 px-4 py-4 transition-colors hover:bg-muted",
-                          !notification.read && "bg-orange/5"
-                        )}
-                      >
-                        <Icon className="mt-0.5 h-5 w-5 shrink-0 text-orange" />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <p className={cn("text-sm", !notification.read && "font-semibold")}>
-                              {notification.title}
-                            </p>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-xs text-muted-foreground">
-                                {formatRelativeTime(notification.createdAt)}
-                              </span>
-                              {!notification.read && (
-                                <span className="h-2 w-2 rounded-full bg-orange" />
-                              )}
-                            </div>
-                          </div>
-                          {notification.body && (
-                            <p className="text-sm text-muted-foreground mt-0.5">
-                              {notification.body}
-                            </p>
+              <h3 className="mb-3 text-sm font-medium text-muted-foreground">{date}</h3>
+              <RevealGroup className="space-y-2.5">
+                {items.map((notification) => {
+                  const Icon = typeIcons[notification.type] || Bell;
+                  return (
+                    <RevealItem key={notification.id}>
+                      <motion.div whileHover={{ y: -2 }} transition={{ duration: 0.2 }}>
+                        <Link
+                          href={notification.actionUrl || "#"}
+                          className={cn(
+                            "flex gap-4 rounded-2xl border px-4 py-4 transition-colors",
+                            notification.read
+                              ? "border-border/60 bg-card/60 hover:border-border"
+                              : "border-orange/40 bg-orange/[0.06] hover:border-orange/60"
                           )}
-                        </div>
-                      </Link>
-                    );
-                  })}
-                </CardContent>
-              </Card>
+                        >
+                          <Icon
+                            className={cn(
+                              "mt-0.5 h-5 w-5 shrink-0",
+                              notification.read ? "text-muted-foreground" : "text-orange"
+                            )}
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-start justify-between gap-2">
+                              <p className={cn("text-sm", !notification.read && "font-semibold")}>
+                                {notification.title}
+                              </p>
+                              <div className="flex shrink-0 items-center gap-2">
+                                <span className="text-xs text-muted-foreground">
+                                  {formatRelativeTime(notification.createdAt)}
+                                </span>
+                                {!notification.read && (
+                                  <span className="h-2 w-2 rounded-full bg-orange" />
+                                )}
+                              </div>
+                            </div>
+                            {notification.body && (
+                              <p className="mt-0.5 text-sm text-muted-foreground">
+                                {notification.body}
+                              </p>
+                            )}
+                          </div>
+                        </Link>
+                      </motion.div>
+                    </RevealItem>
+                  );
+                })}
+              </RevealGroup>
             </div>
           ))}
         </div>
