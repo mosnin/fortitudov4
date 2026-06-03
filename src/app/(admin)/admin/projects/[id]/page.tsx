@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { AdminProjectConsole } from "@/components/dashboard/admin-project-console";
+import { GeneratePlanButton } from "@/components/dashboard/generate-plan-button";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -84,9 +85,12 @@ export default async function AdminProjectDetailPage({
             {architect ? ` · Architect: ${architect.name}` : ""}
           </p>
         </div>
-        <Badge variant="orange" className="text-sm px-3 py-1">
-          {statusLabels[project.status] ?? project.status}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge variant="orange" className="text-sm px-3 py-1">
+            {statusLabels[project.status] ?? project.status}
+          </Badge>
+          <GeneratePlanButton projectId={project.id} />
+        </div>
       </div>
 
       <AdminProjectConsole

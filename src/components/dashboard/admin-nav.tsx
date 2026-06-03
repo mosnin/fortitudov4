@@ -9,10 +9,12 @@ import {
   FolderKanban,
   CreditCard,
   MessageSquare,
+  Columns3,
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "Pipeline", href: "/admin/pipeline", icon: Columns3 },
   { label: "Clients", href: "/admin/clients", icon: Users },
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
