@@ -2,27 +2,34 @@ import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
 
+const isPgUrl = (v: string | undefined): v is string =>
+  !!v && /^postgres(?:ql)?:\/\//.test(v);
+
 /**
  * Resolve the Postgres connection string.
  *
- * Vercel's Supabase (and Postgres) marketplace integration provisions
- * `POSTGRES_URL` / `POSTGRES_PRISMA_URL` / `POSTGRES_URL_NON_POOLING` — it does
- * NOT set `DATABASE_URL`. Prefer those (so the integration "just works"), then
- * fall back to `DATABASE_URL` for local development.
+ * Vercel's Supabase integration provisions POSTGRES_URL etc. — but if a Neon
+ * integration is also connected, it overwrites those standard names with Neon
+ * URLs. So we first scan EVERY env var for a Supabase Postgres URL (the
+ * Supabase value may survive under a non-standard name), and only then fall
+ * back to the standard variables.
  */
-function resolveConnectionString(): string {
-  const url =
+export function resolveConnectionString(): string {
+  for (const value of Object.values(process.env)) {
+    if (isPgUrl(value) && value.includes("supabase.co")) return value;
+  }
+
+  const standard =
     process.env.POSTGRES_URL ||
     process.env.POSTGRES_PRISMA_URL ||
     process.env.DATABASE_URL ||
     process.env.POSTGRES_URL_NON_POOLING;
 
-  if (!url) {
-    throw new Error(
-      "No database connection string found. Set POSTGRES_URL (Vercel Supabase integration) or DATABASE_URL."
-    );
-  }
-  return url;
+  if (standard) return standard;
+
+  throw new Error(
+    "No Postgres connection string found in the environment. Set POSTGRES_URL to your Supabase pooler URL."
+  );
 }
 
 let _db: ReturnType<typeof createDb> | null = null;

@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import postgres from "postgres";
+import { resolveConnectionString } from "@/db";
 
 export const dynamic = "force-dynamic";
 
-// Diagnostic: which DB the live deployment actually connects to, and whether the
-// schema is applied. Exposes only the host (no credentials) + table existence.
+// Diagnostic: which DB the live deployment actually connects to, whether the
+// schema is applied, and what Postgres URLs exist in the environment. Exposes
+// only hosts (no credentials).
 function hostOf(url: string): string {
   try {
     return new URL(url).host;
@@ -13,39 +15,41 @@ function hostOf(url: string): string {
   }
 }
 
+const isPgUrl = (v: string | undefined): v is string =>
+  !!v && /^postgres(?:ql)?:\/\//.test(v);
+
 export async function GET() {
-  const named: [string, string | undefined][] = [
-    ["POSTGRES_URL", process.env.POSTGRES_URL],
-    ["POSTGRES_PRISMA_URL", process.env.POSTGRES_PRISMA_URL],
-    ["DATABASE_URL", process.env.DATABASE_URL],
-    ["POSTGRES_URL_NON_POOLING", process.env.POSTGRES_URL_NON_POOLING],
-  ];
-
-  const envVarsPresent = Object.fromEntries(named.map(([k, v]) => [k, Boolean(v)]));
-  // Same priority order the app uses (src/db/index.ts).
-  const chosen = named.find((e): e is [string, string] => Boolean(e[1]));
-
-  if (!chosen) {
-    return NextResponse.json({
-      ok: false,
-      error: "No database connection env var is set on this deployment.",
-      envVarsPresent,
+  // Every env var that holds a Postgres URL — name + host only (no creds).
+  const pgVars = Object.entries(process.env)
+    .filter(([, v]) => isPgUrl(v))
+    .map(([name, v]) => {
+      const host = hostOf(v as string);
+      return {
+        name,
+        host,
+        isSupabase: host.includes("supabase.co"),
+        isNeon: host.includes("neon.tech"),
+      };
     });
-  }
 
-  const [usingEnvVar, url] = chosen;
-  const host = hostOf(url);
-  const isNeon = host.includes("neon.tech");
+  // Names (only) of any other DB-ish env vars, to spot a Supabase URL hiding
+  // under a non-URL value or unusual name.
+  const dbRelatedKeys = Object.keys(process.env)
+    .filter((k) => /supabase|postgres|database|neon|pg_|_db_/i.test(k))
+    .sort();
 
+  let usingHost: string | null = null;
+  let isNeon = false;
+  let isSupabase = false;
   let usersTableExists: boolean | null = null;
   let connectError: string | undefined;
+
   try {
-    const sql = postgres(url, {
-      prepare: false,
-      max: 1,
-      idle_timeout: 5,
-      connect_timeout: 8,
-    });
+    const url = resolveConnectionString();
+    usingHost = hostOf(url);
+    isNeon = usingHost.includes("neon.tech");
+    isSupabase = usingHost.includes("supabase.co");
+    const sql = postgres(url, { prepare: false, max: 1, idle_timeout: 5, connect_timeout: 8 });
     const rows = await sql`select to_regclass('public.users') as t`;
     usersTableExists = rows[0]?.t != null;
     await sql.end({ timeout: 5 });
@@ -53,20 +57,23 @@ export async function GET() {
     connectError = e instanceof Error ? e.message : String(e);
   }
 
+  const anySupabaseUrlPresent = pgVars.some((p) => p.isSupabase);
+
   return NextResponse.json({
     ok: true,
-    envVarsPresent,
-    usingEnvVar,
-    host,
+    connectingToHost: usingHost,
     isNeon,
+    isSupabase,
     usersTableExists,
     connectError,
-    hint: isNeon
-      ? "Still pointing at NEON. Set POSTGRES_URL (or DATABASE_URL) to the Supabase pooler URL and remove the Neon var."
-      : usersTableExists === false
-      ? "Connected to the right DB, but the schema is missing. Run `pnpm db:push` against this database."
-      : usersTableExists
-      ? "Connected to a database that HAS the users table. Auth/provisioning should work."
-      : undefined,
+    postgresUrlVars: pgVars,
+    dbRelatedEnvKeys: dbRelatedKeys,
+    diagnosis: !anySupabaseUrlPresent
+      ? "NO Supabase Postgres URL exists in this deployment's environment. The code cannot connect to Supabase that isn't there — in Vercel, remove the Neon integration and connect Supabase (or set POSTGRES_URL to the Supabase pooler URL), then redeploy."
+      : isSupabase && usersTableExists === false
+      ? "Connected to Supabase, but the schema is missing. Run `pnpm db:push` against it."
+      : isSupabase && usersTableExists
+      ? "Connected to Supabase and the users table exists — auth/provisioning should work."
+      : "A Supabase URL exists in the env but the app is not using it; investigating.",
   });
 }
