@@ -10,14 +10,12 @@ import { FilePreviewCard } from "@/components/dashboard/file-preview";
 import { ProjectComments } from "@/components/dashboard/project-comments";
 import { NPSSurvey } from "@/components/dashboard/nps-survey";
 import { InvoiceCard } from "@/components/dashboard/invoice-card";
-import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
 import * as Tabs from "@radix-ui/react-tabs";
 import {
   Upload,
   Send,
   MessageSquare,
   RotateCcw,
-  BarChart3,
   MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -51,7 +49,6 @@ interface ProjectDetailClientProps {
 const tabItems = [
   { value: "progress", label: "Progress", icon: RotateCcw },
   { value: "comments", label: "Comments", icon: MessageCircle },
-  { value: "analytics", label: "Analytics", icon: BarChart3 },
 ];
 
 export function ProjectDetailClient({
@@ -273,10 +270,6 @@ export function ProjectDetailClient({
           </Card>
         </Tabs.Content>
 
-        {/* Analytics tab */}
-        <Tabs.Content value="analytics">
-          <AnalyticsOverview projectId={project.id} />
-        </Tabs.Content>
       </Tabs.Root>
     </div>
   );

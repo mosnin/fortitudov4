@@ -1,18 +1,29 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import {
   projects,
   onboardingSubmissions,
   blueprints,
   projectPhases,
-  notifications,
   payments,
   decisionRequests,
+  teamMembers,
   type Blueprint,
   type Project,
 } from "@/db/schema";
 import { generateBlueprint, type BriefInput } from "./blueprint";
 import { projectPhaseNames } from "./services";
+import { notify } from "./notify";
+
+// Assign an available architect for the discipline, if the team is seeded.
+async function pickArchitect(discipline: BriefInput["discipline"]): Promise<string | null> {
+  const [architect] = await db
+    .select({ id: teamMembers.id })
+    .from(teamMembers)
+    .where(and(eq(teamMembers.discipline, discipline), eq(teamMembers.active, true)))
+    .limit(1);
+  return architect?.id ?? null;
+}
 
 // Shared studio orchestration. Both the human portal and the agent API call
 // these so the two surfaces stay in lockstep over one domain core.
@@ -22,6 +33,7 @@ export async function createProjectFromBrief(
   brief: BriefInput
 ): Promise<{ project: Project; blueprint: Blueprint }> {
   const generated = generateBlueprint(brief);
+  const architectId = await pickArchitect(brief.discipline);
 
   const [project] = await db
     .insert(projects)
@@ -30,6 +42,7 @@ export async function createProjectFromBrief(
       name: generated.title,
       serviceType: brief.discipline,
       status: "onboarding",
+      architectId,
     })
     .returning();
 
@@ -73,7 +86,7 @@ export async function createProjectFromBrief(
     }))
   );
 
-  await db.insert(notifications).values({
+  await notify({
     userId,
     projectId: project.id,
     type: "phase_update",
@@ -152,7 +165,7 @@ export async function createDecisionRequest(args: {
     })
     .returning();
 
-  await db.insert(notifications).values({
+  await notify({
     userId: args.userId,
     projectId: args.projectId,
     type: "phase_update",

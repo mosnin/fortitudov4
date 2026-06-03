@@ -11,6 +11,7 @@ import {
   decisionRequests,
   deliverables as deliverablesTable,
   blueprints,
+  teamMembers,
 } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { ProjectDetailClient } from "./client";
@@ -86,6 +87,10 @@ export default async function ProjectDetailPage({
     .slice()
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
 
+  const architect = project.architectId
+    ? (await db.select().from(teamMembers).where(eq(teamMembers.id, project.architectId)))[0]
+    : undefined;
+
   const sortedPhases = phases
     .sort((a, b) => a.order - b.order)
     .map((p) => ({
@@ -128,6 +133,32 @@ export default async function ProjectDetailPage({
 
   return (
     <div className="space-y-6">
+      {/* Your architect — a real human owns this build. */}
+      {architect && (
+        <div className="rounded-2xl border border-border bg-card p-5 flex items-center gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange/10 text-orange font-semibold">
+            {architect.name
+              .split(" ")
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join("")}
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Your architect</p>
+            <p className="font-semibold">{architect.name}</p>
+            {architect.title && (
+              <p className="text-xs text-muted-foreground truncate">{architect.title}</p>
+            )}
+          </div>
+          <a
+            href={`/projects/${project.id}#messages`}
+            className="ml-auto text-sm font-medium text-orange hover:underline whitespace-nowrap"
+          >
+            Message
+          </a>
+        </div>
+      )}
+
       {/* The Decision Loop — the studio only interrupts you when it must. */}
       <DecisionLoop decisions={decisionItems} />
 
