@@ -162,10 +162,24 @@
   100% { background-position: 200%; }
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  /* Lock the page horizontally — nothing should slide sideways on mobile.
+     `clip` (not `hidden`) avoids creating a scroll container, so position:
+     sticky headers keep working. */
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* Fortitudo brand type — Bitcount Grid Single. Used for h1 headings and the

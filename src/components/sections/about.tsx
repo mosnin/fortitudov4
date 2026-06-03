@@ -24,7 +24,7 @@ const values = [
 
 export function AboutSection() {
   return (
-    <section id="about" className="relative bg-charcoal-dark py-24 sm:py-32">
+    <section id="about" className="relative scroll-mt-24 bg-charcoal-dark py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
           <div>
