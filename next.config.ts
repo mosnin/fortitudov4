@@ -17,7 +17,9 @@ const cspHeader = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://blogger.googleusercontent.com https://img.clerk.com https://utfs.io",
   "font-src 'self' https://fonts.gstatic.com",
-  `connect-src 'self' ${clerkOrigins.join(" ")} https://checkout.creem.io`,
+  // clerk-telemetry.com receives clerk-js usage telemetry via fetch; without it
+  // the request is CSP-blocked and logs a console error on every auth page.
+  `connect-src 'self' ${clerkOrigins.join(" ")} https://clerk-telemetry.com https://checkout.creem.io`,
   `frame-src 'self' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
   "worker-src 'self' blob:",
 ].join("; ");
