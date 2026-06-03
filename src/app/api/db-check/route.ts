@@ -4,9 +4,8 @@ import { resolveConnectionString } from "@/db";
 
 export const dynamic = "force-dynamic";
 
-// Diagnostic: which DB the live deployment actually connects to, whether the
-// schema is applied, and what Postgres URLs exist in the environment. Exposes
-// only hosts (no credentials).
+// Diagnostic: which DB the live deployment connects to and whether the schema
+// is applied. Exposes only the host (no credentials).
 function hostOf(url: string): string {
   try {
     return new URL(url).host;
@@ -15,65 +14,37 @@ function hostOf(url: string): string {
   }
 }
 
-const isPgUrl = (v: string | undefined): v is string =>
-  !!v && /^postgres(?:ql)?:\/\//.test(v);
-
 export async function GET() {
-  // Every env var that holds a Postgres URL — name + host only (no creds).
-  const pgVars = Object.entries(process.env)
-    .filter(([, v]) => isPgUrl(v))
-    .map(([name, v]) => {
-      const host = hostOf(v as string);
-      return {
-        name,
-        host,
-        isSupabase: host.includes("supabase.co"),
-        isNeon: host.includes("neon.tech"),
-      };
-    });
-
-  // Names (only) of any other DB-ish env vars, to spot a Supabase URL hiding
-  // under a non-URL value or unusual name.
-  const dbRelatedKeys = Object.keys(process.env)
-    .filter((k) => /supabase|postgres|database|neon|pg_|_db_/i.test(k))
-    .sort();
-
-  let usingHost: string | null = null;
-  let isNeon = false;
-  let isSupabase = false;
+  let host: string | null = null;
   let usersTableExists: boolean | null = null;
-  let connectError: string | undefined;
+  let error: string | undefined;
 
   try {
     const url = resolveConnectionString();
-    usingHost = hostOf(url);
-    isNeon = usingHost.includes("neon.tech");
-    isSupabase = usingHost.includes("supabase.co");
+    host = hostOf(url);
     const sql = postgres(url, { prepare: false, max: 1, idle_timeout: 5, connect_timeout: 8 });
     const rows = await sql`select to_regclass('public.users') as t`;
     usersTableExists = rows[0]?.t != null;
     await sql.end({ timeout: 5 });
   } catch (e) {
-    connectError = e instanceof Error ? e.message : String(e);
+    error = e instanceof Error ? e.message : String(e);
   }
 
-  const anySupabaseUrlPresent = pgVars.some((p) => p.isSupabase);
+  const isSupabase = host?.includes("supabase.co") ?? false;
 
   return NextResponse.json({
-    ok: true,
-    connectingToHost: usingHost,
-    isNeon,
+    ok: error === undefined,
+    host,
     isSupabase,
     usersTableExists,
-    connectError,
-    postgresUrlVars: pgVars,
-    dbRelatedEnvKeys: dbRelatedKeys,
-    diagnosis: !anySupabaseUrlPresent
-      ? "NO Supabase Postgres URL exists in this deployment's environment. The code cannot connect to Supabase that isn't there — in Vercel, remove the Neon integration and connect Supabase (or set POSTGRES_URL to the Supabase pooler URL), then redeploy."
-      : isSupabase && usersTableExists === false
-      ? "Connected to Supabase, but the schema is missing. Run `pnpm db:push` against it."
-      : isSupabase && usersTableExists
-      ? "Connected to Supabase and the users table exists — auth/provisioning should work."
-      : "A Supabase URL exists in the env but the app is not using it; investigating.",
+    error,
+    status:
+      error?.includes("DATABASE_URL is not set")
+        ? "No DATABASE_URL is set on this deployment. Add it (your Supabase pooler URL) and redeploy."
+        : usersTableExists === false
+        ? `Connected to ${host}, but the schema is missing. Run \`pnpm db:push\`.`
+        : usersTableExists
+        ? `Connected to ${host} and the users table exists — auth should work.`
+        : undefined,
   });
 }
