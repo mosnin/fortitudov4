@@ -8,6 +8,7 @@ import {
   Users,
   FolderKanban,
   CreditCard,
+  MessageSquare,
   Columns3,
 } from "lucide-react";
 
@@ -17,6 +18,7 @@ const navItems = [
   { label: "Clients", href: "/admin/clients", icon: Users },
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
+  { label: "Messages", href: "/admin/messages", icon: MessageSquare },
 ];
 
 export function AdminNav() {
