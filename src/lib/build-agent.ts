@@ -4,7 +4,7 @@ import { z } from "zod";
 import { eq, desc, and } from "drizzle-orm";
 import { db } from "@/db";
 import { blueprints, projects, projectPhases, deliverables, type BlueprintScopeItem } from "@/db/schema";
-import { OFFERINGS } from "./offerings";
+import { getAgentConfig } from "./agent-config";
 
 const MODEL = process.env.OPENAI_BRIEF_MODEL ?? "gpt-5.5";
 
@@ -24,15 +24,12 @@ const INSTRUCTIONS = `You are a senior build engineer at the Fortitudo studio, e
 - summary: what this work package delivers.
 - tasks: the concrete, ordered tasks to complete THIS phase (not the whole project).
 - a deliverable document (markdown) that does real work appropriate to the discipline and phase — e.g. a system architecture, data model/schema, API contract, component breakdown, implementation plan, or a test/QA plan. Be specific and technical. Reference the actual scope. Never produce generic filler.
-- pick the most fitting deliverableKind (usually "document").
+- pick the most fitting deliverableKind (usually "document").`;
 
-# What Fortitudo builds (context)
-${OFFERINGS}`;
-
-function buildExecutionAgent() {
+function buildExecutionAgent(offerings: string) {
   return new Agent({
     name: "Fortitudo Build Engineer",
-    instructions: INSTRUCTIONS,
+    instructions: `${INSTRUCTIONS}\n\n# What Fortitudo builds (context)\n${offerings}`,
     model: MODEL,
     outputType: workPackage,
     modelSettings: {
@@ -85,7 +82,8 @@ export async function runPhaseAgent(
     .filter(Boolean)
     .join("\n");
 
-  const result = await run(buildExecutionAgent(), prompt);
+  const { offerings } = await getAgentConfig();
+  const result = await run(buildExecutionAgent(offerings), prompt);
   const wp = result.finalOutput;
   if (!wp) throw new Error("The build agent returned nothing.");
 

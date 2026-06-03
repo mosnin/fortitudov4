@@ -10,6 +10,7 @@ import {
   CreditCard,
   MessageSquare,
   Columns3,
+  Bot,
 } from "lucide-react";
 
 const navItems = [
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { label: "Agent", href: "/admin/agent", icon: Bot },
 ];
 
 export function AdminNav() {

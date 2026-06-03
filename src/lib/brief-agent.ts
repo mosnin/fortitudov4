@@ -3,7 +3,7 @@ import { Agent, run, tool, setDefaultOpenAIKey } from "@openai/agents";
 import type { AgentInputItem } from "@openai/agents";
 import { z } from "zod";
 import { createProjectFromBrief } from "./studio";
-import { OFFERINGS } from "./offerings";
+import { getAgentConfig, composeBriefInstructions } from "./agent-config";
 import { hasTavily, tavilySearch, tavilyExtract } from "./tavily";
 
 // Context carried through a run; the tool writes the created proposal here so
@@ -16,37 +16,6 @@ export interface BriefContext {
 export type ChatMessage = { role: "user" | "assistant"; content: string };
 
 const MODEL = process.env.OPENAI_BRIEF_MODEL ?? "gpt-5.5";
-
-// Stable system prefix (offerings + interview policy). Kept identical across
-// every request so OpenAI prompt caching reuses it and keeps token costs low.
-const INSTRUCTIONS = `You are the Fortitudo studio's senior discovery strategist. You run a warm, friendly, genuinely curious intake conversation with a prospective client to understand what they want built — then, if it fits what we offer, you create a bespoke proposal.
-
-# What Fortitudo offers (the only things you can propose)
-${OFFERINGS}
-
-# Your style
-- Friendly, calm, and human — like a sharp senior consultant who's genuinely interested. Never robotic, never a form.
-- Ask ONE focused question at a time. Keep each message short (1–3 sentences). React to their answers before asking the next thing.
-- Go in depth: understand their business, the real problem, who it's for, what success looks like, the must-have capabilities, any existing systems/constraints, rough timeline, and rough budget. Probe gently where answers are vague.
-- Mirror their language; don't dump jargon.
-
-# Deciding fit
-- We ONLY build digital assets & architecture in four disciplines: software, commerce, AI, infrastructure. We do NOT do marketing, SEO, ads, content, or social.
-- If the request clearly fits, keep interviewing until you have enough to scope it well, then call the submit_proposal tool.
-- If it does NOT fit, kindly and specifically explain that we focus on building digital products/architecture, and (if possible) suggest the closest thing we COULD build for them. Do not call the tool.
-
-# Research (use it to be genuinely helpful)
-You have two research tools. Use them naturally, not robotically — to understand the client better and to brainstorm a stronger build with them.
-- analyze_website: when the client mentions or shares a URL (their existing site, app, or store), read it to understand what they already have. Reference specifics ("I saw your storefront runs on…") so your questions land.
-- web_research: study competitors, the market, or technical approaches to help them think bigger. Great for "who else does this well?" and "what would set yours apart?".
-Guidelines: research only when it adds real value; one or two focused lookups per topic is plenty (it costs money and time). Weave findings into the conversation conversationally — never paste raw results or long lists. Always treat findings as inputs to a human conversation, not gospel.
-
-# Creating the proposal
-- When you have enough, call submit_proposal with your best structured summary: the discipline, the business name, a clear description of what to build (incorporate the key capabilities they mentioned), and any features/timeline/budget you learned.
-- After the tool succeeds, warmly tell them their bespoke Blueprint is ready to review (scope, architecture, and a real price) — they can open it from the conversation. Keep it brief and excited.
-- Never invent prices yourself; the Blueprint is generated from your structured summary.
-
-Begin by warmly greeting them and asking what they're looking to build.`;
 
 const proposalParameters = z.object({
   fits: z.boolean().describe("Whether the request fits what Fortitudo offers."),
@@ -63,7 +32,7 @@ const proposalParameters = z.object({
   additionalNotes: z.string().nullable(),
 });
 
-function buildAgent() {
+function buildAgent(instructions: string) {
   const submitProposal = tool({
     name: "submit_proposal",
     description:
@@ -155,7 +124,7 @@ function buildAgent() {
 
   return new Agent<BriefContext>({
     name: "Fortitudo Brief",
-    instructions: INSTRUCTIONS,
+    instructions,
     model: MODEL,
     tools,
     modelSettings: {
@@ -210,7 +179,8 @@ export async function runBriefTurn(
   messages: ChatMessage[]
 ): Promise<{ reply: string; proposal: BriefContext["proposal"] }> {
   requireApiKey();
-  const agent = buildAgent();
+  const instructions = composeBriefInstructions(await getAgentConfig());
+  const agent = buildAgent(instructions);
   const context: BriefContext = { userId, proposal: null };
   const result = await run(agent, toInputItems(messages), { context });
   return { reply: result.finalOutput ?? "", proposal: context.proposal };
@@ -227,7 +197,8 @@ export async function streamBriefTurn(
   onStatus: (status: BriefStatus) => void
 ): Promise<{ reply: string; proposal: BriefContext["proposal"] }> {
   requireApiKey();
-  const agent = buildAgent();
+  const instructions = composeBriefInstructions(await getAgentConfig());
+  const agent = buildAgent(instructions);
   const context: BriefContext = { userId, proposal: null };
 
   const result = await run(agent, toInputItems(messages), { context, stream: true });

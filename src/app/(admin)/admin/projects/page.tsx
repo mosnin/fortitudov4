@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { db } from "@/db";
 import { projects, users } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
@@ -93,6 +93,14 @@ export default async function AdminProjectsPage() {
         eyebrow="Builds"
         title="Every build in flight"
         subtitle="Manage phases, decisions, and delivery."
+        action={
+          <Link
+            href="/admin/builds/new"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-orange px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-orange/25 transition-colors hover:bg-orange-dark"
+          >
+            <Plus className="h-4 w-4" /> New build
+          </Link>
+        }
       />
       <DataTable
         title="All builds"

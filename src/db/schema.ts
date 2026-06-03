@@ -165,6 +165,27 @@ export const milestones = pgTable("milestones", {
   index("idx_milestones_project_id").on(table.projectId),
 ]);
 
+// Editable agent context + app-wide settings (key/value).
+export const appSettings = pgTable("app_settings", {
+  key: varchar("key", { length: 120 }).primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Invites — an admin can create a build for a client by email; the client
+// claims it (auto-linked by email) on first sign-up.
+export const invites = pgTable("invites", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  code: varchar("code", { length: 24 }).notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull(),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  claimedAt: timestamp("claimed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_invites_email").on(table.email),
+]);
+
 // Messages
 export const messages = pgTable("messages", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -328,6 +349,7 @@ export type File = typeof files.$inferSelect;
 export type RevisionRequest = typeof revisionRequests.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
+export type Invite = typeof invites.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ProjectComment = typeof projectComments.$inferSelect;

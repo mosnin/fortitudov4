@@ -4,7 +4,7 @@ import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/db";
 import { blueprints, projects, projectPhases, type BlueprintScopeItem } from "@/db/schema";
-import { OFFERINGS } from "./offerings";
+import { getAgentConfig } from "./agent-config";
 
 const MODEL = process.env.OPENAI_BRIEF_MODEL ?? "gpt-5.5";
 
@@ -29,15 +29,12 @@ const INSTRUCTIONS = `You are Fortitudo's senior delivery architect. Given an ac
 - Each phase has a short name and a 1–2 sentence description covering the concrete work AND its exit criteria (what "done" means).
 - Be specific to the discipline and the scope items — never generic boilerplate.
 - Sequence sensibly: foundations/architecture first, then core capabilities, then integration/hardening, then launch.
-- The final phase should be launch/handover.
+- The final phase should be launch/handover.`;
 
-# What Fortitudo builds (context)
-${OFFERINGS}`;
-
-function buildPlannerAgent() {
+function buildPlannerAgent(offerings: string) {
   return new Agent({
     name: "Fortitudo Build Planner",
-    instructions: INSTRUCTIONS,
+    instructions: `${INSTRUCTIONS}\n\n# What Fortitudo builds (context)\n${offerings}`,
     model: MODEL,
     outputType: planParameters,
     modelSettings: {
@@ -81,7 +78,8 @@ export async function generateBuildPlan(projectId: string): Promise<{ count: num
     .filter(Boolean)
     .join("\n");
 
-  const result = await run(buildPlannerAgent(), prompt);
+  const { offerings } = await getAgentConfig();
+  const result = await run(buildPlannerAgent(offerings), prompt);
   const plan = result.finalOutput;
   if (!plan?.phases?.length) throw new Error("The planner returned no phases.");
 
