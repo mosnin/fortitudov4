@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,23 +72,12 @@ export default function PortfolioPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">Portfolio</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Work that speaks{" "}
-              <span className="text-gradient-orange">for itself</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              See how we&apos;ve helped businesses like yours launch, grow, and succeed
-              with custom digital solutions.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="Work"
+          title={<>Work that speaks <span className="text-gradient-orange">for itself</span></>}
+          subtitle="A look at what we've designed, built, and shipped for teams like yours."
+        />
 
         {/* Stats Band */}
         <section className="py-12 border-y border-border bg-card/50">

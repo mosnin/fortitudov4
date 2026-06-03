@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
@@ -46,24 +47,12 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">About Us</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Building digital solutions{" "}
-              <span className="text-gradient-orange">with purpose</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Fortitudo Agency exists to bridge the gap between ambitious businesses
-              and the digital tools they need to grow. We believe every client
-              deserves transparency, quality, and speed.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="About"
+          title={<>The studio for the <span className="text-gradient-orange">AI age</span></>}
+          subtitle="Fortitudo is a bespoke building studio. We design and build the software, commerce, AI, and infrastructure ambitious businesses run on — with the craft of a product team and the clarity of a studio."
+        />
 
         {/* Mission */}
         <section className="py-20 sm:py-28">

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { services } from "@/lib/services";
@@ -13,23 +14,12 @@ export default function ServicesPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">Our Services</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Everything you need to{" "}
-              <span className="text-gradient-orange">launch & grow</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              From concept to deployment, we build digital solutions that drive results.
-              Pick the service that fits your needs — we handle the rest.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="What we build"
+          title={<>Four disciplines, <span className="text-gradient-orange">one studio.</span></>}
+          subtitle="From first conversation to launch, we build the digital assets and architecture your business runs on. Pick a discipline — we scope the rest into a Blueprint."
+        />
 
         {/* Service detail sections */}
         {services.map((service, index) => {

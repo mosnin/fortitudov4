@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Send, Loader2, CheckCircle } from "lucide-react";
 
@@ -33,23 +33,12 @@ export default function ContactPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">Contact</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Let&apos;s talk about{" "}
-              <span className="text-gradient-orange">your project</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Have a question or ready to start? Drop us a message and we&apos;ll
-              get back to you within 24 hours.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="Contact"
+          title={<>Let&apos;s talk about <span className="text-gradient-orange">your build</span></>}
+          subtitle="Have a question or ready to start? Send a message and we'll get back within 24 hours."
+        />
 
         {/* Contact Form + Info */}
         <section className="py-20 sm:py-28">
