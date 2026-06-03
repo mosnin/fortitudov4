@@ -15,6 +15,14 @@ type Proposal = { projectId: string; blueprintId: string } | null;
 const GREETING =
   "Hey — I'm so glad you're here. I'd love to understand what you're hoping to build. To start: what's the project, and what's the business or idea behind it?";
 
+// Starter prompts shown before the first reply — lowers the blank-page barrier.
+const STARTERS = [
+  "A custom web app for my business",
+  "An online store / commerce platform",
+  "An AI agent or automation",
+  "Cloud infrastructure & deployment",
+];
+
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export default function BriefChatPage() {
@@ -29,12 +37,12 @@ export default function BriefChatPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
-  // Keep the latest message in view as the conversation grows.
+  const pristine = messages.length === 1 && !loading;
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, loading, proposal]);
 
-  // Auto-grow the composer.
   useEffect(() => {
     const ta = taRef.current;
     if (!ta) return;
@@ -42,11 +50,11 @@ export default function BriefChatPage() {
     ta.style.height = `${Math.min(ta.scrollHeight, 160)}px`;
   }, [draft]);
 
-  async function send() {
-    const text = draft.trim();
-    if (!text || loading) return;
+  async function send(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed || loading) return;
 
-    const next: Msg[] = [...messages, { role: "user", content: text }];
+    const next: Msg[] = [...messages, { role: "user", content: trimmed }];
     setMessages(next);
     setDraft("");
     setError(null);
@@ -59,12 +67,8 @@ export default function BriefChatPage() {
         body: JSON.stringify({ messages: next }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data?.error ?? "Something went wrong. Please try again.");
-      }
-      if (data.reply) {
-        setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
-      }
+      if (!res.ok) throw new Error(data?.error ?? "Something went wrong. Please try again.");
+      if (data.reply) setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
       if (data.proposal) setProposal(data.proposal);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -77,20 +81,20 @@ export default function BriefChatPage() {
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      send();
+      send(draft);
     }
   }
 
   return (
     <div className="mx-auto flex h-[calc(100vh-12rem)] max-w-3xl flex-col">
       {/* Masthead */}
-      <Reveal className="relative mb-5 shrink-0 overflow-hidden rounded-3xl border border-border/60 bg-charcoal p-6 sm:p-7">
-        <AsciiField className="absolute inset-0 h-full w-full opacity-50" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(249,115,22,0.16),transparent_65%)]" />
+      <Reveal className="relative mb-5 shrink-0 overflow-hidden rounded-3xl border border-border/60 bg-charcoal p-7 sm:p-9">
+        <AsciiField className="absolute inset-0 h-full w-full opacity-55" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(249,115,22,0.18),transparent_65%)]" />
         <div className="relative z-10">
           <p className="text-xs uppercase tracking-[0.25em] text-orange/80">New Brief</p>
-          <h1 className="font-brand mt-2 text-2xl sm:text-3xl">Let&apos;s build something</h1>
-          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+          <h1 className="font-brand mt-2 text-3xl sm:text-5xl">Let&apos;s build something</h1>
+          <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
             A quick, friendly conversation. Tell us what you want — if it&apos;s a fit, we&apos;ll
             draft a bespoke Blueprint with real scope and pricing.
           </p>
@@ -124,12 +128,28 @@ export default function BriefChatPage() {
           ))}
         </AnimatePresence>
 
-        {loading && (
+        {/* Starter chips */}
+        {pristine && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex justify-start"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.4, ease: easeOut }}
+            className="flex flex-wrap gap-2 pt-1"
           >
+            {STARTERS.map((s) => (
+              <button
+                key={s}
+                onClick={() => send(s)}
+                className="rounded-full border border-border/60 bg-background/40 px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:border-orange/40 hover:text-foreground"
+              >
+                {s}
+              </button>
+            ))}
+          </motion.div>
+        )}
+
+        {loading && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
             <div className="flex items-center gap-2 rounded-3xl rounded-bl-lg border border-border/60 bg-charcoal px-4 py-3 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-orange" />
               Thinking…
@@ -144,13 +164,15 @@ export default function BriefChatPage() {
             transition={{ duration: 0.5, ease: easeOut }}
             className="rounded-3xl border border-orange/30 bg-orange/[0.06] p-5"
           >
-            <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Your Blueprint is ready</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-orange/80">
+              Your Blueprint is ready
+            </p>
             <p className="mt-2 text-sm text-muted-foreground">
               We&apos;ve drafted a bespoke proposal — scope, architecture, and a real price.
             </p>
             <Link
               href={`/blueprint/${proposal.blueprintId}`}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-orange px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-orange-dark"
+              className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-orange px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-orange-dark"
             >
               Review your Blueprint
               <ArrowRight className="h-4 w-4" />
@@ -178,16 +200,12 @@ export default function BriefChatPage() {
             className="max-h-40 flex-1 resize-none bg-transparent px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
           />
           <button
-            onClick={send}
+            onClick={() => send(draft)}
             disabled={loading || !draft.trim()}
             aria-label="Send"
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-orange text-white transition-colors hover:bg-orange-dark disabled:opacity-40"
           >
-            {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <ArrowUp className="h-4 w-4" />
-            )}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
           </button>
         </div>
         <p className="mt-2 px-1 text-center text-[11px] text-muted-foreground">
