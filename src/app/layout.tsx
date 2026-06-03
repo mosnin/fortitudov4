@@ -4,16 +4,16 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fortitudo Agency | Digital Solutions Built for Growth",
+  title: "Fortitudo | A bespoke digital studio for the AI age",
   description:
-    "Web applications, ecommerce stores, funnels, AI automation, and more. Choose your service and watch your project come to life.",
+    "Fortitudo designs and builds bespoke software, commerce, AI, and infrastructure — scoped into a real Blueprint and tracked from first conversation to launch.",
   metadataBase: new URL("https://fortitudo.agency"),
   openGraph: {
-    title: "Fortitudo Agency | Digital Solutions Built for Growth",
+    title: "Fortitudo | A bespoke digital studio for the AI age",
     description:
-      "Web applications, ecommerce stores, funnels, AI automation, and more.",
+      "Bespoke software, commerce, AI, and infrastructure — scoped into a real Blueprint and tracked from brief to launch.",
     url: "https://fortitudo.agency",
-    siteName: "Fortitudo Agency",
+    siteName: "Fortitudo",
     type: "website",
   },
 };

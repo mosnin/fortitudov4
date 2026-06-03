@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { RainbowButton } from "@/components/ui/rainbow-button";
 import { cn } from "@/lib/utils";
 import {
   Menu,
@@ -89,7 +88,7 @@ function MegaMenuDropdown({
   return (
     <div
       ref={ref}
-      className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[520px] rounded-2xl border border-border bg-card/95 backdrop-blur-xl p-3 shadow-2xl animate-fade-in z-50"
+      className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[520px] rounded-3xl border border-white/10 bg-charcoal/95 ring-1 ring-inset ring-white/5 backdrop-blur-2xl p-3 shadow-2xl shadow-black/50 animate-fade-in z-50"
     >
       <div className="grid grid-cols-2 gap-1">
         {items.map((item) => {
@@ -136,16 +135,16 @@ export function Header() {
     <>
       {/* Pill-style floating header */}
       <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl">
-        <div className="rounded-2xl border border-border/50 bg-background/80 backdrop-blur-xl shadow-lg shadow-black/10">
-          <div className="flex h-14 items-center justify-between px-4 sm:px-5">
+        <div className="rounded-full border border-white/10 bg-charcoal/80 shadow-2xl shadow-black/40 ring-1 ring-inset ring-white/5 backdrop-blur-2xl">
+          <div className="flex h-14 items-center justify-between pl-4 pr-3 sm:pl-5 sm:pr-3">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2">
               <Image
                 src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
                 alt="Fortitudo Agency"
-                width={32}
-                height={32}
-                className="rounded-md"
+                width={30}
+                height={30}
+                className="rounded-full"
               />
               <span className="font-brand text-base font-bold text-foreground hidden sm:inline">
                 Fortitudo
@@ -190,14 +189,18 @@ export function Header() {
               <div className="hidden items-center gap-2 lg:flex">
                 {!isSignedIn ? (
                   <>
-                    <Button variant="ghost" size="sm" asChild>
-                      <Link href="/sign-in">Sign In</Link>
-                    </Button>
-                    <RainbowButton className="h-9 px-5 text-sm rounded-lg" asChild>
-                      <Link href="/sign-up">
-                        Get Started
-                      </Link>
-                    </RainbowButton>
+                    <Link
+                      href="/sign-in"
+                      className="rounded-full px-3.5 py-2 text-sm font-medium text-white/70 transition-colors hover:text-white"
+                    >
+                      Sign In
+                    </Link>
+                    <Link
+                      href="/sign-up"
+                      className="rounded-full bg-orange px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-orange/25 transition-all hover:bg-orange-dark hover:shadow-orange/40"
+                    >
+                      Start a Brief
+                    </Link>
                   </>
                 ) : (
                   <>
@@ -319,16 +322,14 @@ export function Header() {
                       Sign In
                     </Link>
                   </Button>
-                  <RainbowButton
-                    className="w-full h-11 rounded-xl text-sm"
+                  <Link
+                    href="/sign-up"
                     onClick={() => setMobileOpen(false)}
-                    asChild
+                    className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-orange text-sm font-semibold text-white transition-colors hover:bg-orange-dark"
                   >
-                    <Link href="/sign-up">
-                      Get Started
-                      <ArrowRight className="ml-1 h-4 w-4" />
-                    </Link>
-                  </RainbowButton>
+                    Start a Brief
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </>
               ) : (
                 <Button variant="outline" className="w-full" asChild>
