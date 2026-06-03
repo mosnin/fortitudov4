@@ -7,7 +7,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
+    <div className="min-h-screen bg-background dark:bg-charcoal-dark">
       <DashboardHeader />
 
       {/* Bottom padding so content clears the floating dock. */}

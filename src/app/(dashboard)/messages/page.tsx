@@ -90,8 +90,8 @@ export default function MessagesPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(249,115,22,0.16),transparent_65%)]" />
         <div className="relative z-10">
           <p className="text-xs uppercase tracking-[0.25em] text-orange/80">Messages</p>
-          <h1 className="font-brand mt-2 text-2xl sm:text-3xl">Talk to your architect</h1>
-          <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+          <h1 className="font-brand mt-2 text-2xl text-white sm:text-3xl">Talk to your architect</h1>
+          <p className="mt-2 max-w-xl text-sm text-white/60">
             Direct line to the Fortitudo team building your project.
           </p>
         </div>
@@ -160,7 +160,7 @@ export default function MessagesPage() {
                       "max-w-[85%] whitespace-pre-wrap rounded-3xl px-4 py-3 text-sm",
                       mine
                         ? "rounded-br-lg bg-orange text-white"
-                        : "rounded-bl-lg border border-border/60 bg-charcoal text-foreground"
+                        : "rounded-bl-lg border border-border/60 bg-muted text-foreground"
                     )}
                   >
                     {m.content}

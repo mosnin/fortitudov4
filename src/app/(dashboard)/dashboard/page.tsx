@@ -128,11 +128,11 @@ async function DashboardBody() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(249,115,22,0.18),transparent_60%)]" />
         <div className="relative z-10">
           <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Studio</p>
-          <WelcomeRotator name={firstName} className="mt-2 text-2xl font-bold" />
+          <WelcomeRotator name={firstName} className="mt-2 text-2xl font-bold text-white" />
         </div>
         <div className="relative z-10">
-          <p className="text-5xl font-bold tabular-nums">{active.length}</p>
-          <p className="text-sm text-muted-foreground">active {active.length === 1 ? "build" : "builds"}</p>
+          <p className="text-5xl font-bold tabular-nums text-white">{active.length}</p>
+          <p className="text-sm text-white/60">active {active.length === 1 ? "build" : "builds"}</p>
           <div className="mt-4 flex flex-wrap gap-2">
             <Link href="/brief" className="inline-flex items-center gap-1.5 rounded-xl bg-orange px-3.5 py-2 text-sm font-medium text-white hover:bg-orange-dark transition-colors">
               <Plus className="h-4 w-4" /> New Brief

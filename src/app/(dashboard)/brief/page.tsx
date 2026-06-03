@@ -93,8 +93,8 @@ export default function BriefChatPage() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_0%,rgba(249,115,22,0.18),transparent_65%)]" />
         <div className="relative z-10">
           <p className="text-xs uppercase tracking-[0.25em] text-orange/80">New Brief</p>
-          <h1 className="font-brand mt-2 text-3xl sm:text-5xl">Let&apos;s build something</h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground sm:text-base">
+          <h1 className="font-brand mt-2 text-3xl text-white sm:text-5xl">Let&apos;s build something</h1>
+          <p className="mt-3 max-w-xl text-sm text-white/60 sm:text-base">
             A quick, friendly conversation. Tell us what you want — if it&apos;s a fit, we&apos;ll
             draft a bespoke Blueprint with real scope and pricing.
           </p>
@@ -119,7 +119,7 @@ export default function BriefChatPage() {
                 className={
                   m.role === "user"
                     ? "max-w-[85%] whitespace-pre-wrap rounded-3xl rounded-br-lg bg-orange px-4 py-3 text-sm text-white"
-                    : "max-w-[85%] whitespace-pre-wrap rounded-3xl rounded-bl-lg border border-border/60 bg-charcoal px-4 py-3 text-sm text-foreground"
+                    : "max-w-[85%] whitespace-pre-wrap rounded-3xl rounded-bl-lg border border-border/60 bg-muted px-4 py-3 text-sm text-foreground"
                 }
               >
                 {m.content}
@@ -150,7 +150,7 @@ export default function BriefChatPage() {
 
         {loading && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-            <div className="flex items-center gap-2 rounded-3xl rounded-bl-lg border border-border/60 bg-charcoal px-4 py-3 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2 rounded-3xl rounded-bl-lg border border-border/60 bg-muted px-4 py-3 text-sm text-muted-foreground">
               <Loader2 className="h-3.5 w-3.5 animate-spin text-orange" />
               Thinking…
             </div>

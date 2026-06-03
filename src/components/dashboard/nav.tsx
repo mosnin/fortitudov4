@@ -30,7 +30,7 @@ export function DashboardNav() {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "relative rounded-full px-3.5 py-1.5 text-sm font-medium transition-colors duration-200",
-                active ? "text-orange" : "text-white/60 hover:text-white"
+                active ? "text-orange" : "text-muted-foreground hover:text-foreground"
               )}
             >
               {active && (

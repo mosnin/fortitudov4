@@ -80,7 +80,7 @@ export function AppDock() {
         aria-label="Primary"
       >
         <LayoutGroup>
-          <div className="flex items-center gap-1 rounded-full border border-white/10 bg-charcoal/80 p-1.5 shadow-2xl shadow-black/50 ring-1 ring-inset ring-white/5 backdrop-blur-2xl">
+          <div className="flex items-center gap-1 rounded-full border border-border/60 bg-background/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-2xl dark:border-white/10 dark:bg-charcoal/80 dark:shadow-black/50 dark:ring-1 dark:ring-inset dark:ring-white/5">
             {navItems.map((item) => {
               const Icon = item.icon;
               const active = isActivePath(pathname, item.href);
@@ -91,7 +91,7 @@ export function AppDock() {
                   aria-current={active ? "page" : undefined}
                   className={cn(
                     "relative flex items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-medium transition-colors duration-200",
-                    active ? "text-orange" : "text-white/60 hover:text-white"
+                    active ? "text-orange" : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {active && (
@@ -121,7 +121,7 @@ export function AppDock() {
               <span className="hidden sm:inline">New Brief</span>
             </Link>
 
-            <span className="mx-0.5 h-6 w-px bg-white/10" aria-hidden="true" />
+            <span className="mx-0.5 h-6 w-px bg-border/60 dark:bg-white/10" aria-hidden="true" />
 
             <button
               type="button"
@@ -129,7 +129,7 @@ export function AppDock() {
               aria-label="Open apps menu"
               aria-haspopup="dialog"
               aria-expanded={menuOpen}
-              className="flex items-center justify-center rounded-full px-3 py-2.5 text-white/60 transition-colors duration-200 hover:text-white"
+              className="flex items-center justify-center rounded-full px-3 py-2.5 text-muted-foreground transition-colors duration-200 hover:text-foreground"
             >
               <LayoutGrid className="h-[18px] w-[18px]" />
             </button>

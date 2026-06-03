@@ -59,13 +59,13 @@ export default async function ProjectsPage() {
         <div className="relative z-10 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-orange/80">Builds</p>
-            <h1 className="font-brand mt-2 text-4xl sm:text-6xl">
+            <h1 className="font-brand mt-2 text-4xl text-white sm:text-6xl">
               {activeCount}
-              <span className="ml-2 text-lg font-normal text-muted-foreground sm:text-2xl">
+              <span className="ml-2 text-lg font-normal text-white/60 sm:text-2xl">
                 in build
               </span>
             </h1>
-            <p className="mt-2 max-w-md text-sm text-muted-foreground">
+            <p className="mt-2 max-w-md text-sm text-white/60">
               Every project we&apos;re architecting and shipping for you — tracked from Blueprint to
               launch.
             </p>

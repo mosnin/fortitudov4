@@ -11,7 +11,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 export function DashboardHeader() {
   return (
     <div className="sticky top-0 z-50 px-3 pt-3 sm:px-4 sm:pt-4">
-      <header className="mx-auto max-w-7xl rounded-full border border-white/10 bg-charcoal/80 shadow-2xl shadow-black/40 ring-1 ring-inset ring-white/5 backdrop-blur-2xl">
+      <header className="mx-auto max-w-7xl rounded-full border border-border/60 bg-background/70 shadow-xl shadow-black/10 backdrop-blur-2xl dark:border-white/10 dark:bg-charcoal/80 dark:shadow-black/40 dark:ring-1 dark:ring-inset dark:ring-white/5">
         <div className="flex h-14 items-center justify-between gap-2 px-3 sm:px-5">
           <div className="flex items-center gap-3 sm:gap-5">
             <Link href="/dashboard" className="flex items-center gap-2">
@@ -22,7 +22,7 @@ export function DashboardHeader() {
                 height={28}
                 className="rounded-md"
               />
-              <span className="font-brand text-base font-bold text-white hidden sm:inline">
+              <span className="font-brand text-base font-bold text-foreground hidden sm:inline">
                 Fortitudo
               </span>
             </Link>
