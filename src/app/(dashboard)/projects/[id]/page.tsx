@@ -16,6 +16,7 @@ import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { ProjectDetailClient } from "./client";
 import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
 import { DeliverableReview } from "@/components/dashboard/deliverable-review";
+import { FileUpload } from "@/components/dashboard/file-upload";
 import { formatPrice } from "@/lib/catalog";
 import { FileText } from "lucide-react";
 
@@ -213,6 +214,16 @@ export default async function ProjectDetailPage({
         invoice={invoiceData}
         showSurvey={showSurvey}
       />
+
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <p className="text-sm font-medium">Attach files</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Share brand assets, briefs, or references with your architect.
+        </p>
+        <div className="mt-4">
+          <FileUpload projectId={project.id} />
+        </div>
+      </div>
     </div>
   );
 }

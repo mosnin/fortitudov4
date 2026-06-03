@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   const user = await getOrCreateCurrentUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const rate = checkRateLimit(user.id + ":brief-chat", 40);
+  const rate = await checkRateLimit(user.id + ":brief-chat", 40);
   if (!rate.success) {
     return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }

@@ -37,7 +37,7 @@ export async function POST(req: Request) {
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       req.headers.get("x-real-ip") ??
       "unknown";
-    const rateLimit = checkRateLimit(`creem-webhook:${ip}`, 100, 60_000);
+    const rateLimit = await checkRateLimit(`creem-webhook:${ip}`, 100, 60_000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "Too many requests" },

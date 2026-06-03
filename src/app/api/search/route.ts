@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   try {
     const user = await getAuthenticatedUser();
 
-    const rateLimit = checkRateLimit(user.id + ":search", 30);
+    const rateLimit = await checkRateLimit(user.id + ":search", 30);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
