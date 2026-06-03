@@ -11,6 +11,7 @@ import {
 import { eq, inArray, desc, and } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { WelcomeRotator } from "@/components/dashboard/welcome-rotator";
+import { DashboardPreloader } from "@/components/dashboard/dashboard-preloader";
 import { Reveal } from "@/components/ui/motion";
 import { AsciiField } from "@/components/dashboard/ascii-field";
 import { formatPrice } from "@/lib/catalog";
@@ -121,7 +122,9 @@ async function DashboardBody() {
   const timeStr = now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <Reveal className="grid grid-cols-12 gap-4">
+    <>
+      <DashboardPreloader name={firstName} />
+      <Reveal className="grid grid-cols-12 gap-4">
       {/* ── Signature ASCII hero ── */}
       <section className="col-span-12 lg:col-span-4 relative overflow-hidden rounded-3xl border border-border/60 bg-charcoal-dark min-h-[340px] flex flex-col justify-between p-6">
         <AsciiField className="absolute inset-0 h-full w-full opacity-70" />
@@ -310,7 +313,8 @@ async function DashboardBody() {
         <p className="font-semibold">Build something new</p>
         <p className="text-xs text-muted-foreground mt-1">Software · Commerce · AI · Infrastructure</p>
       </Link>
-    </Reveal>
+      </Reveal>
+    </>
   );
 }
 
