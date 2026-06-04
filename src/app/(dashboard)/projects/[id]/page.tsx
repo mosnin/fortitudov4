@@ -16,6 +16,8 @@ import {
 import { eq, and, asc } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { ProjectDetailClient } from "./client";
+import { BuildRoadmap } from "@/components/dashboard/build-roadmap";
+import { getProjectProgress } from "@/lib/tasks";
 import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
 import { DeliverableReview } from "@/components/dashboard/deliverable-review";
 import { FileUpload } from "@/components/dashboard/file-upload";
@@ -110,6 +112,9 @@ export default async function ProjectDetailPage({
       order: p.order,
     }));
 
+  // Live roadmap: roll task completion up to phases.
+  const progress = await getProjectProgress(id);
+
   // Hide internal agent drafts from the client until an architect publishes them.
   const clientDeliverables = projectDeliverables.filter((d) => d.status !== "draft");
 
@@ -173,6 +178,17 @@ export default async function ProjectDetailPage({
 
       {/* The Decision Loop — the studio only interrupts you when it must. */}
       <DecisionLoop decisions={decisionItems} />
+
+      {/* Live build roadmap — phase progress rolled up from real tasks. */}
+      <BuildRoadmap
+        phases={sortedPhases.map((p) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          ...(progress.byPhase[p.id] ?? { done: 0, total: 0, pct: 0 }),
+        }))}
+        overall={progress.overall}
+      />
 
       {/* Blueprint + deliverables surfaces */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

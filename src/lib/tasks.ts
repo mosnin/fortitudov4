@@ -53,3 +53,36 @@ export async function getTaskGraph(projectId: string): Promise<GraphTask[]> {
     blockedBy: blockedBy.get(t.id) ?? [],
   }));
 }
+
+export type PhaseRollup = { done: number; total: number; pct: number };
+
+/**
+ * Roll task completion up to phases + the whole project — drives the client's
+ * live roadmap. Returns a plain (serializable) shape.
+ */
+export async function getProjectProgress(projectId: string): Promise<{
+  byPhase: Record<string, PhaseRollup>;
+  overall: PhaseRollup;
+}> {
+  const ts = await db
+    .select({ phaseId: tasks.phaseId, status: tasks.status })
+    .from(tasks)
+    .where(eq(tasks.projectId, projectId));
+
+  const byPhase: Record<string, PhaseRollup> = {};
+  let total = 0;
+  let done = 0;
+  for (const t of ts) {
+    total++;
+    const isDone = t.status === "done";
+    if (isDone) done++;
+    if (t.phaseId) {
+      const e = (byPhase[t.phaseId] ??= { done: 0, total: 0, pct: 0 });
+      e.total++;
+      if (isDone) e.done++;
+    }
+  }
+  for (const e of Object.values(byPhase)) e.pct = e.total ? Math.round((e.done / e.total) * 100) : 0;
+
+  return { byPhase, overall: { done, total, pct: total ? Math.round((done / total) * 100) : 0 } };
+}
