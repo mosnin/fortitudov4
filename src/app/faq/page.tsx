@@ -114,7 +114,7 @@ export default function FAQPage() {
             <div className="space-y-12">
               {faqCategories.map((category) => (
                 <div key={category.category}>
-                  <h2 className="text-xl font-bold mb-4">{category.category}</h2>
+                  <h2 className="font-brand text-xl mb-4">{category.category}</h2>
                   <Accordion.Root type="single" collapsible className="space-y-2">
                     {category.questions.map((item, i) => (
                       <Accordion.Item
@@ -143,7 +143,7 @@ export default function FAQPage() {
         {/* CTA */}
         <section className="py-16 sm:py-20 bg-charcoal-dark/30">
           <div className="mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-2xl font-bold">Still have questions?</h2>
+            <h2 className="font-brand text-2xl">Still have questions?</h2>
             <p className="mt-3 text-muted-foreground">
               We&apos;re here to help. Reach out and we&apos;ll get back to you within 24 hours.
             </p>
