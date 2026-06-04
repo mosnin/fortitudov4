@@ -10,8 +10,9 @@ import {
   deliverables as deliverablesTable,
   teamMembers,
   milestones as milestonesTable,
+  tasks as tasksTable,
 } from "@/db/schema";
-import { eq, asc } from "drizzle-orm";
+import { eq, asc, inArray } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,6 +21,7 @@ import { ArrowLeft } from "lucide-react";
 import { AdminProjectConsole } from "@/components/dashboard/admin-project-console";
 import { GeneratePlanButton } from "@/components/dashboard/generate-plan-button";
 import { EstimatePanel } from "@/components/dashboard/estimate-panel";
+import { TasksPanel } from "@/components/dashboard/tasks-panel";
 import { MilestonesAdmin } from "@/components/dashboard/milestones-admin";
 
 // Per-user authed data — always render on demand.
@@ -54,7 +56,7 @@ export default async function AdminProjectDetailPage({
   const [project] = await db.select().from(projects).where(eq(projects.id, id));
   if (!project) notFound();
 
-  const [client, brief, phases, decisions, deliverables, architect, projectMilestones] = await Promise.all([
+  const [client, brief, phases, decisions, deliverables, architect, projectMilestones, projectTasks, staff] = await Promise.all([
     db.select().from(users).where(eq(users.id, project.userId)).then((r) => r[0]),
     db.select().from(onboardingSubmissions).where(eq(onboardingSubmissions.projectId, id)).then((r) => r[0]),
     db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
@@ -64,6 +66,11 @@ export default async function AdminProjectDetailPage({
       ? db.select().from(teamMembers).where(eq(teamMembers.id, project.architectId)).then((r) => r[0])
       : Promise.resolve(undefined),
     db.select().from(milestonesTable).where(eq(milestonesTable.projectId, id)).orderBy(asc(milestonesTable.order)),
+    db.select().from(tasksTable).where(eq(tasksTable.projectId, id)).orderBy(asc(tasksTable.order)),
+    db
+      .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email })
+      .from(users)
+      .where(inArray(users.role, ["admin", "team"])),
   ]);
 
   const sortedPhases = phases
@@ -108,6 +115,22 @@ export default async function AdminProjectDetailPage({
         projectId={project.id}
         estimatedHours={project.estimatedHours}
         actualHours={project.actualHours}
+      />
+
+      <TasksPanel
+        projectId={project.id}
+        tasks={projectTasks.map((t) => ({
+          id: t.id,
+          title: t.title,
+          status: t.status,
+          assigneeId: t.assigneeId,
+          phaseId: t.phaseId,
+        }))}
+        staff={staff.map((s) => ({
+          id: s.id,
+          name: `${s.firstName ?? ""} ${s.lastName ?? ""}`.trim() || s.email,
+        }))}
+        phases={phases.slice().sort((a, b) => a.order - b.order).map((p) => ({ id: p.id, name: p.name }))}
       />
 
       <MilestonesAdmin

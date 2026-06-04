@@ -165,6 +165,26 @@ export const milestones = pgTable("milestones", {
   index("idx_milestones_project_id").on(table.projectId),
 ]);
 
+// Tasks — admins assign work to team members; team members track their queue.
+export const tasks = pgTable("tasks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  phaseId: uuid("phase_id").references(() => projectPhases.id, { onDelete: "set null" }),
+  assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 50 }).notNull().default("todo"), // todo | in_progress | done
+  order: integer("order").notNull().default(0),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tasks_project_id").on(table.projectId),
+  index("idx_tasks_assignee_id").on(table.assigneeId),
+]);
+
 // Editable agent context + app-wide settings (key/value).
 export const appSettings = pgTable("app_settings", {
   key: varchar("key", { length: 120 }).primaryKey(),
@@ -350,6 +370,7 @@ export type RevisionRequest = typeof revisionRequests.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
 export type Invite = typeof invites.$inferSelect;
+export type Task = typeof tasks.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ProjectComment = typeof projectComments.$inferSelect;

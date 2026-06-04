@@ -11,11 +11,13 @@ import {
   MessageSquare,
   Columns3,
   Bot,
+  ListChecks,
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
   { label: "Pipeline", href: "/admin/pipeline", icon: Columns3 },
+  { label: "My tasks", href: "/admin/tasks", icon: ListChecks },
   { label: "Clients", href: "/admin/clients", icon: Users },
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
