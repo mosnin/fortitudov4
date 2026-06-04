@@ -164,15 +164,19 @@
 
 html {
   scroll-behavior: smooth;
+  /* Lock horizontal scroll at the root too — on mobile the overflow propagates
+     from body to the viewport, so clipping must also be set here. `clip` keeps
+     position: sticky working (unlike `hidden`). */
+  overflow-x: clip;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
-  /* Lock the page horizontally — nothing should slide sideways on mobile.
-     `clip` (not `hidden`) avoids creating a scroll container, so position:
-     sticky headers keep working. */
+  position: relative;
+  width: 100%;
+  max-width: 100%;
   overflow-x: clip;
 }
 

@@ -10,9 +10,11 @@ import {
   teamMembers,
   type Blueprint,
   type Project,
+  type BlueprintLineItem,
+  type BlueprintScopeItem,
 } from "@/db/schema";
 import { generateBlueprint, type BriefInput } from "./blueprint";
-import { projectPhaseNames } from "./services";
+import { projectPhaseNames, type ServiceType } from "./services";
 import { notify } from "./notify";
 
 // Assign an available architect for the discipline, if the team is seeded.
@@ -201,4 +203,87 @@ export async function answerDecisionRequest(
     .returning();
 
   return updated;
+}
+
+export interface ConfigInput {
+  businessName: string;
+  discipline: ServiceType;
+  title: string;
+  summary: string;
+  scope: BlueprintScopeItem[];
+  lineItems: BlueprintLineItem[];
+  total: number;
+  estimatedTimeline: string;
+  features: string[];
+  notes?: string;
+}
+
+/**
+ * Create a project + Blueprint from a configurator selection. Unlike the AI
+ * brief, the price and line items are explicit (from the catalog), and the
+ * Blueprint is saved as a draft the client can review and accept (checkout).
+ */
+export async function createProjectFromConfig(
+  userId: string,
+  input: ConfigInput
+): Promise<{ project: Project; blueprint: Blueprint }> {
+  const architectId = await pickArchitect(input.discipline);
+
+  const [project] = await db
+    .insert(projects)
+    .values({
+      userId,
+      name: input.businessName,
+      serviceType: input.discipline,
+      status: "onboarding",
+      architectId,
+    })
+    .returning();
+
+  await db.insert(onboardingSubmissions).values({
+    projectId: project.id,
+    businessName: input.businessName,
+    description: input.summary,
+    timeline: input.estimatedTimeline,
+    additionalNotes: input.notes ?? null,
+    features: input.features,
+  });
+
+  const validUntil = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+  const [blueprint] = await db
+    .insert(blueprints)
+    .values({
+      projectId: project.id,
+      title: input.title,
+      summary: input.summary,
+      scope: input.scope,
+      lineItems: input.lineItems,
+      subtotal: input.total,
+      total: input.total,
+      currency: "usd",
+      estimatedTimeline: input.estimatedTimeline,
+      status: "sent",
+      validUntil,
+    })
+    .returning();
+
+  await db.insert(projectPhases).values(
+    projectPhaseNames.map((name, i) => ({
+      projectId: project.id,
+      name,
+      order: i,
+      status: "pending" as const,
+    }))
+  );
+
+  await notify({
+    userId,
+    projectId: project.id,
+    type: "phase_update",
+    title: "Your project is ready to review",
+    body: `${input.title} — review the scope and price, then check out when you're ready.`,
+    actionUrl: `/blueprint/${blueprint.id}`,
+  });
+
+  return { project, blueprint };
 }
