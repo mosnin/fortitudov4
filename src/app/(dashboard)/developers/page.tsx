@@ -66,6 +66,36 @@ export default function DevelopersPage() {
         </div>
       </section>
 
+      {/* MCP */}
+      <section className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl">
+        <h2 className="font-mono text-xs uppercase tracking-[0.25em] text-orange/80">
+          MCP — work tasks with Claude
+        </h2>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Connect Claude (Desktop or cowork) to the studio over the Model Context Protocol. Claude can
+          see ready tasks in dependency order, claim them, and submit work — every submission waits for
+          a human admin to approve or request changes. Add this server with your API key as the bearer token:
+        </p>
+        <pre className="mt-4 overflow-x-auto rounded-2xl border border-border/60 bg-background/60 p-4 font-mono text-xs leading-relaxed">
+{`MCP URL:  https://fortitudo.agency/api/mcp
+Header:   Authorization: Bearer ftd_live_xxxxxxxxxxxx`}
+        </pre>
+        <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {[
+            ["list_projects", "Builds you can access."],
+            ["list_tasks", "Actionable tasks (scope 'ready' = workable now), in dependency order."],
+            ["get_task", "Full context: acceptance criteria, phase, Blueprint, blockers, prior reviews."],
+            ["claim_task", "Assign to yourself + move to in_progress (if ready)."],
+            ["submit_task", "Submit work → in_review (human approves/revises)."],
+          ].map(([name, desc]) => (
+            <div key={name} className="rounded-2xl border border-border/40 bg-background/40 px-4 py-3">
+              <code className="font-mono text-sm text-orange">{name}</code>
+              <p className="mt-0.5 text-xs text-muted-foreground">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <p className="px-1 text-xs text-muted-foreground">
         Keys are scoped to your account; revoke any key anytime in Settings. Requests are rate-limited.
       </p>
