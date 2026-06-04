@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Play, Check, Lock, RotateCcw } from "lucide-react";
 
 export type TaskRow = {
   id: string;
@@ -10,19 +10,18 @@ export type TaskRow = {
   status: string;
   assigneeId: string | null;
   phaseId: string | null;
+  kind: string;
+  estimateHours: number | null;
+  ready: boolean;
+  blockedBy: string[];
 };
 
-const statusOrder = ["todo", "in_progress", "done"] as const;
-const statusLabel: Record<string, string> = {
-  todo: "To do",
-  in_progress: "In progress",
-  done: "Done",
-};
-const statusCls: Record<string, string> = {
-  todo: "border-border/60 bg-background/40 text-muted-foreground",
-  in_progress: "border-orange/30 bg-orange/10 text-orange",
-  done: "border-success/30 bg-success/10 text-success",
-};
+const groups: { key: string; label: string }[] = [
+  { key: "todo", label: "To do" },
+  { key: "in_progress", label: "In progress" },
+  { key: "in_review", label: "In review" },
+  { key: "done", label: "Done" },
+];
 
 export function TasksPanel({
   projectId,
@@ -42,6 +41,8 @@ export function TasksPanel({
   const [busy, setBusy] = useState(false);
 
   const nameFor = (id: string | null) => staff.find((s) => s.id === id)?.name ?? "Unassigned";
+  const done = tasks.filter((t) => t.status === "done").length;
+  const pct = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
 
   async function add() {
     if (!title.trim() || busy) return;
@@ -50,11 +51,7 @@ export function TasksPanel({
       await fetch(`/api/admin/projects/${projectId}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: title.trim(),
-          assigneeId: assigneeId || null,
-          phaseId: phaseId || null,
-        }),
+        body: JSON.stringify({ title: title.trim(), assigneeId: assigneeId || null, phaseId: phaseId || null }),
       });
       setTitle("");
       router.refresh();
@@ -77,6 +74,20 @@ export function TasksPanel({
     }
   }
 
+  async function review(id: string, action: "approve" | "changes") {
+    setBusy(true);
+    try {
+      await fetch(`/api/admin/tasks/${id}/review`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      router.refresh();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function remove(id: string) {
     setBusy(true);
     try {
@@ -87,17 +98,20 @@ export function TasksPanel({
     }
   }
 
-  function cycle(status: string) {
-    const i = statusOrder.indexOf(status as (typeof statusOrder)[number]);
-    return statusOrder[(i + 1) % statusOrder.length];
-  }
-
   const inputCls =
     "h-10 rounded-xl border border-border/60 bg-background/40 px-3 text-sm focus:border-orange/50 focus:outline-none";
 
   return (
     <div className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl">
-      <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-orange/80">Tasks</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-orange/80">Tasks</h3>
+        <span className="text-xs tabular-nums text-muted-foreground">
+          {done}/{tasks.length} · {pct}%
+        </span>
+      </div>
+      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-background/60">
+        <div className="h-full rounded-full bg-gradient-to-r from-orange to-amber-400" style={{ width: `${pct}%` }} />
+      </div>
 
       {/* Create */}
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
@@ -111,17 +125,13 @@ export function TasksPanel({
         <select className={`${inputCls} sm:w-40`} value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)}>
           <option value="">Unassigned</option>
           {staff.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
+            <option key={s.id} value={s.id}>{s.name}</option>
           ))}
         </select>
         <select className={`${inputCls} sm:w-40`} value={phaseId} onChange={(e) => setPhaseId(e.target.value)}>
           <option value="">No phase</option>
           {phases.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.name}
-            </option>
+            <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
         <button
@@ -134,53 +144,106 @@ export function TasksPanel({
         </button>
       </div>
 
-      {/* List */}
-      <div className="mt-4 space-y-2">
-        {tasks.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">No tasks yet.</p>
-        ) : (
-          tasks.map((t) => (
-            <div
-              key={t.id}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-border/40 bg-background/40 px-4 py-3"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{t.title}</p>
-                <p className="text-xs text-muted-foreground">{nameFor(t.assigneeId)}</p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2">
-                <button
-                  onClick={() => patch(t.id, { status: cycle(t.status) })}
-                  disabled={busy}
-                  className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${statusCls[t.status]}`}
-                  title="Advance status"
-                >
-                  {statusLabel[t.status] ?? t.status}
-                </button>
-                <select
-                  value={t.assigneeId ?? ""}
-                  disabled={busy}
-                  onChange={(e) => patch(t.id, { assigneeId: e.target.value || null })}
-                  className="h-8 rounded-full border border-border/60 bg-background/40 px-2 text-xs text-foreground focus:outline-none"
-                >
-                  <option value="">Unassigned</option>
-                  {staff.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => remove(t.id)}
-                  disabled={busy}
-                  className="inline-flex items-center rounded-full border border-border/60 px-2 py-1 text-muted-foreground hover:border-destructive/50 hover:text-destructive"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+      {/* Board */}
+      <div className="mt-5 space-y-5">
+        {tasks.length === 0 && (
+          <p className="py-4 text-center text-sm text-muted-foreground">
+            No tasks yet — generate the build plan to populate the graph.
+          </p>
+        )}
+        {groups.map((g) => {
+          const items = tasks.filter((t) => t.status === g.key);
+          if (items.length === 0) return null;
+          return (
+            <div key={g.key}>
+              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                {g.label} · {items.length}
+              </p>
+              <div className="mt-2 space-y-2">
+                {items.map((t) => {
+                  const blocked = t.status === "todo" && !t.ready;
+                  return (
+                    <div key={t.id} className="rounded-2xl border border-border/40 bg-background/40 p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{t.title}</p>
+                          <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                            <span className="uppercase tracking-wide text-orange/70">{t.kind}</span>
+                            {t.estimateHours ? <span>· {t.estimateHours}h</span> : null}
+                            <span>· {nameFor(t.assigneeId)}</span>
+                          </p>
+                          {blocked && (
+                            <p className="mt-1 inline-flex items-center gap-1 text-[11px] text-warning">
+                              <Lock className="h-3 w-3" /> blocked by {t.blockedBy.join(", ")}
+                            </p>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => remove(t.id)}
+                          disabled={busy}
+                          className="shrink-0 rounded-full border border-border/60 p-1.5 text-muted-foreground hover:border-destructive/50 hover:text-destructive"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+
+                      <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <select
+                          value={t.assigneeId ?? ""}
+                          disabled={busy}
+                          onChange={(e) => patch(t.id, { assigneeId: e.target.value || null })}
+                          className="h-8 rounded-full border border-border/60 bg-background/40 px-2 text-xs focus:outline-none"
+                        >
+                          <option value="">Unassigned</option>
+                          {staff.map((s) => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                          ))}
+                        </select>
+
+                        {t.status === "todo" && (
+                          <button
+                            onClick={() => patch(t.id, { status: "in_progress" })}
+                            disabled={busy || blocked}
+                            className="inline-flex items-center gap-1 rounded-full border border-orange/40 px-3 py-1.5 text-xs text-orange hover:bg-orange/10 disabled:opacity-40"
+                          >
+                            <Play className="h-3 w-3" /> Start
+                          </button>
+                        )}
+                        {t.status === "in_progress" && (
+                          <button
+                            onClick={() => patch(t.id, { status: "done" })}
+                            disabled={busy}
+                            className="inline-flex items-center gap-1 rounded-full border border-success/40 px-3 py-1.5 text-xs text-success hover:bg-success/10"
+                          >
+                            <Check className="h-3 w-3" /> Complete
+                          </button>
+                        )}
+                        {t.status === "in_review" && (
+                          <>
+                            <button
+                              onClick={() => review(t.id, "approve")}
+                              disabled={busy}
+                              className="inline-flex items-center gap-1 rounded-full bg-success/15 px-3 py-1.5 text-xs font-medium text-success hover:bg-success/25"
+                            >
+                              <Check className="h-3 w-3" /> Approve
+                            </button>
+                            <button
+                              onClick={() => review(t.id, "changes")}
+                              disabled={busy}
+                              className="inline-flex items-center gap-1 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                            >
+                              <RotateCcw className="h-3 w-3" /> Changes
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          ))
-        )}
+          );
+        })}
       </div>
     </div>
   );

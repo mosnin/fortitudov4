@@ -9,7 +9,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const patchSchema = z.object({
-  status: z.enum(["todo", "in_progress", "done"]).optional(),
+  status: z.enum(["todo", "in_progress", "in_review", "done", "cancelled"]).optional(),
   assigneeId: z.string().uuid().nullable().optional(),
   title: z.string().min(1).max(255).optional(),
 });

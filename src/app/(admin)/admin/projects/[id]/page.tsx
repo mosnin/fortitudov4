@@ -10,11 +10,11 @@ import {
   deliverables as deliverablesTable,
   teamMembers,
   milestones as milestonesTable,
-  tasks as tasksTable,
   credentials as credentialsTable,
 } from "@/db/schema";
 import { eq, asc, inArray } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
+import { getTaskGraph } from "@/lib/tasks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -68,7 +68,7 @@ export default async function AdminProjectDetailPage({
       ? db.select().from(teamMembers).where(eq(teamMembers.id, project.architectId)).then((r) => r[0])
       : Promise.resolve(undefined),
     db.select().from(milestonesTable).where(eq(milestonesTable.projectId, id)).orderBy(asc(milestonesTable.order)),
-    db.select().from(tasksTable).where(eq(tasksTable.projectId, id)).orderBy(asc(tasksTable.order)),
+    getTaskGraph(id),
     db
       .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email })
       .from(users)
@@ -132,6 +132,10 @@ export default async function AdminProjectDetailPage({
           status: t.status,
           assigneeId: t.assigneeId,
           phaseId: t.phaseId,
+          kind: t.kind,
+          estimateHours: t.estimateHours,
+          ready: t.ready,
+          blockedBy: t.blockedBy,
         }))}
         staff={staff.map((s) => ({
           id: s.id,
