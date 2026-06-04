@@ -185,6 +185,24 @@ export const tasks = pgTable("tasks", {
   index("idx_tasks_assignee_id").on(table.assigneeId),
 ]);
 
+// Credentials vault — two-way login exchange. `secret` holds an AES-256-GCM
+// encrypted blob (base64 iv|tag|ciphertext); plaintext is never stored.
+export const credentials = pgTable("credentials", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  label: varchar("label", { length: 255 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("requested"), // requested | provided
+  secret: text("secret"),
+  note: text("note"),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_credentials_project_id").on(table.projectId),
+]);
+
 // Editable agent context + app-wide settings (key/value).
 export const appSettings = pgTable("app_settings", {
   key: varchar("key", { length: 120 }).primaryKey(),
@@ -371,6 +389,7 @@ export type Payment = typeof payments.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
 export type Invite = typeof invites.$inferSelect;
 export type Task = typeof tasks.$inferSelect;
+export type Credential = typeof credentials.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ProjectComment = typeof projectComments.$inferSelect;

@@ -11,6 +11,7 @@ import {
   teamMembers,
   milestones as milestonesTable,
   tasks as tasksTable,
+  credentials as credentialsTable,
 } from "@/db/schema";
 import { eq, asc, inArray } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
@@ -22,6 +23,7 @@ import { AdminProjectConsole } from "@/components/dashboard/admin-project-consol
 import { GeneratePlanButton } from "@/components/dashboard/generate-plan-button";
 import { EstimatePanel } from "@/components/dashboard/estimate-panel";
 import { TasksPanel } from "@/components/dashboard/tasks-panel";
+import { CredentialsVault } from "@/components/dashboard/credentials-vault";
 import { MilestonesAdmin } from "@/components/dashboard/milestones-admin";
 
 // Per-user authed data — always render on demand.
@@ -56,7 +58,7 @@ export default async function AdminProjectDetailPage({
   const [project] = await db.select().from(projects).where(eq(projects.id, id));
   if (!project) notFound();
 
-  const [client, brief, phases, decisions, deliverables, architect, projectMilestones, projectTasks, staff] = await Promise.all([
+  const [client, brief, phases, decisions, deliverables, architect, projectMilestones, projectTasks, staff, projectCredentials] = await Promise.all([
     db.select().from(users).where(eq(users.id, project.userId)).then((r) => r[0]),
     db.select().from(onboardingSubmissions).where(eq(onboardingSubmissions.projectId, id)).then((r) => r[0]),
     db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
@@ -71,6 +73,11 @@ export default async function AdminProjectDetailPage({
       .select({ id: users.id, firstName: users.firstName, lastName: users.lastName, email: users.email })
       .from(users)
       .where(inArray(users.role, ["admin", "team"])),
+    db
+      .select({ id: credentialsTable.id, label: credentialsTable.label, status: credentialsTable.status, note: credentialsTable.note })
+      .from(credentialsTable)
+      .where(eq(credentialsTable.projectId, id))
+      .orderBy(asc(credentialsTable.createdAt)),
   ]);
 
   const sortedPhases = phases
@@ -132,6 +139,8 @@ export default async function AdminProjectDetailPage({
         }))}
         phases={phases.slice().sort((a, b) => a.order - b.order).map((p) => ({ id: p.id, name: p.name }))}
       />
+
+      <CredentialsVault projectId={project.id} credentials={projectCredentials} />
 
       <MilestonesAdmin
         projectId={project.id}

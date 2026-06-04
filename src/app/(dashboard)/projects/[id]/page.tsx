@@ -11,6 +11,7 @@ import {
   blueprints,
   teamMembers,
   milestones as milestonesTable,
+  credentials as credentialsTable,
 } from "@/db/schema";
 import { eq, and, asc } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
@@ -19,6 +20,7 @@ import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision
 import { DeliverableReview } from "@/components/dashboard/deliverable-review";
 import { FileUpload } from "@/components/dashboard/file-upload";
 import { MilestonesClient } from "@/components/dashboard/milestones-client";
+import { CredentialsVault } from "@/components/dashboard/credentials-vault";
 import { formatPrice } from "@/lib/catalog";
 import { FileText } from "lucide-react";
 
@@ -63,7 +65,7 @@ export default async function ProjectDetailPage({
   if (dbUser.role !== "admin" && project.userId !== dbUser.id) notFound();
 
   // Fetch related data in parallel
-  const [phases, projectFiles, projectInvoices, openDecisions, projectDeliverables, projectBlueprints, projectMilestones] =
+  const [phases, projectFiles, projectInvoices, openDecisions, projectDeliverables, projectBlueprints, projectMilestones, projectCredentials] =
     await Promise.all([
       db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
       db.select().from(filesTable).where(eq(filesTable.projectId, id)),
@@ -75,6 +77,11 @@ export default async function ProjectDetailPage({
       db.select().from(deliverablesTable).where(eq(deliverablesTable.projectId, id)),
       db.select().from(blueprints).where(eq(blueprints.projectId, id)),
       db.select().from(milestonesTable).where(eq(milestonesTable.projectId, id)).orderBy(asc(milestonesTable.order)),
+      db
+        .select({ id: credentialsTable.id, label: credentialsTable.label, status: credentialsTable.status, note: credentialsTable.note })
+        .from(credentialsTable)
+        .where(eq(credentialsTable.projectId, id))
+        .orderBy(asc(credentialsTable.createdAt)),
     ]);
 
   const decisionItems: DecisionItem[] = openDecisions.map((d) => ({
@@ -231,6 +238,8 @@ export default async function ProjectDetailPage({
           dueAt: m.dueAt ? m.dueAt.toISOString() : null,
         }))}
       />
+
+      <CredentialsVault projectId={project.id} credentials={projectCredentials} />
 
       <div className="rounded-2xl border border-border bg-card p-5">
         <p className="text-sm font-medium">Attach files</p>
