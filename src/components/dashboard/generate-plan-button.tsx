@@ -15,7 +15,8 @@ export function GeneratePlanButton({ projectId }: { projectId: string }) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/projects/${projectId}/plan`, { method: "POST" });
+      // Full decomposition: phases + the task DAG (supersedes phase-only planning).
+      const res = await fetch(`/api/admin/projects/${projectId}/decompose`, { method: "POST" });
       const data = await res.json().catch(() => null);
       if (!res.ok) throw new Error(data?.error ?? "Failed to generate plan.");
       router.refresh();

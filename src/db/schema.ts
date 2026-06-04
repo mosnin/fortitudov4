@@ -175,14 +175,46 @@ export const tasks = pgTable("tasks", {
   assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  status: varchar("status", { length: 50 }).notNull().default("todo"), // todo | in_progress | done
+  status: varchar("status", { length: 50 }).notNull().default("todo"), // todo | in_progress | in_review | done | cancelled
   order: integer("order").notNull().default(0),
+  kind: varchar("kind", { length: 40 }).notNull().default("build"), // design|build|qa|devops|content|research
+  acceptanceCriteria: text("acceptance_criteria"),
+  estimateHours: integer("estimate_hours"),
+  submittedAt: timestamp("submitted_at"),
+  reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+  reviewNotes: text("review_notes"),
   createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
   index("idx_tasks_project_id").on(table.projectId),
   index("idx_tasks_assignee_id").on(table.assigneeId),
+]);
+
+// Task dependency edges — the build DAG. A task is "ready" only when every
+// task it depends on is done.
+export const taskDependencies = pgTable("task_dependencies", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  taskId: uuid("task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+  dependsOnTaskId: uuid("depends_on_task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+}, (table) => [
+  index("idx_task_deps_task").on(table.taskId),
+]);
+
+// Task submissions — a team member or AI agent submits work; an admin reviews.
+export const taskSubmissions = pgTable("task_submissions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  taskId: uuid("task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+  submittedBy: uuid("submitted_by").references(() => users.id, { onDelete: "set null" }),
+  summary: text("summary").notNull(),
+  artifactUrl: text("artifact_url"),
+  deliverableId: uuid("deliverable_id"),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending | approved | changes_requested
+  reviewNotes: text("review_notes"),
+  reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_task_submissions_task").on(table.taskId),
 ]);
 
 // Credentials vault — two-way login exchange. `secret` holds an AES-256-GCM
@@ -389,6 +421,8 @@ export type Payment = typeof payments.$inferSelect;
 export type Milestone = typeof milestones.$inferSelect;
 export type Invite = typeof invites.$inferSelect;
 export type Task = typeof tasks.$inferSelect;
+export type TaskDependency = typeof taskDependencies.$inferSelect;
+export type TaskSubmission = typeof taskSubmissions.$inferSelect;
 export type Credential = typeof credentials.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
