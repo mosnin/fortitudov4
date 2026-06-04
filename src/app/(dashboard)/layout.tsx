@@ -1,11 +1,17 @@
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AppDock } from "@/components/dashboard/app-dock";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 
-export default function DashboardLayout({
+export const dynamic = "force-dynamic";
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getOrCreateCurrentUser();
+  const isStaff = user?.role === "admin" || user?.role === "team";
+
   return (
     <div className="min-h-screen bg-background dark:bg-charcoal-dark">
       <DashboardHeader />
@@ -16,7 +22,7 @@ export default function DashboardLayout({
       </main>
 
       {/* Persistent bottom dock + full-page launchpad (client component). */}
-      <AppDock />
+      <AppDock isStaff={isStaff} />
     </div>
   );
 }

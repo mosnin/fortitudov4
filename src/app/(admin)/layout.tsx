@@ -23,7 +23,8 @@ export default async function AdminLayout({
     redirect("/sign-in");
   }
 
-  if (user.role !== "admin") {
+  // Agency staff (owners + team members) get in; clients are bounced.
+  if (user.role !== "admin" && user.role !== "team") {
     redirect("/dashboard");
   }
   return (

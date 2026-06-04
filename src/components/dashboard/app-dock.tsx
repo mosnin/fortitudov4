@@ -37,7 +37,7 @@ const dockItems: DockItem[] = [
 ];
 
 // ── Launchpad tiles ─────────────────────────────────────────────────────────
-type Tile = { label: string; href: string; description: string; highlight?: boolean };
+type Tile = { label: string; href: string; description: string; highlight?: boolean; staff?: boolean };
 
 const launchpadTiles: Tile[] = [
   { label: "Dashboard", href: "/dashboard", description: "Your studio at a glance — builds, blueprints, decisions." },
@@ -46,6 +46,8 @@ const launchpadTiles: Tile[] = [
   { label: "Messages", href: "/messages", description: "Talk directly with your architect." },
   { label: "Notifications", href: "/notifications", description: "Phase updates, deliverables, and decisions." },
   { label: "Settings", href: "/settings", description: "Account, profile, and workspace preferences." },
+  // Staff-only: surfaced for admins and team members.
+  { label: "Agency dashboard", href: "/admin", description: "Manage every client build, pipeline, and task.", staff: true },
 ];
 
 const disciplines = ["Software", "Commerce", "AI", "Infrastructure"];
@@ -122,8 +124,9 @@ function DockButton({
   );
 }
 
-export function AppDock() {
+export function AppDock({ isStaff = false }: { isStaff?: boolean }) {
   const pathname = usePathname();
+  const tiles = launchpadTiles.filter((t) => !t.staff || isStaff);
   const [menuOpen, setMenuOpen] = useState(false);
   const mouseX = useMotionValue(Infinity);
 
@@ -260,7 +263,7 @@ export function AppDock() {
 
               <div className="pointer-events-auto mx-auto w-full max-w-5xl flex-1 px-5 py-10 sm:px-10">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {launchpadTiles.map((tile, i) => {
+                  {tiles.map((tile, i) => {
                     const active = isActivePath(pathname, tile.href);
                     return (
                       <Link
