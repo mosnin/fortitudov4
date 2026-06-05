@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "motion/react";
 import { AsciiField } from "@/components/dashboard/ascii-field";
+import { LogoAscii } from "@/components/dashboard/logo-ascii";
 import { DotFlow, type DotFlowProps } from "@/components/ui/dot-flow";
 import { RotatingWord } from "@/components/ui/rotating-word";
 import { ArrowRight } from "lucide-react";
@@ -83,6 +84,10 @@ export function HeroSection() {
           animate="show"
           className="flex flex-col items-center gap-7"
         >
+          <motion.div variants={item} aria-hidden>
+            <LogoAscii className="h-40 w-40 sm:h-48 sm:w-48" />
+          </motion.div>
+
           <motion.p variants={item} className="text-xs uppercase tracking-[0.3em] text-orange/80">
             Fortitudo // A bespoke building studio
           </motion.p>
