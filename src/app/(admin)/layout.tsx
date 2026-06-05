@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
+import { isViewingAsClient } from "@/lib/view-as";
 import { AdminNav } from "@/components/dashboard/admin-nav";
+import { ViewAsToggle } from "@/components/dashboard/view-as-toggle";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
@@ -27,6 +29,11 @@ export default async function AdminLayout({
   if (user.role !== "admin" && user.role !== "team") {
     redirect("/dashboard");
   }
+  // While a staff member is "viewing as a client", the admin surface is hidden
+  // so the experience is faithful — Exit (in the client banner) brings it back.
+  if (await isViewingAsClient()) {
+    redirect("/dashboard");
+  }
   return (
     <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-charcoal/80 backdrop-blur-2xl">
@@ -48,6 +55,7 @@ export default async function AdminLayout({
             <AdminNav />
           </div>
           <div className="flex items-center gap-2">
+            <ViewAsToggle />
             <GlobalSearch />
             <NotificationBell />
             <ThemeToggle />
