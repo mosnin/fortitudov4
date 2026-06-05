@@ -6,6 +6,7 @@ import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AsciiField } from "@/components/dashboard/ascii-field";
 import { Reveal } from "@/components/ui/motion";
+import { toast } from "@/components/ui/toast";
 
 interface Message {
   id: string;
@@ -76,9 +77,11 @@ export default function MessagesPage() {
         const msg = await res.json();
         setMessages((prev) => [...prev, msg]);
         setNewMessage("");
+      } else {
+        toast.error("Couldn't send", "Your message wasn't delivered — try again.");
       }
     } catch {
-      /* swallow — composer stays populated for retry */
+      toast.error("Couldn't send", "Check your connection and try again.");
     } finally {
       setSending(false);
     }

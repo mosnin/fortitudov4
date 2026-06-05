@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, X, Loader2 } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 /** Shown while a staff member is browsing as a client. Exit returns to /admin. */
 export function ViewAsBanner() {
@@ -13,13 +14,19 @@ export function ViewAsBanner() {
     if (busy) return;
     setBusy(true);
     try {
-      await fetch("/api/view-as", {
+      const res = await fetch("/api/view-as", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: false }),
       });
+      if (!res.ok) {
+        toast.error("Couldn't exit client view");
+        return;
+      }
       router.push("/admin");
       router.refresh();
+    } catch {
+      toast.error("Couldn't exit client view", "Check your connection and try again.");
     } finally {
       setBusy(false);
     }

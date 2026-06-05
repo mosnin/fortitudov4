@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "@/components/ui/toast";
 
 export type TeamRow = {
   id: string;
@@ -64,12 +65,20 @@ export function TeamManager({ rows, meId }: { rows: TeamRow[]; meId: string }) {
   async function setRole(id: string, role: string) {
     setRowBusy(id);
     try {
-      await fetch(`/api/admin/team/${id}`, {
+      const res = await fetch(`/api/admin/team/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role }),
       });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        toast.error("Couldn't update role", data?.error);
+        return;
+      }
+      toast.success(role === "client" ? "Removed from the team" : `Role set to ${role}`);
       router.refresh();
+    } catch {
+      toast.error("Couldn't update role", "Check your connection and try again.");
     } finally {
       setRowBusy(null);
     }
@@ -78,8 +87,16 @@ export function TeamManager({ rows, meId }: { rows: TeamRow[]; meId: string }) {
   async function remove(id: string) {
     setRowBusy(id);
     try {
-      await fetch(`/api/admin/team/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/team/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        toast.error("Couldn't revoke invite", data?.error);
+        return;
+      }
+      toast.success("Invite revoked");
       router.refresh();
+    } catch {
+      toast.error("Couldn't revoke invite", "Check your connection and try again.");
     } finally {
       setRowBusy(null);
     }

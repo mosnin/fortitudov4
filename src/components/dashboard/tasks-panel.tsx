@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, Trash2, Play, Check, Lock, RotateCcw } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 export type TaskRow = {
   id: string;
@@ -77,12 +78,20 @@ export function TasksPanel({
   async function review(id: string, action: "approve" | "changes") {
     setBusy(true);
     try {
-      await fetch(`/api/admin/tasks/${id}/review`, {
+      const res = await fetch(`/api/admin/tasks/${id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        toast.error("Review failed", data?.error);
+        return;
+      }
+      toast.success(action === "approve" ? "Task approved" : "Changes requested");
       router.refresh();
+    } catch {
+      toast.error("Review failed", "Check your connection and try again.");
     } finally {
       setBusy(false);
     }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Play, Lock, Loader2, ArrowUp } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 type MyTask = {
   id: string;
@@ -40,15 +41,23 @@ export function MyTasks({ tasks }: { tasks: MyTask[] }) {
     if (!summary.trim()) return;
     setBusy(id);
     try {
-      await fetch(`/api/tasks/${id}/submit`, {
+      const res = await fetch(`/api/tasks/${id}/submit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ summary: summary.trim(), artifactUrl: artifact.trim() || undefined }),
       });
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        toast.error("Couldn't submit", data?.error);
+        return;
+      }
+      toast.success("Submitted for review", "An admin will approve it or request changes.");
       setSubmitFor(null);
       setSummary("");
       setArtifact("");
       router.refresh();
+    } catch {
+      toast.error("Couldn't submit", "Check your connection and try again.");
     } finally {
       setBusy(null);
     }

@@ -119,6 +119,18 @@ ASCII data conventions (lists, tables, notifications):
 
 ---
 
+## 6.5 Feedback, loading & perf
+
+- **Toasts:** `toast.success/error/info` from `src/components/ui/toast.tsx`
+  (`<Toaster />` is mounted once in the root layout). Every mutation must give
+  feedback — confirm success and surface failure. Never `catch(() => {})` on a
+  user action; toast the error instead. (Best-effort background calls — SW
+  registration, `lastUsedAt` — may stay silent.)
+- **Loading:** add a `loading.tsx` skeleton for any route with server data so
+  navigation never blanks. Use the `Skeleton` primitive (`src/components/ui/skeleton.tsx`).
+- **Offscreen animation:** canvas/RAF effects (`AsciiField`) must pause when not
+  visible (IntersectionObserver). Don't run animation a user can't see.
+
 ## 7. Icons (mirrors `AGENTS.md`)
 
 - **No** "icon inside a tinted rounded box/circle" badge. No decorative icons above

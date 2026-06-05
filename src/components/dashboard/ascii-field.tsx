@@ -84,20 +84,44 @@ export function AsciiField({
     ro.observe(canvas);
     resize();
 
-    if (!reduce) {
-      const loop = (ts: number) => {
-        raf = requestAnimationFrame(loop);
-        if (ts - last < 55) return; // ~18fps, deliberately calm
-        last = ts;
-        t += speed;
-        draw();
-      };
+    let running = false;
+    const loop = (ts: number) => {
       raf = requestAnimationFrame(loop);
-    }
+      if (ts - last < 55) return; // ~18fps, deliberately calm
+      last = ts;
+      t += speed;
+      draw();
+    };
+    const start = () => {
+      if (running || reduce) return;
+      running = true;
+      raf = requestAnimationFrame(loop);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    // Only animate while on-screen. A page can hold many fields; idle ones must
+    // not each burn a RAF loop (battery + jank, especially on mobile).
+    const io = new IntersectionObserver(
+      (entries) => {
+        const visible = entries[0]?.isIntersecting ?? true;
+        if (visible) {
+          draw(); // a fresh frame the moment it reveals
+          start();
+        } else {
+          stop();
+        }
+      },
+      { rootMargin: "120px" }
+    );
+    io.observe(canvas);
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
       ro.disconnect();
+      io.disconnect();
     };
   }, [speed, cell]);
 

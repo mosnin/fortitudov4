@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Sparkles } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 /** Admin action: (re)generate the AI build plan for a project from its Blueprint. */
 export function GeneratePlanButton({ projectId }: { projectId: string }) {
@@ -33,9 +34,15 @@ export function GeneratePlanButton({ projectId }: { projectId: string }) {
         }
         throw new Error(data?.error ?? "Failed to generate plan.");
       }
+      toast.success(
+        "Build plan ready",
+        data?.phases != null ? `${data.phases} phases · ${data.tasks} tasks` : undefined
+      );
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate plan.");
+      const message = err instanceof Error ? err.message : "Failed to generate plan.";
+      setError(message);
+      toast.error("Couldn't generate the plan", message);
     } finally {
       setLoading(false);
     }

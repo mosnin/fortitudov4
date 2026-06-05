@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, Loader2 } from "lucide-react";
+import { toast } from "@/components/ui/toast";
 
 /** Admin/team header action: flip into the client experience. */
 export function ViewAsToggle() {
@@ -13,13 +14,19 @@ export function ViewAsToggle() {
     if (busy) return;
     setBusy(true);
     try {
-      await fetch("/api/view-as", {
+      const res = await fetch("/api/view-as", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ enabled: true }),
       });
+      if (!res.ok) {
+        toast.error("Couldn't switch view");
+        return;
+      }
       router.push("/dashboard");
       router.refresh();
+    } catch {
+      toast.error("Couldn't switch view", "Check your connection and try again.");
     } finally {
       setBusy(false);
     }
