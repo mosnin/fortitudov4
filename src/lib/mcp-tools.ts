@@ -177,6 +177,11 @@ export async function runMcpTool(principal: User, name: string, args: Record<str
     const id = args.taskId as string;
     const [t] = await db.select().from(tasks).where(eq(tasks.id, id));
     if (!t) return text("Task not found.", true);
+    // Non-admins can only claim work that's free or already theirs — no stealing
+    // a task out from under another assignee.
+    if (principal.role !== "admin" && t.assigneeId && t.assigneeId !== principal.id) {
+      return text("That task is already assigned to someone else.", true);
+    }
     const blocked = (await blockedMap([id])).get(id) ?? [];
     if (blocked.length) return text(`Task is blocked by: ${blocked.join(", ")}. Finish those first.`, true);
     await db

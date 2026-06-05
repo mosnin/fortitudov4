@@ -10,15 +10,29 @@ export function GeneratePlanButton({ projectId }: { projectId: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function generate() {
+  async function generate(force = false) {
     if (loading) return;
     setLoading(true);
     setError(null);
     try {
       // Full decomposition: phases + the task DAG (supersedes phase-only planning).
-      const res = await fetch(`/api/admin/projects/${projectId}/decompose`, { method: "POST" });
+      const res = await fetch(`/api/admin/projects/${projectId}/decompose`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ force }),
+      });
       const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error ?? "Failed to generate plan.");
+      if (!res.ok) {
+        // Started work would be wiped — confirm before forcing a replace.
+        if (res.status === 409 && data?.needsForce) {
+          if (window.confirm(`${data.error}\n\nReplace the existing plan anyway?`)) {
+            setLoading(false);
+            return generate(true);
+          }
+          return;
+        }
+        throw new Error(data?.error ?? "Failed to generate plan.");
+      }
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to generate plan.");
@@ -30,7 +44,7 @@ export function GeneratePlanButton({ projectId }: { projectId: string }) {
   return (
     <div className="flex flex-col items-end gap-1">
       <button
-        onClick={generate}
+        onClick={() => generate(false)}
         disabled={loading}
         className="inline-flex items-center gap-1.5 rounded-full bg-orange px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
       >

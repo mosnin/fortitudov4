@@ -23,9 +23,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const [task] = await db.select().from(tasks).where(eq(tasks.id, id));
     if (!task) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    const isStaff = user.role === "admin" || user.role === "team";
-    if (task.assigneeId !== user.id && !isStaff) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // The assignee submits their own work; admins may submit on anyone's behalf.
+    if (user.role !== "admin" && task.assigneeId !== user.id) {
+      return NextResponse.json({ error: "That task isn't assigned to you." }, { status: 403 });
     }
 
     const parsed = schema.safeParse(await req.json().catch(() => null));

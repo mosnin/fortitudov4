@@ -1,7 +1,7 @@
 import "server-only";
 import { Agent, run, setDefaultOpenAIKey } from "@openai/agents";
 import { z } from "zod";
-import { eq, desc } from "drizzle-orm";
+import { and, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import {
   blueprints,
@@ -67,17 +67,46 @@ function plannerAgent(offerings: string) {
   });
 }
 
+export class DecomposeBlockedError extends Error {
+  constructor(public startedCount: number) {
+    super(
+      `This build already has ${startedCount} task(s) in progress, in review, or done. Regenerating the plan would delete that work. Pass force to replace it anyway.`
+    );
+    this.name = "DecomposeBlockedError";
+  }
+}
+
 /**
  * Decompose a project's latest Blueprint into phases + a task DAG, replacing any
  * existing plan. Admin-triggered. Returns counts.
+ *
+ * Destructive: replaces the whole plan. Guards against silently wiping started
+ * work — if any task has progressed past `todo`, it refuses unless `force`.
  */
-export async function decomposeBuild(projectId: string): Promise<{ phases: number; tasks: number }> {
+export async function decomposeBuild(
+  projectId: string,
+  opts: { force?: boolean } = {}
+): Promise<{ phases: number; tasks: number }> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set.");
   setDefaultOpenAIKey(apiKey);
 
   const [project] = await db.select().from(projects).where(eq(projects.id, projectId));
   if (!project) throw new Error("Project not found.");
+
+  // Refuse to blow away started work unless explicitly forced.
+  if (!opts.force) {
+    const started = await db
+      .select({ id: tasks.id })
+      .from(tasks)
+      .where(
+        and(
+          eq(tasks.projectId, projectId),
+          inArray(tasks.status, ["in_progress", "in_review", "done"])
+        )
+      );
+    if (started.length > 0) throw new DecomposeBlockedError(started.length);
+  }
 
   const [bp] = await db
     .select()
