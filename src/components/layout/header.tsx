@@ -51,7 +51,7 @@ const companyItems: MegaMenuItem[] = [
 
 const resourceItems: MegaMenuItem[] = [
   { label: "FAQ", href: "/faq", icon: HelpCircle, description: "Common questions answered" },
-  { label: "How It Works", href: "/#how-it-works", icon: Briefcase, description: "Our process explained" },
+  { label: "How It Works", href: "/process", icon: Briefcase, description: "The process, end to end" },
   { label: "Privacy Policy", href: "/privacy", icon: Shield, description: "How we handle your data" },
   { label: "Terms of Service", href: "/terms", icon: FileText, description: "Service agreement" },
 ];

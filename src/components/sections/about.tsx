@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import { SpotlightCard } from "@/components/ui/spotlight-card";
+import { AsciiArt, blueprintArt } from "@/components/ascii-art";
 
 const values = [
   {
@@ -25,8 +26,14 @@ const values = [
 
 export function AboutSection() {
   return (
-    <section id="about" className="relative scroll-mt-24 bg-charcoal-dark py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section id="about" className="relative scroll-mt-24 overflow-hidden bg-charcoal-dark py-24 sm:py-32">
+      {/* A faint blueprint, tucked in the corner. */}
+      <AsciiArt
+        art={blueprintArt}
+        animate={false}
+        className="pointer-events-none absolute -right-4 top-12 hidden text-orange/[0.06] lg:block"
+      />
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-orange/80">About Fortitudo</p>

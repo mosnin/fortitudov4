@@ -9,6 +9,7 @@ const footerLinks = {
     { label: "Infrastructure", href: "/services#infrastructure" },
   ],
   studio: [
+    { label: "How It Works", href: "/process" },
     { label: "About Us", href: "/about" },
     { label: "Portfolio", href: "/portfolio" },
     { label: "Pricing", href: "/pricing" },
