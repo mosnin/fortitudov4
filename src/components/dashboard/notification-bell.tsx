@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -49,18 +49,30 @@ export function NotificationBell() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Fetch notifications on mount
-  useEffect(() => {
-    fetch("/api/notifications")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setNotifications(data.slice(0, 10));
-      })
-      .catch(() => {
-        setLoaded(true);
-      })
-      .finally(() => setLoaded(true));
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications");
+      const data = await res.json();
+      if (Array.isArray(data)) setNotifications(data.slice(0, 10));
+    } catch {
+      /* keep what we have */
+    } finally {
+      setLoaded(true);
+    }
   }, []);
+
+  // Fetch on mount, poll, and refetch when the tab regains focus — so the
+  // unread count stays honest without a manual refresh.
+  useEffect(() => {
+    load();
+    const timer = setInterval(load, 45000);
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [load]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

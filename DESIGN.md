@@ -130,6 +130,11 @@ ASCII data conventions (lists, tables, notifications):
   navigation never blanks. Use the `Skeleton` primitive (`src/components/ui/skeleton.tsx`).
 - **Offscreen animation:** canvas/RAF effects (`AsciiField`) must pause when not
   visible (IntersectionObserver). Don't run animation a user can't see.
+- **Liveness:** data that changes out-of-band (messages, notifications) should
+  poll on an interval **and** refetch on window `focus`, merging by id so the
+  view never blanks or needlessly re-scrolls. The dashboard surfaces a single
+  **"Needs you"** strip (open decisions, deliverables to review, milestones to
+  pay, unread messages) so a client always knows their next action.
 
 ## 7. Icons (mirrors `AGENTS.md`)
 

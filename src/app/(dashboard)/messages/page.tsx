@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -50,14 +50,47 @@ export default function MessagesPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const loadMessages = useCallback(async () => {
+    if (!selectedProjectId) return;
+    try {
+      const res = await fetch(`/api/messages?projectId=${selectedProjectId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
+      // Only replace if something actually changed — avoids needless re-scroll.
+      setMessages((prev) => {
+        const known = new Set(prev.map((m) => m.id));
+        const hasNew = data.some((m: Message) => !known.has(m.id));
+        return hasNew || prev.length !== data.length ? data : prev;
+      });
+    } catch {
+      /* a poll hiccup shouldn't blank the thread */
+    }
+  }, [selectedProjectId]);
+
+  // Switch threads: clear, load, and mark the studio's messages read.
   useEffect(() => {
     if (!selectedProjectId) return;
     setMessages([]);
-    fetch(`/api/messages?projectId=${selectedProjectId}`)
-      .then((res) => res.json())
-      .then((data) => Array.isArray(data) && setMessages(data))
-      .catch(() => setMessages([]));
-  }, [selectedProjectId]);
+    loadMessages();
+    fetch("/api/messages/read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId: selectedProjectId }),
+    }).catch(() => {});
+  }, [selectedProjectId, loadMessages]);
+
+  // Keep the open thread live — poll + refetch when the tab regains focus.
+  useEffect(() => {
+    if (!selectedProjectId) return;
+    const timer = setInterval(loadMessages, 12000);
+    const onFocus = () => loadMessages();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [selectedProjectId, loadMessages]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });

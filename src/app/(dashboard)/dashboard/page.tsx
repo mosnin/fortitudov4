@@ -6,8 +6,11 @@ import {
   decisionRequests,
   blueprints,
   deliverables as deliverablesTable,
+  milestones as milestonesTable,
+  messages as messagesTable,
   teamMembers,
 } from "@/db/schema";
+import { NeedsYou } from "@/components/dashboard/needs-you";
 import { eq, inArray, desc, and } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { WelcomeRotator } from "@/components/dashboard/welcome-rotator";
@@ -93,21 +96,31 @@ async function DashboardBody() {
   const lead = active[0];
 
   // Parallel detail fetches, guarded against empty IN ()
-  const [latestBp, latestDeliverable, leadPhases, architect, openDecisionList] = await Promise.all([
-    ids.length
-      ? db.select().from(blueprints).where(inArray(blueprints.projectId, ids)).orderBy(desc(blueprints.createdAt)).limit(1).then((r) => r[0])
-      : Promise.resolve(undefined),
-    ids.length
-      ? db.select().from(deliverablesTable).where(inArray(deliverablesTable.projectId, ids)).orderBy(desc(deliverablesTable.releasedAt)).limit(1).then((r) => r[0])
-      : Promise.resolve(undefined),
-    lead
-      ? db.select().from(projectPhases).where(eq(projectPhases.projectId, lead.id))
-      : Promise.resolve([] as (typeof projectPhases.$inferSelect)[]),
-    lead?.architectId
-      ? db.select().from(teamMembers).where(eq(teamMembers.id, lead.architectId)).then((r) => r[0])
-      : Promise.resolve(undefined),
-    getOpenDecisions(ids),
-  ]);
+  const [latestBp, latestDeliverable, leadPhases, architect, openDecisionList, reviewDeliverables, unpaidMilestones, unreadMessages] =
+    await Promise.all([
+      ids.length
+        ? db.select().from(blueprints).where(inArray(blueprints.projectId, ids)).orderBy(desc(blueprints.createdAt)).limit(1).then((r) => r[0])
+        : Promise.resolve(undefined),
+      ids.length
+        ? db.select().from(deliverablesTable).where(inArray(deliverablesTable.projectId, ids)).orderBy(desc(deliverablesTable.releasedAt)).limit(1).then((r) => r[0])
+        : Promise.resolve(undefined),
+      lead
+        ? db.select().from(projectPhases).where(eq(projectPhases.projectId, lead.id))
+        : Promise.resolve([] as (typeof projectPhases.$inferSelect)[]),
+      lead?.architectId
+        ? db.select().from(teamMembers).where(eq(teamMembers.id, lead.architectId)).then((r) => r[0])
+        : Promise.resolve(undefined),
+      getOpenDecisions(ids),
+      ids.length
+        ? db.select({ id: deliverablesTable.id }).from(deliverablesTable).where(and(inArray(deliverablesTable.projectId, ids), eq(deliverablesTable.status, "pending")))
+        : Promise.resolve([] as { id: string }[]),
+      ids.length
+        ? db.select({ id: milestonesTable.id }).from(milestonesTable).where(and(inArray(milestonesTable.projectId, ids), eq(milestonesTable.status, "pending")))
+        : Promise.resolve([] as { id: string }[]),
+      ids.length
+        ? db.select({ id: messagesTable.id }).from(messagesTable).where(and(inArray(messagesTable.projectId, ids), eq(messagesTable.role, "admin"), eq(messagesTable.read, false)))
+        : Promise.resolve([] as { id: string }[]),
+    ]);
 
   const sortedLeadPhases = leadPhases.slice().sort((a, b) => a.order - b.order);
   const completed = sortedLeadPhases.filter((p) => p.status === "completed").length;
@@ -115,6 +128,15 @@ async function DashboardBody() {
   const currentPhase = sortedLeadPhases.find((p) => p.status === "in_progress")?.name ?? (pct === 100 ? "Complete" : "Not started");
 
   const decisionCount = openDecisionList.length;
+
+  // "Needs you" — the client's next actions in one strip.
+  const projectHref = lead ? `/projects/${lead.id}` : "/projects";
+  const needs = [
+    { label: decisionCount === 1 ? "decision to answer" : "decisions to answer", href: projectHref, count: decisionCount },
+    { label: "deliverables to review", href: projectHref, count: reviewDeliverables.length },
+    { label: "milestones to pay", href: projectHref, count: unpaidMilestones.length },
+    { label: "unread messages", href: "/messages", count: unreadMessages.length },
+  ];
 
   const now = new Date();
   const dateStr = now.toLocaleDateString("en-US", { day: "2-digit" });
@@ -125,6 +147,9 @@ async function DashboardBody() {
     <>
       <DashboardPreloader name={firstName} />
       <Reveal className="grid grid-cols-12 gap-4">
+      {/* ── What needs you ── */}
+      <NeedsYou items={needs} />
+
       {/* ── Signature ASCII hero ── */}
       <section className="col-span-12 lg:col-span-4 relative overflow-hidden rounded-3xl border border-border/60 bg-charcoal-dark min-h-[340px] flex flex-col justify-between p-6">
         <AsciiField className="absolute inset-0 h-full w-full opacity-70" />

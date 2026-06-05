@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AsciiField } from "@/components/dashboard/ascii-field";
@@ -53,14 +53,46 @@ export default function AdminMessagesPage() {
       .finally(() => setLoading(false));
   }, []);
 
+  const loadMessages = useCallback(async () => {
+    if (!selectedId) return;
+    try {
+      const res = await fetch(`/api/messages?projectId=${selectedId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
+      setMessages((prev) => {
+        const known = new Set(prev.map((m) => m.id));
+        const hasNew = data.some((m: Message) => !known.has(m.id));
+        return hasNew || prev.length !== data.length ? data : prev;
+      });
+    } catch {
+      /* keep the thread on a poll hiccup */
+    }
+  }, [selectedId]);
+
+  // Open a thread: clear, load, and mark the client's messages read.
   useEffect(() => {
     if (!selectedId) return;
     setMessages([]);
-    fetch(`/api/messages?projectId=${selectedId}`)
-      .then((r) => r.json())
-      .then((data) => Array.isArray(data) && setMessages(data))
-      .catch(() => setMessages([]));
-  }, [selectedId]);
+    loadMessages();
+    fetch("/api/messages/read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId: selectedId }),
+    }).catch(() => {});
+  }, [selectedId, loadMessages]);
+
+  // Keep it live — poll + refetch on focus.
+  useEffect(() => {
+    if (!selectedId) return;
+    const timer = setInterval(loadMessages, 12000);
+    const onFocus = () => loadMessages();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [selectedId, loadMessages]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
