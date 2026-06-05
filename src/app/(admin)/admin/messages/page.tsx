@@ -40,9 +40,12 @@ export default function AdminMessagesPage() {
     fetch("/api/projects")
       .then((r) => r.json())
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setProjects(data);
-          if (data.length > 0) setSelectedId(data[0].id);
+          // Honor ?project=<id> (e.g. from a "New client message" notification).
+          const wanted = new URLSearchParams(window.location.search).get("project");
+          const match = wanted && data.find((p: Project) => p.id === wanted);
+          setSelectedId(match ? match.id : data[0].id);
         }
       })
       .catch(() => {})

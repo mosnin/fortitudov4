@@ -167,12 +167,12 @@ export default async function ProjectDetailPage({
               <p className="text-xs text-muted-foreground truncate">{architect.title}</p>
             )}
           </div>
-          <a
-            href={`/projects/${project.id}#messages`}
+          <Link
+            href={`/messages?project=${project.id}`}
             className="ml-auto text-sm font-medium text-orange hover:underline whitespace-nowrap"
           >
             Message
-          </a>
+          </Link>
         </div>
       )}
 

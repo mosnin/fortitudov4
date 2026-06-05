@@ -36,9 +36,13 @@ export default function MessagesPage() {
     fetch("/api/projects")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setProjects(data);
-          if (data.length > 0) setSelectedProjectId(data[0].id);
+          // Honor a ?project=<id> deep-link (e.g. from a notification);
+          // otherwise open the most recent build's thread.
+          const wanted = new URLSearchParams(window.location.search).get("project");
+          const match = wanted && data.find((p: Project) => p.id === wanted);
+          setSelectedProjectId(match ? match.id : data[0].id);
         }
       })
       .catch(() => {})

@@ -18,7 +18,7 @@ import { getTaskGraph } from "@/lib/tasks";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, MessageSquare } from "lucide-react";
 import { AdminProjectConsole } from "@/components/dashboard/admin-project-console";
 import { GeneratePlanButton } from "@/components/dashboard/generate-plan-button";
 import { EstimatePanel } from "@/components/dashboard/estimate-panel";
@@ -107,6 +107,12 @@ export default async function AdminProjectDetailPage({
           <Badge variant="orange" className="text-sm px-3 py-1">
             {statusLabels[project.status] ?? project.status}
           </Badge>
+          <Button variant="outline" size="sm" asChild>
+            <Link href={`/admin/messages?project=${project.id}`}>
+              <MessageSquare className="h-4 w-4" />
+              Message client
+            </Link>
+          </Button>
           <GeneratePlanButton projectId={project.id} />
         </div>
       </div>
