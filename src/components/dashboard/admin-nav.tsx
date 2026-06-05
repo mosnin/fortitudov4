@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
+  UsersRound,
   FolderKanban,
   CreditCard,
   MessageSquare,
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Pipeline", href: "/admin/pipeline", icon: Columns3 },
   { label: "My tasks", href: "/admin/tasks", icon: ListChecks },
   { label: "Clients", href: "/admin/clients", icon: Users },
+  { label: "Team", href: "/admin/team", icon: UsersRound },
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
