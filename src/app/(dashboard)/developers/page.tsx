@@ -73,8 +73,9 @@ export default function DevelopersPage() {
         </h2>
         <p className="mt-3 text-sm text-muted-foreground">
           Connect Claude (Desktop or cowork) to the studio over the Model Context Protocol. Claude can
-          see ready tasks in dependency order, claim them, and submit work — every submission waits for
-          a human admin to approve or request changes. Add this server with your API key as the bearer token:
+          read the whole build context, see ready tasks in dependency order, claim them, raise a blocking
+          question when something is ambiguous, and submit work — every submission waits for a human admin
+          to approve or request changes. Add this server with your API key as the bearer token:
         </p>
         <pre className="mt-4 overflow-x-auto rounded-2xl border border-border/60 bg-background/60 p-4 font-mono text-xs leading-relaxed">
 {`MCP URL:  https://fortitudo.agency/api/mcp
@@ -84,9 +85,12 @@ Header:   Authorization: Bearer ftd_live_xxxxxxxxxxxx`}
           {[
             ["list_projects", "Builds you can access."],
             ["list_tasks", "Actionable tasks (scope 'ready' = workable now), in dependency order."],
+            ["get_project", "Whole-build context: Blueprint, phases, assets, deliverables, open questions, progress."],
             ["get_task", "Full context: acceptance criteria, phase, Blueprint, blockers, prior reviews."],
             ["claim_task", "Assign to yourself + move to in_progress (if ready)."],
+            ["release_task", "Hand a claimed task back to the pool."],
             ["submit_task", "Submit work → in_review (human approves/revises)."],
+            ["ask_question", "Raise a blocking question to a human — don't guess on ambiguity."],
           ].map(([name, desc]) => (
             <div key={name} className="rounded-2xl border border-border/40 bg-background/40 px-4 py-3">
               <code className="font-mono text-sm text-orange">{name}</code>
