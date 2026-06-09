@@ -19,6 +19,10 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Reveal } from "@/components/ui/motion";
+
+// Elevated surface to match the premium dashboard aesthetic.
+const elevatedCard = "rounded-3xl border-border/60 bg-card/80 backdrop-blur-xl";
 
 interface InvoiceData {
   invoiceNumber: string;
@@ -85,15 +89,17 @@ export function ProjectDetailClient({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">{project.name}</h1>
-          <p className="text-muted-foreground mt-1">{project.serviceType}</p>
+      <Reveal className="flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-[0.2em] text-orange/80">
+            {project.serviceType}
+          </p>
+          <h1 className="font-brand mt-2 text-3xl sm:text-4xl">{project.name}</h1>
         </div>
-        <Badge variant="orange" className="text-sm px-3 py-1">
+        <Badge variant="orange" className="text-sm px-3 py-1 shrink-0">
           {project.status}
         </Badge>
-      </div>
+      </Reveal>
 
       {/* NPS Survey */}
       {showSurvey && (
@@ -128,9 +134,9 @@ export function ProjectDetailClient({
 
         {/* Progress tab */}
         <Tabs.Content value="progress">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <Reveal className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2 space-y-6">
-              <Card>
+              <Card className={elevatedCard}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <RotateCcw className="h-5 w-5 text-orange" />
@@ -149,7 +155,7 @@ export function ProjectDetailClient({
               </Card>
 
               {/* Revision Request */}
-              <Card>
+              <Card className={elevatedCard}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <MessageSquare className="h-5 w-5 text-orange" />
@@ -177,7 +183,7 @@ export function ProjectDetailClient({
             {/* Right sidebar */}
             <div className="space-y-6">
               {/* Files */}
-              <Card>
+              <Card className={elevatedCard}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Upload className="h-5 w-5 text-orange" />
@@ -219,7 +225,7 @@ export function ProjectDetailClient({
               {invoice && <InvoiceCard invoice={invoice} />}
 
               {/* Project Info */}
-              <Card>
+              <Card className={elevatedCard}>
                 <CardHeader>
                   <CardTitle>Project Details</CardTitle>
                 </CardHeader>
@@ -252,12 +258,13 @@ export function ProjectDetailClient({
                 </CardContent>
               </Card>
             </div>
-          </div>
+          </Reveal>
         </Tabs.Content>
 
         {/* Comments tab */}
         <Tabs.Content value="comments">
-          <Card>
+          <Reveal>
+          <Card className={elevatedCard}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5 text-orange" />
@@ -268,6 +275,7 @@ export function ProjectDetailClient({
               <ProjectComments projectId={project.id} />
             </CardContent>
           </Card>
+          </Reveal>
         </Tabs.Content>
 
       </Tabs.Root>

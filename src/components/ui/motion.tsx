@@ -70,3 +70,26 @@ export function RevealItem({
     </motion.div>
   );
 }
+
+/**
+ * A staggered child that also lifts on hover — for premium cards. Combines the
+ * fade-up entrance (inside a <RevealGroup>) with a subtle hover elevation.
+ */
+export function RevealLift({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      variants={fadeUp}
+      whileHover={{ y: -4 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
+    >
+      {children}
+    </motion.div>
+  );
+}
