@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 import { cn } from "@/lib/utils";
@@ -33,8 +32,6 @@ export const DotFlow = ({
     const [index, setIndex] = useState(0);
     const [textIndex, setTextIndex] = useState(0);
 
-    const { contextSafe } = useGSAP();
-
     useEffect(() => {
         if (!containerRef.current || !textRef.current) return;
 
@@ -47,7 +44,9 @@ export const DotFlow = ({
         });
     }, [textIndex]);
 
-    const next = contextSafe(() => {
+    // Plain event handler — the ref is only read when the loader completes,
+    // never during render.
+    const next = () => {
         const el = containerRef.current;
         if (!el) return;
         gsap.to(el, {
@@ -73,7 +72,7 @@ export const DotFlow = ({
         });
 
         setIndex((prev) => (prev + 1) % items.length);
-    });
+    };
 
     return (
         <div className={cn("flex items-center gap-4 rounded bg-black px-4 py-3", className)}>

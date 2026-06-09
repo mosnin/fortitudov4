@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { AsciiField } from "@/components/dashboard/ascii-field";
 
@@ -24,30 +24,33 @@ const SEEN_KEY = "ftd_preloader_seen";
 
 export function DashboardPreloader({ name }: { name: string }) {
   const reduce = useReducedMotion();
-  // Show once per browser session — not on every dashboard visit.
+  // Show once per browser session — not on every dashboard visit. The saying is
+  // picked in the same effect (not during render) so render stays pure; the
+  // overlay only appears after this effect runs, so nothing flashes.
   const [show, setShow] = useState(false);
+  const [picks, setPicks] = useState<{ greeting: string; tagline: string } | null>(null);
 
   useEffect(() => {
     if (typeof sessionStorage !== "undefined" && sessionStorage.getItem(SEEN_KEY)) return;
     sessionStorage?.setItem(SEEN_KEY, "1");
-    setShow(true);
+    // Deferred a tick so the state update isn't synchronous inside the effect.
+    const t = setTimeout(() => {
+      setPicks({
+        greeting: greetings[Math.floor(Math.random() * greetings.length)],
+        tagline: taglines[Math.floor(Math.random() * taglines.length)],
+      });
+      setShow(true);
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
-
-  // Picked once per mount → a different saying each time you arrive.
-  const { greeting, tagline } = useMemo(
-    () => ({
-      greeting: greetings[Math.floor(Math.random() * greetings.length)],
-      tagline: taglines[Math.floor(Math.random() * taglines.length)],
-    }),
-    []
-  );
 
   useEffect(() => {
     const t = setTimeout(() => setShow(false), reduce ? 900 : 2000);
     return () => clearTimeout(t);
   }, [reduce]);
 
-  const words = tagline.split(" ");
+  const greeting = picks?.greeting ?? "";
+  const words = (picks?.tagline ?? "").split(" ");
 
   return (
     <AnimatePresence>
