@@ -1,12 +1,14 @@
 import "server-only";
-import { Agent, run, setDefaultOpenAIKey } from "@openai/agents";
+import { Agent, run, tool, setDefaultOpenAIKey } from "@openai/agents";
 import type { AgentInputItem } from "@openai/agents";
+import { z } from "zod";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { projects, blueprints, decisionRequests } from "@/db/schema";
+import { projects, blueprints, decisionRequests, revisionRequests, messages } from "@/db/schema";
 import { getProjectProgress, getTaskGraph } from "./tasks";
-import { getActivity } from "./activity";
+import { getActivity, recordEvent } from "./activity";
 import { searchMemory, memoryToContext } from "./memory";
+import { notifyAdmins } from "./notify";
 
 const MODEL = process.env.OPENAI_BRIEF_MODEL ?? "gpt-5.5";
 
@@ -28,9 +30,11 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelled",
 };
 
-// The concierge is READ/ANSWER ONLY. It never mutates anything and never claims
-// to have changed anything — it answers from a snapshot of the build and points
-// the client at where *they* act (their project page) when a human step is due.
+// The concierge answers from a snapshot of the build, and can take exactly two
+// bounded actions on the client's behalf — both things the client can already
+// do in the UI (request a revision, message the studio). Everything
+// consequential (approving deliverables, answering decisions, changing scope)
+// stays a human step. It never claims to have done more than that.
 const INSTRUCTIONS = `You are the Fortitudo studio concierge — a warm, concise, always-available assistant for a client's bespoke build.
 
 # Your job
@@ -38,10 +42,14 @@ const INSTRUCTIONS = `You are the Fortitudo studio concierge — a warm, concise
 - Be brief and calm. A few sentences or a short list. No filler, no hype.
 - When the context doesn't contain the answer, say so plainly and suggest they message their architect.
 
+# Actions you can take on the client's behalf
+- request_revision — when the client clearly wants a change to the work, file a revision request. Say what you filed in your reply.
+- message_studio — when the client wants to tell or ask their architect something, send it.
+Only take an action the client clearly asked for. If it's ambiguous, ask a quick clarifying question first. These actions route work to a human — you are not doing the work yourself.
+
 # Hard boundaries
-- You are read-only. You CANNOT change anything, approve anything, answer a decision, upload files, or move the build forward. Never claim you did or will.
-- If the client wants to make a change, approve work, or answer a decision, tell them exactly where to do it — e.g. "open the decision on your project page" or "review the deliverable on your project page". A human still acts; you only point the way.
-- You may *suggest* sensible next steps, but frame them as suggestions for the client or their architect, not actions you take.`;
+- You CANNOT approve or reject deliverables, answer or create decisions, change scope or price, mark anything done, or move the build forward. Those are human steps — point the client to their project page ("open the decision on your project page", "review the deliverable on your project page").
+- Never claim to have changed the build itself or completed work — only that you filed a revision or sent a message.`;
 
 interface BuildSnapshot {
   context: string;
@@ -195,10 +203,71 @@ export async function conciergeReply(opts: ConciergeOpts): Promise<string> {
 
   setDefaultOpenAIKey(apiKey);
 
+  // Bounded, client-safe actions — both are things the client can already do
+  // in the UI; they just route work to a human. Bound to this client + build.
+  const requestRevision = tool({
+    name: "request_revision",
+    description:
+      "File a revision request on this build, on the client's behalf. Use only when the client clearly wants a change to the delivered work.",
+    parameters: z.object({
+      description: z.string().describe("A concise description of the change the client is asking for."),
+    }),
+    execute: async ({ description }) => {
+      await db.insert(revisionRequests).values({ projectId: opts.projectId, userId: opts.userId, description });
+      await recordEvent({
+        projectId: opts.projectId,
+        actorId: opts.userId,
+        kind: "revision_requested",
+        summary: `Revision requested (via concierge): ${description.slice(0, 120)}`,
+      });
+      await notifyAdmins(
+        {
+          projectId: opts.projectId,
+          type: "phase_update",
+          title: "New revision request",
+          body: description.slice(0, 140),
+          actionUrl: `/admin/projects/${opts.projectId}`,
+        },
+        opts.userId
+      );
+      return "Revision request filed and the studio has been notified.";
+    },
+  });
+
+  const messageStudio = tool({
+    name: "message_studio",
+    description:
+      "Send a message to the client's architect/studio, on the client's behalf. Use when the client wants to tell or ask the studio something.",
+    parameters: z.object({
+      content: z.string().describe("The message to send to the studio."),
+    }),
+    execute: async ({ content }) => {
+      await db.insert(messages).values({ projectId: opts.projectId, senderId: opts.userId, role: "client", content });
+      await recordEvent({
+        projectId: opts.projectId,
+        actorId: opts.userId,
+        kind: "message",
+        summary: "Client messaged the studio (via concierge)",
+      });
+      await notifyAdmins(
+        {
+          projectId: opts.projectId,
+          type: "message_received",
+          title: "New client message",
+          body: content.slice(0, 140),
+          actionUrl: `/admin/messages?project=${opts.projectId}`,
+        },
+        opts.userId
+      );
+      return "Message sent to your architect.";
+    },
+  });
+
   const agent = new Agent({
     name: "Fortitudo Concierge",
     instructions: INSTRUCTIONS,
     model: MODEL,
+    tools: [requestRevision, messageStudio],
     modelSettings: {
       promptCacheRetention: "24h",
       providerData: { prompt_cache_key: "fortitudo-concierge-v1" },
