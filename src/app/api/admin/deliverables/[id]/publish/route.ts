@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { deliverables } from "@/db/schema";
+import { deliverables, projects } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { recordEvent } from "@/lib/activity";
+import { notify } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -30,6 +31,23 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
       kind: "deliverable_published",
       summary: `Published deliverable: ${updated.title}`,
     });
+
+    // Tell the client the studio just shipped something for them.
+    const [proj] = await db
+      .select({ userId: projects.userId })
+      .from(projects)
+      .where(eq(projects.id, updated.projectId));
+    if (proj?.userId) {
+      await notify({
+        userId: proj.userId,
+        projectId: updated.projectId,
+        type: "phase_update",
+        title: "New deliverable ready to review",
+        body: updated.title,
+        actionUrl: `/projects/${updated.projectId}`,
+      });
+    }
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Publish failed";
