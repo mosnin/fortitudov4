@@ -44,9 +44,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
 
-    const reply = await conciergeReply({ userId: user.id, projectId, message, history });
+    const { reply, acted } = await conciergeReply({ userId: user.id, projectId, message, history });
 
-    return NextResponse.json({ reply });
+    return NextResponse.json({ reply, acted });
   } catch (error) {
     if (error instanceof NextResponse) return error;
     console.error("Concierge error:", error);

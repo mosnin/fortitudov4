@@ -189,19 +189,23 @@ function toInputItems(messages: ConciergeMessage[]): AgentInputItem[] {
  * is configured — returns a deterministic summary so the feature degrades
  * gracefully. Never mutates anything.
  */
-export async function conciergeReply(opts: ConciergeOpts): Promise<string> {
+export async function conciergeReply(opts: ConciergeOpts): Promise<{ reply: string; acted: boolean }> {
   const snapshot = await buildSnapshot(opts);
   if (!snapshot) {
-    return "I couldn't find that build. If you think this is a mistake, message your architect.";
+    return { reply: "I couldn't find that build. If you think this is a mistake, message your architect.", acted: false };
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    // Graceful, key-free path: deterministic build summary.
-    return snapshot.fallback;
+    // Graceful, key-free path: deterministic build summary (read-only).
+    return { reply: snapshot.fallback, acted: false };
   }
 
   setDefaultOpenAIKey(apiKey);
+
+  // True once the concierge takes an action on the client's behalf, so the UI
+  // can refresh to show the revision/message it just filed.
+  let acted = false;
 
   // Bounded, client-safe actions — both are things the client can already do
   // in the UI; they just route work to a human. Bound to this client + build.
@@ -230,6 +234,7 @@ export async function conciergeReply(opts: ConciergeOpts): Promise<string> {
         },
         opts.userId
       );
+      acted = true;
       return "Revision request filed and the studio has been notified.";
     },
   });
@@ -259,6 +264,7 @@ export async function conciergeReply(opts: ConciergeOpts): Promise<string> {
         },
         opts.userId
       );
+      acted = true;
       return "Message sent to your architect.";
     },
   });
@@ -286,5 +292,5 @@ export async function conciergeReply(opts: ConciergeOpts): Promise<string> {
   ];
 
   const result = await run(agent, input);
-  return result.finalOutput?.trim() || snapshot.fallback;
+  return { reply: result.finalOutput?.trim() || snapshot.fallback, acted };
 }

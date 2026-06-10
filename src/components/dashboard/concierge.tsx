@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { MessageCircle, X, ArrowUp } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ const GREETING =
 const SUGGESTIONS = ["Where are we?", "What's left?", "What needs me?"];
 
 export function Concierge({ projectId, enabled = true }: { projectId: string; enabled?: boolean }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -68,11 +70,14 @@ export function Concierge({ projectId, enabled = true }: { projectId: string; en
       }
       if (!res.ok) throw new Error(`Request failed (${res.status})`);
 
-      const data = (await res.json()) as { reply?: string };
+      const data = (await res.json()) as { reply?: string; acted?: boolean };
       const reply = data.reply?.trim();
       if (!reply) throw new Error("Empty reply");
 
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+      // The concierge filed a revision or messaged the studio — refresh so the
+      // build's activity/threads reflect it.
+      if (data.acted) router.refresh();
     } catch {
       toast.error("Couldn't reach the concierge", "Please try again in a moment.");
     } finally {
@@ -120,7 +125,7 @@ export function Concierge({ projectId, enabled = true }: { projectId: string; en
                 <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-orange/80">
                   Concierge
                 </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">Knows your build · read-only</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">Knows your build · can act for you</p>
               </div>
               <button
                 type="button"
