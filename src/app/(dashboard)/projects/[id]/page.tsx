@@ -22,6 +22,8 @@ import { FileText } from "lucide-react";
 
 import { ProjectBrand } from "@/components/dashboard/project-brand";
 import { BuildHero } from "@/components/dashboard/build-hero";
+import { BuildPhaseStrip } from "@/components/dashboard/build-phase-strip";
+import { DeliverableSpotlight } from "@/components/dashboard/deliverable-spotlight";
 import { BuildTabs, type BuildTab } from "@/components/dashboard/build-tabs";
 import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
@@ -138,6 +140,11 @@ export default async function ProjectDetailPage({
 
   const showSurvey = project.status === "completed" || project.status === "revision";
 
+  // The most recently shipped deliverable — spotlit at the top of Overview.
+  const latestDeliverable = clientDeliverables
+    .slice()
+    .sort((a, b) => new Date(b.releasedAt).getTime() - new Date(a.releasedAt).getTime())[0];
+
   // ── Hero metrics ──────────────────────────────────────────────────────────
   const phasesDone = sortedPhases.filter((p) => {
     const pr = progress.byPhase[p.id];
@@ -180,6 +187,21 @@ export default async function ProjectDetailPage({
   // ── Tab sections ──────────────────────────────────────────────────────────
   const overview = (
     <div className="space-y-5">
+      <DeliverableSpotlight
+        deliverable={
+          latestDeliverable
+            ? {
+                id: latestDeliverable.id,
+                title: latestDeliverable.title,
+                kind: latestDeliverable.kind,
+                url: latestDeliverable.url,
+                description: latestDeliverable.description,
+                status: latestDeliverable.status,
+              }
+            : null
+        }
+        brandColor={settings.brandColor}
+      />
       <DeliveryDigest projectId={project.id} />
       <DecisionLoop decisions={decisionItems} />
       {roadmap}
@@ -278,6 +300,11 @@ export default async function ProjectDetailPage({
           openDecisions={decisionItems.length}
           daysActive={daysActive}
           architect={architect ? { name: architect.name, title: architect.title } : null}
+          brandColor={settings.brandColor}
+        />
+
+        <BuildPhaseStrip
+          phases={sortedPhases.map((p) => ({ id: p.id, name: p.name, pct: progress.byPhase[p.id]?.pct ?? 0 }))}
           brandColor={settings.brandColor}
         />
 
