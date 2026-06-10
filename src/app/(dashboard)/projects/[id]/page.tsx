@@ -15,21 +15,28 @@ import {
 } from "@/db/schema";
 import { eq, and, asc } from "drizzle-orm";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
-import { ProjectDetailClient } from "./client";
-import { BuildRoadmap } from "@/components/dashboard/build-roadmap";
 import { getProjectProgress } from "@/lib/tasks";
-import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
-import { DeliverableReview } from "@/components/dashboard/deliverable-review";
-import { FileUpload } from "@/components/dashboard/file-upload";
-import { MilestonesClient } from "@/components/dashboard/milestones-client";
-import { CredentialsVault } from "@/components/dashboard/credentials-vault";
-import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
-import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
-import { Concierge } from "@/components/dashboard/concierge";
-import { ProjectBrand } from "@/components/dashboard/project-brand";
 import { getProjectSettings } from "@/lib/project-settings";
 import { formatPrice } from "@/lib/catalog";
 import { FileText } from "lucide-react";
+
+import { ProjectBrand } from "@/components/dashboard/project-brand";
+import { BuildHero } from "@/components/dashboard/build-hero";
+import { BuildTabs, type BuildTab } from "@/components/dashboard/build-tabs";
+import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
+import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
+import { BuildRoadmap } from "@/components/dashboard/build-roadmap";
+import { DecisionLoop, type DecisionItem } from "@/components/dashboard/decision-loop";
+import { DeliverableReview } from "@/components/dashboard/deliverable-review";
+import { RevisionRequest } from "@/components/dashboard/revision-request";
+import { MilestonesClient } from "@/components/dashboard/milestones-client";
+import { CredentialsVault } from "@/components/dashboard/credentials-vault";
+import { FileUpload } from "@/components/dashboard/file-upload";
+import { FilePreviewCard } from "@/components/dashboard/file-preview";
+import { InvoiceCard } from "@/components/dashboard/invoice-card";
+import { ProjectComments } from "@/components/dashboard/project-comments";
+import { NPSSurvey } from "@/components/dashboard/nps-survey";
+import { Concierge } from "@/components/dashboard/concierge";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -56,31 +63,19 @@ export default async function ProjectDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  // Provision the user row on first visit — never depend on the Clerk webhook.
   const dbUser = await getOrCreateCurrentUser();
   if (!dbUser) return null;
 
-  // Fetch project
-  const [project] = await db
-    .select()
-    .from(projects)
-    .where(eq(projects.id, id));
-
+  const [project] = await db.select().from(projects).where(eq(projects.id, id));
   if (!project) notFound();
-
-  // Verify ownership (unless admin)
   if (dbUser.role !== "admin" && project.userId !== dbUser.id) notFound();
 
-  // Fetch related data in parallel
   const [phases, projectFiles, projectInvoices, openDecisions, projectDeliverables, projectBlueprints, projectMilestones, projectCredentials] =
     await Promise.all([
       db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
       db.select().from(filesTable).where(eq(filesTable.projectId, id)),
       db.select().from(invoices).where(eq(invoices.projectId, id)),
-      db
-        .select()
-        .from(decisionRequests)
-        .where(and(eq(decisionRequests.projectId, id), eq(decisionRequests.status, "open"))),
+      db.select().from(decisionRequests).where(and(eq(decisionRequests.projectId, id), eq(decisionRequests.status, "open"))),
       db.select().from(deliverablesTable).where(eq(deliverablesTable.projectId, id)),
       db.select().from(blueprints).where(eq(blueprints.projectId, id)),
       db.select().from(milestonesTable).where(eq(milestonesTable.projectId, id)).orderBy(asc(milestonesTable.order)),
@@ -109,22 +104,15 @@ export default async function ProjectDetailPage({
 
   const sortedPhases = phases
     .sort((a, b) => a.order - b.order)
-    .map((p) => ({
-      id: p.id,
-      name: p.name,
-      description: p.description || undefined,
-      status: p.status,
-      order: p.order,
-    }));
+    .map((p) => ({ id: p.id, name: p.name, description: p.description || undefined, status: p.status, order: p.order }));
 
-  // Live roadmap: roll task completion up to phases.
   const progress = await getProjectProgress(id);
-
-  // Bespoke per-build settings (brand theming + concierge toggle).
   const settings = await getProjectSettings(id);
 
-  // Hide internal agent drafts from the client until an architect publishes them.
+  // Hide internal agent drafts until an architect publishes them.
   const clientDeliverables = projectDeliverables.filter((d) => d.status !== "draft");
+  const pendingDeliverables = clientDeliverables.filter((d) => d.status === "pending").length;
+  const unpaidMilestones = projectMilestones.filter((m) => m.status === "pending").length;
 
   const fileData = projectFiles.map((f) => ({
     name: f.name,
@@ -133,16 +121,11 @@ export default async function ProjectDetailPage({
     type: f.type || "application/octet-stream",
   }));
 
-  // Format invoice for display
   const invoice = projectInvoices[0];
   const invoiceData = invoice
     ? {
         invoiceNumber: invoice.invoiceNumber,
-        date: new Date(invoice.issuedAt).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }),
+        date: new Date(invoice.issuedAt).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
         status: invoice.status as "paid" | "pending" | "overdue",
         projectName: project.name,
         clientName: `${dbUser.firstName || ""} ${dbUser.lastName || ""}`.trim() || dbUser.email,
@@ -153,109 +136,85 @@ export default async function ProjectDetailPage({
       }
     : null;
 
-  const showSurvey =
-    project.status === "completed" || project.status === "revision";
+  const showSurvey = project.status === "completed" || project.status === "revision";
 
-  return (
-    <ProjectBrand brandColor={settings.brandColor}>
-    <div className="space-y-6">
-      {/* Your architect — a real human owns this build. */}
-      {architect && (
-        <div className="rounded-2xl border border-border bg-card p-5 flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange/10 text-orange font-semibold">
-            {architect.name
-              .split(" ")
-              .map((n) => n[0])
-              .slice(0, 2)
-              .join("")}
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs text-muted-foreground">Your architect</p>
-            <p className="font-semibold">{architect.name}</p>
-            {architect.title && (
-              <p className="text-xs text-muted-foreground truncate">{architect.title}</p>
-            )}
-          </div>
-          <Link
-            href={`/messages?project=${project.id}`}
-            className="ml-auto text-sm font-medium text-orange hover:underline whitespace-nowrap"
-          >
-            Message
-          </Link>
+  // ── Hero metrics ──────────────────────────────────────────────────────────
+  const phasesDone = sortedPhases.filter((p) => {
+    const pr = progress.byPhase[p.id];
+    return pr && pr.total > 0 && pr.pct >= 100;
+  }).length;
+  const currentPhase =
+    sortedPhases.find((p) => (progress.byPhase[p.id]?.pct ?? 0) < 100)?.name ??
+    (sortedPhases.length ? "Wrapping up" : "Getting started");
+  const daysActive = daysSince(new Date(project.createdAt));
+
+  // ── Roadmap (shared between hero context + Overview) ──────────────────────
+  const roadmap = (
+    <BuildRoadmap
+      phases={sortedPhases.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        ...(progress.byPhase[p.id] ?? { done: 0, total: 0, pct: 0 }),
+      }))}
+      overall={progress.overall}
+    />
+  );
+
+  const blueprintCard = latestBlueprint && (
+    <Link
+      href={`/blueprint/${latestBlueprint.id}`}
+      className="flex items-center justify-between gap-4 rounded-3xl border border-border/60 bg-card/60 p-5 backdrop-blur-xl transition-colors hover:border-orange/50"
+    >
+      <div className="flex items-center gap-3">
+        <FileText className="h-5 w-5 shrink-0 text-orange" />
+        <div>
+          <p className="text-sm font-medium">Blueprint</p>
+          <p className="text-xs capitalize text-muted-foreground">{latestBlueprint.status}</p>
         </div>
-      )}
-
-      {/* The Decision Loop — the studio only interrupts you when it must. */}
-      <DecisionLoop decisions={decisionItems} />
-
-      {/* The AI delivery lead's read on where the build stands. */}
-      <DeliveryDigest projectId={project.id} />
-
-      {/* Live build roadmap — phase progress rolled up from real tasks. */}
-      <BuildRoadmap
-        phases={sortedPhases.map((p) => ({
-          id: p.id,
-          name: p.name,
-          description: p.description,
-          ...(progress.byPhase[p.id] ?? { done: 0, total: 0, pct: 0 }),
-        }))}
-        overall={progress.overall}
-      />
-
-      {/* Blueprint + deliverables surfaces */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {latestBlueprint && (
-          <Link
-            href={`/blueprint/${latestBlueprint.id}`}
-            className="rounded-2xl border border-border bg-card p-5 hover:border-orange/50 transition-colors flex items-center justify-between gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <FileText className="h-5 w-5 shrink-0 text-orange" />
-              <div>
-                <p className="text-sm font-medium">Blueprint</p>
-                <p className="text-xs text-muted-foreground capitalize">{latestBlueprint.status}</p>
-              </div>
-            </div>
-            <span className="text-lg font-bold text-orange">{formatPrice(latestBlueprint.total)}</span>
-          </Link>
-        )}
-
-        {clientDeliverables.length > 0 && (
-          <div className="rounded-2xl border border-border bg-card p-5">
-            <p className="text-sm font-medium mb-3">Deliverables</p>
-            <ul className="space-y-2">
-              {clientDeliverables.map((d) => (
-                <DeliverableReview
-                  key={d.id}
-                  id={d.id}
-                  title={d.title}
-                  url={d.url}
-                  status={d.status}
-                />
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
+      <span className="text-lg font-bold text-orange">{formatPrice(latestBlueprint.total)}</span>
+    </Link>
+  );
 
-      <ProjectDetailClient
-        project={{
-          id: project.id,
-          name: project.name,
-          serviceType: serviceLabels[project.serviceType] || project.serviceType,
-          status: statusLabels[project.status] || project.status,
-          createdAt: new Date(project.createdAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          }),
-        }}
-        phases={sortedPhases}
-        files={fileData}
-        invoice={invoiceData}
-        showSurvey={showSurvey}
-      />
+  // ── Tab sections ──────────────────────────────────────────────────────────
+  const overview = (
+    <div className="space-y-5">
+      <DeliveryDigest projectId={project.id} />
+      <DecisionLoop decisions={decisionItems} />
+      {roadmap}
+      {blueprintCard}
+      <RevisionRequest projectId={project.id} />
+      <div className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl">
+        <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-orange/80">Discussion</h3>
+        <div className="mt-3">
+          <ProjectComments projectId={project.id} />
+        </div>
+      </div>
+    </div>
+  );
 
+  const deliverablesTab = (
+    <div className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl">
+      <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-orange/80">Deliverables</h3>
+      {clientDeliverables.length === 0 ? (
+        <p className="mt-4 text-sm text-muted-foreground">
+          Deliverables appear here as the studio ships them — review and approve right inline.
+        </p>
+      ) : (
+        <ul className="mt-4 space-y-2">
+          {clientDeliverables.map((d) => (
+            <DeliverableReview key={d.id} id={d.id} title={d.title} url={d.url} status={d.status} />
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+
+  const activityTab = <ActivityTimeline projectId={project.id} />;
+
+  const billingTab = (
+    <div className="space-y-5">
       <MilestonesClient
         milestones={projectMilestones.map((m) => ({
           id: m.id,
@@ -266,27 +225,76 @@ export default async function ProjectDetailPage({
           dueAt: m.dueAt ? m.dueAt.toISOString() : null,
         }))}
       />
+      {invoiceData && <InvoiceCard invoice={invoiceData} />}
+    </div>
+  );
 
+  const assetsTab = (
+    <div className="space-y-5">
       <CredentialsVault projectId={project.id} credentials={projectCredentials} />
-
-      <div className="rounded-2xl border border-border bg-card p-5">
-        <p className="text-sm font-medium">Attach files</p>
-        <p className="mt-1 text-xs text-muted-foreground">
+      <div className="rounded-3xl border border-border/60 bg-card/60 p-6 backdrop-blur-xl">
+        <h3 className="font-mono text-xs uppercase tracking-[0.25em] text-orange/80">Files & assets</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
           Share brand assets, briefs, or references with your architect.
         </p>
         <div className="mt-4">
           <FileUpload projectId={project.id} />
         </div>
+        {fileData.length > 0 && (
+          <div className="mt-4 space-y-2">
+            {fileData.map((f) => (
+              <FilePreviewCard key={f.name} name={f.name} url={f.url} type={f.type} size={f.size} />
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* The full, replayable timeline of everything on this build. */}
-      <ActivityTimeline projectId={project.id} />
-
-      {/* Always-on concierge — knows this build, answers anything. */}
-      <Concierge projectId={project.id} enabled={settings.conciergeEnabled} />
     </div>
+  );
+
+  const tabs: BuildTab[] = [
+    { id: "overview", label: "Overview", content: overview },
+    { id: "deliverables", label: "Deliverables", badge: pendingDeliverables, content: deliverablesTab },
+    { id: "activity", label: "Activity", content: activityTab },
+    { id: "billing", label: "Billing", badge: unpaidMilestones, content: billingTab },
+    { id: "assets", label: "Assets", content: assetsTab },
+  ];
+
+  return (
+    <ProjectBrand brandColor={settings.brandColor}>
+      <div className="space-y-5">
+        <BuildHero
+          projectId={project.id}
+          name={project.name}
+          discipline={serviceLabels[project.serviceType] ?? project.serviceType}
+          status={project.status}
+          statusLabel={statusLabels[project.status] ?? project.status}
+          pct={progress.overall.pct}
+          stepsDone={progress.overall.done}
+          stepsTotal={progress.overall.total}
+          phasesDone={phasesDone}
+          phasesTotal={sortedPhases.length}
+          currentPhase={currentPhase}
+          deliverables={clientDeliverables.length}
+          openDecisions={decisionItems.length}
+          daysActive={daysActive}
+          architect={architect ? { name: architect.name, title: architect.title } : null}
+          brandColor={settings.brandColor}
+        />
+
+        {showSurvey && (
+          <NPSSurvey projectId={project.id} projectName={project.name} />
+        )}
+
+        <BuildTabs tabs={tabs} />
+
+        <Concierge projectId={project.id} enabled={settings.conciergeEnabled} />
+      </div>
     </ProjectBrand>
   );
+}
+
+function daysSince(date: Date): number {
+  return Math.max(0, Math.floor((Date.now() - date.getTime()) / 86400000));
 }
 
 function formatBytes(bytes: number): string {

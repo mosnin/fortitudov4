@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 interface NPSSurveyProps {
   projectId: string;
   projectName: string;
-  onDismiss: () => void;
+  onDismiss?: () => void;
 }
 
 export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps) {
@@ -18,6 +18,14 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
   const [feedback, setFeedback] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  const dismiss = () => {
+    setDismissed(true);
+    onDismiss?.();
+  };
+
+  if (dismissed) return null;
 
   const handleSubmit = async () => {
     if (score === null) return;
@@ -57,7 +65,7 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
   return (
     <Card className="border-orange/30 bg-orange/5 relative">
       <button
-        onClick={onDismiss}
+        onClick={dismiss}
         className="absolute top-3 right-3 h-7 w-7 flex items-center justify-center rounded-md hover:bg-muted transition-colors cursor-pointer"
       >
         <X className="h-4 w-4 text-muted-foreground" />
