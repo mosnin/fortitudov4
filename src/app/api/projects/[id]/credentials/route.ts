@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { credentials, projects } from "@/db/schema";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
 import { encryptSecret, hasCredentialsKey } from "@/lib/crypto";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,6 +46,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       status: provide ? "provided" : "requested",
       secret: provide ? encryptSecret(parsed.data.secret!.trim()) : null,
       createdBy: user.id,
+    });
+
+    await recordEvent({
+      projectId: id,
+      actorId: user.id,
+      kind: provide ? "credential_provided" : "credential_requested",
+      summary: `${provide ? "Provided" : "Requested"} credential: ${parsed.data.label}`,
     });
 
     return NextResponse.json({ ok: true }, { status: 201 });

@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { recordEvent } from "@/lib/activity";
 
 export async function GET(req: Request) {
   try {
@@ -73,6 +74,13 @@ export async function POST(req: Request) {
         type,
       })
       .returning();
+
+    await recordEvent({
+      projectId,
+      actorId: user.id,
+      kind: "file_uploaded",
+      summary: `Uploaded "${name}"`,
+    });
 
     return NextResponse.json(file);
   } catch (error) {

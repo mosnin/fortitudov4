@@ -4,6 +4,7 @@ import { eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { milestones } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,6 +42,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         dueAt: parsed.data.dueAt ? new Date(parsed.data.dueAt) : null,
       })
       .returning({ id: milestones.id });
+
+    await recordEvent({
+      projectId: id,
+      actorId: user.id,
+      kind: "milestone_created",
+      summary: `Milestone added: ${parsed.data.label} · $${parsed.data.amountUsd.toLocaleString()}`,
+    });
 
     return NextResponse.json({ ok: true, id: created.id }, { status: 201 });
   } catch (error) {

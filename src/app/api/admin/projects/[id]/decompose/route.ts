@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { decomposeBuild, DecomposeBlockedError } from "@/lib/decompose";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,6 +17,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     const body = (await req.json().catch(() => ({}))) as { force?: boolean };
     const result = await decomposeBuild(id, { force: body?.force === true });
+    await recordEvent({
+      projectId: id,
+      actorId: user.id,
+      actorType: "agent",
+      kind: "plan_generated",
+      summary: `Build plan generated · ${result.phases} phases, ${result.tasks} tasks`,
+    });
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     // Started work would be wiped — surface as a confirmable conflict, not a 500.

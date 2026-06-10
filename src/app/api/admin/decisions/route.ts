@@ -4,6 +4,7 @@ import { projects } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { createDecisionRequest } from "@/lib/studio";
+import { recordEvent } from "@/lib/activity";
 import { z } from "zod";
 
 const schema = z.object({
@@ -50,6 +51,13 @@ export async function POST(req: Request) {
       blocking,
       dueAt: dueAt ? new Date(dueAt) : undefined,
       createdBy: user.id,
+    });
+
+    await recordEvent({
+      projectId,
+      actorId: user.id,
+      kind: "decision_opened",
+      summary: `Decision raised: ${title}`,
     });
 
     return NextResponse.json({ decision }, { status: 201 });

@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { recordEvent } from "@/lib/activity";
 
 const createRevisionSchema = z.object({
   projectId: z.string().uuid(),
@@ -70,6 +71,13 @@ export async function POST(req: Request) {
         description,
       })
       .returning();
+
+    await recordEvent({
+      projectId,
+      actorId: user.id,
+      kind: "revision_requested",
+      summary: `Revision requested: ${description.slice(0, 120)}`,
+    });
 
     return NextResponse.json(revision);
   } catch (error) {

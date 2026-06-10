@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { deliverables, projects, revisionRequests } from "@/db/schema";
 import { getOrCreateCurrentUser } from "@/lib/auth-utils";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -49,6 +50,13 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         description: parsed.data.note?.trim() || `Changes requested on "${deliverable.title}".`,
       });
     }
+
+    await recordEvent({
+      projectId: project.id,
+      actorId: user.id,
+      kind: "deliverable_reviewed",
+      summary: `${parsed.data.action === "approve" ? "Approved" : "Requested changes on"} deliverable "${deliverable.title}"`,
+    });
 
     return NextResponse.json({ ok: true, status });
   } catch (error) {
