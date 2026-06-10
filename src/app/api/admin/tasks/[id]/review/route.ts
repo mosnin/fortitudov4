@@ -2,12 +2,13 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq, desc } from "drizzle-orm";
 import { db } from "@/db";
-import { tasks, taskSubmissions } from "@/db/schema";
+import { tasks, taskSubmissions, projects } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { recordEvent } from "@/lib/activity";
 import { getProjectSettings } from "@/lib/project-settings";
 import { reviseTask } from "@/lib/orchestrator";
 import { notifyAdmins } from "@/lib/notify";
+import { addMemory } from "@/lib/memory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,7 +54,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     // Settle the latest pending submission, if any.
     const [latest] = await db
-      .select({ id: taskSubmissions.id })
+      .select({ id: taskSubmissions.id, summary: taskSubmissions.summary })
       .from(taskSubmissions)
       .where(eq(taskSubmissions.taskId, id))
       .orderBy(desc(taskSubmissions.createdAt))
@@ -67,6 +68,30 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
           reviewNotes: parsed.data.notes ?? null,
         })
         .where(eq(taskSubmissions.id, latest.id));
+    }
+
+    // Compounding memory: harvest approved work into the agency's knowledge so
+    // future briefs/concierge for THIS client recall it. Scoped to the build +
+    // client (never global), so nothing leaks across clients. Best-effort.
+    if (approve && updatedTask && latest?.summary) {
+      try {
+        const [proj] = await db
+          .select({ userId: projects.userId })
+          .from(projects)
+          .where(eq(projects.id, updatedTask.projectId));
+        await addMemory({
+          scope: "project",
+          projectId: updatedTask.projectId,
+          userId: proj?.userId ?? null,
+          kind: "pattern",
+          title: updatedTask.title,
+          // Strip the "🤖 Agent draft" preamble if present; cap length.
+          content: latest.summary.replace(/^🤖[^\n]*\n+/, "").slice(0, 2000),
+          createdBy: user.id,
+        });
+      } catch (e) {
+        console.error("memory capture failed", e instanceof Error ? e.message : e);
+      }
     }
 
     // Self-healing: in autonomous mode, the agent reads the feedback and
