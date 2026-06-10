@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { recordEvent } from "@/lib/activity";
 
 export async function GET(req: Request) {
   try {
@@ -57,7 +58,7 @@ export async function POST(req: Request) {
 
     await verifyProjectAccess(projectId, user.id, user.role);
 
-    const rateLimit = checkRateLimit(user.id + ":files", 20);
+    const rateLimit = await checkRateLimit(user.id + ":files", 20);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -73,6 +74,13 @@ export async function POST(req: Request) {
         type,
       })
       .returning();
+
+    await recordEvent({
+      projectId,
+      actorId: user.id,
+      kind: "file_uploaded",
+      summary: `Uploaded "${name}"`,
+    });
 
     return NextResponse.json(file);
   } catch (error) {

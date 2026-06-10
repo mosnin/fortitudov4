@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import postgres from "postgres";
 import { resolveConnectionString } from "@/db";
+import { getAuthenticatedUser } from "@/lib/auth-utils";
 
 export const dynamic = "force-dynamic";
 
 // Diagnostic: which DB the live deployment connects to, whether the schema is
 // applied, and what Postgres URLs / DB-related vars exist (names + hosts only,
-// never credentials).
+// never credentials). Infrastructure detail — admin eyes only.
 function hostOf(url: string): string {
   try {
     return new URL(url).host;
@@ -18,6 +19,16 @@ const isPgUrl = (v: string | undefined): v is string =>
   !!v && /^postgres(?:ql)?:\/\//.test(v);
 
 export async function GET() {
+  try {
+    const user = await getAuthenticatedUser();
+    if (user.role !== "admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  } catch (e) {
+    if (e instanceof NextResponse) return e;
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   // Every env var that holds a Postgres URL — name + host only.
   const postgresUrlVars = Object.entries(process.env)
     .filter(([, v]) => isPgUrl(v))

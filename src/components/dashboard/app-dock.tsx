@@ -1,8 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "motion/react";
 import { cn } from "@/lib/utils";
 import { AsciiField } from "@/components/dashboard/ascii-field";
 import {
@@ -12,107 +20,129 @@ import {
   LayoutGrid,
   Plus,
   X,
-  Bell,
-  Settings,
-  Code2,
-  ShoppingCart,
-  Bot,
-  Server,
+  ArrowUpRight,
   type LucideIcon,
 } from "lucide-react";
 
 // ── Dock items ──────────────────────────────────────────────────────────────
-// Real routes only. Verified to exist under src/app/(dashboard)/ and
-// src/app/onboarding. The center "New Brief" is the prominent orange action.
-type DockItem = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  accent?: boolean;
-};
+// The dock is the primary navigation: an Apple-style magnifying dock. Real
+// routes only, verified under src/app/(dashboard)/.
+type DockItem = { label: string; href: string; icon: LucideIcon; accent?: boolean };
 
 const dockItems: DockItem[] = [
   { label: "Home", href: "/dashboard", icon: Home },
   { label: "Builds", href: "/projects", icon: FolderKanban },
-  { label: "New Brief", href: "/onboarding", icon: Plus, accent: true },
+  { label: "New Brief", href: "/brief", icon: Plus, accent: true },
   { label: "Messages", href: "/messages", icon: MessageSquare },
 ];
 
 // ── Launchpad tiles ─────────────────────────────────────────────────────────
-// Every real destination in the studio app, with a one-line description.
-type Tile = {
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  description: string;
-  highlight?: boolean;
-};
+type Tile = { label: string; href: string; description: string; highlight?: boolean; staff?: boolean };
 
 const launchpadTiles: Tile[] = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-    description: "Your studio at a glance — builds, blueprints, decisions.",
-  },
-  {
-    label: "Builds",
-    href: "/projects",
-    icon: FolderKanban,
-    description: "Every project we're architecting and shipping for you.",
-  },
-  {
-    label: "New Brief",
-    href: "/onboarding",
-    icon: Plus,
-    description: "Start something new — we turn it into a Blueprint.",
-    highlight: true,
-  },
-  {
-    label: "Messages",
-    href: "/messages",
-    icon: MessageSquare,
-    description: "Talk directly with your architect.",
-  },
-  {
-    label: "Notifications",
-    href: "/notifications",
-    icon: Bell,
-    description: "Phase updates, deliverables, and decisions.",
-  },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-    description: "Account, profile, and workspace preferences.",
-  },
+  { label: "Dashboard", href: "/dashboard", description: "Your studio at a glance — builds, blueprints, decisions." },
+  { label: "Builds", href: "/projects", description: "Every project we're architecting and shipping for you." },
+  { label: "New Brief", href: "/brief", description: "Start something new — we turn it into a Blueprint.", highlight: true },
+  { label: "Messages", href: "/messages", description: "Talk directly with your architect." },
+  { label: "Notifications", href: "/notifications", description: "Phase updates, deliverables, and decisions." },
+  { label: "Settings", href: "/settings", description: "Account, profile, and workspace preferences." },
+  // Staff-only: surfaced for admins and team members.
+  { label: "Agency dashboard", href: "/admin", description: "Manage every client build, pipeline, and task.", staff: true },
 ];
 
-// The four building disciplines — flavor, not routes. The actionable path is
-// always "New Brief".
-const disciplines: { label: string; icon: LucideIcon }[] = [
-  { label: "Software", icon: Code2 },
-  { label: "Commerce", icon: ShoppingCart },
-  { label: "AI", icon: Bot },
-  { label: "Infrastructure", icon: Server },
-];
+const disciplines = ["Software", "Commerce", "AI", "Infrastructure"];
 
 function isActivePath(pathname: string, href: string) {
   if (href === "/dashboard") return pathname === "/dashboard";
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function AppDock() {
-  const pathname = usePathname();
-  const [menuOpen, setMenuOpen] = useState(false);
+// Base / magnified icon-container sizes (px) and the cursor influence radius.
+const BASE = 46;
+const MAX = 78;
+const ICON_BASE = 20;
+const ICON_MAX = 34;
+const RADIUS = 130;
 
-  // Lock body scroll while the launchpad is open (mirrors the header sidebar).
+function DockButton({
+  item,
+  mouseX,
+  active,
+}: {
+  item: DockItem;
+  mouseX: MotionValue<number>;
+  active: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const distance = useTransform(mouseX, (val) => {
+    const b = ref.current?.getBoundingClientRect() ?? { x: 0, width: BASE };
+    return val - b.x - b.width / 2;
+  });
+
+  const sizeSync = useTransform(distance, [-RADIUS, 0, RADIUS], [BASE, MAX, BASE]);
+  const iconSync = useTransform(distance, [-RADIUS, 0, RADIUS], [ICON_BASE, ICON_MAX, ICON_BASE]);
+  const spring = { mass: 0.1, stiffness: 170, damping: 14 };
+  const size = useSpring(sizeSync, spring);
+  const iconSize = useSpring(iconSync, spring);
+
+  const Icon = item.icon;
+
+  return (
+    <Link href={item.href} aria-label={item.label} aria-current={active ? "page" : undefined}>
+      <motion.div
+        ref={ref}
+        style={{ width: size, height: size }}
+        className="group relative flex items-center justify-center"
+      >
+        {/* Tooltip */}
+        <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-border/60 bg-background/90 px-2.5 py-1 text-xs font-medium opacity-0 shadow-lg backdrop-blur-md transition-opacity duration-150 group-hover:opacity-100 dark:border-white/10 dark:bg-charcoal/90">
+          {item.label}
+        </span>
+
+        <span
+          className={cn(
+            "flex h-full w-full items-center justify-center rounded-full transition-colors",
+            item.accent
+              ? "bg-orange text-white shadow-lg shadow-orange/30"
+              : active
+                ? "bg-orange/15 text-orange ring-1 ring-inset ring-orange/30"
+                : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+          )}
+        >
+          <motion.span style={{ width: iconSize, height: iconSize }} className="flex">
+            <Icon className="h-full w-full" strokeWidth={item.accent ? 2.4 : 2} />
+          </motion.span>
+        </span>
+
+        {/* Running-app dot */}
+        {active && !item.accent && (
+          <span className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-orange" />
+        )}
+      </motion.div>
+    </Link>
+  );
+}
+
+export function AppDock({ isStaff = false }: { isStaff?: boolean }) {
+  const pathname = usePathname();
+  const tiles = launchpadTiles.filter((t) => !t.staff || isStaff);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const mouseX = useMotionValue(Infinity);
+
+  // Apps launcher behaves like a dock item visually; give it the same magnify.
+  const appsRef = useRef<HTMLDivElement>(null);
+  const appsDistance = useTransform(mouseX, (val) => {
+    const b = appsRef.current?.getBoundingClientRect() ?? { x: 0, width: BASE };
+    return val - b.x - b.width / 2;
+  });
+  const appsSpring = { mass: 0.1, stiffness: 170, damping: 14 };
+  const appsSize = useSpring(useTransform(appsDistance, [-RADIUS, 0, RADIUS], [BASE, MAX, BASE]), appsSpring);
+  const appsIcon = useSpring(useTransform(appsDistance, [-RADIUS, 0, RADIUS], [ICON_BASE, ICON_MAX, ICON_BASE]), appsSpring);
+
+  // Lock body scroll while the launchpad is open.
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
@@ -121,215 +151,175 @@ export function AppDock() {
   // Close on Escape.
   useEffect(() => {
     if (!menuOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMenuOpen(false);
-    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setMenuOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
   return (
     <>
-      {/* ── Floating bottom dock ── */}
-      <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 px-3 w-auto max-w-[calc(100%-1rem)]">
-        <div className="flex items-center gap-1 rounded-3xl border border-border/60 bg-background/80 px-2 py-2 shadow-lg shadow-black/20 backdrop-blur-xl sm:gap-2 sm:px-3">
-          {dockItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActivePath(pathname, item.href);
+      {/* ── Floating magnifying dock ── */}
+      <motion.nav
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+        className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 px-3"
+        aria-label="Primary"
+      >
+        <div
+          onMouseMove={(e) => mouseX.set(e.clientX)}
+          onMouseLeave={() => mouseX.set(Infinity)}
+          className="flex items-end gap-2 rounded-full border border-border/60 bg-background/80 px-3 py-2 shadow-xl shadow-black/10 backdrop-blur-2xl dark:border-white/10 dark:bg-charcoal/80 dark:shadow-black/50 dark:ring-1 dark:ring-inset dark:ring-white/5"
+        >
+          {dockItems.map((item) => (
+            <DockButton
+              key={item.href}
+              item={item}
+              mouseX={mouseX}
+              active={isActivePath(pathname, item.href)}
+            />
+          ))}
 
-            if (item.accent) {
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-label={item.label}
-                  className="group flex flex-col items-center gap-1"
-                >
-                  <span
-                    className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-2xl bg-orange text-white shadow-md shadow-orange/30 transition-all duration-200 group-hover:bg-orange-dark group-hover:scale-105 sm:h-14 sm:w-14",
-                      active && "ring-2 ring-orange/50 ring-offset-2 ring-offset-background"
-                    )}
-                  >
-                    <Icon className="h-6 w-6" />
-                  </span>
-                  <span className="hidden text-[11px] font-medium text-orange sm:block">
-                    {item.label}
-                  </span>
-                </Link>
-              );
-            }
+          <span className="mx-0.5 mb-3 h-7 w-px self-center bg-border/60 dark:bg-white/10" aria-hidden="true" />
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-label={item.label}
-                aria-current={active ? "page" : undefined}
-                className="group flex flex-col items-center gap-1"
-              >
-                <span
-                  className={cn(
-                    "flex h-11 w-11 items-center justify-center rounded-2xl transition-colors duration-200 sm:h-12 sm:w-12",
-                    active
-                      ? "bg-orange/10 text-orange"
-                      : "text-muted-foreground group-hover:bg-muted group-hover:text-foreground"
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                </span>
-                <span
-                  className={cn(
-                    "hidden text-[11px] sm:block",
-                    active ? "font-medium text-orange" : "text-muted-foreground"
-                  )}
-                >
-                  {item.label}
-                </span>
-              </Link>
-            );
-          })}
-
-          {/* Divider */}
-          <span className="mx-0.5 h-8 w-px bg-border/60" aria-hidden="true" />
-
-          {/* Apps / Menu */}
+          {/* Apps launcher */}
           <button
             type="button"
             onClick={() => setMenuOpen(true)}
             aria-label="Open apps menu"
             aria-haspopup="dialog"
             aria-expanded={menuOpen}
-            className="group flex flex-col items-center gap-1"
           >
-            <span
-              className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-2xl transition-colors duration-200 sm:h-12 sm:w-12",
-                menuOpen
-                  ? "bg-orange/10 text-orange"
-                  : "text-muted-foreground group-hover:bg-muted group-hover:text-foreground"
-              )}
+            <motion.div
+              ref={appsRef}
+              style={{ width: appsSize, height: appsSize }}
+              className="group relative flex items-center justify-center"
             >
-              <LayoutGrid className="h-5 w-5" />
-            </span>
-            <span
-              className={cn(
-                "hidden text-[11px] sm:block",
-                menuOpen ? "font-medium text-orange" : "text-muted-foreground"
-              )}
-            >
-              Apps
-            </span>
+              <span className="pointer-events-none absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-border/60 bg-background/90 px-2.5 py-1 text-xs font-medium opacity-0 shadow-lg backdrop-blur-md transition-opacity duration-150 group-hover:opacity-100 dark:border-white/10 dark:bg-charcoal/90">
+                Apps
+              </span>
+              <span
+                className={cn(
+                  "flex h-full w-full items-center justify-center rounded-full transition-colors",
+                  menuOpen
+                    ? "bg-orange/15 text-orange ring-1 ring-inset ring-orange/30"
+                    : "text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
+                )}
+              >
+                <motion.span style={{ width: appsIcon, height: appsIcon }} className="flex">
+                  <LayoutGrid className="h-full w-full" />
+                </motion.span>
+              </span>
+            </motion.div>
           </button>
         </div>
-      </div>
+      </motion.nav>
 
       {/* ── Full-page launchpad ── */}
-      {menuOpen && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Apps menu"
-          className="fixed inset-0 z-[100] animate-fade-in"
-        >
-          {/* Backdrop — charcoal + ASCII signature + radial orange glow */}
-          <button
-            type="button"
-            aria-label="Close apps menu"
-            onClick={() => setMenuOpen(false)}
-            className="absolute inset-0 cursor-default bg-charcoal-dark/95 backdrop-blur-xl"
-          />
-          <AsciiField className="pointer-events-none absolute inset-0 h-full w-full opacity-40" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_30%,rgba(249,115,22,0.18),transparent_60%)]" />
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Apps menu"
+            className="fixed inset-0 z-[100]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+          >
+            <button
+              type="button"
+              aria-label="Close apps menu"
+              onClick={() => setMenuOpen(false)}
+              className="absolute inset-0 cursor-default bg-charcoal-dark/95 backdrop-blur-xl"
+            />
+            <AsciiField className="pointer-events-none absolute inset-0 h-full w-full opacity-40" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_25%,rgba(249,115,22,0.16),transparent_60%)]" />
 
-          {/* Content */}
-          <div className="animate-scale-in pointer-events-none relative flex h-full flex-col overflow-y-auto">
-            {/* Header row */}
-            <div className="pointer-events-auto flex items-center justify-between px-5 pt-6 sm:px-8">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-orange/80">
-                  Fortitudo // Studio
-                </p>
-                <h2 className="font-brand mt-1 text-2xl font-bold text-foreground">
-                  Apps
-                </h2>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              className="pointer-events-none relative flex h-full flex-col overflow-y-auto"
+            >
+              <div className="pointer-events-auto flex items-center justify-between px-5 pt-7 sm:px-10">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.25em] text-orange/80">
+                    Fortitudo // Studio
+                  </p>
+                  <h2 className="font-brand mt-1 text-3xl text-white sm:text-4xl">Everything</h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(false)}
+                  aria-label="Close"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white transition-colors hover:bg-white/10"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                aria-label="Close"
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-border/60 bg-background/40 text-foreground transition-colors hover:border-orange/50 hover:bg-background/70"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
 
-            {/* Tile grid */}
-            <div className="pointer-events-auto mx-auto w-full max-w-5xl flex-1 px-5 py-8 sm:px-8">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {launchpadTiles.map((tile) => {
-                  const Icon = tile.icon;
-                  const active = isActivePath(pathname, tile.href);
-                  return (
-                    <Link
-                      key={tile.href}
-                      href={tile.href}
-                      onClick={() => setMenuOpen(false)}
-                      className={cn(
-                        "group relative flex flex-col gap-3 rounded-3xl border bg-card/70 p-5 backdrop-blur-xl transition-all duration-200 hover:-translate-y-0.5 hover:border-orange/50 hover:bg-card",
-                        tile.highlight
-                          ? "border-orange/40 bg-orange/[0.06]"
-                          : "border-border/60",
-                        active && "ring-1 ring-orange/40"
-                      )}
-                    >
-                      <span
+              <div className="pointer-events-auto mx-auto w-full max-w-5xl flex-1 px-5 py-10 sm:px-10">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {tiles.map((tile, i) => {
+                    const active = isActivePath(pathname, tile.href);
+                    return (
+                      <Link
+                        key={tile.href}
+                        href={tile.href}
+                        onClick={() => setMenuOpen(false)}
                         className={cn(
-                          "flex h-12 w-12 items-center justify-center rounded-2xl transition-colors",
+                          "group relative flex flex-col justify-between gap-8 overflow-hidden rounded-3xl border p-6 transition-all duration-300 hover:-translate-y-1",
                           tile.highlight
-                            ? "bg-orange text-white"
-                            : "bg-orange/10 text-orange group-hover:bg-orange/20"
+                            ? "border-orange/40 bg-orange/[0.07] hover:bg-orange/[0.12]"
+                            : "border-white/10 bg-white/[0.03] hover:border-white/25 hover:bg-white/[0.06]",
+                          active && "ring-1 ring-orange/40"
                         )}
                       >
-                        <Icon className="h-6 w-6" />
-                      </span>
-                      <div>
-                        <h3 className="font-brand text-lg font-bold text-foreground">
-                          {tile.label}
-                        </h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {tile.description}
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-
-              {/* Disciplines — flavor strip */}
-              <div className="mt-8">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                  What we build
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {disciplines.map((d) => {
-                    const Icon = d.icon;
-                    return (
-                      <span
-                        key={d.label}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-border/60 bg-background/40 px-3.5 py-2 text-sm text-muted-foreground"
-                      >
-                        <Icon className="h-4 w-4 text-orange" />
-                        {d.label}
-                      </span>
+                        <div className="flex items-start justify-between">
+                          <span
+                            className={cn(
+                              "font-brand text-sm tabular-nums",
+                              tile.highlight ? "text-orange" : "text-white/40"
+                            )}
+                          >
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <ArrowUpRight
+                            className={cn(
+                              "h-5 w-5 -translate-y-0.5 translate-x-0.5 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100",
+                              tile.highlight ? "text-orange" : "text-white"
+                            )}
+                          />
+                        </div>
+                        <div>
+                          <h3 className="font-brand text-2xl text-white">{tile.label}</h3>
+                          <p className="mt-1.5 text-sm leading-relaxed text-white/55">
+                            {tile.description}
+                          </p>
+                        </div>
+                      </Link>
                     );
                   })}
                 </div>
+
+                <div className="mt-10">
+                  <p className="text-xs uppercase tracking-[0.25em] text-white/40">What we build</p>
+                  <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+                    {disciplines.map((d) => (
+                      <span key={d} className="font-brand text-xl text-white/70">
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

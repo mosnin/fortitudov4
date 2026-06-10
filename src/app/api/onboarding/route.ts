@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   try {
     const user = await getAuthenticatedUser();
 
-    const rateLimit = checkRateLimit(user.id + ":brief", 10);
+    const rateLimit = await checkRateLimit(user.id + ":brief", 10);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

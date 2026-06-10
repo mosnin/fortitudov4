@@ -59,7 +59,7 @@ export async function POST(req: Request) {
 
     await verifyProjectAccess(projectId, user.id, user.role);
 
-    const rateLimit = checkRateLimit(user.id + ":analytics", 60);
+    const rateLimit = await checkRateLimit(user.id + ":analytics", 60);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

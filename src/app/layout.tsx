@@ -1,21 +1,33 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { PwaRegister } from "@/components/pwa-register";
+import { Toaster } from "@/components/ui/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fortitudo Agency | Digital Solutions Built for Growth",
+  title: "Fortitudo | A bespoke digital studio for the AI age",
   description:
-    "Web applications, ecommerce stores, funnels, AI automation, and more. Choose your service and watch your project come to life.",
+    "Fortitudo designs and builds bespoke software, commerce, AI, and infrastructure — scoped into a real Blueprint and tracked from first conversation to launch.",
   metadataBase: new URL("https://fortitudo.agency"),
+  applicationName: "Fortitudo",
+  appleWebApp: {
+    capable: true,
+    title: "Fortitudo",
+    statusBarStyle: "black-translucent",
+  },
   openGraph: {
-    title: "Fortitudo Agency | Digital Solutions Built for Growth",
+    title: "Fortitudo | A bespoke digital studio for the AI age",
     description:
-      "Web applications, ecommerce stores, funnels, AI automation, and more.",
+      "Bespoke software, commerce, AI, and infrastructure — scoped into a real Blueprint and tracked from brief to launch.",
     url: "https://fortitudo.agency",
-    siteName: "Fortitudo Agency",
+    siteName: "Fortitudo",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#141414",
 };
 
 export default function RootLayout({
@@ -70,6 +82,8 @@ export default function RootLayout({
       <html lang="en" className="dark h-full antialiased" suppressHydrationWarning>
         <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
           <ThemeProvider>{children}</ThemeProvider>
+          <Toaster />
+          <PwaRegister />
         </body>
       </html>
     </ClerkProvider>

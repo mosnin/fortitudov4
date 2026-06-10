@@ -79,6 +79,9 @@ export const projects = pgTable("projects", {
   architectId: uuid("architect_id").references(() => teamMembers.id, {
     onDelete: "set null",
   }),
+  // Estimation loop: scoped vs. actual effort (hours) to sharpen pricing over time.
+  estimatedHours: integer("estimated_hours"),
+  actualHours: integer("actual_hours"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -141,6 +144,116 @@ export const payments = pgTable("payments", {
 }, (table) => [
   index("idx_payments_project_id").on(table.projectId),
   index("idx_payments_user_id").on(table.userId),
+]);
+
+// Milestones — phase-gated billing. Each is its own payable slice of a build.
+export const milestones = pgTable("milestones", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  label: varchar("label", { length: 255 }).notNull(),
+  description: text("description"),
+  amount: integer("amount").notNull(), // cents
+  order: integer("order").notNull().default(0),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending | paid
+  dueAt: timestamp("due_at"),
+  paidAt: timestamp("paid_at"),
+  paymentId: uuid("payment_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_milestones_project_id").on(table.projectId),
+]);
+
+// Tasks — admins assign work to team members; team members track their queue.
+export const tasks = pgTable("tasks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  phaseId: uuid("phase_id").references(() => projectPhases.id, { onDelete: "set null" }),
+  assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: varchar("status", { length: 50 }).notNull().default("todo"), // todo | in_progress | in_review | done | cancelled
+  order: integer("order").notNull().default(0),
+  kind: varchar("kind", { length: 40 }).notNull().default("build"), // design|build|qa|devops|content|research
+  acceptanceCriteria: text("acceptance_criteria"),
+  estimateHours: integer("estimate_hours"),
+  submittedAt: timestamp("submitted_at"),
+  reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+  reviewNotes: text("review_notes"),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_tasks_project_id").on(table.projectId),
+  index("idx_tasks_assignee_id").on(table.assigneeId),
+]);
+
+// Task dependency edges — the build DAG. A task is "ready" only when every
+// task it depends on is done.
+export const taskDependencies = pgTable("task_dependencies", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  taskId: uuid("task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+  dependsOnTaskId: uuid("depends_on_task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+}, (table) => [
+  index("idx_task_deps_task").on(table.taskId),
+]);
+
+// Task submissions — a team member or AI agent submits work; an admin reviews.
+export const taskSubmissions = pgTable("task_submissions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  taskId: uuid("task_id").references(() => tasks.id, { onDelete: "cascade" }).notNull(),
+  submittedBy: uuid("submitted_by").references(() => users.id, { onDelete: "set null" }),
+  summary: text("summary").notNull(),
+  artifactUrl: text("artifact_url"),
+  deliverableId: uuid("deliverable_id"),
+  status: varchar("status", { length: 50 }).notNull().default("pending"), // pending | approved | changes_requested
+  reviewNotes: text("review_notes"),
+  reviewedBy: uuid("reviewed_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_task_submissions_task").on(table.taskId),
+]);
+
+// Credentials vault — two-way login exchange. `secret` holds an AES-256-GCM
+// encrypted blob (base64 iv|tag|ciphertext); plaintext is never stored.
+export const credentials = pgTable("credentials", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  label: varchar("label", { length: 255 }).notNull(),
+  status: varchar("status", { length: 50 }).notNull().default("requested"), // requested | provided
+  secret: text("secret"),
+  note: text("note"),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_credentials_project_id").on(table.projectId),
+]);
+
+// Editable agent context + app-wide settings (key/value).
+export const appSettings = pgTable("app_settings", {
+  key: varchar("key", { length: 120 }).primaryKey(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Invites — an admin can create a build for a client by email; the client
+// claims it (auto-linked by email) on first sign-up.
+export const invites = pgTable("invites", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  code: varchar("code", { length: 24 }).notNull().unique(),
+  email: varchar("email", { length: 255 }).notNull(),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  claimedAt: timestamp("claimed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_invites_email").on(table.email),
 ]);
 
 // Messages
@@ -305,6 +418,12 @@ export type Message = typeof messages.$inferSelect;
 export type File = typeof files.$inferSelect;
 export type RevisionRequest = typeof revisionRequests.$inferSelect;
 export type Payment = typeof payments.$inferSelect;
+export type Milestone = typeof milestones.$inferSelect;
+export type Invite = typeof invites.$inferSelect;
+export type Task = typeof tasks.$inferSelect;
+export type TaskDependency = typeof taskDependencies.$inferSelect;
+export type TaskSubmission = typeof taskSubmissions.$inferSelect;
+export type Credential = typeof credentials.$inferSelect;
 export type OnboardingSubmission = typeof onboardingSubmissions.$inferSelect;
 export type Notification = typeof notifications.$inferSelect;
 export type ProjectComment = typeof projectComments.$inferSelect;
@@ -449,6 +568,10 @@ export const deliverables = pgTable("deliverables", {
   url: text("url"),
   description: text("description"),
   metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  // Client review: pending → approved | changes_requested.
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  reviewedAt: timestamp("reviewed_at"),
+  clientNote: text("client_note"),
   releasedAt: timestamp("released_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
@@ -510,3 +633,86 @@ export const businessProfiles = pgTable("business_profiles", {
 ]);
 
 export type BusinessProfile = typeof businessProfiles.$inferSelect;
+
+// ── Agentic foundation ──────────────────────────────────────────────────────
+
+// Per-build configuration: how autonomous the agents may be, and the bespoke
+// brand theming for this client's studio.
+export const projectSettings = pgTable("project_settings", {
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .primaryKey(),
+  // manual = humans do everything; assisted = agents draft, humans approve
+  // (default); autonomous = agents act, humans are notified and can veto.
+  autonomyLevel: varchar("autonomy_level", { length: 20 }).notNull().default("assisted"),
+  brandColor: varchar("brand_color", { length: 9 }), // hex, themes the client portal
+  brandName: varchar("brand_name", { length: 255 }),
+  conciergeEnabled: boolean("concierge_enabled").notNull().default(true),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// The replayable, auditable timeline of everything that happens on a build —
+// human, agent, and system actions alike. Radical transparency as a feature.
+export const activityEvents = pgTable("activity_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+  actorType: varchar("actor_type", { length: 20 }).notNull().default("human"), // human | agent | system
+  kind: varchar("kind", { length: 50 }).notNull(),
+  summary: text("summary").notNull(),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_activity_project_id").on(table.projectId),
+  index("idx_activity_created_at").on(table.createdAt),
+]);
+
+// Compounding knowledge: client preferences, reusable patterns, decisions, and
+// build facts the agents reason over. The studio gets smarter every build.
+export const agencyMemory = pgTable("agency_memory", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  scope: varchar("scope", { length: 20 }).notNull().default("project"), // global | client | project
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+  kind: varchar("kind", { length: 50 }).notNull(), // preference | pattern | decision | fact | component
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  tags: jsonb("tags").$type<string[]>(),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_memory_scope").on(table.scope),
+  index("idx_memory_user_id").on(table.userId),
+  index("idx_memory_project_id").on(table.projectId),
+]);
+
+export type ProjectSettings = typeof projectSettings.$inferSelect;
+export type ActivityEvent = typeof activityEvents.$inferSelect;
+export type AgencyMemory = typeof agencyMemory.$inferSelect;
+
+// Issues — anyone on a build (client, staff, or the concierge agent) can raise
+// a problem; the studio triages, assigns, and resolves it with a full trail.
+export const issues = pgTable("issues", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  raisedBy: uuid("raised_by").references(() => users.id, { onDelete: "set null" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  severity: varchar("severity", { length: 20 }).notNull().default("medium"), // low | medium | high | critical
+  status: varchar("status", { length: 20 }).notNull().default("open"), // open | in_progress | resolved | closed
+  assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+  resolution: text("resolution"),
+  resolvedBy: uuid("resolved_by").references(() => users.id, { onDelete: "set null" }),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_issues_project_id").on(table.projectId),
+  index("idx_issues_status").on(table.status),
+]);
+
+export type Issue = typeof issues.$inferSelect;

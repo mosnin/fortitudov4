@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server";
-import { createHmac, timingSafeEqual } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import { db } from "@/db";
-import { payments, projects } from "@/db/schema";
+import { payments, projects, milestones, invoices } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { recordEvent } from "@/lib/activity";
+
+// e.g. INV-20260605-3F9A2C — unique constraint on invoice_number backstops us.
+function genInvoiceNumber(): string {
+  const d = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  return `INV-${d}-${randomBytes(3).toString("hex").toUpperCase()}`;
+}
 
 function getSignatureHeader(req: Request): string | null {
   return (
@@ -37,7 +44,7 @@ export async function POST(req: Request) {
       req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
       req.headers.get("x-real-ip") ??
       "unknown";
-    const rateLimit = checkRateLimit(`creem-webhook:${ip}`, 100, 60_000);
+    const rateLimit = await checkRateLimit(`creem-webhook:${ip}`, 100, 60_000);
     if (!rateLimit.success) {
       return NextResponse.json(
         { error: "Too many requests" },
@@ -81,6 +88,7 @@ export async function POST(req: Request) {
       // metadata[paymentId], so resolve the specific payment row to settle.
       const projectId: string | undefined = data.metadata?.projectId;
       const paymentId: string | undefined = data.metadata?.paymentId;
+      const milestoneId: string | undefined = data.metadata?.milestoneId;
       const creemPaymentId: string | undefined = data.id;
 
       if (!projectId) {
@@ -110,12 +118,12 @@ export async function POST(req: Request) {
       // the same creemPaymentId and violate its unique constraint.
       const [payment] = paymentId
         ? await db
-            .select({ id: payments.id })
+            .select()
             .from(payments)
             .where(and(eq(payments.id, paymentId), eq(payments.projectId, projectId)))
             .limit(1)
         : await db
-            .select({ id: payments.id })
+            .select()
             .from(payments)
             .where(and(eq(payments.projectId, projectId), eq(payments.status, "pending")))
             .limit(1);
@@ -125,24 +133,52 @@ export async function POST(req: Request) {
         return NextResponse.json({ received: true, skipped: "no matching payment" });
       }
 
-      // Update the specific payment, then advance the project.
+      // Settle atomically: payment + project + milestone + invoice either all
+      // land or none do — a partial failure must not leave a paid-looking
+      // payment with a stalled project.
       try {
-        await db
-          .update(payments)
-          .set({
-            status: "completed",
-            creemPaymentId: creemPaymentId ?? null,
-            updatedAt: new Date(),
-          })
-          .where(eq(payments.id, payment.id));
+        await db.transaction(async (tx) => {
+          await tx
+            .update(payments)
+            .set({
+              status: "completed",
+              creemPaymentId: creemPaymentId ?? null,
+              updatedAt: new Date(),
+            })
+            .where(eq(payments.id, payment.id));
 
-        await db
-          .update(projects)
-          .set({
-            status: "in_progress",
-            updatedAt: new Date(),
-          })
-          .where(eq(projects.id, projectId));
+          await tx
+            .update(projects)
+            .set({
+              status: "in_progress",
+              updatedAt: new Date(),
+            })
+            .where(eq(projects.id, projectId));
+
+          // If this payment settled a milestone, mark it paid too.
+          let itemLabel = "Build payment";
+          if (milestoneId) {
+            const [m] = await tx
+              .update(milestones)
+              .set({ status: "paid", paidAt: new Date(), paymentId: payment.id })
+              .where(eq(milestones.id, milestoneId))
+              .returning({ label: milestones.label });
+            if (m?.label) itemLabel = `Milestone — ${m.label}`;
+          }
+
+          // The accounting record. Idempotency above guarantees one per payment.
+          await tx.insert(invoices).values({
+            paymentId: payment.id,
+            projectId,
+            userId: payment.userId,
+            invoiceNumber: genInvoiceNumber(),
+            items: [{ description: itemLabel, amount: (payment.amount / 100).toFixed(2) }],
+            subtotal: payment.amount,
+            tax: 0,
+            total: payment.amount,
+            status: "paid",
+          });
+        });
       } catch (dbError) {
         console.error(
           "Creem webhook: failed to update payment/project",
@@ -158,6 +194,14 @@ export async function POST(req: Request) {
           { status: 500 }
         );
       }
+
+      await recordEvent({
+        projectId,
+        actorType: "system",
+        kind: "payment_settled",
+        summary: `Payment settled · $${(payment.amount / 100).toFixed(2)}`,
+        metadata: { paymentId: payment.id, milestoneId: milestoneId ?? null },
+      });
     }
 
     return NextResponse.json({ received: true });

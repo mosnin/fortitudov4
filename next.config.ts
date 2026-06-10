@@ -19,7 +19,7 @@ const cspHeader = [
   "font-src 'self' https://fonts.gstatic.com",
   // clerk-telemetry.com receives clerk-js usage telemetry via fetch; without it
   // the request is CSP-blocked and logs a console error on every auth page.
-  `connect-src 'self' ${clerkOrigins.join(" ")} https://clerk-telemetry.com https://checkout.creem.io`,
+  `connect-src 'self' ${clerkOrigins.join(" ")} https://clerk-telemetry.com https://checkout.creem.io https://*.ufs.sh https://*.uploadthing.com https://uploadthing.com`,
   `frame-src 'self' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
   "worker-src 'self' blob:",
 ].join("; ");

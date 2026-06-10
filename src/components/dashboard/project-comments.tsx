@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Reply, MessageCircle } from "lucide-react";
@@ -168,7 +168,7 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const fetchComments = () => {
+  const fetchComments = useCallback(() => {
     fetch(`/api/comments?projectId=${projectId}`)
       .then((res) => res.json())
       .then((data) => {
@@ -178,11 +178,11 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
         setComments([]);
       })
       .finally(() => setLoading(false));
-  };
+  }, [projectId]);
 
   useEffect(() => {
     fetchComments();
-  }, [projectId]);
+  }, [fetchComments]);
 
   const handleNewComment = async () => {
     if (!newComment.trim()) return;

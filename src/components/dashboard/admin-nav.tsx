@@ -6,17 +6,27 @@ import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
   Users,
+  UsersRound,
   FolderKanban,
   CreditCard,
   MessageSquare,
+  Columns3,
+  Bot,
+  Brain,
+  ListChecks,
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/admin", icon: LayoutDashboard },
+  { label: "Pipeline", href: "/admin/pipeline", icon: Columns3 },
+  { label: "My tasks", href: "/admin/tasks", icon: ListChecks },
   { label: "Clients", href: "/admin/clients", icon: Users },
+  { label: "Team", href: "/admin/team", icon: UsersRound },
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { label: "Memory", href: "/admin/memory", icon: Brain },
+  { label: "Agent", href: "/admin/agent", icon: Bot },
 ];
 
 export function AdminNav() {
@@ -35,10 +45,10 @@ export function AdminNav() {
             key={item.href}
             href={item.href}
             className={cn(
-              "flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+              "flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors",
               isActive
-                ? "bg-orange/10 text-orange font-medium"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                ? "bg-orange/15 text-orange font-medium ring-1 ring-inset ring-orange/30"
+                : "text-white/60 hover:text-white hover:bg-white/5"
             )}
           >
             <Icon className="h-4 w-4" />

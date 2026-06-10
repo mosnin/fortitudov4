@@ -36,7 +36,7 @@ export async function PATCH(req: Request) {
   try {
     const user = await getAuthenticatedUser();
 
-    const rateLimit = checkRateLimit(user.id + ":notifications", 30);
+    const rateLimit = await checkRateLimit(user.id + ":notifications", 30);
     if (!rateLimit.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

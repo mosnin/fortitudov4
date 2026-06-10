@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Send, MessageSquare } from "lucide-react";
-import { Reveal } from "@/components/ui/motion";
+import { ArrowUp, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AsciiField } from "@/components/dashboard/ascii-field";
+import { Reveal } from "@/components/ui/motion";
+import { toast } from "@/components/ui/toast";
 
 interface Message {
   id: string;
@@ -20,7 +22,7 @@ interface Project {
   serviceType: string;
 }
 
-const card = "rounded-3xl border border-border/60 bg-card/80 backdrop-blur-xl";
+const easeOut = [0.16, 1, 0.3, 1] as const;
 
 export default function MessagesPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -29,68 +31,90 @@ export default function MessagesPage() {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Fetch projects
   useEffect(() => {
     fetch("/api/projects")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) {
+        if (Array.isArray(data) && data.length > 0) {
           setProjects(data);
-          if (data.length > 0) setSelectedProjectId(data[0].id);
+          // Honor a ?project=<id> deep-link (e.g. from a notification);
+          // otherwise open the most recent build's thread.
+          const wanted = new URLSearchParams(window.location.search).get("project");
+          const match = wanted && data.find((p: Project) => p.id === wanted);
+          setSelectedProjectId(match ? match.id : data[0].id);
         }
       })
-      .catch(() => {
-        setError("Failed to load projects. Please try again.");
-        setLoading(false);
-      })
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
-  // Fetch messages when project changes
+  const loadMessages = useCallback(async () => {
+    if (!selectedProjectId) return;
+    try {
+      const res = await fetch(`/api/messages?projectId=${selectedProjectId}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
+      // Only replace if something actually changed — avoids needless re-scroll.
+      setMessages((prev) => {
+        const known = new Set(prev.map((m) => m.id));
+        const hasNew = data.some((m: Message) => !known.has(m.id));
+        return hasNew || prev.length !== data.length ? data : prev;
+      });
+    } catch {
+      /* a poll hiccup shouldn't blank the thread */
+    }
+  }, [selectedProjectId]);
+
+  // Switch threads: clear, load, and mark the studio's messages read.
   useEffect(() => {
     if (!selectedProjectId) return;
     setMessages([]);
-    fetch(`/api/messages?projectId=${selectedProjectId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setMessages(data);
-        }
-      })
-      .catch(() => {
-        setMessages([]);
-      });
-  }, [selectedProjectId]);
+    loadMessages();
+    fetch("/api/messages/read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ projectId: selectedProjectId }),
+    }).catch(() => {});
+  }, [selectedProjectId, loadMessages]);
 
-  // Auto-scroll to bottom
+  // Keep the open thread live — poll + refetch when the tab regains focus.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    if (!selectedProjectId) return;
+    const timer = setInterval(loadMessages, 12000);
+    const onFocus = () => loadMessages();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [selectedProjectId, loadMessages]);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+  }, [messages, sending]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedProjectId) return;
-
+    if (!newMessage.trim() || !selectedProjectId || sending) return;
     setSending(true);
     try {
       const res = await fetch("/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          projectId: selectedProjectId,
-          content: newMessage,
-        }),
+        body: JSON.stringify({ projectId: selectedProjectId, content: newMessage }),
       });
       if (res.ok) {
         const msg = await res.json();
         setMessages((prev) => [...prev, msg]);
         setNewMessage("");
+      } else {
+        toast.error("Couldn't send", "Your message wasn't delivered — try again.");
       }
     } catch {
-      window.alert("Failed to send message. Please try again.");
+      toast.error("Couldn't send", "Check your connection and try again.");
     } finally {
       setSending(false);
     }
@@ -98,139 +122,125 @@ export default function MessagesPage() {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
-  if (loading) {
-    return (
-      <div className="space-y-8">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Comms</p>
-          <h1 className="mt-2 text-2xl font-brand sm:text-3xl">Messages</h1>
-          <p className="text-muted-foreground mt-1">Loading…</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-8">
-      <Reveal>
-        <p className="text-xs uppercase tracking-[0.2em] text-orange/80">Fortitudo // Comms</p>
-        <h1 className="mt-2 text-2xl font-brand sm:text-3xl">Messages</h1>
-        <p className="text-muted-foreground mt-1">
-          Chat with the Fortitudo team about your project.
-        </p>
-        {error && <p className="text-destructive mt-1 text-sm">{error}</p>}
+    <div className="mx-auto flex h-[calc(100vh-12rem)] max-w-3xl flex-col">
+      {/* Masthead */}
+      <Reveal className="relative mb-5 shrink-0 overflow-hidden rounded-3xl border border-border/60 bg-charcoal p-6 sm:p-7">
+        <AsciiField className="absolute inset-0 h-full w-full opacity-50" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_50%_0%,rgba(249,115,22,0.16),transparent_65%)]" />
+        <div className="relative z-10">
+          <p className="text-xs uppercase tracking-[0.25em] text-orange/80">Messages</p>
+          <h1 className="font-brand mt-2 text-2xl text-white sm:text-3xl">Talk to your architect</h1>
+          <p className="mt-2 max-w-xl text-sm text-white/60">
+            Direct line to the Fortitudo team building your project.
+          </p>
+        </div>
       </Reveal>
 
-      {projects.length === 0 ? (
-        <Reveal delay={0.1} className={cn(card, "flex flex-col items-center justify-center px-6 py-16 text-center")}>
-          <MessageSquare className="h-8 w-8 text-orange/40" />
-          <p className="mt-4 text-base font-medium">No messages yet</p>
-          <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-            Once you have an active project, you can chat directly with the Fortitudo team here.
-          </p>
-        </Reveal>
-      ) : (
-        <Reveal delay={0.08} className="space-y-5">
-          {/* Project selector — pills */}
-          {projects.length > 1 && (
-            <div className="flex flex-wrap gap-2">
-              {projects.map((project) => {
-                const active = selectedProjectId === project.id;
-                return (
-                  <button
-                    key={project.id}
-                    type="button"
-                    onClick={() => setSelectedProjectId(project.id)}
+      {/* Project selector */}
+      {projects.length > 1 && (
+        <div className="mb-3 flex shrink-0 flex-wrap gap-2">
+          {projects.map((project) => {
+            const active = selectedProjectId === project.id;
+            return (
+              <button
+                key={project.id}
+                onClick={() => setSelectedProjectId(project.id)}
+                className={cn(
+                  "rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors",
+                  active
+                    ? "border-orange/40 bg-orange/15 text-orange"
+                    : "border-border/60 bg-card/40 text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {project.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Conversation */}
+      <div
+        ref={scrollRef}
+        className="flex-1 space-y-4 overflow-y-auto rounded-3xl border border-border/60 bg-card/40 p-4 backdrop-blur-xl sm:p-6"
+      >
+        {loading ? (
+          <div className="flex h-full items-center justify-center">
+            <Loader2 className="h-5 w-5 animate-spin text-orange" />
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center">
+            <p className="font-brand text-lg">No conversations yet</p>
+            <p className="mt-1 max-w-xs text-sm text-muted-foreground">
+              Once you have an active build, you can chat directly with your architect here.
+            </p>
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center text-center">
+            <p className="font-brand text-lg">{selectedProject?.name}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              No messages yet — send one below to get started.
+            </p>
+          </div>
+        ) : (
+          <AnimatePresence initial={false}>
+            {messages.map((m) => {
+              const mine = m.role === "client";
+              return (
+                <motion.div
+                  key={m.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, ease: easeOut }}
+                  className={cn("flex flex-col", mine ? "items-end" : "items-start")}
+                >
+                  <div
                     className={cn(
-                      "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                      active
-                        ? "bg-orange text-white"
-                        : "border border-border/60 bg-card/60 text-muted-foreground hover:border-orange/50 hover:text-foreground"
+                      "max-w-[85%] whitespace-pre-wrap rounded-3xl px-4 py-3 text-sm",
+                      mine
+                        ? "rounded-br-lg bg-orange text-white"
+                        : "rounded-bl-lg border border-border/60 bg-muted text-foreground"
                     )}
                   >
-                    {project.name}
-                  </button>
-                );
-              })}
-            </div>
-          )}
+                    {m.content}
+                  </div>
+                  <span className="mt-1 px-1 text-[11px] text-muted-foreground">
+                    {mine ? "You" : "Fortitudo Team"} ·{" "}
+                    {new Date(m.createdAt).toLocaleString([], {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
+        )}
+      </div>
 
-          <div className={cn(card, "flex flex-col overflow-hidden")} style={{ height: "calc(100vh - 320px)", minHeight: "420px" }}>
-            {/* Conversation header */}
-            <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange/10 text-sm font-semibold text-orange">
-                {(selectedProject?.name || "?").slice(0, 2).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate font-semibold">{selectedProject?.name || "Select a project"}</p>
-                <p className="text-xs text-muted-foreground">Fortitudo Team</p>
-              </div>
-            </div>
-
-            {/* Messages area */}
-            <div className="flex-1 space-y-4 overflow-y-auto p-5">
-              {messages.length === 0 ? (
-                <div className="flex h-full flex-col items-center justify-center text-center">
-                  <MessageSquare className="mx-auto mb-2 h-8 w-8 text-orange/30" />
-                  <p className="text-sm text-muted-foreground">No messages yet.</p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">Send one below to get started.</p>
-                </div>
-              ) : (
-                <AnimatePresence initial={false}>
-                  {messages.map((message, i) => (
-                    <motion.div
-                      key={message.id}
-                      layout
-                      initial={{ opacity: 0, scale: 0.96, y: 8 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1], delay: Math.min(i * 0.03, 0.3) }}
-                      className={cn(
-                        "flex max-w-[80%] flex-col",
-                        message.role === "client" ? "ml-auto items-end" : "items-start"
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "rounded-2xl px-4 py-3 text-sm",
-                          message.role === "client"
-                            ? "rounded-br-md bg-orange text-white"
-                            : "rounded-bl-md bg-muted"
-                        )}
-                      >
-                        {message.content}
-                      </div>
-                      <span className="mt-1 text-xs text-muted-foreground">
-                        {message.role === "admin" ? "Fortitudo Team" : "You"} &middot;{" "}
-                        {new Date(message.createdAt).toLocaleString()}
-                      </span>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Message input */}
-            <div className="border-t border-border/60 p-4">
-              <form className="flex items-center gap-2" onSubmit={handleSend}>
-                <input
-                  placeholder="Type your message…"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  className="h-11 flex-1 rounded-full border border-border/60 bg-background/50 px-4 text-sm placeholder:text-muted-foreground focus-visible:border-orange/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/30"
-                />
-                <button
-                  type="submit"
-                  disabled={!newMessage.trim() || sending}
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-orange text-white transition-colors hover:bg-orange-dark disabled:opacity-40"
-                  aria-label="Send message"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
-              </form>
-            </div>
+      {/* Composer */}
+      {projects.length > 0 && (
+        <form onSubmit={handleSend} className="mt-3 shrink-0">
+          <div className="flex items-end gap-2 rounded-3xl border border-border/60 bg-card/80 p-2 backdrop-blur-xl focus-within:border-orange/50">
+            <input
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Type your message…"
+              className="flex-1 bg-transparent px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={!newMessage.trim() || sending}
+              aria-label="Send"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-orange text-white transition-colors hover:bg-orange-dark disabled:opacity-40"
+            >
+              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowUp className="h-4 w-4" />}
+            </button>
           </div>
-        </Reveal>
+        </form>
       )}
     </div>
   );

@@ -1,13 +1,26 @@
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 import { AppDock } from "@/components/dashboard/app-dock";
+import { getOrCreateCurrentUser } from "@/lib/auth-utils";
+import { isViewingAsClient } from "@/lib/view-as";
+import { ViewAsBanner } from "@/components/dashboard/view-as-banner";
 
-export default function DashboardLayout({
+export const dynamic = "force-dynamic";
+
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = await getOrCreateCurrentUser();
+  const realStaff = user?.role === "admin" || user?.role === "team";
+  const viewingAsClient = realStaff && (await isViewingAsClient());
+  // In "view as client" mode, staff see the exact client surface — the
+  // Agency-dashboard tile drops away and a banner offers the way back.
+  const isStaff = realStaff && !viewingAsClient;
+
   return (
-    <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
+    <div className="min-h-screen bg-background dark:bg-charcoal-dark">
+      {viewingAsClient && <ViewAsBanner />}
       <DashboardHeader />
 
       {/* Bottom padding so content clears the floating dock. */}
@@ -16,7 +29,7 @@ export default function DashboardLayout({
       </main>
 
       {/* Persistent bottom dock + full-page launchpad (client component). */}
-      <AppDock />
+      <AppDock isStaff={isStaff} />
     </div>
   );
 }

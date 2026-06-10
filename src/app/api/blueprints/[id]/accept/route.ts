@@ -4,6 +4,7 @@ import { blueprints } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
 import { acceptBlueprint } from "@/lib/studio";
+import { recordEvent } from "@/lib/activity";
 
 // Accept a Blueprint -> mark accepted, create a pending payment, and return a
 // checkout URL for the real total.
@@ -33,6 +34,13 @@ export async function POST(
         { status: 409 }
       );
     }
+
+    await recordEvent({
+      projectId: blueprint.projectId,
+      actorId: user.id,
+      kind: "blueprint_accepted",
+      summary: `Blueprint "${blueprint.title}" accepted — the build is a go`,
+    });
 
     const checkoutBase = process.env.NEXT_PUBLIC_CREEM_CHECKOUT_URL;
     const checkoutUrl = checkoutBase

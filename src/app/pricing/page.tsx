@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { SpotlightCard } from "@/components/ui/spotlight-card";
 import { Check, ArrowRight, Minus } from "lucide-react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -96,23 +96,12 @@ export default function PricingPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">Pricing</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Transparent pricing,{" "}
-              <span className="text-gradient-orange">no surprises</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Pick the plan that fits your project. Every plan includes design,
-              development, testing, and launch support.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="Pricing"
+          title={<>Transparent pricing, <span className="text-gradient-orange">no surprises</span></>}
+          subtitle="Every engagement is scoped into a bespoke Blueprint with a real price. Start from a discipline below."
+        />
 
         {/* Plan Cards */}
         <section className="py-16 sm:py-20 -mt-12">
@@ -126,58 +115,54 @@ export default function PricingPage() {
                   viewport={{ once: true }}
                   transition={{ duration: 0.4, delay: index * 0.1 }}
                 >
-                  <Card
+                  <SpotlightCard
                     className={cn(
-                      "relative h-full flex flex-col",
-                      plan.popular && "border-orange shadow-lg shadow-orange-glow/10"
+                      "flex h-full flex-col p-7",
+                      plan.popular && "ring-1 ring-orange/40"
                     )}
                   >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <Badge variant="default" className="bg-orange text-white">
-                          Most Popular
-                        </Badge>
-                      </div>
-                    )}
-                    <CardHeader className="text-center">
-                      <CardTitle className="text-xl">{plan.name}</CardTitle>
+                    <div className="text-center">
+                      {plan.popular && (
+                        <p className="mb-2 text-[11px] uppercase tracking-[0.25em] text-orange">
+                          Most popular
+                        </p>
+                      )}
+                      <h3 className="font-brand text-xl text-white">{plan.name}</h3>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold">{plan.price}</span>
+                        <span className="font-brand text-4xl text-white">{plan.price}</span>
                         {plan.price !== "Custom" && (
-                          <span className="text-muted-foreground text-sm ml-1">/ project</span>
+                          <span className="ml-1 text-sm text-white/50">/ project</span>
                         )}
                       </div>
-                      <CardDescription className="mt-2">
-                        {plan.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-1 flex flex-col">
-                      <ul className="space-y-3 flex-1">
-                        {plan.features.map((feature) => (
-                          <li key={feature.name} className="flex items-center gap-2.5 text-sm">
-                            {feature.included ? (
-                              <Check className="h-4 w-4 shrink-0 text-orange" />
-                            ) : (
-                              <Minus className="h-4 w-4 shrink-0 text-muted-foreground/40" />
-                            )}
-                            <span className={!feature.included ? "text-muted-foreground/60" : ""}>
-                              {feature.name}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                      <Button
-                        variant={plan.popular ? "glow" : "outline"}
-                        className="w-full mt-8"
-                        asChild
-                      >
-                        <Link href={plan.price === "Custom" ? "/contact" : "/sign-up"}>
-                          {plan.cta}
-                          <ArrowRight className="ml-1 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
+                      <p className="mt-2 text-sm text-white/60">{plan.description}</p>
+                    </div>
+                    <ul className="mt-6 flex-1 space-y-3">
+                      {plan.features.map((feature) => (
+                        <li key={feature.name} className="flex items-center gap-2.5 text-sm">
+                          {feature.included ? (
+                            <Check className="h-4 w-4 shrink-0 text-orange" />
+                          ) : (
+                            <Minus className="h-4 w-4 shrink-0 text-white/30" />
+                          )}
+                          <span className={feature.included ? "text-white/80" : "text-white/40"}>
+                            {feature.name}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      href={plan.price === "Custom" ? "/contact" : "/sign-up"}
+                      className={cn(
+                        "mt-8 inline-flex w-full items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
+                        plan.popular
+                          ? "bg-orange text-white hover:bg-orange-dark"
+                          : "border border-white/15 text-white hover:border-orange/50 hover:text-orange"
+                      )}
+                    >
+                      {plan.cta}
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </SpotlightCard>
                 </motion.div>
               ))}
             </div>

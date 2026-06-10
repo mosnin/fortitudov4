@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import * as Accordion from "@radix-ui/react-accordion";
 import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const faqCategories = [
   {
@@ -101,23 +100,12 @@ export default function FAQPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">FAQ</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Frequently asked{" "}
-              <span className="text-gradient-orange">questions</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to know about working with Fortitudo Agency.
-              Can&apos;t find what you&apos;re looking for? Reach out to us directly.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="FAQ"
+          title={<>Frequently asked <span className="text-gradient-orange">questions</span></>}
+          subtitle="Everything you need to know about building with Fortitudo. Can't find it? Reach out directly."
+        />
 
         {/* FAQ Sections */}
         <section className="py-20 sm:py-28">
@@ -125,7 +113,7 @@ export default function FAQPage() {
             <div className="space-y-12">
               {faqCategories.map((category) => (
                 <div key={category.category}>
-                  <h2 className="text-xl font-bold mb-4">{category.category}</h2>
+                  <h2 className="font-brand text-xl mb-4">{category.category}</h2>
                   <Accordion.Root type="single" collapsible className="space-y-2">
                     {category.questions.map((item, i) => (
                       <Accordion.Item
@@ -154,7 +142,7 @@ export default function FAQPage() {
         {/* CTA */}
         <section className="py-16 sm:py-20 bg-charcoal-dark/30">
           <div className="mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-2xl font-bold">Still have questions?</h2>
+            <h2 className="font-brand text-2xl">Still have questions?</h2>
             <p className="mt-3 text-muted-foreground">
               We&apos;re here to help. Reach out and we&apos;ll get back to you within 24 hours.
             </p>

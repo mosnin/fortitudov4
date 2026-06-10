@@ -27,19 +27,18 @@ function getFileCategory(name: string, type?: string): "image" | "pdf" | "svg" |
   return "other";
 }
 
-function getFileIcon(category: "image" | "pdf" | "svg" | "other") {
-  switch (category) {
-    case "image": return FileImage;
-    case "pdf": return FileText;
-    case "svg": return FileImage;
-    default: return FileIcon;
-  }
-}
+// Static lookup — selecting a component is fine; *creating* one during render is not.
+const categoryIcons = {
+  image: FileImage,
+  pdf: FileText,
+  svg: FileImage,
+  other: FileIcon,
+} as const;
 
 export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const category = getFileCategory(name, type);
-  const Icon = getFileIcon(category);
+  const Icon = categoryIcons[category];
   const canPreview = (category === "image" || category === "pdf");
 
   return (

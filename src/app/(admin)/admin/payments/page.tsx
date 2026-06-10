@@ -1,83 +1,106 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CreditCard } from "lucide-react";
+import { db } from "@/db";
+import { payments, users, projects } from "@/db/schema";
+import { sql, eq, desc } from "drizzle-orm";
+import { AdminMast, StatTile, DataTable, StatusPill, type Column } from "@/components/admin/ascii-table";
 
-const demoPayments = [
-  { client: "John Doe", project: "E-commerce Platform", amount: "$2,500", status: "paid", date: "Mar 1, 2026" },
-  { client: "Jane Smith", project: "Lead Gen Funnel", amount: "$1,200", status: "paid", date: "Feb 28, 2026" },
-  { client: "Bob Wilson", project: "AI Chatbot", amount: "$3,000", status: "pending", date: "Mar 10, 2026" },
-  { client: "Sarah Lee", project: "Company Website", amount: "$2,500", status: "paid", date: "Jan 20, 2026" },
-  { client: "Mike Chen", project: "Open Claw Setup", amount: "$2,000", status: "paid", date: "Mar 8, 2026" },
-];
+export const dynamic = "force-dynamic";
 
-export default function AdminPaymentsPage() {
+function formatUsd(cents: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(cents / 100);
+}
+
+function fmtDate(d: Date): string {
+  return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+}
+
+type PaymentRow = {
+  id: string;
+  amount: number;
+  status: string;
+  createdAt: Date;
+  clientFirst: string | null;
+  clientLast: string | null;
+  clientEmail: string | null;
+  projectName: string | null;
+};
+
+export default async function AdminPaymentsPage() {
+  const [totals, rows] = await Promise.all([
+    db
+      .select({
+        all: sql<number>`coalesce(sum(${payments.amount}), 0)::int`,
+        paid: sql<number>`coalesce(sum(${payments.amount}) filter (where ${payments.status} = 'completed'), 0)::int`,
+        pending: sql<number>`coalesce(sum(${payments.amount}) filter (where ${payments.status} = 'pending'), 0)::int`,
+      })
+      .from(payments),
+    db
+      .select({
+        id: payments.id,
+        amount: payments.amount,
+        status: payments.status,
+        createdAt: payments.createdAt,
+        clientFirst: users.firstName,
+        clientLast: users.lastName,
+        clientEmail: users.email,
+        projectName: projects.name,
+      })
+      .from(payments)
+      .leftJoin(users, eq(payments.userId, users.id))
+      .leftJoin(projects, eq(payments.projectId, projects.id))
+      .orderBy(desc(payments.createdAt)),
+  ]);
+
+  const t = totals[0] ?? { all: 0, paid: 0, pending: 0 };
+  const paymentRows = rows as PaymentRow[];
+
+  const columns: Column<PaymentRow>[] = [
+    {
+      header: "Client",
+      cell: (p) => (
+        <span className="font-medium text-foreground">
+          {`${p.clientFirst ?? ""} ${p.clientLast ?? ""}`.trim() || p.clientEmail || "—"}
+        </span>
+      ),
+    },
+    { header: "Build", cell: (p) => <span className="text-muted-foreground">{p.projectName ?? "—"}</span> },
+    { header: "Amount", align: "right", cell: (p) => formatUsd(p.amount) },
+    {
+      header: "Status",
+      cell: (p) => (
+        <StatusPill tone={p.status === "completed" ? "success" : p.status === "pending" ? "warning" : "muted"}>
+          {p.status}
+        </StatusPill>
+      ),
+    },
+    {
+      header: "Date",
+      align: "right",
+      cell: (p) => <span className="text-muted-foreground">{fmtDate(p.createdAt)}</span>,
+    },
+  ];
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">Payments</h1>
-        <p className="text-muted-foreground mt-1">Track all payments and revenue.</p>
-      </div>
+    <div className="space-y-5">
+      <AdminMast eyebrow="Payments" title="Revenue & invoices" subtitle="Every payment across the studio." />
 
-      {/* Revenue summary */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Total Revenue</p>
-            <p className="text-3xl font-bold mt-1">$11,200</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Paid</p>
-            <p className="text-3xl font-bold text-success mt-1">$8,200</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground">Pending</p>
-            <p className="text-3xl font-bold text-warning mt-1">$3,000</p>
-          </CardContent>
-        </Card>
+        <StatTile label="Total" value={formatUsd(t.all)} />
+        <StatTile label="Collected" value={formatUsd(t.paid)} accent="success" />
+        <StatTile label="Pending" value={formatUsd(t.pending)} accent="warning" />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5 text-orange" />
-            Payment History
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="pb-3 font-medium">Client</th>
-                  <th className="pb-3 font-medium">Project</th>
-                  <th className="pb-3 font-medium">Amount</th>
-                  <th className="pb-3 font-medium">Status</th>
-                  <th className="pb-3 font-medium">Date</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {demoPayments.map((payment, i) => (
-                  <tr key={i} className="hover:bg-muted/50">
-                    <td className="py-3 font-medium">{payment.client}</td>
-                    <td className="py-3 text-muted-foreground">{payment.project}</td>
-                    <td className="py-3 font-semibold">{payment.amount}</td>
-                    <td className="py-3">
-                      <Badge variant={payment.status === "paid" ? "success" : "warning"}>
-                        {payment.status}
-                      </Badge>
-                    </td>
-                    <td className="py-3 text-muted-foreground">{payment.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable
+        title="Payment history"
+        count={paymentRows.length}
+        columns={columns}
+        rows={paymentRows}
+        getKey={(p) => p.id}
+        empty="No payments yet."
+      />
     </div>
   );
 }

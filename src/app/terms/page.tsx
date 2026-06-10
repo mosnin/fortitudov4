@@ -1,21 +1,16 @@
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { Badge } from "@/components/ui/badge";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 
 export default function TermsPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        <section className="relative py-24 sm:py-28 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.08),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">Legal</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">Terms of Service</h1>
-            <p className="mt-4 text-muted-foreground">Last updated: March 2026</p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="Legal"
+          title="Terms of Service"
+        />
 
         <section className="py-16 sm:py-20">
           <div className="mx-auto max-w-3xl px-4">

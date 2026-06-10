@@ -162,10 +162,28 @@
   100% { background-position: 200%; }
 }
 
+html {
+  scroll-behavior: smooth;
+  /* Lock horizontal scroll at the root too — on mobile the overflow propagates
+     from body to the viewport, so clipping must also be set here. `clip` keeps
+     position: sticky working (unlike `hidden`). */
+  overflow-x: clip;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), system-ui, sans-serif;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 /* Fortitudo brand type — Bitcount Grid Single. Used for h1 headings and the
@@ -175,6 +193,22 @@ h1,
   font-family: var(--font-brand);
   font-variation-settings: "slnt" 0, "CRSV" 0.5, "ELSH" 0, "ELXP" 0;
   letter-spacing: 0.01em;
+}
+
+/* Keyboard-only focus ring — visible for keyboard / assistive-tech users,
+   invisible to mouse users. Fills focus gaps on interactive elements; any
+   component that sets its own focus style keeps it (higher specificity wins). */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+  border-radius: 6px;
 }
 
 /* Utility classes */

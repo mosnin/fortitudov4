@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { MarketingHero } from "@/components/layout/marketing-hero";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 
@@ -46,31 +46,19 @@ export default function AboutPage() {
   return (
     <>
       <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">About Us</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Building digital solutions{" "}
-              <span className="text-gradient-orange">with purpose</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-              Fortitudo Agency exists to bridge the gap between ambitious businesses
-              and the digital tools they need to grow. We believe every client
-              deserves transparency, quality, and speed.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1">
+        <MarketingHero
+          eyebrow="About"
+          title={<>The studio for the <span className="text-gradient-orange">AI age</span></>}
+          subtitle="Fortitudo is a bespoke building studio. We design and build the software, commerce, AI, and infrastructure ambitious businesses run on — with the craft of a product team and the clarity of a studio."
+        />
 
         {/* Mission */}
         <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
               <div>
-                <h2 className="text-3xl font-bold sm:text-4xl">Our Mission</h2>
+                <h2 className="font-brand text-3xl sm:text-4xl">Our Mission</h2>
                 <p className="mt-4 text-lg text-muted-foreground">
                   We created Fortitudo because we saw too many businesses getting burned by
                   opaque agencies — missed deadlines, unclear pricing, and zero visibility
@@ -97,7 +85,7 @@ export default function AboutPage() {
                       height={120}
                       className="rounded-xl mx-auto"
                     />
-                    <h3 className="text-xl font-bold text-center mt-6">Fortitudo Agency</h3>
+                    <h3 className="font-brand text-xl text-center mt-6">Fortitudo Agency</h3>
                     <p className="text-sm text-muted-foreground text-center mt-2">
                       Strength through clarity. Excellence through transparency.
                     </p>
@@ -113,8 +101,8 @@ export default function AboutPage() {
         <section className="py-20 sm:py-28 bg-charcoal-dark/30">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <Badge variant="orange" className="mb-4">Our Values</Badge>
-              <h2 className="text-3xl font-bold sm:text-4xl">What drives us</h2>
+              <p className="mb-4 text-xs uppercase tracking-[0.25em] text-orange/80">Our Values</p>
+              <h2 className="font-brand text-3xl sm:text-4xl">What drives us</h2>
             </div>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {values.map((value, index) => {
@@ -139,7 +127,7 @@ export default function AboutPage() {
         {/* Timeline */}
         <section className="py-20 sm:py-28">
           <div className="mx-auto max-w-3xl px-4">
-            <h2 className="text-3xl font-bold text-center mb-12">Our Journey</h2>
+            <h2 className="font-brand text-3xl text-center mb-12">Our Journey</h2>
             <div className="space-y-8">
               {timeline.map((item, index) => (
                 <motion.div
@@ -171,7 +159,7 @@ export default function AboutPage() {
         {/* CTA */}
         <section className="py-24 sm:py-32 bg-charcoal-dark/30">
           <div className="mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-3xl font-bold sm:text-4xl">
+            <h2 className="font-brand text-3xl sm:text-4xl">
               Let&apos;s build something great together
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">

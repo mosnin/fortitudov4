@@ -4,6 +4,7 @@ import { decisionRequests } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
 import { answerDecisionRequest } from "@/lib/studio";
+import { recordEvent } from "@/lib/activity";
 import { z } from "zod";
 
 const answerSchema = z.object({
@@ -46,6 +47,13 @@ export async function POST(
         { status: 409 }
       );
     }
+
+    await recordEvent({
+      projectId: decision.projectId,
+      actorId: user.id,
+      kind: "decision_answered",
+      summary: `Answered: ${decision.title}`,
+    });
 
     return NextResponse.json({ decision: updated });
   } catch (error) {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Bell, MessageSquare, CreditCard, FolderKanban, Upload, FileText } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -15,26 +15,30 @@ interface NotificationItem {
   createdAt: string;
 }
 
-const typeIcons: Record<string, React.ElementType> = {
-  phase_update: FolderKanban,
-  message_received: MessageSquare,
-  payment_confirmed: CreditCard,
-  file_uploaded: Upload,
-  comment_added: FileText,
-};
+// Short, monospace tag per type — typography over icon chips, on aesthetic.
+function tagFor(type: string): string {
+  const map: Record<string, string> = {
+    phase_update: "phase",
+    message_received: "message",
+    payment_confirmed: "payment",
+    file_uploaded: "file",
+    comment_added: "comment",
+    revision_response: "revision",
+    survey_request: "survey",
+  };
+  return map[type] ?? type.split("_")[0] ?? "notice";
+}
 
 function formatRelativeTime(dateStr: string): string {
   const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
+  const diffMins = Math.floor((Date.now() - date.getTime()) / 60000);
+  if (diffMins < 1) return "now";
+  if (diffMins < 60) return `${diffMins}m`;
   const diffHours = Math.floor(diffMins / 60);
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffHours < 24) return `${diffHours}h`;
   const diffDays = Math.floor(diffHours / 24);
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
+  if (diffDays < 7) return `${diffDays}d`;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 export function NotificationBell() {
@@ -45,18 +49,30 @@ export function NotificationBell() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  // Fetch notifications on mount
-  useEffect(() => {
-    fetch("/api/notifications")
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setNotifications(data.slice(0, 10));
-      })
-      .catch(() => {
-        setLoaded(true);
-      })
-      .finally(() => setLoaded(true));
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/notifications");
+      const data = await res.json();
+      if (Array.isArray(data)) setNotifications(data.slice(0, 10));
+    } catch {
+      /* keep what we have */
+    } finally {
+      setLoaded(true);
+    }
   }, []);
+
+  // Fetch on mount, poll, and refetch when the tab regains focus — so the
+  // unread count stays honest without a manual refresh.
+  useEffect(() => {
+    load();
+    const timer = setInterval(load, 45000);
+    const onFocus = () => load();
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [load]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -113,7 +129,7 @@ export function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background hover:bg-muted transition-colors cursor-pointer"
+        className="relative flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background/80 backdrop-blur-md hover:bg-muted transition-colors cursor-pointer"
         aria-label="Notifications"
       >
         <Bell className="h-4 w-4" />
@@ -125,16 +141,18 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 rounded-xl border border-border bg-card shadow-2xl z-50 animate-fade-in overflow-hidden">
+        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-2xl border border-border/60 bg-card/95 shadow-2xl backdrop-blur-xl animate-fade-in sm:w-96">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-            <h3 className="text-sm font-semibold">Notifications</h3>
+          <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-orange/80">
+              Signal
+            </span>
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="text-xs text-orange hover:underline cursor-pointer"
+                className="cursor-pointer font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
               >
-                Mark all read
+                mark all read
               </button>
             )}
           </div>
@@ -142,62 +160,63 @@ export function NotificationBell() {
           {/* List */}
           <div className="max-h-80 overflow-y-auto">
             {!loaded ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                Loading...
-              </div>
+              <div className="p-6 text-center font-mono text-xs text-muted-foreground">syncing…</div>
             ) : notifications.length === 0 ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                No notifications yet
+              <div className="p-6 text-center font-mono text-xs text-muted-foreground">
+                ~ no signal yet ~
               </div>
             ) : (
-              notifications.map((notification) => {
-                const Icon = typeIcons[notification.type] || Bell;
-                return (
-                  <Link
-                    key={notification.id}
-                    href={notification.actionUrl || "#"}
-                    onClick={() => {
-                      markRead(notification.id);
-                      setOpen(false);
-                    }}
+              notifications.map((notification) => (
+                <Link
+                  key={notification.id}
+                  href={notification.actionUrl || "#"}
+                  onClick={() => {
+                    markRead(notification.id);
+                    setOpen(false);
+                  }}
+                  className={cn(
+                    "flex items-start gap-3 border-b border-border/40 px-4 py-3 transition-colors last:border-0 hover:bg-orange/[0.04]",
+                    !notification.read && "bg-orange/[0.05]"
+                  )}
+                >
+                  <span
                     className={cn(
-                      "flex gap-3 px-4 py-3 transition-colors hover:bg-muted border-b border-border last:border-0",
-                      !notification.read && "bg-orange/5"
+                      "mt-0.5 font-mono text-xs",
+                      notification.read ? "text-muted-foreground/40" : "text-orange"
                     )}
+                    aria-hidden
                   >
-                    <Icon className="mt-0.5 h-4 w-4 shrink-0 text-orange" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className={cn("text-sm", !notification.read && "font-medium")}>
-                          {notification.title}
-                        </p>
-                        {!notification.read && (
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-orange" />
-                        )}
-                      </div>
-                      {notification.body && (
-                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
-                          {notification.body}
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-1">
+                    {notification.read ? "○" : "●"}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-orange/70">
+                        {tagFor(notification.type)}
+                      </span>
+                      <span className="shrink-0 font-mono text-[10px] tabular-nums text-muted-foreground">
                         {formatRelativeTime(notification.createdAt)}
-                      </p>
+                      </span>
                     </div>
-                  </Link>
-                );
-              })
+                    <p className={cn("mt-0.5 text-sm", !notification.read && "font-medium")}>
+                      {notification.title}
+                    </p>
+                    {notification.body && (
+                      <p className="mt-0.5 truncate text-xs text-muted-foreground">{notification.body}</p>
+                    )}
+                  </div>
+                </Link>
+              ))
             )}
           </div>
 
           {/* Footer */}
-          <div className="border-t border-border p-2">
+          <div className="border-t border-border/60 p-2">
             <Link
               href="/notifications"
               onClick={() => setOpen(false)}
-              className="block text-center text-xs text-muted-foreground hover:text-foreground py-1.5 rounded-lg hover:bg-muted transition-colors"
+              className="block rounded-lg py-1.5 text-center font-mono text-[11px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
-              View all notifications
+              view all
             </Link>
           </div>
         </div>
