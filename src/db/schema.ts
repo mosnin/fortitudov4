@@ -691,3 +691,28 @@ export const agencyMemory = pgTable("agency_memory", {
 export type ProjectSettings = typeof projectSettings.$inferSelect;
 export type ActivityEvent = typeof activityEvents.$inferSelect;
 export type AgencyMemory = typeof agencyMemory.$inferSelect;
+
+// Issues — anyone on a build (client, staff, or the concierge agent) can raise
+// a problem; the studio triages, assigns, and resolves it with a full trail.
+export const issues = pgTable("issues", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  raisedBy: uuid("raised_by").references(() => users.id, { onDelete: "set null" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  severity: varchar("severity", { length: 20 }).notNull().default("medium"), // low | medium | high | critical
+  status: varchar("status", { length: 20 }).notNull().default("open"), // open | in_progress | resolved | closed
+  assigneeId: uuid("assignee_id").references(() => users.id, { onDelete: "set null" }),
+  resolution: text("resolution"),
+  resolvedBy: uuid("resolved_by").references(() => users.id, { onDelete: "set null" }),
+  resolvedAt: timestamp("resolved_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_issues_project_id").on(table.projectId),
+  index("idx_issues_status").on(table.status),
+]);
+
+export type Issue = typeof issues.$inferSelect;

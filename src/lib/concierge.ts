@@ -9,6 +9,7 @@ import { getProjectProgress, getTaskGraph } from "./tasks";
 import { getActivity, recordEvent } from "./activity";
 import { searchMemory, memoryToContext } from "./memory";
 import { notifyAdmins } from "./notify";
+import { createIssue } from "./issues";
 
 const MODEL = process.env.OPENAI_BRIEF_MODEL ?? "gpt-5.5";
 
@@ -45,6 +46,7 @@ const INSTRUCTIONS = `You are the Fortitudo studio concierge — a warm, concise
 # Actions you can take on the client's behalf
 - request_revision — when the client clearly wants a change to the work, file a revision request. Say what you filed in your reply.
 - message_studio — when the client wants to tell or ask their architect something, send it.
+- report_issue — when the client reports something is broken or wrong, raise an issue. Pick a severity (low/medium/high/critical) that matches how they describe it.
 Only take an action the client clearly asked for. If it's ambiguous, ask a quick clarifying question first. These actions route work to a human — you are not doing the work yourself.
 
 # Hard boundaries
@@ -269,11 +271,34 @@ export async function conciergeReply(opts: ConciergeOpts): Promise<{ reply: stri
     },
   });
 
+  const reportIssue = tool({
+    name: "report_issue",
+    description:
+      "Raise an issue on this build when the client reports something is broken, wrong, or blocking. Choose a severity that matches.",
+    parameters: z.object({
+      title: z.string().describe("A short title for the problem."),
+      description: z.string().nullable().describe("More detail about the problem, or null."),
+      severity: z.enum(["low", "medium", "high", "critical"]).describe("How serious the problem is."),
+    }),
+    execute: async ({ title, description, severity }) => {
+      await createIssue({
+        projectId: opts.projectId,
+        raisedBy: opts.userId,
+        title,
+        description: description ?? null,
+        severity,
+        viaAgent: true,
+      });
+      acted = true;
+      return `Issue raised (${severity}) and the studio has been notified.`;
+    },
+  });
+
   const agent = new Agent({
     name: "Fortitudo Concierge",
     instructions: INSTRUCTIONS,
     model: MODEL,
-    tools: [requestRevision, messageStudio],
+    tools: [requestRevision, messageStudio, reportIssue],
     modelSettings: {
       promptCacheRetention: "24h",
       providerData: { prompt_cache_key: "fortitudo-concierge-v1" },

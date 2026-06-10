@@ -25,6 +25,7 @@ import { BuildHero } from "@/components/dashboard/build-hero";
 import { BuildPhaseStrip } from "@/components/dashboard/build-phase-strip";
 import { DeliverableSpotlight } from "@/components/dashboard/deliverable-spotlight";
 import { BuildTabs, type BuildTab } from "@/components/dashboard/build-tabs";
+import { IssuesPanel } from "@/components/dashboard/issues-panel";
 import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
 import { BuildRoadmap } from "@/components/dashboard/build-roadmap";
@@ -279,6 +280,7 @@ export default async function ProjectDetailPage({
     { id: "activity", label: "Activity", content: activityTab },
     { id: "billing", label: "Billing", badge: unpaidMilestones, content: billingTab },
     { id: "assets", label: "Assets", content: assetsTab },
+    { id: "issues", label: "Issues", content: <IssuesPanel projectId={project.id} staff={dbUser.role === "admin"} /> },
   ];
 
   return (

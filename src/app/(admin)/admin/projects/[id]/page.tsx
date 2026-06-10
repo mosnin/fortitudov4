@@ -32,6 +32,7 @@ import { AutonomyDial } from "@/components/dashboard/autonomy-dial";
 import { BrandSettings } from "@/components/dashboard/brand-settings";
 import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
 import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
+import { IssuesPanel } from "@/components/dashboard/issues-panel";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -199,6 +200,7 @@ export default async function AdminProjectDetailPage({
   const tabs: BuildTab[] = [
     { id: "overview", label: "Overview", content: overview },
     { id: "tasks", label: "Tasks", badge: tReview || undefined, content: tasksTab },
+    { id: "issues", label: "Issues", content: <IssuesPanel projectId={project.id} staff /> },
     { id: "activity", label: "Activity", content: activityTab },
     { id: "billing", label: "Billing", content: billingTab },
     { id: "vault", label: "Vault", content: vaultTab },
