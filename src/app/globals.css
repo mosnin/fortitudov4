@@ -195,6 +195,22 @@ h1,
   letter-spacing: 0.01em;
 }
 
+/* Keyboard-only focus ring — visible for keyboard / assistive-tech users,
+   invisible to mouse users. Fills focus gaps on interactive elements; any
+   component that sets its own focus style keeps it (higher specificity wins). */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #f97316;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 /* Utility classes */
 .text-gradient-orange {
   background: linear-gradient(135deg, #F97316, #FB923C, #FDBA74);
