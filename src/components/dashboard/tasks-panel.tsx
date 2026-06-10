@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Plus, Trash2, Play, Check, Lock, RotateCcw } from "lucide-react";
+import { Loader2, Plus, Trash2, Play, Check, Lock, RotateCcw, FileText } from "lucide-react";
 import { toast } from "@/components/ui/toast";
 
 export type TaskRow = {
@@ -40,6 +40,26 @@ export function TasksPanel({
   const [assigneeId, setAssigneeId] = useState("");
   const [phaseId, setPhaseId] = useState("");
   const [busy, setBusy] = useState(false);
+  const [openDraft, setOpenDraft] = useState<string | null>(null);
+  const [draft, setDraft] = useState<Record<string, { summary: string; artifactUrl: string | null } | "loading" | "empty">>({});
+
+  async function toggleDraft(id: string) {
+    if (openDraft === id) {
+      setOpenDraft(null);
+      return;
+    }
+    setOpenDraft(id);
+    if (draft[id]) return;
+    setDraft((d) => ({ ...d, [id]: "loading" }));
+    try {
+      const res = await fetch(`/api/admin/tasks/${id}/submissions`);
+      const data = await res.json().catch(() => null);
+      const latest = Array.isArray(data) ? data[0] : null;
+      setDraft((d) => ({ ...d, [id]: latest?.summary ? { summary: latest.summary, artifactUrl: latest.artifactUrl ?? null } : "empty" }));
+    } catch {
+      setDraft((d) => ({ ...d, [id]: "empty" }));
+    }
+  }
 
   const nameFor = (id: string | null) => staff.find((s) => s.id === id)?.name ?? "Unassigned";
   const done = tasks.filter((t) => t.status === "done").length;
@@ -251,7 +271,41 @@ export function TasksPanel({
                             </button>
                           </>
                         )}
+                        {(t.status === "in_review" || t.status === "done") && (
+                          <button
+                            onClick={() => toggleDraft(t.id)}
+                            className="inline-flex items-center gap-1 rounded-full border border-border/60 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground"
+                          >
+                            <FileText className="h-3 w-3" /> {openDraft === t.id ? "Hide" : "View"} draft
+                          </button>
+                        )}
                       </div>
+
+                      {openDraft === t.id && (
+                        <div className="mt-3 rounded-2xl border border-border/40 bg-background/40 p-3">
+                          {draft[t.id] === "loading" || draft[t.id] === undefined ? (
+                            <p className="font-mono text-xs text-muted-foreground">loading…</p>
+                          ) : draft[t.id] === "empty" ? (
+                            <p className="font-mono text-xs text-muted-foreground">~ no submission yet ~</p>
+                          ) : (
+                            <>
+                              <pre className="max-h-72 overflow-auto whitespace-pre-wrap font-mono text-[11px] leading-relaxed text-foreground/80">
+                                {(draft[t.id] as { summary: string }).summary}
+                              </pre>
+                              {(draft[t.id] as { artifactUrl: string | null }).artifactUrl && (
+                                <a
+                                  href={(draft[t.id] as { artifactUrl: string }).artifactUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="mt-2 inline-block text-xs text-orange hover:underline"
+                                >
+                                  Open artifact ↗
+                                </a>
+                              )}
+                            </>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
