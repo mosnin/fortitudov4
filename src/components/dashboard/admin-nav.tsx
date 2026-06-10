@@ -12,6 +12,7 @@ import {
   MessageSquare,
   Columns3,
   Bot,
+  Brain,
   ListChecks,
 } from "lucide-react";
 
@@ -24,6 +25,7 @@ const navItems = [
   { label: "Projects", href: "/admin/projects", icon: FolderKanban },
   { label: "Payments", href: "/admin/payments", icon: CreditCard },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
+  { label: "Memory", href: "/admin/memory", icon: Brain },
   { label: "Agent", href: "/admin/agent", icon: Bot },
 ];
 

@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { payments, projects, milestones, invoices } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { recordEvent } from "@/lib/activity";
 
 // e.g. INV-20260605-3F9A2C — unique constraint on invoice_number backstops us.
 function genInvoiceNumber(): string {
@@ -193,6 +194,14 @@ export async function POST(req: Request) {
           { status: 500 }
         );
       }
+
+      await recordEvent({
+        projectId,
+        actorType: "system",
+        kind: "payment_settled",
+        summary: `Payment settled · $${(payment.amount / 100).toFixed(2)}`,
+        metadata: { paymentId: payment.id, milestoneId: milestoneId ?? null },
+      });
     }
 
     return NextResponse.json({ received: true });

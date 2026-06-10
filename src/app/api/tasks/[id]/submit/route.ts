@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { tasks, taskSubmissions } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,6 +43,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       .update(tasks)
       .set({ status: "in_review", submittedAt: new Date(), updatedAt: new Date() })
       .where(eq(tasks.id, id));
+
+    await recordEvent({
+      projectId: task.projectId,
+      actorId: user.id,
+      actorType: user.type === "agent" ? "agent" : "human",
+      kind: "task_submitted",
+      summary: `Submitted "${task.title}" for review`,
+    });
 
     return NextResponse.json({ ok: true });
   } catch (error) {

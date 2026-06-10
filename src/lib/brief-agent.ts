@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createProjectFromBrief } from "./studio";
 import { getAgentConfig, composeBriefInstructions } from "./agent-config";
 import { hasTavily, tavilySearch, tavilyExtract } from "./tavily";
+import { searchMemory, memoryToContext } from "./memory";
 
 // Context carried through a run; the tool writes the created proposal here so
 // the route can return its ids after the turn completes.
@@ -167,6 +168,37 @@ function toInputItems(messages: ChatMessage[]): AgentInputItem[] {
   );
 }
 
+/**
+ * Build the full run input: the conversation plus, when available, a SEPARATE
+ * dynamic context message carrying this client's relevant memory. This stays out
+ * of the cached instructions/OFFERINGS prefix so prompt caching is preserved —
+ * the memory rides as its own developer message appended after the prefix.
+ */
+async function buildRunInput(
+  userId: string,
+  messages: ChatMessage[]
+): Promise<AgentInputItem[]> {
+  const items = toInputItems(messages);
+  if (!userId) return items;
+
+  try {
+    const rows = await searchMemory({ userId, includeGlobal: true, limit: 10 });
+    const context = memoryToContext(rows);
+    if (!context) return items;
+
+    const memoryItem: AgentInputItem = {
+      role: "system" as const,
+      content: `What we already know about this client and the studio (use it to make the Brief feel like we remember them; don't recite it verbatim):\n${context}`,
+    };
+    // Prepend so it precedes the conversation but stays separate from the
+    // cached instructions prefix.
+    return [memoryItem, ...items];
+  } catch {
+    // Memory is best-effort; never block a brief turn on it.
+    return items;
+  }
+}
+
 function requireApiKey() {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set.");
@@ -182,7 +214,8 @@ export async function runBriefTurn(
   const instructions = composeBriefInstructions(await getAgentConfig());
   const agent = buildAgent(instructions);
   const context: BriefContext = { userId, proposal: null };
-  const result = await run(agent, toInputItems(messages), { context });
+  const input = await buildRunInput(userId, messages);
+  const result = await run(agent, input, { context });
   return { reply: result.finalOutput ?? "", proposal: context.proposal };
 }
 
@@ -200,8 +233,9 @@ export async function streamBriefTurn(
   const instructions = composeBriefInstructions(await getAgentConfig());
   const agent = buildAgent(instructions);
   const context: BriefContext = { userId, proposal: null };
+  const input = await buildRunInput(userId, messages);
 
-  const result = await run(agent, toInputItems(messages), { context, stream: true });
+  const result = await run(agent, input, { context, stream: true });
 
   for await (const event of result) {
     if (event.type !== "run_item_stream_event") continue;

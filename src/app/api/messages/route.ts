@@ -6,6 +6,7 @@ import { z } from "zod";
 import { getAuthenticatedUser, verifyProjectAccess } from "@/lib/auth-utils";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { notify } from "@/lib/notify";
+import { recordEvent } from "@/lib/activity";
 
 export async function GET(req: Request) {
   try {
@@ -132,6 +133,13 @@ export async function POST(req: Request) {
     void notifyRecipients({ projectId, senderId: user.id, isStaff, content }).catch((err) =>
       console.error("message notify failed", err instanceof Error ? err.message : err)
     );
+
+    void recordEvent({
+      projectId,
+      actorId: user.id,
+      kind: "message",
+      summary: `${isStaff ? "Studio" : "Client"} sent a message`,
+    });
 
     return NextResponse.json(message);
   } catch (error) {

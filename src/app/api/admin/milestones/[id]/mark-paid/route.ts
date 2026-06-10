@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { milestones, payments, projects, invoices } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -69,6 +70,14 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
         total: milestone.amount,
         status: "paid",
       });
+    });
+
+    await recordEvent({
+      projectId: project.id,
+      actorId: user.id,
+      kind: "payment_settled",
+      summary: `Milestone marked paid: ${milestone.label} · $${(milestone.amount / 100).toFixed(2)}`,
+      metadata: { milestoneId: milestone.id, manual: true },
     });
 
     return NextResponse.json({ ok: true });

@@ -15,6 +15,7 @@ import {
   type User,
 } from "@/db/schema";
 import { getProjectProgress } from "./tasks";
+import { recordEvent } from "./activity";
 
 // MCP tools for Claude / Claude cowork. The caller is the API key's owner.
 // Human-in-the-loop is enforced by the state machine: submit_task lands work in
@@ -246,6 +247,13 @@ export async function runMcpTool(principal: User, name: string, args: Record<str
       .update(tasks)
       .set({ assigneeId: principal.id, status: t.status === "todo" ? "in_progress" : t.status, updatedAt: new Date() })
       .where(eq(tasks.id, id));
+    await recordEvent({
+      projectId: t.projectId,
+      actorId: principal.id,
+      actorType: "agent",
+      kind: "task_claimed",
+      summary: `Agent claimed "${t.title}"`,
+    });
     return text(`Claimed "${t.title}". It's yours and in progress.`);
   }
 
@@ -265,6 +273,13 @@ export async function runMcpTool(principal: User, name: string, args: Record<str
       artifactUrl: (args.artifactUrl as string) || null,
     });
     await db.update(tasks).set({ status: "in_review", submittedAt: new Date(), updatedAt: new Date() }).where(eq(tasks.id, id));
+    await recordEvent({
+      projectId: t.projectId,
+      actorId: principal.id,
+      actorType: "agent",
+      kind: "task_submitted",
+      summary: `Agent submitted "${t.title}" for review`,
+    });
     return text(`Submitted "${t.title}" for review. A human admin will approve it or request changes.`);
   }
 

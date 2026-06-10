@@ -23,6 +23,11 @@ import { DeliverableReview } from "@/components/dashboard/deliverable-review";
 import { FileUpload } from "@/components/dashboard/file-upload";
 import { MilestonesClient } from "@/components/dashboard/milestones-client";
 import { CredentialsVault } from "@/components/dashboard/credentials-vault";
+import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
+import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
+import { Concierge } from "@/components/dashboard/concierge";
+import { ProjectBrand } from "@/components/dashboard/project-brand";
+import { getProjectSettings } from "@/lib/project-settings";
 import { formatPrice } from "@/lib/catalog";
 import { FileText } from "lucide-react";
 
@@ -115,6 +120,9 @@ export default async function ProjectDetailPage({
   // Live roadmap: roll task completion up to phases.
   const progress = await getProjectProgress(id);
 
+  // Bespoke per-build settings (brand theming + concierge toggle).
+  const settings = await getProjectSettings(id);
+
   // Hide internal agent drafts from the client until an architect publishes them.
   const clientDeliverables = projectDeliverables.filter((d) => d.status !== "draft");
 
@@ -149,6 +157,7 @@ export default async function ProjectDetailPage({
     project.status === "completed" || project.status === "revision";
 
   return (
+    <ProjectBrand brandColor={settings.brandColor}>
     <div className="space-y-6">
       {/* Your architect — a real human owns this build. */}
       {architect && (
@@ -178,6 +187,9 @@ export default async function ProjectDetailPage({
 
       {/* The Decision Loop — the studio only interrupts you when it must. */}
       <DecisionLoop decisions={decisionItems} />
+
+      {/* The AI delivery lead's read on where the build stands. */}
+      <DeliveryDigest projectId={project.id} />
 
       {/* Live build roadmap — phase progress rolled up from real tasks. */}
       <BuildRoadmap
@@ -266,7 +278,14 @@ export default async function ProjectDetailPage({
           <FileUpload projectId={project.id} />
         </div>
       </div>
+
+      {/* The full, replayable timeline of everything on this build. */}
+      <ActivityTimeline projectId={project.id} />
+
+      {/* Always-on concierge — knows this build, answers anything. */}
+      <Concierge projectId={project.id} enabled={settings.conciergeEnabled} />
     </div>
+    </ProjectBrand>
   );
 }
 

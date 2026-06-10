@@ -3,6 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { deliverables } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -20,9 +21,15 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
       .update(deliverables)
       .set({ status: "pending", releasedAt: new Date() })
       .where(eq(deliverables.id, id))
-      .returning({ id: deliverables.id });
+      .returning({ id: deliverables.id, projectId: deliverables.projectId, title: deliverables.title });
 
     if (!updated) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    await recordEvent({
+      projectId: updated.projectId,
+      actorId: user.id,
+      kind: "deliverable_published",
+      summary: `Published deliverable: ${updated.title}`,
+    });
     return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Publish failed";

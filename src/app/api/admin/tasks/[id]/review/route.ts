@@ -4,6 +4,7 @@ import { eq, desc } from "drizzle-orm";
 import { db } from "@/db";
 import { tasks, taskSubmissions } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
+import { recordEvent } from "@/lib/activity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     const approve = parsed.data.action === "approve";
 
-    await db
+    const [updatedTask] = await db
       .update(tasks)
       .set({
         status: approve ? "done" : "in_progress",
@@ -34,7 +35,17 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         reviewNotes: parsed.data.notes ?? null,
         updatedAt: new Date(),
       })
-      .where(eq(tasks.id, id));
+      .where(eq(tasks.id, id))
+      .returning({ projectId: tasks.projectId, title: tasks.title });
+
+    if (updatedTask) {
+      await recordEvent({
+        projectId: updatedTask.projectId,
+        actorId: user.id,
+        kind: "task_reviewed",
+        summary: `${approve ? "Approved" : "Requested changes on"} "${updatedTask.title}"`,
+      });
+    }
 
     // Settle the latest pending submission, if any.
     const [latest] = await db

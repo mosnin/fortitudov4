@@ -25,6 +25,11 @@ import { EstimatePanel } from "@/components/dashboard/estimate-panel";
 import { TasksPanel } from "@/components/dashboard/tasks-panel";
 import { CredentialsVault } from "@/components/dashboard/credentials-vault";
 import { MilestonesAdmin } from "@/components/dashboard/milestones-admin";
+import { AutonomyDial } from "@/components/dashboard/autonomy-dial";
+import { BrandSettings } from "@/components/dashboard/brand-settings";
+import { DeliveryDigest } from "@/components/dashboard/delivery-digest";
+import { ActivityTimeline } from "@/components/dashboard/activity-timeline";
+import { getProjectSettings } from "@/lib/project-settings";
 
 // Per-user authed data — always render on demand.
 export const dynamic = "force-dynamic";
@@ -88,6 +93,8 @@ export default async function AdminProjectDetailPage({
   const clientName =
     `${client?.firstName ?? ""} ${client?.lastName ?? ""}`.trim() || client?.email || "Unknown";
 
+  const settings = await getProjectSettings(id);
+
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4">
@@ -115,6 +122,15 @@ export default async function AdminProjectDetailPage({
           </Button>
           <GeneratePlanButton projectId={project.id} />
         </div>
+      </div>
+
+      {/* AI delivery lead's read on the build. */}
+      <DeliveryDigest projectId={project.id} />
+
+      {/* Autonomy + bespoke brand for this client's studio. */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <AutonomyDial projectId={project.id} initial={settings.autonomyLevel} />
+        <BrandSettings projectId={project.id} initialColor={settings.brandColor} initialName={settings.brandName} />
       </div>
 
       <AdminProjectConsole
@@ -162,6 +178,9 @@ export default async function AdminProjectDetailPage({
           dueAt: m.dueAt ? m.dueAt.toISOString() : null,
         }))}
       />
+
+      {/* The replayable build timeline — every human, agent, and system action. */}
+      <ActivityTimeline projectId={project.id} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <Card>
