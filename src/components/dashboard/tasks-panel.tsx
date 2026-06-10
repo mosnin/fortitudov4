@@ -83,12 +83,18 @@ export function TasksPanel({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
+      const data = await res.json().catch(() => null);
       if (!res.ok) {
-        const data = await res.json().catch(() => null);
         toast.error("Review failed", data?.error);
         return;
       }
-      toast.success(action === "approve" ? "Task approved" : "Changes requested");
+      if (action === "approve") {
+        toast.success("Task approved");
+      } else if (data?.autoRevised) {
+        toast.success("Changes requested", "The agent read your notes and redrafted it for review.");
+      } else {
+        toast.success("Changes requested");
+      }
       router.refresh();
     } catch {
       toast.error("Review failed", "Check your connection and try again.");

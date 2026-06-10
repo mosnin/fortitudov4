@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
-import { orchestrateNext } from "@/lib/orchestrator";
+import { orchestrateNext, orchestrateRevisions } from "@/lib/orchestrator";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
-const bodySchema = z.object({ all: z.boolean().optional() });
+const bodySchema = z.object({ all: z.boolean().optional(), mode: z.enum(["draft", "revise"]).optional() });
 
 // Admin-only: run the supervised execution orchestrator. It drafts ready tasks
-// and lands them in human review (HITL) — it never auto-approves.
+// (or revises sent-back tasks) and lands them in human review — never auto-approves.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getAuthenticatedUser();
@@ -19,8 +19,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     const parsed = bodySchema.safeParse(await req.json().catch(() => ({})));
     const all = parsed.success ? parsed.data.all === true : false;
+    const mode = parsed.success ? parsed.data.mode ?? "draft" : "draft";
 
-    const result = await orchestrateNext(id, user.id, { max: all ? 5 : 1 });
+    const result =
+      mode === "revise"
+        ? await orchestrateRevisions(id, user.id, { max: 5 })
+        : await orchestrateNext(id, user.id, { max: all ? 5 : 1 });
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     // getAuthenticatedUser throws a NextResponse (401) for unauthenticated callers.

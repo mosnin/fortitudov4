@@ -14,16 +14,16 @@ type DraftedTask = { taskId: string; title: string; preview: string };
  */
 export function OrchestratorPanel({ projectId }: { projectId: string }) {
   const router = useRouter();
-  const [running, setRunning] = useState<null | "one" | "all">(null);
+  const [running, setRunning] = useState<null | "one" | "all" | "revise">(null);
 
-  async function run(all: boolean) {
+  async function run(kind: "one" | "all" | "revise") {
     if (running) return;
-    setRunning(all ? "all" : "one");
+    setRunning(kind);
     try {
       const res = await fetch(`/api/admin/projects/${projectId}/orchestrate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ all }),
+        body: JSON.stringify(kind === "revise" ? { mode: "revise" } : { all: kind === "all" }),
       });
       const data = await res.json().catch(() => null);
 
@@ -64,13 +64,13 @@ export function OrchestratorPanel({ projectId }: { projectId: string }) {
       <h3 className="mt-2 text-lg font-semibold">Draft ready work for review</h3>
       <p className="mt-2 max-w-prose text-sm text-muted-foreground">
         The agent picks a ready task, drafts the actual deliverable against its acceptance
-        criteria, and submits it for review. Every draft waits for a human to approve or
-        revise — nothing ships on its own.
+        criteria, and submits it for review. When you send work back, it reads your notes and
+        redrafts. Every draft waits for a human to approve — nothing ships on its own.
       </p>
 
       <div className="mt-5 flex flex-wrap items-center gap-3">
         <button
-          onClick={() => run(false)}
+          onClick={() => run("one")}
           disabled={busy}
           className="inline-flex items-center gap-1.5 rounded-full bg-orange px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
         >
@@ -78,12 +78,20 @@ export function OrchestratorPanel({ projectId }: { projectId: string }) {
           {running === "one" ? "Drafting…" : "Run on next ready task"}
         </button>
         <button
-          onClick={() => run(true)}
+          onClick={() => run("all")}
           disabled={busy}
           className="inline-flex items-center gap-1.5 rounded-full border border-border/70 px-4 py-2 text-sm font-semibold transition-colors hover:bg-foreground/5 disabled:opacity-50"
         >
           {running === "all" && <Loader2 className="h-4 w-4 animate-spin" />}
           {running === "all" ? "Drafting…" : "Run on all ready"}
+        </button>
+        <button
+          onClick={() => run("revise")}
+          disabled={busy}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border/70 px-4 py-2 text-sm font-semibold transition-colors hover:bg-foreground/5 disabled:opacity-50"
+        >
+          {running === "revise" && <Loader2 className="h-4 w-4 animate-spin" />}
+          {running === "revise" ? "Revising…" : "Revise sent-back work"}
         </button>
       </div>
     </section>

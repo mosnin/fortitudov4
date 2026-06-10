@@ -5,9 +5,12 @@ import { db } from "@/db";
 import { tasks, taskSubmissions } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { recordEvent } from "@/lib/activity";
+import { getProjectSettings } from "@/lib/project-settings";
+import { reviseTask } from "@/lib/orchestrator";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 120;
 
 const schema = z.object({
   action: z.enum(["approve", "changes"]),
@@ -65,7 +68,23 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         .where(eq(taskSubmissions.id, latest.id));
     }
 
-    return NextResponse.json({ ok: true });
+    // Self-healing: in autonomous mode, the agent reads the feedback and
+    // redrafts immediately (still landing in review — never auto-approved).
+    // Best-effort and gated; the review itself has already succeeded.
+    let autoRevised = false;
+    if (!approve && updatedTask && process.env.OPENAI_API_KEY) {
+      try {
+        const settings = await getProjectSettings(updatedTask.projectId);
+        if (settings.autonomyLevel === "autonomous") {
+          const r = await reviseTask(id, user.id);
+          autoRevised = !!r;
+        }
+      } catch (e) {
+        console.error("auto-revise failed", e instanceof Error ? e.message : e);
+      }
+    }
+
+    return NextResponse.json({ ok: true, autoRevised });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Review failed";
     return NextResponse.json({ error: message }, { status: 500 });
