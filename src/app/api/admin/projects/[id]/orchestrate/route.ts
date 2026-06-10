@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { orchestrateNext, orchestrateRevisions } from "@/lib/orchestrator";
+import { notifyAdmins } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,6 +26,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       mode === "revise"
         ? await orchestrateRevisions(id, user.id, { max: 5 })
         : await orchestrateNext(id, user.id, { max: all ? 5 : 1 });
+
+    // Ping the other reviewers — there's fresh agent work waiting on a human.
+    if (result.drafted.length > 0) {
+      await notifyAdmins(
+        {
+          projectId: id,
+          type: "phase_update",
+          title: mode === "revise" ? "Agent revised work for review" : "Agent drafted work for review",
+          body: result.message,
+          actionUrl: `/admin/projects/${id}`,
+        },
+        user.id
+      );
+    }
+
     return NextResponse.json({ ok: true, ...result });
   } catch (error) {
     // getAuthenticatedUser throws a NextResponse (401) for unauthenticated callers.

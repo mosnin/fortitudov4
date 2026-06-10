@@ -7,6 +7,7 @@ import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { recordEvent } from "@/lib/activity";
 import { getProjectSettings } from "@/lib/project-settings";
 import { reviseTask } from "@/lib/orchestrator";
+import { notifyAdmins } from "@/lib/notify";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -78,6 +79,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         if (settings.autonomyLevel === "autonomous") {
           const r = await reviseTask(id, user.id);
           autoRevised = !!r;
+          if (r) {
+            await notifyAdmins(
+              {
+                projectId: updatedTask.projectId,
+                type: "phase_update",
+                title: "Agent redrafted after your changes",
+                body: `"${updatedTask.title}" is ready to review again.`,
+                actionUrl: `/admin/projects/${updatedTask.projectId}`,
+              },
+              user.id
+            );
+          }
         }
       } catch (e) {
         console.error("auto-revise failed", e instanceof Error ? e.message : e);

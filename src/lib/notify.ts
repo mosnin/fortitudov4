@@ -33,6 +33,22 @@ export async function notify(args: NotifyArgs): Promise<void> {
   });
 }
 
+/**
+ * Alert every admin (optionally excluding one — e.g. the person who triggered
+ * the action). Used for agent activity that a human reviewer should see.
+ */
+export async function notifyAdmins(
+  args: Omit<NotifyArgs, "userId">,
+  exceptUserId?: string
+): Promise<void> {
+  const admins = await db.select({ id: users.id }).from(users).where(eq(users.role, "admin"));
+  await Promise.all(
+    admins
+      .filter((a) => a.id !== exceptUserId)
+      .map((a) => notify({ ...args, userId: a.id }))
+  );
+}
+
 async function sendEmail(args: NotifyArgs): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.NOTIFY_FROM_EMAIL;
