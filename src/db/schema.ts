@@ -633,3 +633,61 @@ export const businessProfiles = pgTable("business_profiles", {
 ]);
 
 export type BusinessProfile = typeof businessProfiles.$inferSelect;
+
+// ── Agentic foundation ──────────────────────────────────────────────────────
+
+// Per-build configuration: how autonomous the agents may be, and the bespoke
+// brand theming for this client's studio.
+export const projectSettings = pgTable("project_settings", {
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .primaryKey(),
+  // manual = humans do everything; assisted = agents draft, humans approve
+  // (default); autonomous = agents act, humans are notified and can veto.
+  autonomyLevel: varchar("autonomy_level", { length: 20 }).notNull().default("assisted"),
+  brandColor: varchar("brand_color", { length: 9 }), // hex, themes the client portal
+  brandName: varchar("brand_name", { length: 255 }),
+  conciergeEnabled: boolean("concierge_enabled").notNull().default(true),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// The replayable, auditable timeline of everything that happens on a build —
+// human, agent, and system actions alike. Radical transparency as a feature.
+export const activityEvents = pgTable("activity_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  projectId: uuid("project_id")
+    .references(() => projects.id, { onDelete: "cascade" })
+    .notNull(),
+  actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+  actorType: varchar("actor_type", { length: 20 }).notNull().default("human"), // human | agent | system
+  kind: varchar("kind", { length: 50 }).notNull(),
+  summary: text("summary").notNull(),
+  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_activity_project_id").on(table.projectId),
+  index("idx_activity_created_at").on(table.createdAt),
+]);
+
+// Compounding knowledge: client preferences, reusable patterns, decisions, and
+// build facts the agents reason over. The studio gets smarter every build.
+export const agencyMemory = pgTable("agency_memory", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  scope: varchar("scope", { length: 20 }).notNull().default("project"), // global | client | project
+  userId: uuid("user_id").references(() => users.id, { onDelete: "cascade" }),
+  projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+  kind: varchar("kind", { length: 50 }).notNull(), // preference | pattern | decision | fact | component
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  tags: jsonb("tags").$type<string[]>(),
+  createdBy: uuid("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_memory_scope").on(table.scope),
+  index("idx_memory_user_id").on(table.userId),
+  index("idx_memory_project_id").on(table.projectId),
+]);
+
+export type ProjectSettings = typeof projectSettings.$inferSelect;
+export type ActivityEvent = typeof activityEvents.$inferSelect;
+export type AgencyMemory = typeof agencyMemory.$inferSelect;
