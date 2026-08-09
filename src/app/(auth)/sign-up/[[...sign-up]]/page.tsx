@@ -1,29 +1,50 @@
-import { SignUp } from "@clerk/nextjs";
-import { AsciiField } from "@/components/ui/ascii-field";
-import { Logo } from "@/components/ui/logo";
+import { AuthPageLayout } from '@/components/auth/auth-page-layout';
+import { ThemedSignUp } from '@/components/auth/clerk-sign-up';
+import Link from 'next/link';
+import type { Metadata } from 'next';
+import { BODY_MUTED, QUIET_LINK } from '@/lib/typography';
+import { cn } from '@/lib/utils';
 
-export default function SignUpPage() {
+export const metadata: Metadata = { title: 'Sign Up — Fortitudo' };
+
+export default async function SignUpPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect_url?: string }>;
+}) {
+  const { redirect_url } = await searchParams;
+  // Validate redirect_url: allow safe internal paths, block path traversal.
+  const SAFE_PREFIXES = ['/dashboard', '/admin', '/onboarding', '/checkout', '/projects', '/messages', '/payments', '/settings', '/post-login'];
+  const isSafeRedirect = redirect_url
+    && SAFE_PREFIXES.some(p => redirect_url.startsWith(p))
+    && !redirect_url.includes('..');
+  const signInUrl = isSafeRedirect
+    ? `/sign-in?redirect_url=${encodeURIComponent(redirect_url!)}`
+    : '/sign-in';
+
+  const postSignUpUrl = isSafeRedirect
+    ? redirect_url!
+    : '/post-login';
+
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center gap-8 bg-background py-12">
-      <div
-        className="absolute inset-0"
-        style={{
-          maskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 30%, black 100%)",
-          WebkitMaskImage:
-            "radial-gradient(ellipse 70% 60% at 50% 40%, transparent 30%, black 100%)",
-        }}
-      >
-        <AsciiField />
+    <AuthPageLayout
+      heading="Set up Helix."
+      subheading="Two minutes."
+    >
+      <div className="w-full space-y-4">
+        <ThemedSignUp
+          routing="path"
+          path="/sign-up"
+          forceRedirectUrl={postSignUpUrl}
+          signInUrl={signInUrl}
+        />
+        <p className={cn(BODY_MUTED, 'text-center')}>
+          Already have an account?{' '}
+          <Link href={signInUrl} className={cn(QUIET_LINK, 'underline underline-offset-4')}>
+            Sign in
+          </Link>
+        </p>
       </div>
-
-      <div className="relative flex flex-col items-center gap-2">
-        <Logo size={40} />
-        <p className="eyebrow-mono">Start your project</p>
-      </div>
-      <div className="relative">
-        <SignUp />
-      </div>
-    </div>
+    </AuthPageLayout>
   );
 }

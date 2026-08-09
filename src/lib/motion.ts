@@ -54,3 +54,15 @@ export const rowItem: Variants = {
     transition: { duration: 0.25, ease: easeOutExpo },
   },
 };
+
+/* ── Giga marketing motion vocabulary (ported with the logged-out site) ──── */
+
+/** Premium ease-out cubic — Apple-ish curve for entrances. */
+export const EASE_OUT: [number, number, number, number] = [0.16, 1, 0.3, 1];
+export const EASE_IN_OUT: [number, number, number, number] = [0.4, 0, 0.2, 1];
+/** Apple "out-quint" curve — slightly longer settle than EASE_OUT. */
+export const EASE_APPLE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
+export const DURATION_FAST = 0.15;
+export const DURATION_BASE = 0.22;
+export const DURATION_SLOW = 0.32;

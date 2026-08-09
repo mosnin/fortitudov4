@@ -2,9 +2,8 @@ import { ImageIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Marked slot for a real asset (photo / illustration / render) that hasn't
- * been produced yet. Swap each instance for the final image; the label says
- * what belongs there.
+ * Marked slot for a real asset that hasn't been produced yet. Used by the
+ * legacy marketing chrome; the logged-out site proper follows design.md.
  */
 export function ImagePlaceholder({
   label,
@@ -20,15 +19,10 @@ export function ImagePlaceholder({
       className={cn(
         "flex flex-col items-center justify-center gap-2 border border-dashed select-none",
         dark
-          ? "border-white/25 bg-white/[0.04] text-cream/40"
-          : "border-ink/20 bg-ink/[0.03] text-ink/40",
+          ? "border-white/25 bg-white/[0.04] text-white/40"
+          : "border-black/20 bg-black/[0.03] text-black/40",
         className
       )}
-      style={{
-        backgroundImage: dark
-          ? "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 11px)"
-          : "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(26,26,24,0.02) 10px, rgba(26,26,24,0.02) 11px)",
-      }}
       role="img"
       aria-label={`Placeholder: ${label}`}
     >
