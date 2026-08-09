@@ -1,17 +1,30 @@
 import type { Metadata } from "next";
+import { Inter, Instrument_Serif } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+});
+
 export const metadata: Metadata = {
-  title: "Fortitudo Agency | Digital Solutions Built for Growth",
+  title: "Fortitudo Agency | A Digital Agency Built for Founders",
   description:
-    "Web applications, ecommerce stores, funnels, AI automation, and more. Choose your service and watch your project come to life.",
+    "Web applications, ecommerce stores, funnels, and AI automation — built by a senior team and accelerated by our AI build agent. Fixed quotes, real-time tracking.",
   metadataBase: new URL("https://foritudo.agency"),
   openGraph: {
-    title: "Fortitudo Agency | Digital Solutions Built for Growth",
+    title: "Fortitudo Agency | A Digital Agency Built for Founders",
     description:
-      "Web applications, ecommerce stores, funnels, AI automation, and more.",
+      "Web applications, ecommerce stores, funnels, and AI automation — built by a senior team, accelerated by AI.",
     url: "https://foritudo.agency",
     siteName: "Fortitudo Agency",
     type: "website",
@@ -35,7 +48,11 @@ export default function RootLayout({
         },
       }}
     >
-      <html lang="en" className="dark h-full antialiased" suppressHydrationWarning>
+      <html
+        lang="en"
+        className={`dark h-full antialiased ${inter.variable} ${instrumentSerif.variable}`}
+        suppressHydrationWarning
+      >
         <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
           <ThemeProvider>{children}</ThemeProvider>
         </body>
