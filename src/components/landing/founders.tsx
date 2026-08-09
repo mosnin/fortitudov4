@@ -1,103 +1,119 @@
 "use client";
 
-import { motion } from "motion/react";
-import { ArrowRight } from "lucide-react";
-import { EASE_OUT, Reveal } from "./reveal";
-import { PillLink } from "./pill-link";
+import { PressButton } from "./press-button";
+import { SectionRails } from "./section-rails";
+import { ImagePlaceholder } from "./image-placeholder";
 
 const stories = [
   {
-    initials: "SM",
     name: "Sarah Mitchell",
     role: "Founder, Maison Noir",
     quote:
       "Our store shipped in three weeks and conversion tripled. I always knew exactly where the build stood.",
-    tone: "from-[#2A2A28] to-[#111110]",
   },
   {
-    initials: "MG",
+    name: "David Chen",
+    role: "CTO, DataPulse",
+    quote:
+      "No back-and-forth emails, no mystery timelines. Everything was right there in the dashboard.",
+  },
+  {
     name: "Maria Gonzalez",
     role: "Ops Lead, HelpStream",
     quote:
       "The automation they built saves us 20+ hours a week. They understood our workflow better than we did.",
-    tone: "from-[#33312D] to-[#161513]",
   },
   {
-    initials: "JO",
     name: "James Okafor",
     role: "CEO, GrowthForge",
     quote:
-      "We needed a funnel fast and got 450% ROI on ad spend. Already planning the next build with them.",
-    tone: "from-[#2E2B26] to-[#131211]",
+      "We needed a funnel fast and got 450% ROI on ad spend. Already planning the next build.",
   },
   {
-    initials: "PS",
     name: "Priya Shah",
     role: "Founder, Atlas Ops",
     quote:
       "Figma to production in five weeks. I checked the build tracker more often than my email.",
-    tone: "from-[#292824] to-[#141412]",
   },
 ];
 
 export function FoundersSection() {
   return (
-    <section className="bg-cream py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div className="max-w-lg">
-            <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
-              Built for founders{" "}
-              <span className="font-serif italic font-normal">who ship</span>
+    <section className="relative border-b border-line bg-cream py-16 md:py-20">
+      <SectionRails />
+
+      <div className="relative mx-auto max-w-[1600px]">
+        <div className="flex flex-col items-start justify-between gap-6 px-4 md:px-6 lg:flex-row lg:items-end lg:px-16">
+          <div className="flex flex-col items-start gap-4 md:gap-6">
+            <h2 className="font-mono text-[28px] leading-none font-medium tracking-[-0.032em] text-ink md:text-[40px] lg:text-[48px]">
+              Built for{" "}
+              <span className="pr-2.5 font-serif italic font-normal md:pr-5">
+                Founders
+              </span>
+              Who Ship
             </h2>
-            <p className="mt-3 text-lg text-ink-soft">
+            <p className="text-[18px] leading-[120%] tracking-[-0.015em] text-ink-soft md:text-[20px]">
               Why startups get built with Fortitudo.
             </p>
           </div>
-          <PillLink href="/portfolio" variant="ink">
+          <PressButton href="/portfolio" variant="dark" size="lg">
             Read customer stories
-            <ArrowRight className="h-4 w-4" />
-          </PillLink>
-        </Reveal>
+          </PressButton>
+        </div>
+      </div>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {stories.map((story, index) => (
-            <motion.figure
-              key={story.name}
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-64px" }}
-              transition={{ duration: 0.6, delay: index * 0.08, ease: EASE_OUT }}
-              className="group flex flex-col overflow-hidden rounded-3xl border border-line bg-paper transition-shadow duration-300 hover:shadow-[0_20px_50px_-20px_rgba(26,26,24,0.25)]"
-            >
-              {/* Monochrome portrait block */}
-              <div
-                className={`relative flex aspect-[4/3.4] items-end overflow-hidden bg-gradient-to-br ${story.tone} p-4`}
+      {/* Draggable-feel card strip with hairline frame and edge fade */}
+      <div className="relative mt-8 w-full select-none">
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 z-10 h-px bg-line" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-px bg-line" />
+
+        <div
+          className="overflow-hidden py-6"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent 0, black 3%, black 97%, transparent 100%)",
+          }}
+        >
+          <div
+            className="flex w-max animate-marquee gap-4 will-change-transform md:gap-6"
+            style={{ "--marquee-duration": "55s" } as React.CSSProperties}
+          >
+            {[...stories, ...stories].map((story, i) => (
+              <article
+                key={`${story.name}-${i}`}
+                aria-hidden={i >= stories.length}
+                className="flex h-[440px] w-[320px] shrink-0 flex-col overflow-clip rounded-[24px] border border-line bg-white md:h-[480px] md:w-[382px]"
               >
-                <span
-                  aria-hidden
-                  className="absolute -top-6 -right-3 font-serif text-[10rem] leading-none text-white/[0.09] transition-transform duration-500 group-hover:scale-105"
-                >
-                  {story.initials.charAt(0)}
-                </span>
-                <div className="relative">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/25 bg-white/10 text-sm font-bold text-cream backdrop-blur-sm">
-                    {story.initials}
+                {/* Nested photo card — tilts on hover */}
+                <div className="relative -mx-px -mt-px flex h-[260px] shrink-0 flex-col justify-end overflow-clip rounded-[24px] border border-line bg-ink p-4 shadow-[0px_0px_16px_0px_rgba(25,25,25,0.3)] transition-transform duration-300 ease-out hover:-rotate-[1.2deg] md:h-[300px]">
+                  <ImagePlaceholder
+                    dark
+                    label={`Portrait photo — ${story.name} (B&W)`}
+                    className="absolute inset-0 rounded-none border-0"
+                  />
+                  <span className="relative w-fit rounded-[6px] bg-white/95 px-2.5 py-1.5 text-[12px] leading-none font-medium text-ink">
+                    {story.name}
                   </span>
                 </div>
-              </div>
 
-              <blockquote className="flex flex-1 flex-col p-5">
-                <p className="text-sm leading-relaxed text-ink">
-                  &ldquo;{story.quote}&rdquo;
-                </p>
-                <figcaption className="mt-auto pt-4">
-                  <p className="text-sm font-semibold text-ink">{story.name}</p>
-                  <p className="text-xs text-ink-soft">{story.role}</p>
-                </figcaption>
-              </blockquote>
-            </motion.figure>
-          ))}
+                <div className="flex flex-1 flex-col justify-between p-5">
+                  <p className="text-[16px] leading-[1.4] tracking-[-0.015em] text-ink">
+                    &ldquo;{story.quote}&rdquo;
+                  </p>
+                  <div>
+                    <p className="text-[14px] font-medium tracking-[-0.015em] text-ink">
+                      {story.name}
+                    </p>
+                    <p className="text-[13px] tracking-[-0.015em] text-ink-soft">
+                      {story.role}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>

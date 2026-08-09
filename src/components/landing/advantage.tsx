@@ -1,141 +1,93 @@
 "use client";
 
-import { motion } from "motion/react";
-import { AlertCircle, Bot, LayoutDashboard, Users } from "lucide-react";
-import { EASE_OUT, Reveal } from "./reveal";
+import {
+  AlertTriangle,
+  Bot,
+  CalendarClock,
+  CheckCircle2,
+  FileWarning,
+  GaugeCircle,
+  Mail,
+  PenTool,
+  Receipt,
+  Rocket,
+  UserCheck,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
+import { SectionRails } from "./section-rails";
 
-const annotations = [
-  { label: "Scope creep +$4,000", top: "14%", right: "-4%", delay: 0.4 },
-  { label: "Update from 9 days ago", top: "44%", left: "-6%", delay: 0.55 },
-  { label: "Invoice surprise", top: "72%", right: "2%", delay: 0.7 },
-];
-
-function LegacyCard() {
-  return (
-    <div className="relative">
-      <div className="rounded-3xl bg-cream p-6 sm:p-8">
-        {/* Fake statement-of-work document */}
-        <div className="relative mx-auto max-w-sm rounded-xl border border-line bg-paper p-6 shadow-lg">
-          <div className="h-3 w-2/5 rounded-full bg-ink/20" />
-          <div className="mt-5 space-y-2.5">
-            {[100, 88, 94, 72, 90, 60, 84, 78].map((width, i) => (
-              <div
-                key={i}
-                className="h-2 rounded-full bg-ink/10"
-                style={{ width: `${width}%` }}
-              />
-            ))}
-          </div>
-          <div className="mt-5 flex items-center justify-between border-t border-line pt-3">
-            <p className="text-[10px] text-ink-soft">
-              SOW_v7_final_FINAL_(2).pdf
-            </p>
-            <p className="text-[10px] text-ink-soft">Page 1 of 34</p>
-          </div>
-
-          {/* Red annotation pills */}
-          {annotations.map((a) => (
-            <motion.span
-              key={a.label}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.45, delay: a.delay, ease: EASE_OUT }}
-              style={{ top: a.top, left: a.left, right: a.right }}
-              className="absolute flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-semibold whitespace-nowrap text-red-500 shadow-sm"
-            >
-              <AlertCircle className="h-3 w-3" />
-              {a.label}
-            </motion.span>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-6 px-2">
-        <h3 className="text-lg font-semibold text-cream">Typical agencies</h3>
-        <p className="mt-2 text-sm leading-relaxed text-cream/60">
-          Account managers playing broken telephone between you and the people
-          actually building. Updates arrive by email, weeks apart — and the
-          invoice never matches the quote.
-        </p>
-      </div>
-    </div>
-  );
+interface Pill {
+  icon: LucideIcon;
+  label: string;
+  duration: number;
+  delay: number;
 }
 
-const pipeline = [
-  {
-    icon: Users,
-    title: "Senior builders",
-    caption: "Design, architecture & craft",
-  },
-  {
-    icon: Bot,
-    title: "AI build agent",
-    caption: "Scaffolding, tests & busywork",
-  },
-  {
-    icon: LayoutDashboard,
-    title: "Your dashboard",
-    caption: "Live progress, quotes & chat",
-  },
+const legacyPills: Pill[] = [
+  { icon: CalendarClock, label: "Discovery call #4", duration: 1.7, delay: -0.2 },
+  { icon: FileWarning, label: "Scope change order", duration: 2.4, delay: -0.8 },
+  { icon: Mail, label: "Week-old status email", duration: 2.0, delay: -1.3 },
+  { icon: Receipt, label: "Surprise invoice", duration: 1.8, delay: -0.5 },
+  { icon: AlertTriangle, label: "Handoff to a stranger", duration: 2.2, delay: -1.7 },
 ];
 
-function FortitudoCard() {
+const fortitudoPills: Pill[] = [
+  { icon: GaugeCircle, label: "Fixed quote", duration: 2.1, delay: -0.4 },
+  { icon: Users, label: "Senior architecture", duration: 1.8, delay: -1.1 },
+  { icon: Bot, label: "AI-accelerated build", duration: 2.3, delay: -0.7 },
+  { icon: CheckCircle2, label: "Live tracker", duration: 1.9, delay: -1.5 },
+  { icon: UserCheck, label: "Human review", duration: 2.2, delay: -0.2 },
+  { icon: Rocket, label: "Launch", duration: 1.7, delay: -0.9 },
+];
+
+function PillConveyor({
+  pills,
+  tone,
+}: {
+  pills: Pill[];
+  tone: "alert" | "orange";
+}) {
+  const pillStyles =
+    tone === "alert"
+      ? "border-alert bg-alert-tint text-alert"
+      : "border-orange bg-orange-tint text-orange";
+  const connector = tone === "alert" ? "bg-alert" : "bg-orange";
+  const ring = tone === "alert" ? "#FF94A4" : "#FDBA74";
+
+  const row = (hidden: boolean) => (
+    <div aria-hidden={hidden} className="flex shrink-0 items-center gap-2">
+      {pills.map((pill) => {
+        const Icon = pill.icon;
+        return (
+          <div key={pill.label} className="flex shrink-0 items-center gap-2">
+            <div
+              className={`flex shrink-0 items-center gap-3 rounded-[24px] border-2 p-4 motion-safe:animate-[pill-ring-pulse_2s_ease-in-out_infinite] ${pillStyles}`}
+              style={
+                {
+                  "--pill-ring": ring,
+                  animationDuration: `${pill.duration}s`,
+                  animationDelay: `${pill.delay}s`,
+                } as React.CSSProperties
+              }
+            >
+              <Icon className="size-6 shrink-0" />
+              <span className="font-mono text-[22px] leading-none font-normal tracking-[-0.032em] whitespace-nowrap md:text-[24px]">
+                {pill.label}
+              </span>
+            </div>
+            <div className={`h-0.5 w-6 shrink-0 ${connector}`} />
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <div className="relative">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange via-orange-dark to-[#7C2D12] p-6 sm:p-8">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_20%_0%,rgba(255,255,255,0.18),transparent)]" />
-
-        <div className="relative mx-auto flex max-w-sm flex-col gap-2.5 py-2">
-          {pipeline.map((step, i) => {
-            const Icon = step.icon;
-            return (
-              <div key={step.title}>
-                <motion.div
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{
-                    duration: 0.5,
-                    delay: 0.35 + i * 0.15,
-                    ease: EASE_OUT,
-                  }}
-                  className="flex items-center gap-3.5 rounded-2xl border border-white/20 bg-white/10 p-3.5 backdrop-blur-sm"
-                >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/90">
-                    <Icon className="h-5 w-5 text-orange-dark" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-semibold text-white">
-                      {step.title}
-                    </p>
-                    <p className="text-xs text-white/70">{step.caption}</p>
-                  </div>
-                </motion.div>
-                {i < pipeline.length - 1 && (
-                  <motion.div
-                    initial={{ opacity: 0, scaleY: 0 }}
-                    whileInView={{ opacity: 1, scaleY: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.3, delay: 0.45 + i * 0.15 }}
-                    className="mx-auto mt-2.5 h-4 w-px origin-top bg-white/40"
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="mt-6 px-2">
-        <h3 className="text-lg font-semibold text-cream">Fortitudo</h3>
-        <p className="mt-2 text-sm leading-relaxed text-cream/60">
-          One senior team, one dashboard. Our AI build agent handles the
-          scaffolding, test suites, and revision churn — so human hours go
-          where they matter, and your build ships weeks faster. You watch it
-          happen live.
-        </p>
+    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 overflow-x-clip">
+      <div className="flex w-max items-center py-2 motion-safe:animate-[marquee-left_26s_linear_infinite]">
+        {row(false)}
+        {row(true)}
       </div>
     </div>
   );
@@ -143,31 +95,58 @@ function FortitudoCard() {
 
 export function AdvantageSection() {
   return (
-    <section id="how-it-works" className="bg-ink py-24 sm:py-32">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <Reveal className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-cream sm:text-4xl lg:text-[2.75rem]">
-            Our{" "}
-            <span className="font-serif italic font-normal text-orange">
-              unique
-            </span>{" "}
-            advantage
-          </h2>
-          <p className="mt-4 text-lg text-cream/60">
-            Humans lead every build. Our AI agent does the heavy lifting. You
-            get agency craft without agency overhead.
-          </p>
-        </Reveal>
+    <section id="how-it-works" className="relative bg-night">
+      <SectionRails dark />
 
-        <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-8">
-          <Reveal delay={0.05}>
-            <LegacyCard />
-          </Reveal>
-          <Reveal delay={0.15}>
-            <FortitudoCard />
-          </Reveal>
+      <div className="relative flex flex-col items-center px-4 pt-10 pb-4 md:px-12 md:pt-14 md:pb-6 lg:px-16 lg:pt-16">
+        <h2 className="text-center font-mono text-[28px] leading-none font-medium tracking-[-0.032em] text-white md:text-[40px] lg:text-[48px]">
+          Our Unique Advantage
+        </h2>
+      </div>
+
+      <div className="relative border-y border-line-dark px-4 py-6 md:px-12 lg:px-16">
+        <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-6 md:grid-cols-2">
+          {/* Legacy agencies */}
+          <div className="flex flex-col gap-5">
+            <div className="overflow-hidden rounded-[24px] bg-white p-0">
+              <div className="relative aspect-[724/322] overflow-hidden rounded-[24px] bg-surface shadow-[0_8px_28px_0_rgba(0,0,0,0.4)]">
+                <PillConveyor pills={legacyPills} tone="alert" />
+              </div>
+            </div>
+            <div className="px-1">
+              <h3 className="text-[18px] leading-none font-bold tracking-[-0.032em] text-white">
+                Typical agencies
+              </h3>
+              <p className="mt-2.5 max-w-[560px] text-[15px] leading-[1.45] tracking-[-0.015em] text-white/60">
+                An endless conveyor of calls, change orders, and week-old
+                status emails — with account managers between you and the
+                people actually building. The invoice never matches the quote.
+              </p>
+            </div>
+          </div>
+
+          {/* Fortitudo */}
+          <div className="flex flex-col gap-5">
+            <div className="overflow-hidden rounded-[24px] bg-white p-0">
+              <div className="relative aspect-[724/322] overflow-hidden rounded-[24px] bg-panel shadow-[0_8px_28px_0_rgba(0,0,0,0.4)]">
+                <PillConveyor pills={fortitudoPills} tone="orange" />
+              </div>
+            </div>
+            <div className="px-1">
+              <h3 className="text-[18px] leading-none font-bold tracking-[-0.032em] text-white">
+                Fortitudo
+              </h3>
+              <p className="mt-2.5 max-w-[560px] text-[15px] leading-[1.45] tracking-[-0.015em] text-white/60">
+                One senior team in one dashboard. Our AI build agent runs the
+                scaffolding, tests, and revision churn under senior review —
+                so your build ships weeks faster and you watch it live.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+
+      <div className="h-8 md:h-12" />
     </section>
   );
 }

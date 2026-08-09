@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
-import { Reveal } from "./reveal";
+import { Plus } from "lucide-react";
+import { SectionRails } from "./section-rails";
 
 const faqs = [
   {
@@ -34,49 +34,45 @@ const faqs = [
 
 export function FAQSection() {
   return (
-    <section className="bg-cream-dark py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6">
-        <Reveal className="text-center">
-          <h2 className="text-3xl font-semibold tracking-tight text-ink sm:text-4xl lg:text-[2.75rem]">
-            FAQ
-          </h2>
-        </Reveal>
+    <section className="relative border-b border-line bg-cream px-4 py-16 md:px-6 md:py-20 lg:px-16">
+      <SectionRails />
 
-        <Reveal delay={0.1} className="mt-10">
-          <Accordion.Root type="single" collapsible className="space-y-3">
-            {faqs.map((faq, index) => (
-              <Accordion.Item
-                key={index}
-                value={`faq-${index}`}
-                className="overflow-hidden rounded-2xl border border-line bg-paper"
-              >
-                <Accordion.Header>
-                  <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left text-[15px] font-semibold text-ink transition-colors hover:bg-cream/60 sm:px-6">
-                    {faq.q}
-                    <ChevronDown className="h-4 w-4 shrink-0 text-ink-soft transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                  </Accordion.Trigger>
-                </Accordion.Header>
-                <Accordion.Content className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
-                  <p className="px-5 pb-5 text-sm leading-relaxed text-ink-soft sm:px-6">
-                    {faq.a}
-                  </p>
-                </Accordion.Content>
-              </Accordion.Item>
-            ))}
-          </Accordion.Root>
-        </Reveal>
+      <div className="relative mx-auto flex w-full max-w-[840px] flex-col gap-10">
+        <h2 className="px-6 text-center font-mono text-[28px] leading-none font-medium tracking-[-0.032em] text-ink md:text-[40px] lg:text-[48px]">
+          FAQ
+        </h2>
 
-        <Reveal delay={0.15} className="mt-8 text-center">
-          <p className="text-sm text-ink-soft">
-            Can&apos;t find an answer to your question?{" "}
-            <Link
-              href="/contact"
-              className="font-semibold text-orange underline-offset-2 hover:underline"
+        <Accordion.Root type="single" collapsible className="flex flex-col gap-3">
+          {faqs.map((faq, index) => (
+            <Accordion.Item
+              key={index}
+              value={`faq-${index}`}
+              className="overflow-hidden rounded-[12px] border border-line bg-white"
             >
-              Get in touch
-            </Link>
-          </p>
-        </Reveal>
+              <Accordion.Header>
+                <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left text-[16px] font-medium tracking-[-0.015em] text-ink transition-colors hover:bg-surface md:px-6">
+                  {faq.q}
+                  <Plus className="h-4 w-4 shrink-0 text-ink-soft transition-transform duration-200 group-data-[state=open]:rotate-45" />
+                </Accordion.Trigger>
+              </Accordion.Header>
+              <Accordion.Content className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
+                <p className="px-5 pb-5 text-[15px] leading-[1.5] tracking-[-0.015em] text-ink-soft md:px-6">
+                  {faq.a}
+                </p>
+              </Accordion.Content>
+            </Accordion.Item>
+          ))}
+        </Accordion.Root>
+
+        <p className="text-center text-[15px] tracking-[-0.015em] text-ink-soft">
+          Can&apos;t find an answer to your question?{" "}
+          <Link
+            href="/contact"
+            className="font-medium text-ink underline underline-offset-4 hover:text-orange"
+          >
+            Get in touch
+          </Link>
+        </p>
       </div>
     </section>
   );

@@ -1,20 +1,9 @@
 import type { Metadata } from "next";
-import { Inter, Instrument_Serif } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-});
-
-const instrumentSerif = Instrument_Serif({
-  weight: "400",
-  style: ["normal", "italic"],
-  subsets: ["latin"],
-  variable: "--font-instrument-serif",
-});
 
 export const metadata: Metadata = {
   title: "Fortitudo Agency | A Digital Agency Built for Founders",
@@ -50,7 +39,7 @@ export default function RootLayout({
     >
       <html
         lang="en"
-        className={`dark h-full antialiased ${inter.variable} ${instrumentSerif.variable}`}
+        className={`dark h-full antialiased ${GeistSans.variable} ${GeistMono.variable}`}
         suppressHydrationWarning
       >
         <body className="min-h-full flex flex-col bg-background text-foreground font-sans">

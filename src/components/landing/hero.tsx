@@ -1,183 +1,80 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Check } from "lucide-react";
-import { PillLink } from "./pill-link";
-import { EASE_OUT } from "./reveal";
+import { PressButton } from "./press-button";
+import { SectionRails } from "./section-rails";
+import { ImagePlaceholder } from "./image-placeholder";
 
-function FloatingCard({
-  className,
-  float = 10,
-  duration = 6,
-  rotate = 0,
-  delay = 0,
-  children,
-}: {
-  className?: string;
-  float?: number;
-  duration?: number;
-  rotate?: number;
-  delay?: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <motion.div
-      className={className}
-      initial={{ opacity: 0, y: 24, rotate }}
-      animate={{ opacity: 1, y: [0, -float, 0], rotate }}
-      transition={{
-        opacity: { duration: 0.9, delay, ease: EASE_OUT },
-        y: {
-          duration,
-          delay,
-          repeat: Infinity,
-          ease: "easeInOut",
-        },
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function LandingHero() {
   return (
-    <section className="relative overflow-hidden bg-cream pt-20 pb-24 sm:pt-24 sm:pb-32">
-      {/* Soft warm glow */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_0%,rgba(249,115,22,0.08),transparent)]" />
+    <section className="relative overflow-hidden border-b border-line bg-white">
+      {/* Bottom fade into the next band, per the reference */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgba(246,246,246,0)] from-[72%] to-surface to-[95%]" />
+      <SectionRails />
 
-      {/* Floating decor — left: live phase tracker */}
-      <FloatingCard
-        className="absolute top-40 left-[6%] hidden w-56 xl:block"
-        rotate={-5}
-        float={12}
-        duration={7}
-        delay={0.5}
-      >
-        <div className="rounded-2xl border border-line bg-paper p-4 shadow-[0_16px_40px_-12px_rgba(26,26,24,0.18)]">
-          <p className="text-[10px] font-semibold tracking-widest text-ink-soft uppercase">
-            Live build status
-          </p>
-          <div className="mt-3 space-y-2.5">
-            {[
-              { phase: "Discovery", done: true },
-              { phase: "Design", done: true },
-              { phase: "Development", done: false },
-            ].map((step) => (
-              <div key={step.phase} className="flex items-center gap-2.5">
-                <span
-                  className={
-                    step.done
-                      ? "flex h-4.5 w-4.5 items-center justify-center rounded-full bg-orange"
-                      : "relative flex h-4.5 w-4.5 items-center justify-center rounded-full border-2 border-orange"
-                  }
-                >
-                  {step.done ? (
-                    <Check className="h-2.5 w-2.5 text-white" strokeWidth={4} />
-                  ) : (
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-orange" />
-                  )}
-                </span>
-                <span className="text-xs font-medium text-ink">
-                  {step.phase}
-                </span>
-                {!step.done && (
-                  <span className="ml-auto rounded-full bg-orange/10 px-2 py-0.5 text-[10px] font-semibold text-orange">
-                    In progress
-                  </span>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </FloatingCard>
-
-      {/* Floating decor — right: fixed quote card */}
-      <FloatingCard
-        className="absolute top-32 right-[6%] hidden w-52 xl:block"
-        rotate={6}
-        float={10}
-        duration={6}
-        delay={0.7}
-      >
-        <div className="rounded-2xl border border-line bg-paper p-4 shadow-[0_16px_40px_-12px_rgba(26,26,24,0.18)]">
-          <p className="text-[10px] font-semibold tracking-widest text-ink-soft uppercase">
-            Your quote
-          </p>
-          <p className="mt-2 text-2xl font-bold tracking-tight text-ink">
-            $2,500
-          </p>
-          <p className="text-xs text-ink-soft">Web application · fixed price</p>
-          <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-orange/8 px-2.5 py-1.5">
-            <Check className="h-3.5 w-3.5 text-orange" strokeWidth={3} />
-            <span className="text-[11px] font-medium text-ink">
-              No surprise invoices
-            </span>
-          </div>
-        </div>
-      </FloatingCard>
-
-      <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6">
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.12 } },
-          }}
-        >
-          <motion.h1
-            variants={{
-              hidden: { opacity: 0, y: 28 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.8, ease: EASE_OUT },
-              },
-            }}
-            className="text-[2.75rem] leading-[1.05] font-semibold tracking-tight text-ink sm:text-6xl lg:text-[4.5rem]"
-          >
-            Agency Craft
-            <span className="block">
-              at the{" "}
-              <span className="font-serif italic font-normal text-ink">
-                Speed of Compute.
-              </span>
-            </span>
-          </motion.h1>
-
-          <motion.p
-            variants={{
-              hidden: { opacity: 0, y: 24 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.8, ease: EASE_OUT },
-              },
-            }}
-            className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg"
-          >
-            No black boxes, no waiting — fixed quotes and real-time build
-            tracking. A senior team, accelerated by our AI build agent. Built
-            for founders, by builders.
-          </motion.p>
-
+      <div className="relative mx-auto flex min-h-[560px] max-w-[1600px] items-center justify-center md:min-h-[640px]">
+        <div className="relative w-full md:w-auto">
+          {/* Rotated brand prop — top right, hanging over the heading */}
           <motion.div
-            variants={{
-              hidden: { opacity: 0, y: 20 },
-              visible: {
-                opacity: 1,
-                y: 0,
-                transition: { duration: 0.8, ease: EASE_OUT },
-              },
-            }}
-            className="mt-9"
+            initial={{ opacity: 0, scale: 0.9, rotate: -16.78 }}
+            animate={{ opacity: 1, scale: 1, rotate: -16.78 }}
+            transition={{ duration: 0.7, delay: 0.35, ease: EASE }}
+            className="pointer-events-none absolute top-[-60px] right-[-24px] z-10 hidden md:top-[-96px] md:right-[-72px] md:block lg:right-[-108px] lg:top-[-112px]"
           >
-            <PillLink href="/services" size="lg">
-              Start your project
-            </PillLink>
+            <ImagePlaceholder
+              label="Hero prop — brand mascot"
+              className="aspect-[299/269] w-[200px] rounded-[16px] lg:w-[260px]"
+            />
           </motion.div>
-        </motion.div>
+
+          {/* Rotated prop — bottom left */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, rotate: 12 }}
+            animate={{ opacity: 1, scale: 1, rotate: 12 }}
+            transition={{ duration: 0.7, delay: 0.5, ease: EASE }}
+            className="pointer-events-none absolute bottom-[-56px] left-[-24px] z-10 hidden md:bottom-[-40px] md:left-[-96px] md:block"
+          >
+            <ImagePlaceholder
+              label="Hero prop — product still"
+              className="h-[140px] w-[190px] rounded-[16px]"
+            />
+          </motion.div>
+
+          <div className="relative flex flex-col items-center gap-12 px-4 py-12 text-center md:px-[120px] md:py-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: EASE }}
+              className="flex flex-col items-center gap-6"
+            >
+              <h1 className="mx-auto max-w-[752px] font-mono text-[36px] leading-[100%] font-medium tracking-[-0.032em] text-ink md:text-[48px] lg:text-[60px]">
+                Custom Software <br />
+                at the{" "}
+                <span className="pr-1 font-serif italic font-normal text-orange">
+                  Speed of Compute.
+                </span>
+              </h1>
+              <p className="text-[18px] leading-[120%] tracking-[-0.015em] text-[#4E4E4E] md:text-[20px]">
+                No black boxes, no waiting. Get a fixed quote in minutes.
+                <br className="hidden md:block" /> Modular services, built for
+                founders by builders.
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: EASE }}
+              className="relative z-10"
+            >
+              <PressButton href="/services" size="lg">
+                Start your project
+              </PressButton>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </section>
   );

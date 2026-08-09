@@ -1,81 +1,59 @@
 "use client";
 
 import { motion } from "motion/react";
-import { Check } from "lucide-react";
-import { Reveal, EASE_OUT } from "./reveal";
+import { SectionRails } from "./section-rails";
+import { ImagePlaceholder } from "./image-placeholder";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
 
 export function IntroPanel() {
   return (
-    <section className="bg-cream px-4 py-10 sm:px-6 sm:py-14">
-      <Reveal className="mx-auto max-w-6xl">
-        <div className="relative overflow-hidden rounded-[2rem] bg-ink px-8 py-14 sm:px-12 sm:py-20 lg:px-16">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_85%_20%,rgba(249,115,22,0.12),transparent)]" />
+    <section className="relative bg-cream px-4 pt-4 pb-4 md:px-6 md:pt-12 md:pb-12 lg:px-16 lg:pt-16 lg:pb-16">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-line" />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-4 h-px bg-line md:top-12 lg:top-16" />
+      <SectionRails />
 
-          <div className="relative grid items-center gap-12 lg:grid-cols-[1.4fr_1fr]">
-            <p className="text-2xl leading-snug font-medium tracking-tight text-cream sm:text-3xl lg:text-[2.1rem]">
-              <span className="text-orange">Fortitudo</span> is a full-service
-              digital agency built for founders. That means senior builders on
-              every project, fixed transparent pricing, and an AI-accelerated
-              process that ships in weeks — not months.
-            </p>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.7, ease: EASE }}
+        className="relative mx-auto max-w-[1600px] overflow-hidden rounded-[24px] bg-panel p-5 pb-[200px] md:p-16 md:pb-16"
+      >
+        <h2 className="relative font-mono text-[20px] leading-none font-normal tracking-[-0.032em] text-white md:pr-[360px] md:text-[28px] lg:pr-[420px] lg:text-[32px] min-[1440px]:pr-[460px] min-[1440px]:text-[40px]">
+          <span className="text-orange">Fortitudo</span> is a full-stack
+          digital agency built for founders. That means fast quotes, senior
+          craft, and an AI-accelerated team that understands your business.
+        </h2>
 
-            {/* Tilted dashboard-card mockups */}
-            <div className="relative mx-auto hidden h-64 w-full max-w-xs lg:block">
-              <motion.div
-                initial={{ opacity: 0, y: 30, rotate: -6 }}
-                whileInView={{ opacity: 1, y: 0, rotate: -6 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.15, ease: EASE_OUT }}
-                className="absolute top-10 left-0 w-56 rounded-2xl border border-line bg-paper p-4 shadow-2xl shadow-black/40"
-              >
-                <p className="text-[10px] font-semibold tracking-widest text-ink-soft uppercase">
-                  Project kickoff
-                </p>
-                <div className="mt-2.5 space-y-2">
-                  <div className="h-2 w-4/5 rounded-full bg-ink/10" />
-                  <div className="h-2 w-3/5 rounded-full bg-ink/10" />
-                  <div className="h-2 w-2/3 rounded-full bg-ink/10" />
-                </div>
-                <div className="mt-3 flex items-center gap-1.5 rounded-lg bg-orange/10 px-2.5 py-1.5">
-                  <Check className="h-3.5 w-3.5 text-orange" strokeWidth={3} />
-                  <span className="text-[11px] font-medium text-ink">
-                    Deposit received — build started
-                  </span>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30, rotate: 5 }}
-                whileInView={{ opacity: 1, y: 0, rotate: 5 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3, ease: EASE_OUT }}
-                className="absolute top-0 right-0 w-52 rounded-2xl border border-line bg-paper p-4 shadow-2xl shadow-black/40"
-              >
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] font-semibold tracking-widest text-ink-soft uppercase">
-                    Phase 3 of 6
-                  </p>
-                  <span className="rounded-full bg-orange/10 px-2 py-0.5 text-[10px] font-semibold text-orange">
-                    Development
-                  </span>
-                </div>
-                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/10">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    whileInView={{ width: "52%" }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1.1, delay: 0.6, ease: EASE_OUT }}
-                    className="h-full rounded-full bg-orange"
-                  />
-                </div>
-                <p className="mt-2.5 text-[11px] text-ink-soft">
-                  Updated 14 minutes ago
-                </p>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </Reveal>
+        {/* Tilted document props — right side on desktop, bottom on mobile */}
+        <motion.div
+          initial={{ opacity: 0, rotate: -19.27 }}
+          whileInView={{ opacity: 1, rotate: -19.27 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.25, ease: EASE }}
+          className="pointer-events-none absolute right-[200px] bottom-[120px] z-10 hidden origin-bottom-right md:block"
+        >
+          <ImagePlaceholder
+            dark
+            label="Prop — project brief document"
+            className="h-[52px] w-[200px] rounded-[8px]"
+          />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, rotate: 8 }}
+          whileInView={{ opacity: 1, rotate: 8 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.35, ease: EASE }}
+          className="pointer-events-none absolute right-6 bottom-8 md:right-16 md:bottom-12"
+        >
+          <ImagePlaceholder
+            dark
+            label="Prop — dashboard still / documents photo"
+            className="h-[150px] w-[240px] rounded-[12px] md:h-[190px] md:w-[320px]"
+          />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
