@@ -1,126 +1,249 @@
 "use client";
 
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Send } from "lucide-react";
+import { Send, MessageSquare } from "lucide-react";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { usePolling } from "@/hooks/use-polling";
+import { services } from "@/lib/services";
 
-const conversations = [
-  { id: "1", client: "John Doe", project: "E-commerce Platform", unread: 2, lastMessage: "I uploaded the brand guide..." },
-  { id: "2", client: "Jane Smith", project: "Lead Gen Funnel", unread: 0, lastMessage: "Looks great! Let me know..." },
-  { id: "3", client: "Mike Chen", project: "Open Claw Setup", unread: 1, lastMessage: "When will testing begin?" },
-];
+const serviceLabels: Record<string, string> = Object.fromEntries(
+  services.map((s) => [s.id, s.name])
+);
 
-const demoMessages = [
-  { id: "1", content: "Hey! I uploaded the brand guide and logo files.", role: "client" as const, name: "John Doe", time: "10:00 AM" },
-  { id: "2", content: "Perfect, I'll review them today. The wireframes are looking good.", role: "admin" as const, name: "You", time: "10:15 AM" },
-  { id: "3", content: "Awesome! Can we also add a wishlist feature to the store?", role: "client" as const, name: "John Doe", time: "10:30 AM" },
-  { id: "4", content: "I uploaded the brand guide and product photos to the project.", role: "client" as const, name: "John Doe", time: "11:00 AM" },
-];
+interface Message {
+  id: string;
+  content: string;
+  role: "client" | "admin";
+  senderId: string;
+  createdAt: string;
+}
 
+interface Project {
+  id: string;
+  name: string;
+  serviceType: string;
+}
+
+/**
+ * Admin message center — staff side of client <> agency messaging. Staff see
+ * every project here via the staff-scoped projects API; threads refresh on a
+ * simple polling loop (no realtime dependency).
+ */
 export default function AdminMessagesPage() {
-  const [selectedConvo, setSelectedConvo] = useState(conversations[0]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
+    null
+  );
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [sending, setSending] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setProjects(data);
+          if (data.length > 0) setSelectedProjectId(data[0].id);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Clear the thread on project switch; the poll below refills it.
+  useEffect(() => {
+    setMessages([]);
+  }, [selectedProjectId]);
+
+  usePolling<Message[]>({
+    url: `/api/messages?projectId=${selectedProjectId}`,
+    interval: 5000,
+    enabled: !!selectedProjectId,
+    onUpdate: (data) => {
+      if (!Array.isArray(data)) return;
+      setMessages((prev) => {
+        const existingIds = new Set(prev.map((m) => m.id));
+        const incoming = data.filter((m) => !existingIds.has(m.id));
+        if (incoming.length === 0) return prev;
+        return [...prev, ...incoming];
+      });
+    },
+  });
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedProjectId) return;
+
+    setSending(true);
+    try {
+      const res = await fetch("/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          projectId: selectedProjectId,
+          content: newMessage,
+        }),
+      });
+      if (res.ok) {
+        const msg = await res.json();
+        setMessages((prev) =>
+          prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
+        );
+        setNewMessage("");
+      }
+    } catch {
+      window.alert("Failed to send message. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const selectedProject = projects.find((p) => p.id === selectedProjectId);
+
+  const header = (
+    <header className="border-b border-border pb-6">
+      <p className="eyebrow-mono">Fortitudo · Admin</p>
+      <h1 className="font-title mt-2 text-3xl tracking-tight sm:text-4xl">
+        Messages
+      </h1>
+      <p className="mt-2 text-muted-foreground">
+        Chat with clients across every project.
+      </p>
+    </header>
+  );
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        {header}
+        <Skeleton className="h-96 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">Messages</h1>
-        <p className="text-muted-foreground mt-1">Communicate with clients.</p>
-      </div>
+      {header}
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3" style={{ height: "calc(100vh - 250px)" }}>
-        {/* Conversation list */}
-        <Card className="lg:col-span-1 overflow-hidden">
-          <CardHeader className="border-b border-border py-4">
-            <CardTitle className="text-base flex items-center gap-2">
-              <MessageSquare className="h-4 w-4 text-orange" />
-              Conversations
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0 overflow-y-auto">
-            {conversations.map((convo) => (
-              <button
-                key={convo.id}
-                onClick={() => setSelectedConvo(convo)}
-                className={cn(
-                  "w-full text-left p-4 border-b border-border transition-colors cursor-pointer",
-                  selectedConvo.id === convo.id
-                    ? "bg-orange/5 border-l-2 border-l-orange"
-                    : "hover:bg-muted/50"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium text-sm">{convo.client}</span>
-                  {convo.unread > 0 && (
-                    <Badge variant="default" className="text-xs h-5 w-5 p-0 flex items-center justify-center rounded-full">
-                      {convo.unread}
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mt-0.5">{convo.project}</p>
-                <p className="text-xs text-muted-foreground mt-1 truncate">{convo.lastMessage}</p>
-              </button>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Chat area */}
-        <Card className="lg:col-span-2 flex flex-col overflow-hidden">
-          <CardHeader className="border-b border-border py-4">
-            <CardTitle className="text-base">
-              {selectedConvo.client} — {selectedConvo.project}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            {demoMessages.map((msg) => (
-              <div
-                key={msg.id}
-                className={cn(
-                  "flex flex-col max-w-[80%]",
-                  msg.role === "admin" ? "ml-auto items-end" : "items-start"
-                )}
-              >
-                <div
+      {projects.length === 0 ? (
+        <EmptyState
+          icon={MessageSquare}
+          title="No projects yet"
+          description="Once projects exist, their message threads appear here."
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_1fr]">
+          {/* Project list */}
+          <aside className="lg:border-r lg:border-border lg:pr-6">
+            <p className="micro-label border-b border-border pb-3">Projects</p>
+            <div className="mt-3 space-y-0.5">
+              {projects.map((project) => (
+                <button
+                  key={project.id}
+                  onClick={() => setSelectedProjectId(project.id)}
                   className={cn(
-                    "rounded-2xl px-4 py-3 text-sm",
-                    msg.role === "admin"
-                      ? "bg-orange text-white rounded-br-md"
-                      : "bg-muted rounded-bl-md"
+                    "w-full rounded-lg px-3 py-2 text-left text-[13px] transition-colors cursor-pointer",
+                    project.id === selectedProjectId
+                      ? "bg-muted font-medium text-foreground"
+                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                   )}
                 >
-                  {msg.content}
-                </div>
-                <span className="mt-1 text-xs text-muted-foreground">
-                  {msg.name} &middot; {msg.time}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-          <div className="border-t border-border p-4">
+                  <span className="block truncate">{project.name}</span>
+                  <span className="block truncate font-mono text-[10px] uppercase text-muted-foreground">
+                    {serviceLabels[project.serviceType] ?? project.serviceType}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          {/* Thread */}
+          <section className="flex min-h-[28rem] flex-col">
+            <div className="border-b border-border pb-3">
+              <h2 className="text-[15px] font-semibold">
+                {selectedProject?.name ?? "Select a project"}
+              </h2>
+            </div>
+
+            <div className="flex-1 space-y-3 overflow-y-auto py-5">
+              {messages.length === 0 ? (
+                <p className="pt-10 text-center text-sm text-muted-foreground">
+                  No messages yet — start the conversation.
+                </p>
+              ) : (
+                messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={cn(
+                      "flex",
+                      message.role === "admin" ? "justify-end" : "justify-start"
+                    )}
+                  >
+                    <div
+                      className={cn(
+                        "max-w-[75%] rounded-2xl px-4 py-2.5 text-sm",
+                        message.role === "admin"
+                          ? "bg-foreground text-background"
+                          : "bg-muted"
+                      )}
+                    >
+                      <p className="whitespace-pre-wrap break-words">
+                        {message.content}
+                      </p>
+                      <p
+                        className={cn(
+                          "mt-1 font-mono text-[10px]",
+                          message.role === "admin"
+                            ? "text-background/70"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {message.role === "admin" ? "Fortitudo Team" : "Client"} ·{" "}
+                        {new Date(message.createdAt).toLocaleTimeString(
+                          "en-US",
+                          { hour: "numeric", minute: "2-digit" }
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+
             <form
-              className="flex gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (newMessage.trim()) setNewMessage("");
-              }}
+              onSubmit={handleSend}
+              className="flex items-center gap-2 border-t border-border pt-4"
             >
               <Input
-                placeholder="Type your message..."
+                placeholder="Reply to the client…"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                className="flex-1"
+                disabled={!selectedProjectId || sending}
               />
-              <Button type="submit" disabled={!newMessage.trim()}>
+              <Button
+                type="submit"
+                size="icon"
+                disabled={!newMessage.trim() || sending}
+                aria-label="Send"
+              >
                 <Send className="h-4 w-4" />
               </Button>
             </form>
-          </div>
-        </Card>
-      </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }

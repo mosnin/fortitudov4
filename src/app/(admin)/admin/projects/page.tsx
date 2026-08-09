@@ -1,86 +1,181 @@
-"use client";
-
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { FolderKanban, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { db } from "@/db";
+import { projects, users, projectPhases } from "@/db/schema";
+import { eq, inArray, desc, and } from "drizzle-orm";
+import { getAuthenticatedUser, getAccessibleProjectIds } from "@/lib/auth-utils";
+import { canManageProjects } from "@/lib/permissions";
+import { services } from "@/lib/services";
+import { WeeklyReportsSection } from "./weekly-reports-section";
 
-const demoProjects = [
-  { id: "1", client: "John Doe", name: "E-commerce Platform", service: "Ecommerce Store", status: "in_progress", phase: "Development", payment: "paid" },
-  { id: "2", client: "Jane Smith", name: "Lead Gen Funnel", service: "Funnels", status: "in_progress", phase: "Design", payment: "paid" },
-  { id: "3", client: "Bob Wilson", name: "AI Chatbot", service: "AI Automation", status: "payment_pending", phase: "Discovery", payment: "pending" },
-  { id: "4", client: "Sarah Lee", name: "Company Website", service: "Web Application", status: "completed", phase: "Launch", payment: "paid" },
-  { id: "5", client: "Mike Chen", name: "Open Claw Setup", service: "Open Claw Deployment", status: "in_progress", phase: "Testing", payment: "paid" },
-];
+const serviceLabels: Record<string, string> = Object.fromEntries(
+  services.map((s) => [s.id, s.name])
+);
 
-export default function AdminProjectsPage() {
+const statusLabels: Record<string, string> = {
+  onboarding: "Onboarding",
+  payment_pending: "Payment Pending",
+  in_progress: "In Progress",
+  revision: "Revision",
+  completed: "Completed",
+  cancelled: "Cancelled",
+};
+
+// Status semantics as uppercase mono text — orange stays rare (active only).
+const statusClass: Record<string, string> = {
+  onboarding: "text-muted-foreground",
+  payment_pending: "text-warning",
+  in_progress: "text-brand",
+  revision: "text-warning",
+  completed: "text-success",
+  cancelled: "text-muted-foreground",
+};
+
+export default async function AdminProjectsPage() {
+  const user = await getAuthenticatedUser();
+  const accessible = await getAccessibleProjectIds(user.id, user.role);
+  const canManage = canManageProjects(user.role);
+
+  // VAs with no assigned projects get an empty array — nothing to show.
+  const hasScope = accessible === "all" || accessible.length > 0;
+
+  const rows = hasScope
+    ? await db
+        .select({
+          id: projects.id,
+          name: projects.name,
+          serviceType: projects.serviceType,
+          status: projects.status,
+          clientFirstName: users.firstName,
+          clientLastName: users.lastName,
+          clientEmail: users.email,
+        })
+        .from(projects)
+        .leftJoin(users, eq(projects.userId, users.id))
+        .where(
+          accessible === "all" ? undefined : inArray(projects.id, accessible)
+        )
+        .orderBy(desc(projects.createdAt))
+    : [];
+
+  // Fetch the in-progress phase for each listed project (one query, then map).
+  const phaseMap = new Map<string, string>();
+  if (rows.length > 0) {
+    const ids = rows.map((r) => r.id);
+    const activePhases = await db
+      .select({
+        projectId: projectPhases.projectId,
+        name: projectPhases.name,
+      })
+      .from(projectPhases)
+      .where(
+        and(
+          inArray(projectPhases.projectId, ids),
+          eq(projectPhases.status, "in_progress")
+        )
+      );
+    for (const p of activePhases) {
+      if (!phaseMap.has(p.projectId)) phaseMap.set(p.projectId, p.name);
+    }
+  }
+
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">Projects</h1>
-        <p className="text-muted-foreground mt-1">Manage all client projects and update phases.</p>
-      </div>
+    <div className="space-y-10">
+      {/* Header band */}
+      <header className="border-b border-border pb-6">
+        <p className="eyebrow-mono">Fortitudo · Admin</p>
+        <h1 className="font-title mt-2 text-3xl tracking-tight sm:text-4xl">
+          Projects
+        </h1>
+        <p className="mt-2 text-muted-foreground">
+          Manage all client projects and update phases.
+        </p>
+      </header>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <FolderKanban className="h-5 w-5 text-orange" />
-            All Projects
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+      <section>
+        <p className="bracket-label pb-4">
+          [ <b>{rows.length}</b> ] · ALL PROJECTS
+        </p>
+        {rows.length === 0 ? (
+          <EmptyState
+            icon={FolderKanban}
+            title="No projects yet"
+            description="Client projects will appear here once they're created."
+          />
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left text-muted-foreground">
-                  <th className="pb-3 font-medium">Project</th>
-                  <th className="pb-3 font-medium">Client</th>
-                  <th className="pb-3 font-medium">Service</th>
-                  <th className="pb-3 font-medium">Phase</th>
-                  <th className="pb-3 font-medium">Payment</th>
-                  <th className="pb-3 font-medium">Status</th>
-                  <th className="pb-3 font-medium"></th>
+                <tr className="border-b border-border text-left">
+                  <th className="micro-label py-3 pr-4">Project</th>
+                  <th className="micro-label py-3 pr-4">Client</th>
+                  <th className="micro-label py-3 pr-4">Service</th>
+                  <th className="micro-label py-3 pr-4">Phase</th>
+                  <th className="micro-label py-3 pr-4">Status</th>
+                  <th className="py-3"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {demoProjects.map((project) => (
-                  <tr key={project.id} className="hover:bg-muted/50">
-                    <td className="py-3 font-medium">{project.name}</td>
-                    <td className="py-3 text-muted-foreground">{project.client}</td>
-                    <td className="py-3 text-muted-foreground">{project.service}</td>
-                    <td className="py-3">
-                      <Badge variant="secondary">{project.phase}</Badge>
-                    </td>
-                    <td className="py-3">
-                      <Badge variant={project.payment === "paid" ? "success" : "warning"}>
-                        {project.payment}
-                      </Badge>
-                    </td>
-                    <td className="py-3">
-                      <Badge
-                        variant={
-                          project.status === "completed" ? "success" :
-                          project.status === "payment_pending" ? "warning" : "orange"
-                        }
-                      >
-                        {project.status.replace("_", " ")}
-                      </Badge>
-                    </td>
-                    <td className="py-3">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`/admin/projects/${project.id}`}>
-                          Manage <ArrowRight className="ml-1 h-3 w-3" />
+                {rows.map((project) => {
+                  const clientName =
+                    [project.clientFirstName, project.clientLastName]
+                      .filter(Boolean)
+                      .join(" ") ||
+                    project.clientEmail ||
+                    "—";
+                  return (
+                    <tr
+                      key={project.id}
+                      className="group transition-colors hover:bg-muted/50"
+                    >
+                      <td className="py-3 pr-4 font-medium">{project.name}</td>
+                      <td className="py-3 pr-4 text-muted-foreground">
+                        {clientName}
+                      </td>
+                      <td className="py-3 pr-4 text-muted-foreground">
+                        {serviceLabels[project.serviceType] || project.serviceType}
+                      </td>
+                      <td className="py-3 pr-4">
+                        {phaseMap.has(project.id) ? (
+                          <span className="font-mono text-xs text-foreground">
+                            {phaseMap.get(project.id)}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </td>
+                      <td className="py-3 pr-4">
+                        <span
+                          className={cn(
+                            "font-mono text-[11px] font-semibold uppercase tracking-wide whitespace-nowrap",
+                            statusClass[project.status] ?? "text-muted-foreground"
+                          )}
+                        >
+                          {statusLabels[project.status] || project.status}
+                        </span>
+                      </td>
+                      <td className="py-3 text-right">
+                        <Link
+                          href={`/admin/projects/${project.id}`}
+                          aria-label={`Manage ${project.name}`}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-muted hover:text-foreground active:scale-[0.98]"
+                        >
+                          <ArrowRight className="h-4 w-4" />
                         </Link>
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </section>
+
+      {/* Weekly reporting loop — agency side of client performance reports */}
+      <WeeklyReportsSection canManage={canManage} />
     </div>
   );
 }

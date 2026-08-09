@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Send, MessageSquare } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageHero } from "@/components/ui/firecrawl";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -29,7 +31,6 @@ export default function MessagesPage() {
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch projects
@@ -43,27 +44,32 @@ export default function MessagesPage() {
         }
       })
       .catch(() => {
-        setError("Failed to load projects. Please try again.");
-        setLoading(false);
+        setProjects([]);
       })
       .finally(() => setLoading(false));
   }, []);
 
-  // Fetch messages when project changes
+  // Reset the thread when switching projects so stale messages never flash.
   useEffect(() => {
-    if (!selectedProjectId) return;
     setMessages([]);
-    fetch(`/api/messages?projectId=${selectedProjectId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setMessages(data);
-        }
-      })
-      .catch(() => {
-        setMessages([]);
-      });
   }, [selectedProjectId]);
+
+  // Polling keeps the thread fresh without realtime infrastructure — the DB
+  // stays the source of truth, new messages merge in by id every 5s.
+  usePolling<Message[]>({
+    url: `/api/messages?projectId=${selectedProjectId}`,
+    interval: 5000,
+    enabled: !!selectedProjectId,
+    onUpdate: (data) => {
+      if (!Array.isArray(data)) return;
+      setMessages((prev) => {
+        const existingIds = new Set(prev.map((m) => m.id));
+        const incoming = data.filter((m) => !existingIds.has(m.id));
+        if (incoming.length === 0) return prev;
+        return [...prev, ...incoming];
+      });
+    },
+  });
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -86,7 +92,9 @@ export default function MessagesPage() {
       });
       if (res.ok) {
         const msg = await res.json();
-        setMessages((prev) => [...prev, msg]);
+        setMessages((prev) =>
+          prev.some((m) => m.id === msg.id) ? prev : [...prev, msg]
+        );
         setNewMessage("");
       }
     } catch {
@@ -101,9 +109,22 @@ export default function MessagesPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Messages</h1>
-          <p className="text-muted-foreground mt-1">Loading...</p>
+        <PageHero
+          title="Messages"
+          description="Chat with the Fortitudo team about your project."
+        />
+        <div
+          className="flex flex-col rounded-xl border border-border"
+          style={{ height: "calc(100vh - 300px)" }}
+        >
+          <div className="border-b border-border px-4 py-4">
+            <Skeleton className="h-6 w-48" />
+          </div>
+          <div className="flex-1 space-y-4 p-4">
+            <Skeleton className="h-16 w-2/3" />
+            <Skeleton className="ml-auto h-12 w-1/2" />
+            <Skeleton className="h-16 w-3/5" />
+          </div>
         </div>
       </div>
     );
@@ -111,21 +132,26 @@ export default function MessagesPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold sm:text-3xl">Messages</h1>
-        <p className="text-muted-foreground mt-1">
-          Chat with the Fortitudo team about your project.
-        </p>
-      </div>
+      <PageHero
+        title="Messages"
+        description="Chat with the Fortitudo team about your project."
+        action={
+          selectedProjectId ? (
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+              [ Auto-refresh · 5s ]
+            </span>
+          ) : undefined
+        }
+      />
 
       {projects.length === 0 ? (
-        <Card>
+        <div className="rounded-xl border border-border">
           <EmptyState
             icon={MessageSquare}
             title="No messages yet"
             description="Once you have an active project, you can chat directly with the Fortitudo team here."
           />
-        </Card>
+        </div>
       ) : (
         <>
           {/* Project selector */}
@@ -144,19 +170,22 @@ export default function MessagesPage() {
             </div>
           )}
 
-          <Card className="flex flex-col" style={{ height: "calc(100vh - 300px)" }}>
-            <CardHeader className="border-b border-border">
-              <CardTitle className="text-lg">
+          <div
+            className="flex flex-col overflow-hidden rounded-xl border border-border"
+            style={{ height: "calc(100vh - 300px)" }}
+          >
+            <div className="border-b border-border px-4 py-3.5">
+              <h2 className="text-[15px] font-semibold">
                 {selectedProject?.name || "Select a project"}
-              </CardTitle>
-            </CardHeader>
+              </h2>
+            </div>
 
             {/* Messages area */}
-            <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 ? (
                 <div className="flex-1 flex items-center justify-center h-full">
                   <div className="text-center">
-                    <MessageSquare className="h-8 w-8 text-orange/30 mx-auto mb-2" />
+                    <MessageSquare className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
                     <p className="text-sm text-muted-foreground">No messages yet.</p>
                     <p className="text-xs text-muted-foreground mt-0.5">Send one below to get started.</p>
                   </div>
@@ -174,13 +203,13 @@ export default function MessagesPage() {
                       className={cn(
                         "rounded-2xl px-4 py-3 text-sm",
                         message.role === "client"
-                          ? "bg-orange text-white rounded-br-md"
+                          ? "bg-primary text-primary-foreground rounded-br-md"
                           : "bg-muted rounded-bl-md"
                       )}
                     >
                       {message.content}
                     </div>
-                    <span className="mt-1 text-xs text-muted-foreground">
+                    <span className="mt-1 font-mono text-[11px] text-muted-foreground">
                       {message.role === "admin" ? "Fortitudo Team" : "You"} &middot;{" "}
                       {new Date(message.createdAt).toLocaleString()}
                     </span>
@@ -188,7 +217,7 @@ export default function MessagesPage() {
                 ))
               )}
               <div ref={messagesEndRef} />
-            </CardContent>
+            </div>
 
             {/* Message input */}
             <div className="border-t border-border p-4">
@@ -204,7 +233,7 @@ export default function MessagesPage() {
                 </Button>
               </form>
             </div>
-          </Card>
+          </div>
         </>
       )}
     </div>

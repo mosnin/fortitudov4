@@ -8,7 +8,6 @@ import {
   FileWarning,
   GaugeCircle,
   Mail,
-  PenTool,
   Receipt,
   Rocket,
   UserCheck,

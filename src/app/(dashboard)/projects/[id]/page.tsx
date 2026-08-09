@@ -6,19 +6,13 @@ import {
   projectPhases,
   files as filesTable,
   invoices,
-  payments,
   users,
 } from "@/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { ProjectDetailClient } from "./client";
-
-const serviceLabels: Record<string, string> = {
-  web_application: "Web Application",
-  ecommerce_store: "E-Commerce Store",
-  funnels: "Funnels",
-  ai_automation: "AI Automation",
-  open_claw_deployment: "Open Claw Deployment",
-};
+import { getLaunchPipeline } from "@/components/dashboard/launch-pipeline-data";
+import { serviceLabels } from "@/components/dashboard/project-list";
+import { canViewAllProjects } from "@/lib/permissions";
 
 const statusLabels: Record<string, string> = {
   onboarding: "Onboarding",
@@ -45,30 +39,24 @@ export default async function ProjectDetailPage({
   if (!dbUser) return null;
 
   // Fetch project
-  const [project] = await db
-    .select()
-    .from(projects)
-    .where(eq(projects.id, id));
+  const [project] = await db.select().from(projects).where(eq(projects.id, id));
 
   if (!project) notFound();
 
-  // Verify ownership (unless admin)
-  if (dbUser.role !== "admin" && project.userId !== dbUser.id) notFound();
+  // Clients may only open their OWN projects here; staff with all-project
+  // visibility (admin / project manager) may open any for support purposes.
+  if (project.userId !== dbUser.id && !canViewAllProjects(dbUser.role)) {
+    notFound();
+  }
 
   // Fetch related data in parallel
-  const [phases, projectFiles, projectInvoices] = await Promise.all([
-    db
-      .select()
-      .from(projectPhases)
-      .where(eq(projectPhases.projectId, id)),
-    db
-      .select()
-      .from(filesTable)
-      .where(eq(filesTable.projectId, id)),
-    db
-      .select()
-      .from(invoices)
-      .where(eq(invoices.projectId, id)),
+  const [phases, projectFiles, projectInvoices, pipeline] = await Promise.all([
+    db.select().from(projectPhases).where(eq(projectPhases.projectId, id)),
+    db.select().from(filesTable).where(eq(filesTable.projectId, id)),
+    db.select().from(invoices).where(eq(invoices.projectId, id)),
+    // Launch pipeline belongs to the project OWNER's roster record, so staff
+    // viewing on behalf of a client see the same transparency mirror.
+    getLaunchPipeline(project.userId),
   ]);
 
   const sortedPhases = phases
@@ -97,11 +85,16 @@ export default async function ProjectDetailPage({
           year: "numeric",
           month: "long",
           day: "numeric",
+          timeZone: "UTC",
         }),
         status: invoice.status as "paid" | "pending" | "overdue",
         projectName: project.name,
-        clientName: `${dbUser.firstName || ""} ${dbUser.lastName || ""}`.trim() || dbUser.email,
-        items: (invoice.items as Array<{ description: string; amount: string }>) || [],
+        clientName:
+          `${dbUser.firstName || ""} ${dbUser.lastName || ""}`.trim() ||
+          dbUser.email,
+        items:
+          (invoice.items as Array<{ description: string; amount: string }>) ||
+          [],
         subtotal: formatCurrency(invoice.subtotal),
         tax: formatCurrency(invoice.tax),
         total: formatCurrency(invoice.total),
@@ -118,6 +111,7 @@ export default async function ProjectDetailPage({
         name: project.name,
         serviceType: serviceLabels[project.serviceType] || project.serviceType,
         status: statusLabels[project.status] || project.status,
+        statusKey: project.status,
         createdAt: new Date(project.createdAt).toLocaleDateString("en-US", {
           year: "numeric",
           month: "short",
@@ -128,6 +122,7 @@ export default async function ProjectDetailPage({
       files={fileData}
       invoice={invoiceData}
       showSurvey={showSurvey}
+      pipeline={pipeline}
     />
   );
 }

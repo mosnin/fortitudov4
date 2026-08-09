@@ -27,19 +27,17 @@ function getFileCategory(name: string, type?: string): "image" | "pdf" | "svg" |
   return "other";
 }
 
-function getFileIcon(category: "image" | "pdf" | "svg" | "other") {
-  switch (category) {
-    case "image": return FileImage;
-    case "pdf": return FileText;
-    case "svg": return FileImage;
-    default: return FileIcon;
-  }
-}
+const FILE_ICONS = {
+  image: FileImage,
+  pdf: FileText,
+  svg: FileImage,
+  other: FileIcon,
+} as const;
 
 export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const category = getFileCategory(name, type);
-  const Icon = getFileIcon(category);
+  const Icon = FILE_ICONS[category];
   const canPreview = (category === "image" || category === "pdf");
 
   return (
@@ -54,8 +52,8 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
             <Image src={url} alt={name} fill className="object-cover" sizes="40px" />
           </div>
         ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-orange/10">
-            <Icon className="h-5 w-5 text-orange" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted">
+            <Icon className="h-5 w-5 text-muted-foreground" />
           </div>
         )}
         <div className="flex-1 min-w-0">

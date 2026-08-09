@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Reply, MessageCircle } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
 
 interface CommentData {
@@ -103,7 +104,7 @@ function CommentItem({
             className={cn(
               "h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold",
               comment.role === "admin"
-                ? "bg-orange/10 text-orange"
+                ? "bg-brand-subtle text-brand"
                 : "bg-muted text-muted-foreground"
             )}
           >
@@ -111,7 +112,7 @@ function CommentItem({
           </div>
           <span className="text-sm font-medium">{comment.userName}</span>
           {comment.role === "admin" && (
-            <span className="text-[10px] bg-orange/10 text-orange px-1.5 py-0.5 rounded-full font-medium">
+            <span className="rounded-full bg-brand-subtle px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-brand">
               Team
             </span>
           )}
@@ -166,23 +167,16 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
   const [comments, setComments] = useState<CommentData[]>([]);
   const [newComment, setNewComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  const fetchComments = () => {
-    fetch(`/api/comments?projectId=${projectId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (Array.isArray(data)) setComments(data);
-      })
-      .catch(() => {
-        setComments([]);
-      })
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    fetchComments();
-  }, [projectId]);
+  // Initial fetch + 10s background refresh so team replies appear without a
+  // reload (fused polling pattern — no realtime infrastructure).
+  const { loading, refetch: fetchComments } = usePolling<CommentData[]>({
+    url: `/api/comments?projectId=${projectId}`,
+    interval: 10000,
+    onUpdate: (data) => {
+      if (Array.isArray(data)) setComments(data);
+    },
+  });
 
   const handleNewComment = async () => {
     if (!newComment.trim()) return;

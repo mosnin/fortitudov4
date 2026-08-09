@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui/card";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Bell,
   Check,
@@ -13,9 +12,14 @@ import {
   CreditCard,
   Upload,
   FileText,
+  RefreshCw,
+  CheckCircle,
   Star,
 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
+import { PageHero } from "@/components/ui/firecrawl";
+import { TableSkeleton } from "@/components/ui/skeleton";
+import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 interface Notification {
@@ -34,6 +38,8 @@ const typeIcons: Record<string, React.ElementType> = {
   payment_confirmed: CreditCard,
   file_uploaded: Upload,
   comment_added: FileText,
+  revision_response: RefreshCw,
+  project_completed: CheckCircle,
   survey_request: Star,
 };
 
@@ -105,9 +111,9 @@ export default function NotificationsPage() {
   if (loading) {
     return (
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Notifications</h1>
-          <p className="text-muted-foreground mt-1">Loading...</p>
+        <PageHero title="Notifications" description="Loading your latest updates…" />
+        <div className="rounded-xl border border-border p-6">
+          <TableSkeleton rows={5} />
         </div>
       </div>
     );
@@ -115,51 +121,55 @@ export default function NotificationsPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold sm:text-3xl">Notifications</h1>
-          <p className="text-muted-foreground mt-1">
-            {unreadCount > 0
-              ? `You have ${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
-              : "All caught up!"}
-          </p>
-        </div>
-        {unreadCount > 0 && (
-          <Button variant="outline" size="sm" onClick={markAllRead}>
-            <Check className="mr-1 h-4 w-4" />
-            Mark all read
-          </Button>
-        )}
-      </div>
+      <PageHero
+        title="Notifications"
+        description={
+          unreadCount > 0
+            ? `You have ${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
+            : "All caught up!"
+        }
+        action={
+          unreadCount > 0 ? (
+            <Button variant="outline" size="sm" onClick={markAllRead}>
+              <Check className="mr-1 h-4 w-4" />
+              Mark all read
+            </Button>
+          ) : undefined
+        }
+      />
 
       {notifications.length === 0 ? (
-        <Card>
+        <div className="rounded-xl border border-border">
           <EmptyState
             icon={Bell}
             title="You're all caught up"
             description="Project updates, messages, and payment confirmations will show up here."
           />
-        </Card>
+        </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {Object.entries(grouped).map(([date, items]) => (
             <div key={date}>
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">{date}</h3>
-              <Card>
-                <CardContent className="p-0 divide-y divide-border">
-                  {items.map((notification) => {
-                    const Icon = typeIcons[notification.type] || Bell;
-                    return (
+              <h3 className="micro-label mb-3">{date}</h3>
+              <motion.div
+                variants={rowCascade}
+                initial="hidden"
+                animate="visible"
+                className="divide-y divide-border border-y border-border"
+              >
+                {items.map((notification) => {
+                  const Icon = typeIcons[notification.type] || Bell;
+                  return (
+                    <motion.div key={notification.id} variants={rowItem}>
                       <Link
-                        key={notification.id}
                         href={notification.actionUrl || "#"}
                         className={cn(
-                          "flex gap-4 px-4 py-4 transition-colors hover:bg-muted",
-                          !notification.read && "bg-orange/5"
+                          "flex gap-4 px-3 py-4 transition-colors hover:bg-muted/50",
+                          !notification.read && "bg-brand-subtle/40"
                         )}
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                          <Icon className="h-5 w-5 text-orange" />
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
+                          <Icon className="h-5 w-5 text-muted-foreground" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
@@ -167,11 +177,11 @@ export default function NotificationsPage() {
                               {notification.title}
                             </p>
                             <div className="flex items-center gap-2 shrink-0">
-                              <span className="text-xs text-muted-foreground">
+                              <span className="font-mono text-[11px] text-muted-foreground">
                                 {formatRelativeTime(notification.createdAt)}
                               </span>
                               {!notification.read && (
-                                <span className="h-2 w-2 rounded-full bg-orange" />
+                                <span className="h-2 w-2 rounded-full bg-brand" />
                               )}
                             </div>
                           </div>
@@ -182,10 +192,10 @@ export default function NotificationsPage() {
                           )}
                         </div>
                       </Link>
-                    );
-                  })}
-                </CardContent>
-              </Card>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
             </div>
           ))}
         </div>
