@@ -13,7 +13,15 @@ import {
 } from "@/components/dashboard/project-list";
 import { FolderKanban, Plus } from "lucide-react";
 import { db } from "@/db";
-import { projects, projectPhases, messages, files, users } from "@/db/schema";
+import {
+  projects,
+  projectPhases,
+  messages,
+  files,
+  users,
+  agencyClients,
+  weeklyReports,
+} from "@/db/schema";
 import { eq, count, inArray } from "drizzle-orm";
 
 export default async function DashboardPage() {
@@ -82,9 +90,21 @@ export default async function DashboardPage() {
         )[0]?.value ?? 0
       : 0;
 
-  // Launch pipeline — the client's roster progress (transparency mirror of
+  // Delivery pipeline — the client's roster progress (transparency mirror of
   // the admin Client CRM). Null until the team creates their record.
   const pipeline = await getLaunchPipeline(dbUser.id);
+
+  // Weekly reports are a DIGITAL MARKETING artifact — leads, cost per lead,
+  // spend, return on spend. A websites/software/AI/consultation client never
+  // gets one, so the marketing band is only mounted when this client actually
+  // has reports; everyone else leads with their build.
+  const [reported] = await db
+    .select({ id: weeklyReports.id })
+    .from(weeklyReports)
+    .innerJoin(agencyClients, eq(weeklyReports.clientId, agencyClients.id))
+    .where(eq(agencyClients.userId, dbUser.id))
+    .limit(1);
+  const hasMarketingReports = Boolean(reported);
 
   const stats = [
     { label: "Active Projects", value: activeProjects.length },
@@ -112,9 +132,9 @@ export default async function DashboardPage() {
       {/* Welcome */}
       <PageHero
         title="Dashboard"
-        description={`Welcome back, ${
-          user.firstName || "there"
-        } — track your builds, files, and results in one place.`}
+        description={`Welcome back, ${user.firstName || "there"} — track your ${
+          hasMarketingReports ? "builds, files, and results" : "builds and files"
+        } in one place.`}
         action={
           <Button asChild>
             <Link href="/onboarding">
@@ -125,11 +145,11 @@ export default async function DashboardPage() {
         }
       />
 
-      {/* Launch pipeline — hidden until the team creates a roster record. */}
+      {/* Delivery pipeline — hidden until the team creates a roster record. */}
       <LaunchPipeline data={pipeline} />
 
-      {/* Weekly results — hidden until the first weekly report exists. */}
-      <PerformanceOverview />
+      {/* Marketing results — digital-marketing engagements only. */}
+      {hasMarketingReports && <PerformanceOverview />}
 
       {/* Stats — hairline-divided 3-up, big numerals */}
       <div className="animate-fade-up grid grid-cols-1 divide-y divide-border border-b border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">

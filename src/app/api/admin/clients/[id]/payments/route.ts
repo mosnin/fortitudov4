@@ -4,8 +4,6 @@ import {
   agencyClients,
   clientPayments,
   clientPaymentTypeEnum,
-  expenses,
-  users,
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -15,12 +13,8 @@ import { addMonthsUTC } from "@/lib/dates";
 const recordSchema = z.object({
   paymentType: z.enum(clientPaymentTypeEnum.enumValues),
   method: z.string().min(1).max(50),
-  receivedBy: z.string().uuid(),
   // Optional override in cents; defaults to the client's fee for the type.
   amount: z.number().int().positive().optional(),
-  // Processor fees in cents (payment-link payments) — booked as a one-time
-  // expense so they deduct from profit before partner splits.
-  fees: z.number().int().min(0).max(100_000_000).optional(),
   // When the money actually landed; defaults to now.
   paidAt: z.string().datetime().optional(),
   notes: z.string().max(2000).optional(),
@@ -51,8 +45,7 @@ export async function POST(
         { status: 400 }
       );
     }
-    const { paymentType, method, receivedBy, amount, fees, notes, paidAt } =
-      parsed.data;
+    const { paymentType, method, amount, notes, paidAt } = parsed.data;
 
     const [client] = await db
       .select()
@@ -60,17 +53,6 @@ export async function POST(
       .where(eq(agencyClients.id, id));
     if (!client) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
-    }
-
-    const [receiver] = await db
-      .select({ id: users.id, role: users.role })
-      .from(users)
-      .where(eq(users.id, receivedBy));
-    if (!receiver || receiver.role !== "admin") {
-      return NextResponse.json(
-        { error: "Receiver must be an admin" },
-        { status: 400 }
-      );
     }
 
     const finalAmount =
@@ -90,29 +72,11 @@ export async function POST(
         paymentType,
         method,
         amount: finalAmount,
-        // Snapshot the referral cut so later fee edits don't rewrite history.
-        partnerCut: Math.min(client.partnerCut, finalAmount),
-        receivedBy,
         notes,
         ...(paidAt && { paidAt: new Date(paidAt) }),
         createdBy: admin.id,
       })
       .returning();
-
-    // Processor fees become their own expense row (category "fees"), so
-    // each one shows individually on the Expenses page and the profit-based
-    // ledger deducts it before the partner split.
-    if (fees && fees > 0) {
-      await db.insert(expenses).values({
-        name: `${method} fee — ${client.companyName}`,
-        category: "fees",
-        amount: fees,
-        cadence: "one_time",
-        incurredAt: created.paidAt ?? new Date(),
-        notes: `Auto-recorded from ${method} payment ${created.id}`,
-        createdBy: admin.id,
-      });
-    }
 
     // A collected retainer pushes the next due date a month out and brings a
     // paused/overdue client back to Active (an overdue client is Active with a

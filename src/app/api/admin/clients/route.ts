@@ -9,9 +9,8 @@ import {
   projects,
   users,
 } from "@/db/schema";
-import { desc, eq, inArray } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth-utils";
-import { pickPartners } from "@/lib/partners";
 import { z } from "zod";
 import { DEFAULT_TASKS } from "@/lib/crm";
 import { addMonthsUTC } from "@/lib/dates";
@@ -19,10 +18,11 @@ import { addMonthsUTC } from "@/lib/dates";
 /**
  * Agency client roster + Client CRM. Admin-only.
  * GET  — all clients (newest first) with pipeline stage, onboarding task
- *        progress, and the linked portal account/project, plus portal accounts
- *        available for linking and the admin partner list.
- * POST — create a client: seeds the 15-step onboarding checklist routed to the
- *        four departments and emails a Clerk portal invitation. Fees in cents.
+ *        progress, and the linked portal account/project, plus the portal
+ *        accounts available for linking.
+ * POST — create a client: seeds the default delivery checklist (unassigned —
+ *        a human claims each step) and optionally emails a Clerk portal
+ *        invitation. Fees in cents.
  */
 
 const clientSchema = z.object({
@@ -31,13 +31,11 @@ const clientSchema = z.object({
   businessType: z.string().max(100).optional(),
   package: z.enum(clientPackageEnum.enumValues).optional(),
   packageLabel: z.string().max(100).nullable().optional(),
-  saasPlan: z.string().max(100).nullable().optional(),
   driveUrl: z.string().max(1000).nullable().optional(),
   landingPageUrl: z.string().max(1000).nullable().optional(),
   email: z.string().email().optional(),
   setupFee: z.number().int().min(0).default(0),
   monthlyFee: z.number().int().min(0).default(0),
-  partnerCut: z.number().int().min(0).default(0),
   startDate: z.string().datetime().optional(),
   nextDueDate: z.string().datetime().nullable().optional(),
   status: z.enum(clientStatusEnum.enumValues).default("active"),
@@ -52,7 +50,7 @@ export async function GET() {
   try {
     await requireAdmin();
 
-    const [clientRows, portalUsers, admins, staff, taskRows] =
+    const [clientRows, portalUsers, staff, taskRows] =
       await Promise.all([
         db.select().from(agencyClients).orderBy(desc(agencyClients.createdAt)),
         db
@@ -64,16 +62,6 @@ export async function GET() {
           })
           .from(users)
           .where(eq(users.role, "client")),
-        db
-          .select({
-            id: users.id,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            email: users.email,
-          })
-          .from(users)
-          .where(eq(users.role, "admin"))
-          .orderBy(users.createdAt),
         db
           .select({
             id: users.id,
@@ -124,16 +112,7 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({
-      clients,
-      portalUsers,
-      // Payment receivers = the ledger partners, not every admin — a payment
-      // received by a non-partner would silently fall out of the split math.
-      admins: pickPartners(admins).map((a) => ({
-        id: a.id,
-        name: a.firstName || a.email.split("@")[0],
-      })),
-    });
+    return NextResponse.json({ clients, portalUsers });
   } catch (error) {
     if (error instanceof NextResponse) return error;
     console.error("Clients fetch error:", error);
@@ -200,42 +179,19 @@ export async function POST(request: Request) {
       })
       .returning();
 
-    // Seed the default onboarding checklist, routing each task to the live
-    // staff member in the matching department (staff only, oldest account
-    // first, so assignment stays deterministic).
-    const staff = await db
-      .select({
-        id: users.id,
-        firstName: users.firstName,
-        email: users.email,
-        department: users.department,
-      })
-      .from(users)
-      .where(inArray(users.role, ["admin", "project_manager", "va"]))
-      .orderBy(users.createdAt);
-    const byDepartment = new Map<string, { id: string; name: string }>();
-    for (const m of staff) {
-      if (m.department && !byDepartment.has(m.department)) {
-        byDepartment.set(m.department, {
-          id: m.id,
-          name: m.firstName || m.email.split("@")[0],
-        });
-      }
-    }
+    // Seed the default delivery checklist. Steps land UNASSIGNED — there is
+    // no built-in staff roster and no department routing, so whoever picks a
+    // step up claims it themselves.
     await db.insert(clientTasks).values(
-      DEFAULT_TASKS.map((t, i) => {
-        const assignee = byDepartment.get(t.department);
-        return {
-          clientId: created.id,
-          title: t.title,
-          department: t.department,
-          stage: t.stage,
-          priority: t.priority,
-          assigneeId: assignee?.id ?? null,
-          assigneeName: assignee?.name ?? null,
-          order: i,
-        };
-      })
+      DEFAULT_TASKS.map((t, i) => ({
+        clientId: created.id,
+        title: t.title,
+        stage: t.stage,
+        priority: t.priority,
+        assigneeId: null,
+        assigneeName: null,
+        order: i,
+      }))
     );
 
     // Portal invitations are NOT automatic: the agency onboards a client in

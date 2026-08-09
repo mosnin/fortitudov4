@@ -32,12 +32,6 @@ interface Transaction {
   paymentType: "setup_fee" | "monthly_retainer";
   method: string;
   amount: number;
-  partnerCut: number;
-  receivedBy: string | null;
-  receivedByName: string;
-  /** Profit-adjusted half owed to the other partner (from the ledger API). */
-  otherPartnerCut: number;
-  splitStatus: "pending" | "settled";
   paidAt: string;
   notes: string | null;
 }
@@ -52,16 +46,15 @@ export default function AdminPaymentsPage() {
   const [editing, setEditing] = useState<EditablePayment | null>(null);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [range, setRange] = useState<DateRange>(ALL_TIME);
   const [sort, setSort] = useState("date_desc");
 
   const load = useCallback(() => {
-    fetch("/api/admin/ledger")
+    fetch("/api/admin/client-payments")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data && Array.isArray(data.transactions)) {
-          setTransactions(data.transactions);
+        if (data && Array.isArray(data.payments)) {
+          setTransactions(data.payments);
         }
       })
       .catch(() => {})
@@ -87,16 +80,9 @@ export default function AdminPaymentsPage() {
     const q = search.trim().toLowerCase();
     const rows = transactions.filter((t) => {
       if (typeFilter !== "all" && t.paymentType !== typeFilter) return false;
-      if (statusFilter !== "all" && t.splitStatus !== statusFilter) return false;
       if (!inRange(t.paidAt, range)) return false;
       if (q) {
-        const hay = [
-          t.contactName,
-          t.companyName,
-          t.method,
-          t.receivedByName,
-          t.notes,
-        ]
+        const hay = [t.contactName, t.companyName, t.method, t.notes]
           .filter(Boolean)
           .join(" ")
           .toLowerCase();
@@ -111,13 +97,10 @@ export default function AdminPaymentsPage() {
         : (new Date(a.paidAt).getTime() - new Date(b.paidAt).getTime()) * dir
     );
     return rows;
-  }, [transactions, search, typeFilter, statusFilter, range, sort]);
+  }, [transactions, search, typeFilter, range, sort]);
 
   const filtersActive =
-    search.trim() !== "" ||
-    typeFilter !== "all" ||
-    statusFilter !== "all" ||
-    range.preset !== "all";
+    search.trim() !== "" || typeFilter !== "all" || range.preset !== "all";
   const filteredTotal = filtered.reduce((s, t) => s + t.amount, 0);
 
   const now = new Date();
@@ -131,14 +114,16 @@ export default function AdminPaymentsPage() {
       );
     })
     .reduce((s, t) => s + t.amount, 0);
-  const pendingSplits = transactions
-    .filter((t) => t.splitStatus === "pending")
-    .reduce((s, t) => s + t.otherPartnerCut, 0);
+  // Retainers are the recurring half of revenue — worth its own tile beside
+  // the raw totals so setup-fee spikes don't read as recurring growth.
+  const retainerCollected = transactions
+    .filter((t) => t.paymentType === "monthly_retainer")
+    .reduce((s, t) => s + t.amount, 0);
 
   return (
     <div className="space-y-10">
       <PageHero
-        title="Clients & Payments"
+        title="Payments"
         description="Record retainers and setup fees against the client roster."
         action={
           <div className="flex gap-2">
@@ -180,14 +165,14 @@ export default function AdminPaymentsPage() {
         />
         <StatHeader
           className="px-5 py-6"
-          title="Unsettled Splits"
-          caption="OWED BETWEEN PARTNERS"
-          value={pendingSplits}
+          title="Retainer Revenue"
+          caption="ALL TIME · RECURRING"
+          value={retainerCollected}
           format={usd}
         />
       </div>
 
-      {/* Filter row — search + type/status pills, date range right-aligned.
+      {/* Filter row — search + type pill, date range right-aligned.
           Drives the trends and the payment history below. */}
       {!loading && transactions.length > 0 && (
         <div className="space-y-3">
@@ -208,18 +193,6 @@ export default function AdminPaymentsPage() {
                 { value: "all", label: "All Types" },
                 { value: "setup_fee", label: "Setup Fees" },
                 { value: "monthly_retainer", label: "Retainers" },
-              ]}
-            />
-            <SelectPill
-              className="lg:w-44"
-              icon={Filter}
-              ariaLabel="Split status"
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={[
-                { value: "all", label: "All Splits" },
-                { value: "pending", label: "Pending Split" },
-                { value: "settled", label: "Settled Split" },
               ]}
             />
             <SortPill
@@ -296,7 +269,7 @@ export default function AdminPaymentsPage() {
               description={
                 filtersActive
                   ? "No payments match the current filters — widen the date range or clear the search."
-                  : "Record payments against roster clients — each one feeds revenue and the partner ledger automatically."
+                  : "Record payments against roster clients — each one feeds the agency revenue metrics automatically."
               }
             />
           </div>
@@ -310,7 +283,6 @@ export default function AdminPaymentsPage() {
                   <th className="micro-label py-3 pr-4">Type</th>
                   <th className="micro-label py-3 pr-4">Method</th>
                   <th className="micro-label py-3 pr-4">Amount</th>
-                  <th className="micro-label py-3 pr-4">Received By</th>
                   <th className="micro-label py-3 pr-4">Notes</th>
                   <th className="py-3" />
                 </tr>
@@ -347,7 +319,6 @@ export default function AdminPaymentsPage() {
                     <td className="py-3 pr-4 font-mono font-semibold">
                       {usd(t.amount)}
                     </td>
-                    <td className="py-3 pr-4">{t.receivedByName}</td>
                     <td
                       className="max-w-40 truncate py-3 pr-4 text-muted-foreground"
                       title={t.notes ?? undefined}
@@ -363,7 +334,6 @@ export default function AdminPaymentsPage() {
                             paymentType: t.paymentType,
                             method: t.method,
                             amount: t.amount,
-                            receivedBy: t.receivedBy,
                             notes: t.notes,
                           });
                           setModalOpen(true);

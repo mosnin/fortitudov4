@@ -60,10 +60,6 @@ export const users = pgTable("users", {
   bio: text("bio"),
   // "client" | "admin" | "project_manager" | "va" — see lib/permissions.ts
   role: varchar("role", { length: 50 }).notNull().default("client"),
-  // Team department for staff — "csm" | "funnel" | "automations" | "ads".
-  department: varchar("department", { length: 50 }),
-  // GoHighLevel contact sync (client-side users only)
-  ghlContactId: varchar("ghl_contact_id", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -78,8 +74,6 @@ export const projects = pgTable("projects", {
   serviceType: serviceTypeEnum("service_type").notNull(),
   status: projectStatusEnum("status").notNull().default("onboarding"),
   currentPhase: integer("current_phase").notNull().default(0),
-  // GoHighLevel opportunity sync (pipeline/revenue tracking)
-  ghlOpportunityId: varchar("ghl_opportunity_id", { length: 255 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -138,10 +132,6 @@ export const payments = pgTable("payments", {
   amount: integer("amount").notNull(),
   currency: varchar("currency", { length: 10 }).notNull().default("usd"),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
-  // Where this payment record originated — synced from the agency's
-  // GoHighLevel invoicing/CRM ("ghl") or recorded in the portal.
-  source: varchar("source", { length: 20 }).notNull().default("portal"),
-  ghlPaymentId: varchar("ghl_payment_id", { length: 255 }),
   // Free-form admin notes ("wire ref 4421", "50% deposit", …).
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -325,8 +315,6 @@ export const leads = pgTable("leads", {
   // Where the lead came from: "contact_form" | "get_started_funnel" | ...
   source: varchar("source", { length: 100 }).notNull().default("contact_form"),
   status: leadStatusEnum("status").notNull().default("new"),
-  ghlContactId: varchar("ghl_contact_id", { length: 255 }),
-  ghlSyncedAt: timestamp("ghl_synced_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => [
@@ -334,44 +322,6 @@ export const leads = pgTable("leads", {
   index("idx_leads_status").on(table.status),
 ]);
 
-// Ad campaigns — the campaigns the agency runs for a client project.
-// Metrics are agency-entered for now; ghlCampaignId reserves the link for
-// pulling attribution/reporting out of GoHighLevel later.
-export const campaignPlatformEnum = pgEnum("campaign_platform", [
-  "meta",
-  "google",
-  "tiktok",
-  "other",
-]);
-
-export const campaignStatusEnum = pgEnum("campaign_status", [
-  "draft",
-  "active",
-  "paused",
-  "completed",
-]);
-
-export const adCampaigns = pgTable("ad_campaigns", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  projectId: uuid("project_id")
-    .references(() => projects.id, { onDelete: "cascade" })
-    .notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
-  platform: campaignPlatformEnum("platform").notNull(),
-  status: campaignStatusEnum("status").notNull().default("draft"),
-  // Money in cents
-  monthlyBudget: integer("monthly_budget"),
-  totalSpend: integer("total_spend").notNull().default(0),
-  leadsGenerated: integer("leads_generated").notNull().default(0),
-  notes: text("notes"),
-  ghlCampaignId: varchar("ghl_campaign_id", { length: 255 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => [
-  index("idx_campaigns_project_id").on(table.projectId),
-]);
-
-// Task board (kanban) — internal team task management per project
 export const taskStatusEnum = pgEnum("task_status", [
   "todo",
   "in_progress",
@@ -407,17 +357,16 @@ export const tasks = pgTable("tasks", {
   index("idx_tasks_assignee_id").on(table.assigneeId),
 ]);
 
-// Agency clients — the business ledger of who we serve, matching how LGNDRY
-// actually sells (Bronze/Gold/Diamond, setup + monthly). Separate from portal
-// logins: a client may exist here before (or without) ever signing in, and can
-// be linked to a portal user once they do.
+// Agency clients — the business record of who we serve (which offering they
+// bought, setup + any monthly fee). Separate from portal logins: a client may
+// exist here before (or without) ever signing in, and can be linked to a
+// portal user once they do.
 export const clientPackageEnum = pgEnum("client_package", [
-  "bronze",
-  "silver",
-  "gold",
-  "diamond",
-  "rev_split",
-  "mentorship",
+  "websites",
+  "software_solutions",
+  "ai_solutions",
+  "consultation",
+  "digital_marketing",
   "custom",
 ]);
 
@@ -427,30 +376,17 @@ export const clientStatusEnum = pgEnum("client_status", [
   "churned",
 ]);
 
-// The 12-stage launch pipeline that governs the client journey. Drives the
-// Kanban board columns on the Client CRM and each client's onboarding
-// checklist. Order matters — stage auto-progression walks it top to bottom.
+// The delivery pipeline every engagement walks. Drives the Client CRM board
+// columns and each client's kickoff checklist. Order matters — stage
+// auto-progression walks it top to bottom.
 export const crmStageEnum = pgEnum("crm_stage", [
-  "onboarding_form",
-  "onboarding_guide",
-  "crm_access",
-  "funnel_build_out",
-  "automations_build_out",
-  "a2p_submitted",
-  "a2p_verified",
-  "ad_creatives",
-  "launch_form_submitted",
-  "launch_call_completed",
-  "ads_campaign_build_out",
-  "ads_launched",
-]);
-
-// The four departments work is routed to on the onboarding checklist.
-export const departmentEnum = pgEnum("department", [
-  "csm",
-  "funnel",
-  "automations",
-  "ads",
+  "onboarding",
+  "discovery",
+  "design",
+  "build",
+  "client_review",
+  "launched",
+  "retained",
 ]);
 
 export const clientTaskStatusEnum = pgEnum("client_task_status", [
@@ -470,28 +406,20 @@ export const agencyClients = pgTable("agency_clients", {
   contactName: varchar("contact_name", { length: 255 }).notNull(),
   companyName: varchar("company_name", { length: 255 }).notNull(),
   businessType: varchar("business_type", { length: 100 }),
-  package: clientPackageEnum("package").notNull().default("bronze"),
+  package: clientPackageEnum("package").notNull().default("websites"),
   // Display name for package = "custom" (e.g. a bespoke retainer).
   packageLabel: varchar("package_label", { length: 100 }),
   // Money in cents.
   setupFee: integer("setup_fee").notNull().default(0),
   monthlyFee: integer("monthly_fee").notNull().default(0),
-  // Partner referral cut in cents — deducted before the 50/50 admin split.
-  partnerCut: integer("partner_cut").notNull().default(0),
   startDate: timestamp("start_date").defaultNow().notNull(),
   nextDueDate: timestamp("next_due_date"),
   status: clientStatusEnum("status").notNull().default("active"),
   // When this client churned — set on the status change so churn can be
   // reported for a date range rather than only lifetime-to-date.
   churnedAt: timestamp("churned_at"),
-  // Current position in the 12-stage launch pipeline (Client CRM board).
-  stage: crmStageEnum("stage").notNull().default("onboarding_form"),
-  // SaaS plan the client is on (free-form, separate from their package tier).
-  saasPlan: varchar("saas_plan", { length: 100 }),
-  // The client's sub-account name in GoHighLevel. Sub-accounts are often
-  // named nothing like the company, so the team records it here to find the
-  // right account without hunting through the GHL agency view.
-  ghlAccountName: varchar("ghl_account_name", { length: 255 }),
+  // Current position in the delivery pipeline (Client CRM board).
+  stage: crmStageEnum("stage").notNull().default("onboarding"),
   // Login email for the portal invite (kept even before the account exists).
   email: varchar("email", { length: 255 }),
   // Shared asset links surfaced on the client portal.
@@ -509,16 +437,15 @@ export const agencyClients = pgTable("agency_clients", {
   index("idx_agency_clients_status").on(table.status),
 ]);
 
-// Onboarding checklist tasks per client — the 15 default steps (auto-created
-// on client creation and routed to the four departments) plus any custom
-// tasks. Completing tasks auto-advances the client's pipeline stage.
+// Delivery checklist tasks per client — the default kickoff steps (auto-created
+// on client creation) plus any custom tasks. Completing tasks auto-advances
+// the client's pipeline stage.
 export const clientTasks = pgTable("client_tasks", {
   id: uuid("id").defaultRandom().primaryKey(),
   clientId: uuid("client_id")
     .references(() => agencyClients.id, { onDelete: "cascade" })
     .notNull(),
   title: varchar("title", { length: 255 }).notNull(),
-  department: departmentEnum("department"),
   // Which pipeline stage this task belongs to (null for ad-hoc custom tasks).
   stage: crmStageEnum("stage"),
   status: clientTaskStatusEnum("status").notNull().default("pending"),
@@ -539,10 +466,11 @@ export const clientTasks = pgTable("client_tasks", {
   index("idx_client_tasks_client_id").on(table.clientId),
 ]);
 
-// Weekly performance reports — the bidirectional reporting loop. The agency
-// enters leads + CPL from the ads manager (Data Entry page); the report lands
-// on the client's portal as "pending_client" until they add their closes and
-// revenue, which completes it and feeds the true-ROAS dashboard numbers.
+// Weekly performance reports — the reporting loop for DIGITAL MARKETING
+// engagements only (clients on other offerings never see these). The agency
+// enters leads + spend; the report lands on the client's portal as
+// "pending_client" until they add their closes and revenue, which completes it
+// and feeds the true-ROAS numbers.
 export const weeklyReportStatusEnum = pgEnum("weekly_report_status", [
   "pending_client",
   "completed",
@@ -573,15 +501,11 @@ export const weeklyReports = pgTable("weekly_reports", {
 ]);
 
 // Client payments — money actually collected from agency clients (setup fees
-// and monthly retainers). Each payment carries who physically received it and
-// drives the partner ledger: net = amount - partnerCut, split 50/50, and the
-// receiver owes the other partner their half until the split is settled.
+// and monthly retainers). Feeds the Financials revenue metrics.
 export const clientPaymentTypeEnum = pgEnum("client_payment_type", [
   "setup_fee",
   "monthly_retainer",
 ]);
-
-export const splitStatusEnum = pgEnum("split_status", ["pending", "settled"]);
 
 export const clientPayments = pgTable("client_payments", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -592,13 +516,6 @@ export const clientPayments = pgTable("client_payments", {
   method: varchar("method", { length: 50 }).notNull().default("zelle"),
   // Cents. Snapshot of the fee at collection time (fees can change later).
   amount: integer("amount").notNull(),
-  // Referral cut deducted before the 50/50 partner split, in cents.
-  partnerCut: integer("partner_cut").notNull().default(0),
-  receivedBy: uuid("received_by").references(() => users.id, {
-    onDelete: "set null",
-  }),
-  splitStatus: splitStatusEnum("split_status").notNull().default("pending"),
-  settledAt: timestamp("settled_at"),
   paidAt: timestamp("paid_at").defaultNow().notNull(),
   notes: text("notes"),
   createdBy: uuid("created_by")
@@ -607,71 +524,6 @@ export const clientPayments = pgTable("client_payments", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => [
   index("idx_client_payments_client_id").on(table.clientId),
-  index("idx_client_payments_split_status").on(table.splitStatus),
-]);
-
-// Expenses — agency operating costs (SaaS subscriptions, team/contractor pay,
-// platform fees, ad spend). Feeds the Financials cost/profit metrics.
-export const expenseCategoryEnum = pgEnum("expense_category", [
-  "saas",
-  "team",
-  "fees",
-  "ads",
-  "other",
-]);
-
-export const expenseCadenceEnum = pgEnum("expense_cadence", [
-  "one_time",
-  "monthly",
-]);
-
-export const expenses = pgTable("expenses", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  category: expenseCategoryEnum("category").notNull().default("other"),
-  // Free-text label when category is "other" (custom category input).
-  categoryLabel: text("category_label"),
-  // Money in cents. Monthly-cadence expenses recur every month from incurredAt.
-  amount: integer("amount").notNull(),
-  cadence: expenseCadenceEnum("cadence").notNull().default("one_time"),
-  incurredAt: timestamp("incurred_at").defaultNow().notNull(),
-  notes: text("notes"),
-  createdBy: uuid("created_by")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-}, (table) => [
-  index("idx_expenses_incurred_at").on(table.incurredAt),
-]);
-
-// Partner ledger — tracks profit splits between the agency's admins.
-// "credit" allocates a share of profit to a partner; "payout" records money
-// actually paid out to them. Balance = sum(credits) - sum(payouts).
-export const ledgerEntryTypeEnum = pgEnum("ledger_entry_type", [
-  "credit",
-  "payout",
-]);
-
-export const partnerLedgerEntries = pgTable("partner_ledger_entries", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  partnerId: uuid("partner_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  entryType: ledgerEntryTypeEnum("entry_type").notNull(),
-  // Money in cents, always positive; entryType carries the direction.
-  amount: integer("amount").notNull(),
-  description: text("description"),
-  // Optional link back to the client payment this split derives from.
-  paymentId: uuid("payment_id").references(() => payments.id, {
-    onDelete: "set null",
-  }),
-  createdBy: uuid("created_by")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (table) => [
-  index("idx_ledger_partner_id").on(table.partnerId),
 ]);
 
 // Types
@@ -693,13 +545,7 @@ export type Task = typeof tasks.$inferSelect;
 export type NewTask = typeof tasks.$inferInsert;
 export type Lead = typeof leads.$inferSelect;
 export type NewLead = typeof leads.$inferInsert;
-export type AdCampaign = typeof adCampaigns.$inferSelect;
-export type NewAdCampaign = typeof adCampaigns.$inferInsert;
 export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
-export type Expense = typeof expenses.$inferSelect;
-export type NewExpense = typeof expenses.$inferInsert;
-export type PartnerLedgerEntry = typeof partnerLedgerEntries.$inferSelect;
-export type NewPartnerLedgerEntry = typeof partnerLedgerEntries.$inferInsert;
 export type AgencyClient = typeof agencyClients.$inferSelect;
 export type NewAgencyClient = typeof agencyClients.$inferInsert;
 export type ClientPayment = typeof clientPayments.$inferSelect;

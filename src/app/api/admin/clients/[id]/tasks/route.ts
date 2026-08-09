@@ -4,7 +4,6 @@ import {
   agencyClients,
   clientTaskPriorityEnum,
   clientTasks,
-  departmentEnum,
   users,
 } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
@@ -41,7 +40,6 @@ export async function GET(
 
 const createSchema = z.object({
   title: z.string().min(1).max(255),
-  department: z.enum(departmentEnum.enumValues).nullable().optional(),
   priority: z.enum(clientTaskPriorityEnum.enumValues).optional(),
   assigneeId: z.string().uuid().nullable().optional(),
   dueDate: z.string().datetime().nullable().optional(),
@@ -70,9 +68,10 @@ export async function POST(
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid task" }, { status: 400 });
     }
-    const { title, department, priority, assigneeId, dueDate, notes } =
-      parsed.data;
+    const { title, priority, assigneeId, dueDate, notes } = parsed.data;
 
+    // Assignment is opt-in: the picker sends a real user id or nothing at
+    // all. Nothing is ever routed to a department or a default owner.
     let assigneeName: string | null = null;
     if (assigneeId) {
       const [u] = await db
@@ -94,7 +93,6 @@ export async function POST(
       .values({
         clientId: id,
         title,
-        department: department ?? null,
         priority: priority ?? "medium",
         assigneeId: assigneeId ?? null,
         assigneeName,

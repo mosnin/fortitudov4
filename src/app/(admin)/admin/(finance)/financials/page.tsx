@@ -14,16 +14,13 @@ import {
   type DateRange,
 } from "@/components/ui/filters";
 import { cascade, cascadeItem } from "@/lib/motion";
+import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import { BarChart3, Users2 } from "lucide-react";
 
 interface Metrics {
   totals: {
     totalRevenue: number;
-    totalCosts: number;
-    monthlyRecurringCosts: number;
-    profitMargin: number;
-    totalProfit: number;
     mrr: number;
     arr: number;
     activeClients: number;
@@ -31,21 +28,19 @@ interface Metrics {
     avgLtv: number | null;
     arpu: number;
     expectedLifetimeMonths: number | null;
-    avgMonthsRetained: number;
     churnRate: number;
     clientsLost: number;
   };
   months: string[];
   series: {
     revenue: number[];
-    costs: number[];
-    profit: number[];
     mrr: number[];
     arr: number[];
     newClients: number[];
   };
   topCustomers: { name: string; total: number }[];
-  packagesDistribution: { label: string; count: number }[];
+  /** Offering enum key + head count; labels resolve through PACKAGE_LABELS. */
+  packagesDistribution: { key: string; count: number }[];
   windowed: boolean;
 }
 
@@ -55,15 +50,16 @@ const isoDay = (d: Date | null) => (d ? d.toISOString().slice(0, 10) : null);
 const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 const pct = (f: number) => `${(f * 100).toFixed(1)}%`;
+const count = (v: number) => Math.round(v).toLocaleString("en-US");
 
-/** Hairline-divided grid cell borders, 2-up small / 4-up large. */
+/** Hairline-divided grid cell borders, 2-up small / 3-up large. */
 const statCell = (i: number) =>
   cn(
     "px-5 py-6",
-    i % 2 === 1 && "border-l border-border",
+    i % 2 === 1 && "max-lg:border-l max-lg:border-border",
     i >= 2 && "max-lg:border-t max-lg:border-border",
-    i % 4 !== 0 && "lg:border-l lg:border-border",
-    i >= 4 && "lg:border-t lg:border-border"
+    i % 3 !== 0 && "lg:border-l lg:border-border",
+    i >= 3 && "lg:border-t lg:border-border"
   );
 
 export default function AdminFinancialsPage() {
@@ -102,7 +98,7 @@ export default function AdminFinancialsPage() {
       <div className="space-y-10">
         <PageHero
           title="Financials"
-          description="Revenue, costs, profit, and growth across the agency."
+          description="Revenue, recurring revenue, and client growth across the agency."
         />
         <EmptyState
           icon={BarChart3}
@@ -131,20 +127,6 @@ export default function AdminFinancialsPage() {
           format: usd,
         },
         {
-          label: "Total Costs",
-          caption: "SaaS, team, fees",
-          value: t.totalCosts,
-          format: usd,
-          accent: "text-destructive",
-        },
-        {
-          label: "Profit Margin",
-          caption: `${usd(t.totalProfit)} profit`,
-          value: t.profitMargin,
-          format: pct,
-          accent: t.totalProfit >= 0 ? "text-success" : "text-destructive",
-        },
-        {
           label: "Total MRR",
           caption: `ARR: ${usd(t.arr)}`,
           value: t.mrr,
@@ -152,9 +134,9 @@ export default function AdminFinancialsPage() {
         },
         {
           label: "Active Clients",
-          caption: `+${t.newClientsThisPeriod} new this period`,
+          caption: `${usd(t.arpu)}/mo ARPU`,
           value: t.activeClients,
-          format: (v) => Math.round(v).toLocaleString("en-US"),
+          format: count,
         },
         {
           // ARPU per month ÷ churn rate. Undefined when nobody has churned.
@@ -175,10 +157,10 @@ export default function AdminFinancialsPage() {
           accent: t.churnRate > 0 ? "text-warning" : "text-success",
         },
         {
-          label: "Monthly Burn",
-          caption: "Recurring costs",
-          value: t.monthlyRecurringCosts,
-          format: usd,
+          label: "New Clients",
+          caption: metrics?.windowed ? "In selected range" : "Last 30 days",
+          value: t.newClientsThisPeriod,
+          format: count,
         },
       ]
     : [];
@@ -187,19 +169,25 @@ export default function AdminFinancialsPage() {
     metrics
       ? [
           { title: "Revenue", series: metrics.series.revenue, money: true },
-          { title: "Costs", series: metrics.series.costs, money: true },
-          { title: "Profit", series: metrics.series.profit, money: true },
           { title: "MRR Trend", series: metrics.series.mrr, money: true },
           { title: "ARR Trend", series: metrics.series.arr, money: true },
           { title: "New Clients Trend", series: metrics.series.newClients },
         ]
       : [];
 
+  // Offering mix — labels come from PACKAGE_LABELS so the legend always reads
+  // as the five offerings (plus Custom), never a tier name.
+  const packages =
+    metrics?.packagesDistribution.map((p) => ({
+      label: PACKAGE_LABELS[p.key as ClientPackage] ?? p.key,
+      count: p.count,
+    })) ?? [];
+
   return (
     <div className="space-y-10">
       <PageHero
         title="Financials"
-        description="Revenue, costs, profit, and growth across the agency."
+        description="Revenue, recurring revenue, and client growth across the agency."
         action={<DateRangePill value={range} onChange={setRange} />}
       />
 
@@ -210,11 +198,11 @@ export default function AdminFinancialsPage() {
         />
       )}
 
-      {/* Headline metrics — hairline-divided 4-up grid */}
+      {/* Headline metrics — hairline-divided 3-up grid */}
       <motion.section variants={cascade} initial="hidden" animate="visible">
-        <div className="grid grid-cols-2 border-b border-border lg:grid-cols-4">
+        <div className="grid grid-cols-2 border-b border-border lg:grid-cols-3">
           {loading || !t
-            ? Array.from({ length: 8 }).map((_, i) => (
+            ? Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className={cn(statCell(i), "space-y-3")}>
                   <Skeleton className="h-3 w-24" />
                   <Skeleton className="h-8 w-20" />
@@ -264,11 +252,7 @@ export default function AdminFinancialsPage() {
                   points={chart.series}
                   xLabels={metrics.months.map((m) => m.split(" ")[0])}
                   height={170}
-                  format={
-                    chart.money
-                      ? (v) => usd(v)
-                      : (v) => Math.round(v).toLocaleString("en-US")
-                  }
+                  format={chart.money ? usd : count}
                 />
               </div>
             ))}
@@ -303,15 +287,12 @@ export default function AdminFinancialsPage() {
                 Packages Distribution
               </h2>
             </div>
-            {metrics.packagesDistribution.length === 0 ? (
+            {packages.length === 0 ? (
               <p className="pt-6 text-center text-sm text-muted-foreground">
                 No active clients yet.
               </p>
             ) : (
-              <DonutChart
-                className="mt-6"
-                data={metrics.packagesDistribution}
-              />
+              <DonutChart className="mt-6" data={packages} />
             )}
           </div>
         </section>

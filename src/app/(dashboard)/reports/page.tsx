@@ -14,10 +14,13 @@ import { cn } from "@/lib/utils";
 import { ClipboardCheck } from "lucide-react";
 
 /**
- * Weekly Reports — the client half of the reporting loop. The Fortitudo team
- * posts each week's results (leads, cost per lead, spend); pending weeks
- * surface here for the client to add closes and revenue, completing the week
- * and feeding the true return-on-spend totals.
+ * Weekly Reports — the client half of the reporting loop for DIGITAL MARKETING
+ * engagements. The Fortitudo team posts each week's results (leads, cost per
+ * lead, spend); pending weeks surface here for the client to add closes and
+ * revenue, completing the week and feeding the true return-on-spend totals.
+ *
+ * Clients on the other four offerings never have reports, so this page shows
+ * its empty state and the nav entry is simply unused for them.
  */
 
 interface Report {

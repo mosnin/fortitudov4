@@ -6,8 +6,6 @@ import { eq, ne, count } from "drizzle-orm";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth-utils";
 
-const DEPARTMENTS = ["csm", "funnel", "automations", "ads"] as const;
-
 export async function GET(req: Request) {
   try {
     await requireAdmin();
@@ -32,7 +30,6 @@ const createSchema = z.object({
   lastName: z.string().max(255).optional(),
   email: z.string().email(),
   role: z.enum(userRoles).default("project_manager"),
-  department: z.enum(DEPARTMENTS).nullable().optional(),
 });
 
 /**
@@ -52,7 +49,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    const { firstName, lastName, email, role, department } = parsed.data;
+    const { firstName, lastName, email, role } = parsed.data;
     const normalizedEmail = email.trim().toLowerCase();
 
     const [existing] = await db
@@ -74,7 +71,6 @@ export async function POST(req: Request) {
         firstName,
         lastName: lastName || null,
         role,
-        department: department ?? null,
       })
       .returning();
 
@@ -107,7 +103,6 @@ const patchSchema = z.object({
   firstName: z.string().min(1).max(255).optional(),
   lastName: z.string().max(255).nullable().optional(),
   email: z.string().email().optional(),
-  department: z.enum(DEPARTMENTS).nullable().optional(),
   resendInvite: z.boolean().optional(),
 });
 
@@ -201,8 +196,8 @@ const deleteSchema = z.object({ userId: z.string().uuid() });
  * DELETE /api/team — remove a team member. Guard rails:
  * - You can't delete yourself.
  * - Admins can't be deleted directly (demote first — the PATCH last-admin
- *   guard then applies), which also protects the ledger partners and every
- *   admin-owned financial record from cascading away.
+ *   guard then applies), which also protects every admin-owned record from
+ *   cascading away.
  * - Their authored records are reassigned to the acting admin before the
  *   row is removed (messages, uploaded files, created tasks would otherwise
  *   cascade-delete and erase client-facing history). Checklist assignments
@@ -257,10 +252,7 @@ export async function DELETE(req: Request) {
     // Best-effort: kill the login too (real accounts only; invite
     // placeholders never had one).
     let clerkStatus: "removed" | "skipped" | "failed" = "skipped";
-    if (
-      !target.clerkId.startsWith("invite:") &&
-      !target.clerkId.startsWith("seed_")
-    ) {
+    if (!target.clerkId.startsWith("invite:")) {
       try {
         const cc = await clerkClient();
         await cc.users.deleteUser(target.clerkId);

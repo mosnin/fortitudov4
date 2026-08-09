@@ -1,4 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { db } from "@/db";
+import { agencyClients, users, weeklyReports } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { AppShell, type ShellNavItem } from "@/components/shell/app-shell";
 
 const navItems: ShellNavItem[] = [
@@ -18,12 +21,6 @@ const navItems: ShellNavItem[] = [
     label: "Messages",
     href: "/messages",
     icon: "MessageSquare",
-    section: "Workspace",
-  },
-  {
-    label: "Weekly Reports",
-    href: "/reports",
-    icon: "ClipboardCheck",
     section: "Workspace",
   },
   {
@@ -65,9 +62,35 @@ export default async function DashboardLayout({
 }) {
   const user = await currentUser();
 
+  // Weekly reports exist for digital-marketing engagements only — the nav
+  // entry appears only for clients who actually have them.
+  let nav = navItems;
+  if (user) {
+    const [report] = await db
+      .select({ id: weeklyReports.id })
+      .from(weeklyReports)
+      .innerJoin(agencyClients, eq(weeklyReports.clientId, agencyClients.id))
+      .innerJoin(users, eq(agencyClients.userId, users.id))
+      .where(eq(users.clerkId, user.id))
+      .limit(1);
+    if (report) {
+      const at = navItems.findIndex((i) => i.href === "/messages") + 1;
+      nav = [
+        ...navItems.slice(0, at),
+        {
+          label: "Weekly Reports",
+          href: "/reports",
+          icon: "ClipboardCheck",
+          section: "Workspace",
+        },
+        ...navItems.slice(at),
+      ];
+    }
+  }
+
   return (
     <AppShell
-      navItems={navItems}
+      navItems={nav}
       cta={{ label: "New Project", href: "/services" }}
       accountEmail={user?.emailAddresses[0]?.emailAddress}
     >

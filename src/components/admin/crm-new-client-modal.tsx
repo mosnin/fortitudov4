@@ -5,17 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, Plus } from "lucide-react";
-import { INDUSTRIES, SAAS_PLANS } from "@/lib/crm";
-
-const PACKAGES = [
-  { value: "bronze", label: "Bronze" },
-  { value: "silver", label: "Silver" },
-  { value: "gold", label: "Gold" },
-  { value: "diamond", label: "Diamond" },
-  { value: "rev_split", label: "Rev Split" },
-  { value: "mentorship", label: "Mentorship" },
-  { value: "custom", label: "Custom" },
-];
+import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
 
 const selectClass =
   "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
@@ -35,8 +25,8 @@ function Field({
   );
 }
 
-/** Create New Client — records the client, seeds the onboarding checklist, and
- * emails a Clerk portal invitation to the login email. */
+/** Create New Client — records the client, seeds the delivery checklist
+ * (unassigned), and optionally emails a Clerk portal invitation. */
 export function NewClientModal({
   open,
   onClose,
@@ -55,11 +45,12 @@ export function NewClientModal({
     industryCustom: "",
     package: "",
     packageCustom: "",
-    saasPlan: "",
-    saasPlanCustom: "",
+    setupFee: "",
+    monthlyFee: "",
     startDate: today(),
     driveUrl: "",
     landingPageUrl: "",
+    notes: "",
     sendInvite: false,
   });
   const [saving, setSaving] = useState(false);
@@ -74,11 +65,12 @@ export function NewClientModal({
       industryCustom: "",
       package: "",
       packageCustom: "",
-      saasPlan: "",
-      saasPlanCustom: "",
+      setupFee: "",
+      monthlyFee: "",
       startDate: today(),
       driveUrl: "",
       landingPageUrl: "",
+      notes: "",
       sendInvite: false,
     });
     setError(null);
@@ -96,10 +88,7 @@ export function NewClientModal({
         ? form.industryCustom.trim() || "Custom"
         : form.industry || undefined;
     const pkg = form.package || undefined;
-    const saasPlan =
-      form.saasPlan === "Custom"
-        ? form.saasPlanCustom.trim() || "Custom"
-        : form.saasPlan || undefined;
+    const cents = (v: string) => Math.round((parseFloat(v) || 0) * 100);
     setSaving(true);
     try {
       const res = await fetch("/api/admin/clients", {
@@ -115,7 +104,9 @@ export function NewClientModal({
             package: "custom",
             packageLabel: form.packageCustom.trim() || "Custom",
           }),
-          ...(saasPlan && { saasPlan }),
+          setupFee: cents(form.setupFee),
+          monthlyFee: cents(form.monthlyFee),
+          ...(form.notes.trim() && { notes: form.notes.trim() }),
           ...(form.startDate && {
             startDate: new Date(form.startDate + "T00:00:00Z").toISOString(),
           }),
@@ -240,17 +231,17 @@ export function NewClientModal({
                       setForm({ ...form, package: e.target.value })
                     }
                   >
-                    <option value="">Select package</option>
-                    {PACKAGES.map((p) => (
-                      <option key={p.value} value={p.value}>
-                        {p.label}
+                    <option value="">Select offering</option>
+                    {CLIENT_PACKAGES.map((p) => (
+                      <option key={p} value={p}>
+                        {PACKAGE_LABELS[p]}
                       </option>
                     ))}
                   </select>
                   {form.package === "custom" && (
                     <Input
                       className="mt-2"
-                      placeholder="Custom package name"
+                      placeholder="Custom engagement name"
                       value={form.packageCustom}
                       onChange={(e) =>
                         setForm({ ...form, packageCustom: e.target.value })
@@ -258,31 +249,25 @@ export function NewClientModal({
                     />
                   )}
                 </Field>
-                <Field label="SaaS Plan">
-                  <select
-                    className={selectClass}
-                    value={form.saasPlan}
+                <Field label="Setup Fee ($)">
+                  <Input
+                    inputMode="decimal"
+                    placeholder="1500"
+                    value={form.setupFee}
                     onChange={(e) =>
-                      setForm({ ...form, saasPlan: e.target.value })
+                      setForm({ ...form, setupFee: e.target.value })
                     }
-                  >
-                    <option value="">Select plan</option>
-                    {SAAS_PLANS.map((p) => (
-                      <option key={p} value={p}>
-                        {p}
-                      </option>
-                    ))}
-                  </select>
-                  {form.saasPlan === "Custom" && (
-                    <Input
-                      className="mt-2"
-                      placeholder="Custom plan name"
-                      value={form.saasPlanCustom}
-                      onChange={(e) =>
-                        setForm({ ...form, saasPlanCustom: e.target.value })
-                      }
-                    />
-                  )}
+                  />
+                </Field>
+                <Field label="Monthly Fee ($)">
+                  <Input
+                    inputMode="decimal"
+                    placeholder="500"
+                    value={form.monthlyFee}
+                    onChange={(e) =>
+                      setForm({ ...form, monthlyFee: e.target.value })
+                    }
+                  />
                 </Field>
                 <Field label="Date Started">
                   <Input
@@ -311,6 +296,13 @@ export function NewClientModal({
                   onChange={(e) =>
                     setForm({ ...form, landingPageUrl: e.target.value })
                   }
+                />
+              </Field>
+              <Field label="Notes">
+                <Input
+                  placeholder="Anything worth remembering about this client"
+                  value={form.notes}
+                  onChange={(e) => setForm({ ...form, notes: e.target.value })}
                 />
               </Field>
 

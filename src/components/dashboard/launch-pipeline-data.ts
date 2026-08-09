@@ -35,10 +35,17 @@ export async function getLaunchPipeline(
   const total = tasks.length;
   const done = tasks.filter((t) => t.status === "completed").length;
 
-  const stages = CRM_STAGES.map((s) => {
+  // Where the client sits now — stages behind it read as complete even when
+  // they carry no checklist steps of their own (the kickoff list doesn't put
+  // a task in every stage), so the stepper never shows a gap behind the
+  // current position.
+  const currentIndex = CRM_STAGES.indexOf(client.stage as CrmStage);
+
+  const stages = CRM_STAGES.map((s, i) => {
     const stageTasks = tasks.filter((t) => t.stage === s);
-    const complete =
-      stageTasks.length > 0 && stageTasks.every((t) => t.status === "completed");
+    const complete = stageTasks.length
+      ? stageTasks.every((t) => t.status === "completed")
+      : currentIndex > i;
     return {
       key: s,
       label: STAGE_LABELS[s],

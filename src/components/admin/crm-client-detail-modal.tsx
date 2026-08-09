@@ -5,17 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X, Plus, Trash2, Send } from "lucide-react";
-import { INDUSTRIES, SAAS_PLANS } from "@/lib/crm";
-
-const PACKAGES = [
-  { value: "bronze", label: "Bronze" },
-  { value: "silver", label: "Silver" },
-  { value: "gold", label: "Gold" },
-  { value: "diamond", label: "Diamond" },
-  { value: "rev_split", label: "Rev Split" },
-  { value: "mentorship", label: "Mentorship" },
-  { value: "custom", label: "Custom" },
-];
+import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
 
 const STATUSES = [
   { value: "active", label: "Active" },
@@ -53,7 +43,6 @@ interface ClientData {
   businessType: string | null;
   package: string;
   packageLabel: string | null;
-  saasPlan: string | null;
   email: string | null;
   status: string;
   startDate: string;
@@ -104,8 +93,6 @@ export function ClientDetailModal({
     industryCustom: "",
     package: "",
     packageCustom: "",
-    saasPlan: "",
-    saasPlanCustom: "",
     startDate: "",
     driveUrl: "",
     landingPageUrl: "",
@@ -120,7 +107,6 @@ export function ClientDetailModal({
         const c: ClientData = data.client;
         const knownIndustry =
           c.businessType && INDUSTRIES.includes(c.businessType);
-        const knownPlan = c.saasPlan && SAAS_PLANS.includes(c.saasPlan);
         setForm({
           companyName: c.companyName,
           contactName: c.contactName,
@@ -135,8 +121,6 @@ export function ClientDetailModal({
             c.businessType && !knownIndustry ? c.businessType : "",
           package: c.package,
           packageCustom: c.package === "custom" ? c.packageLabel ?? "" : "",
-          saasPlan: c.saasPlan ? (knownPlan ? c.saasPlan : "Custom") : "",
-          saasPlanCustom: c.saasPlan && !knownPlan ? c.saasPlan : "",
           startDate: c.startDate ? c.startDate.slice(0, 10) : "",
           driveUrl: c.driveUrl ?? "",
           landingPageUrl: c.landingPageUrl ?? "",
@@ -243,10 +227,6 @@ export function ClientDetailModal({
             form.package === "custom"
               ? form.packageCustom.trim() || "Custom"
               : null,
-          saasPlan:
-            form.saasPlan === "Custom"
-              ? form.saasPlanCustom.trim() || "Custom"
-              : form.saasPlan || null,
           startDate: form.startDate
             ? new Date(form.startDate + "T00:00:00Z").toISOString()
             : undefined,
@@ -398,46 +378,20 @@ export function ClientDetailModal({
                         setForm({ ...form, package: e.target.value })
                       }
                     >
-                      <option value="">Select package</option>
-                      {PACKAGES.map((p) => (
-                        <option key={p.value} value={p.value}>
-                          {p.label}
+                      <option value="">Select offering</option>
+                      {CLIENT_PACKAGES.map((p) => (
+                        <option key={p} value={p}>
+                          {PACKAGE_LABELS[p]}
                         </option>
                       ))}
                     </select>
                     {form.package === "custom" && (
                       <Input
                         className="mt-2"
-                        placeholder="Custom package name"
+                        placeholder="Custom engagement name"
                         value={form.packageCustom}
                         onChange={(e) =>
                           setForm({ ...form, packageCustom: e.target.value })
-                        }
-                      />
-                    )}
-                  </Field>
-                  <Field label="SaaS Plan">
-                    <select
-                      className={selectClass}
-                      value={form.saasPlan}
-                      onChange={(e) =>
-                        setForm({ ...form, saasPlan: e.target.value })
-                      }
-                    >
-                      <option value="">Select plan</option>
-                      {SAAS_PLANS.map((p) => (
-                        <option key={p} value={p}>
-                          {p}
-                        </option>
-                      ))}
-                    </select>
-                    {form.saasPlan === "Custom" && (
-                      <Input
-                        className="mt-2"
-                        placeholder="Custom plan name"
-                        value={form.saasPlanCustom}
-                        onChange={(e) =>
-                          setForm({ ...form, saasPlanCustom: e.target.value })
                         }
                       />
                     )}

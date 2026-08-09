@@ -6,7 +6,6 @@ import {
   weeklyReports,
   projects,
   projectPhases,
-  adCampaigns,
 } from "@/db/schema";
 import { asc, desc, eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth-utils";
@@ -15,10 +14,10 @@ import { CRM_STAGES, STAGE_LABELS, stageFromTasks, type CrmStage } from "@/lib/c
 
 /**
  * GET /api/admin/clients/[id]/portal — a read-only snapshot of exactly what
- * this client sees in their portal: launch pipeline, weekly reports (with
- * the same ROAS math the portal runs), project phases, and ad campaigns.
- * Admin-only. Works whether or not a portal login is linked yet — the
- * pipeline exists from the moment the client is created.
+ * this client sees in their portal: delivery pipeline, project phases, and —
+ * for digital-marketing engagements only — their weekly reports with the same
+ * ROAS math the portal runs. Admin-only. Works whether or not a portal login
+ * is linked yet: the pipeline exists from the moment the client is created.
  */
 export async function GET(
   _request: Request,
@@ -63,14 +62,6 @@ export async function GET(
       | { id: string; name: string; status: string; serviceType: string }
       | null;
     let phases: { id: string; name: string; status: string; order: number }[] = [];
-    let campaigns: {
-      id: string;
-      name: string;
-      platform: string;
-      status: string;
-      leadsGenerated: number;
-      totalSpend: number;
-    }[] = [];
     if (client.userId) {
       const [p] = await db
         .select({
@@ -84,29 +75,16 @@ export async function GET(
         .limit(1);
       if (p) {
         project = p;
-        [phases, campaigns] = await Promise.all([
-          db
-            .select({
-              id: projectPhases.id,
-              name: projectPhases.name,
-              status: projectPhases.status,
-              order: projectPhases.order,
-            })
-            .from(projectPhases)
-            .where(eq(projectPhases.projectId, p.id))
-            .orderBy(asc(projectPhases.order)),
-          db
-            .select({
-              id: adCampaigns.id,
-              name: adCampaigns.name,
-              platform: adCampaigns.platform,
-              status: adCampaigns.status,
-              leadsGenerated: adCampaigns.leadsGenerated,
-              totalSpend: adCampaigns.totalSpend,
-            })
-            .from(adCampaigns)
-            .where(eq(adCampaigns.projectId, p.id)),
-        ]);
+        phases = await db
+          .select({
+            id: projectPhases.id,
+            name: projectPhases.name,
+            status: projectPhases.status,
+            order: projectPhases.order,
+          })
+          .from(projectPhases)
+          .where(eq(projectPhases.projectId, p.id))
+          .orderBy(asc(projectPhases.order));
       }
     }
 
@@ -138,7 +116,10 @@ export async function GET(
         contactName: client.contactName,
         email: client.email,
         status: client.status,
-        package: client.packageLabel ?? client.package,
+        // Raw offering key — the preview gates the marketing-only blocks on
+        // it. packageLabel is the free-text name for "custom" engagements.
+        package: client.package,
+        packageLabel: client.packageLabel,
         driveUrl: client.driveUrl,
         landingPageUrl: client.landingPageUrl,
         hasPortalLogin: !!client.userId,
@@ -160,7 +141,6 @@ export async function GET(
       },
       project,
       phases,
-      campaigns,
     });
   } catch (error) {
     if (error instanceof NextResponse) return error;

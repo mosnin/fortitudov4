@@ -3,8 +3,11 @@ import { Check, Circle, Rocket } from "lucide-react";
 import { BracketLabel } from "@/components/ui/firecrawl";
 
 /**
- * Read-only launch pipeline — the same stage checklist the team tracks in the
- * admin Client CRM, mirrored for the client (the transparency bridge).
+ * Read-only delivery pipeline — the same stage checklist the team tracks in
+ * the admin Client CRM (Onboarding → Discovery → Design → Build → Client
+ * review → Launched → Ongoing), mirrored for the client as the transparency
+ * bridge. Stages come from CRM_STAGES/STAGE_LABELS via getLaunchPipeline;
+ * nothing here is offering-specific.
  *
  * Purely presentational: server pages load the data with
  * `getLaunchPipeline()` (launch-pipeline-data.ts) and pass it down, so this
@@ -36,7 +39,7 @@ export function LaunchPipeline({ data }: { data: LaunchPipelineData | null }) {
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
         <div className="flex items-center gap-2">
           <Rocket className="h-4 w-4 text-brand" />
-          <h2 className="text-[15px] font-semibold">Launch Progress</h2>
+          <h2 className="text-[15px] font-semibold">Delivery Pipeline</h2>
         </div>
         <BracketLabel n={data.done} m={data.total} label="Steps" />
       </div>
@@ -70,7 +73,7 @@ export function LaunchPipeline({ data }: { data: LaunchPipelineData | null }) {
               className={cn(
                 "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
                 s.complete
-                  ? "border-success bg-success text-white"
+                  ? "border-foreground bg-foreground text-background"
                   : s.active
                     ? "border-brand text-brand"
                     : "border-border text-muted-foreground"

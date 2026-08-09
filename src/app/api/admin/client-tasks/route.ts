@@ -20,7 +20,6 @@ export async function GET() {
           id: clientTasks.id,
           clientId: clientTasks.clientId,
           title: clientTasks.title,
-          department: clientTasks.department,
           stage: clientTasks.stage,
           status: clientTasks.status,
           priority: clientTasks.priority,

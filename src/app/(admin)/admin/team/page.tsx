@@ -23,23 +23,16 @@ import type { UserRole } from "@/db/schema";
 
 interface TeamUser {
   id: string;
+  /** Real accounts carry a Clerk id; invited-but-not-signed-up members carry
+   * the `invite:<email>` placeholder the API seeds them with. */
+  clerkId: string;
   email: string;
   firstName: string | null;
   lastName: string | null;
   role: UserRole;
-  department: string | null;
 }
 
 const roleOptions: UserRole[] = ["admin", "project_manager", "va", "client"];
-
-const DEPARTMENTS = [
-  { value: "csm", label: "CSM" },
-  { value: "funnel", label: "Funnel" },
-  { value: "automations", label: "Automations" },
-  { value: "ads", label: "Ads" },
-];
-const deptLabel = (v: string | null) =>
-  DEPARTMENTS.find((d) => d.value === v)?.label ?? "—";
 
 const selectClass =
   "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
@@ -59,7 +52,6 @@ export default function AdminTeamPage() {
     lastName: "",
     email: "",
     role: "project_manager" as UserRole,
-    department: "",
   });
 
   const fetchTeam = () => {
@@ -105,7 +97,6 @@ export default function AdminTeamPage() {
       lastName: "",
       email: "",
       role: "project_manager",
-      department: "",
     });
     setNotice(null);
     setError(null);
@@ -119,7 +110,6 @@ export default function AdminTeamPage() {
       lastName: u.lastName ?? "",
       email: u.email,
       role: u.role,
-      department: u.department ?? "",
     });
     setNotice(null);
     setError(null);
@@ -141,7 +131,6 @@ export default function AdminTeamPage() {
         lastName: form.lastName.trim() || undefined,
         email: form.email.trim(),
         role: form.role,
-        department: form.department || null,
       };
       const res = editing
         ? await fetch("/api/team", {
@@ -254,9 +243,8 @@ export default function AdminTeamPage() {
               Team
             </h1>
             <p className="mt-2 max-w-2xl text-muted-foreground">
-              Manage staff access and departments. Add a team member to send
-              them a portal invite — they become assignable across the Client
-              CRM instantly.
+              Manage staff access. Add a team member to send them a portal
+              invite — they become assignable across the Client CRM instantly.
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
@@ -301,7 +289,6 @@ export default function AdminTeamPage() {
                 <tr className="border-b border-border text-left">
                   <th className="micro-label py-3 pr-4">Name</th>
                   <th className="micro-label py-3 pr-4">Email</th>
-                  <th className="micro-label py-3 pr-4">Department</th>
                   <th className="micro-label py-3 pr-4">Role</th>
                   <th className="micro-label py-3 text-right">Actions</th>
                 </tr>
@@ -313,7 +300,7 @@ export default function AdminTeamPage() {
                 className="divide-y divide-border"
               >
                 {staff.map((member) => {
-                  const pending = member.email.startsWith("invite:") || false;
+                  const pending = member.clerkId?.startsWith("invite:") ?? false;
                   return (
                     <motion.tr
                       key={member.id}
@@ -332,9 +319,6 @@ export default function AdminTeamPage() {
                             Invited
                           </span>
                         )}
-                      </td>
-                      <td className="py-3 pr-4 text-muted-foreground">
-                        {deptLabel(member.department)}
                       </td>
                       <td className="py-3 pr-4">
                         <select
@@ -464,46 +448,28 @@ export default function AdminTeamPage() {
                     We&apos;ll email them a secure invite to set their password.
                   </p>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div>
-                    <span className="mb-1.5 block text-[13px] font-semibold">
-                      Department
-                    </span>
-                    <select
-                      className={selectClass}
-                      value={form.department}
-                      onChange={(e) =>
-                        setForm({ ...form, department: e.target.value })
-                      }
-                    >
-                      <option value="">No department</option>
-                      {DEPARTMENTS.map((d) => (
-                        <option key={d.value} value={d.value}>
-                          {d.label}
+                <div>
+                  <span className="mb-1.5 block text-[13px] font-semibold">
+                    Role
+                  </span>
+                  <select
+                    className={selectClass}
+                    value={form.role}
+                    onChange={(e) =>
+                      setForm({ ...form, role: e.target.value as UserRole })
+                    }
+                  >
+                    {(["project_manager", "va", "admin"] as UserRole[]).map(
+                      (r) => (
+                        <option key={r} value={r}>
+                          {ROLE_LABELS[r]}
                         </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <span className="mb-1.5 block text-[13px] font-semibold">
-                      Role
-                    </span>
-                    <select
-                      className={selectClass}
-                      value={form.role}
-                      onChange={(e) =>
-                        setForm({ ...form, role: e.target.value as UserRole })
-                      }
-                    >
-                      {(["project_manager", "va", "admin"] as UserRole[]).map(
-                        (r) => (
-                          <option key={r} value={r}>
-                            {ROLE_LABELS[r]}
-                          </option>
-                        )
-                      )}
-                    </select>
-                  </div>
+                      )
+                    )}
+                  </select>
+                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                    Roles set what they can see — access is per-role, not per-team.
+                  </p>
                 </div>
 
                 {error && <p className="text-sm text-destructive">{error}</p>}

@@ -11,9 +11,10 @@ import { Input } from "@/components/ui/input";
 import { AsciiField } from "@/components/ui/ascii-field";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import {
-  DEPARTMENT_LABELS,
+  CRM_STAGES,
   PRIORITY_LABELS,
-  type Department,
+  STAGE_LABELS,
+  type CrmStage,
   type TaskPriority,
 } from "@/lib/crm";
 import { rowCascade, rowItem } from "@/lib/motion";
@@ -34,7 +35,7 @@ interface TaskRow {
   id: string;
   clientId: string;
   title: string;
-  department: Department | null;
+  stage: CrmStage | null;
   status: "pending" | "in_progress" | "completed";
   priority: TaskPriority;
   assigneeId: string | null;
@@ -50,13 +51,13 @@ interface Feed {
   staff: { id: string; name: string }[];
 }
 
-const DEPT_TABS = ["All Departments", "CSM", "Ads", "Funnel", "Automations"];
-const DEPT_BY_TAB: Record<string, Department> = {
-  CSM: "csm",
-  Ads: "ads",
-  Funnel: "funnel",
-  Automations: "automations",
-};
+/** Delivery stages double as the top-level cut of the checklist. Custom
+ * (unstaged) tasks only appear under "All Stages". */
+const ALL_STAGES_TAB = "All Stages";
+const STAGE_TABS = [ALL_STAGES_TAB, ...CRM_STAGES.map((s) => STAGE_LABELS[s])];
+const STAGE_BY_TAB = new Map<string, CrmStage>(
+  CRM_STAGES.map((s) => [STAGE_LABELS[s], s])
+);
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "Not Started" },
@@ -101,7 +102,7 @@ const STATUS_RANK: Record<string, number> = {
 export default function AdminTasksPage() {
   const [feed, setFeed] = useState<Feed | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("All Departments");
+  const [tab, setTab] = useState(ALL_STAGES_TAB);
   const [query, setQuery] = useState("");
   const [assigneeFilter, setAssigneeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -163,10 +164,10 @@ export default function AdminTasksPage() {
   }
 
   const tasks = useMemo(() => {
-    const dept = DEPT_BY_TAB[tab];
+    const stage = STAGE_BY_TAB.get(tab);
     const q = query.trim().toLowerCase();
     const rows = (feed?.tasks ?? []).filter((t) => {
-      if (dept && t.department !== dept) return false;
+      if (stage && t.stage !== stage) return false;
       if (clientFilter !== "all" && t.clientStatus !== clientFilter)
         return false;
       if (assigneeFilter !== "all" && t.assigneeId !== assigneeFilter)
@@ -215,7 +216,7 @@ export default function AdminTasksPage() {
   ]);
 
   const filtersActive =
-    tab !== "All Departments" ||
+    tab !== ALL_STAGES_TAB ||
     query.trim() !== "" ||
     clientFilter !== "active" ||
     assigneeFilter !== "all" ||
@@ -274,9 +275,18 @@ export default function AdminTasksPage() {
         </div>
       </header>
 
-      {/* Department tabs + filter row */}
+      {/* Stage tabs + filter row */}
       <div className="space-y-4">
-        <SegmentedTabs options={DEPT_TABS} value={tab} onChange={setTab} />
+        {/* Eight stage pills overflow a phone — let the strip scroll rather
+            than wrap out of the pill track. */}
+        <div className="-mx-1 overflow-x-auto px-1 pb-1">
+          <SegmentedTabs
+            className="w-max"
+            options={STAGE_TABS}
+            value={tab}
+            onChange={setTab}
+          />
+        </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <SearchPill
             className="sm:w-64"
@@ -536,7 +546,8 @@ export default function AdminTasksPage() {
   );
 }
 
-/** Add Task to Client — client, title, department, assignee. */
+/** Add Task to Client — client, title, assignee. Assignment is explicit: the
+ * picker lists real staff accounts and defaults to unassigned. */
 function AddCustomTaskModal({
   open,
   clients,
@@ -553,7 +564,6 @@ function AddCustomTaskModal({
   const [form, setForm] = useState({
     clientId: "",
     title: "",
-    department: "",
     assigneeId: "",
   });
   const [saving, setSaving] = useState(false);
@@ -573,12 +583,11 @@ function AddCustomTaskModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: form.title.trim(),
-          department: form.department || null,
           assigneeId: form.assigneeId || null,
         }),
       });
       if (!res.ok) throw new Error();
-      setForm({ clientId: "", title: "", department: "", assigneeId: "" });
+      setForm({ clientId: "", title: "", assigneeId: "" });
       onCreated();
     } catch {
       setError("Could not create the task — try again.");
@@ -642,52 +651,32 @@ function AddCustomTaskModal({
                   Task Title
                 </span>
                 <Input
-                  placeholder="e.g. Build secondary funnel"
+                  placeholder="e.g. Migrate DNS to the new host"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div>
-                  <span className="mb-1.5 block text-[13px] font-semibold">
-                    Department
-                  </span>
-                  <select
-                    className={selectClass}
-                    value={form.department}
-                    onChange={(e) =>
-                      setForm({ ...form, department: e.target.value })
-                    }
-                  >
-                    <option value="">Select department</option>
-                    {(
-                      Object.entries(DEPARTMENT_LABELS) as [Department, string][]
-                    ).map(([value, label]) => (
-                      <option key={value} value={value}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <span className="mb-1.5 block text-[13px] font-semibold">
-                    Assignee
-                  </span>
-                  <select
-                    className={selectClass}
-                    value={form.assigneeId}
-                    onChange={(e) =>
-                      setForm({ ...form, assigneeId: e.target.value })
-                    }
-                  >
-                    <option value="">Select assignee</option>
-                    {staff.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <span className="mb-1.5 block text-[13px] font-semibold">
+                  Assignee
+                </span>
+                <select
+                  className={selectClass}
+                  value={form.assigneeId}
+                  onChange={(e) =>
+                    setForm({ ...form, assigneeId: e.target.value })
+                  }
+                >
+                  <option value="">Unassigned</option>
+                  {staff.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                  Leave unassigned and a teammate can claim it.
+                </p>
               </div>
 
               {error && <p className="text-sm text-destructive">{error}</p>}

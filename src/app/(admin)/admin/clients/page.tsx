@@ -9,7 +9,13 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { AsciiField } from "@/components/ui/ascii-field";
 import { NewClientModal } from "@/components/admin/crm-new-client-modal";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
-import { CRM_STAGES, STAGE_LABELS, type CrmStage } from "@/lib/crm";
+import {
+  CRM_STAGES,
+  STAGE_LABELS,
+  PACKAGE_LABELS,
+  type ClientPackage,
+  type CrmStage,
+} from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   UserPlus,
@@ -27,7 +33,7 @@ interface Client {
   companyName: string;
   businessType: string | null;
   industry: string | null;
-  package: string;
+  package: ClientPackage;
   packageLabel: string | null;
   status: string;
   stage: CrmStage;
@@ -38,26 +44,17 @@ interface Client {
   tasksDone: number;
 }
 
-const PACKAGE_LABELS: Record<string, string> = {
-  bronze: "Bronze",
-  silver: "Silver",
-  gold: "Gold",
-  diamond: "Diamond",
-  rev_split: "Rev Split",
-  mentorship: "Mentorship",
-  custom: "Custom",
-};
-
 const STATUS_LABELS: Record<string, string> = {
   active: "Active",
   paused: "Paused",
   churned: "Canceled",
 };
 
+/** The offering this client bought — a bespoke engagement shows its own name. */
 const packageLabel = (c: Client) =>
   c.package === "custom" && c.packageLabel
     ? c.packageLabel
-    : PACKAGE_LABELS[c.package] ?? c.package;
+    : PACKAGE_LABELS[c.package] ?? "—";
 
 const dateStarted = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", {
@@ -264,7 +261,7 @@ export default function ClientCrmPage() {
                       </div>
                       <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
                         <span className="font-mono text-[11px] uppercase text-muted-foreground">
-                          {packageLabel(c) === c.package ? "—" : packageLabel(c)}
+                          {packageLabel(c)}
                         </span>
                         <div className="flex items-center gap-1">
                           <button
@@ -351,7 +348,7 @@ export default function ClientCrmPage() {
                     {c.industry || "—"}
                   </td>
                   <td className="py-4 pr-3 text-muted-foreground">
-                    {packageLabel(c) === c.package ? "—" : packageLabel(c)}
+                    {packageLabel(c)}
                   </td>
                   <td className="py-4 pr-3 font-mono text-xs text-muted-foreground whitespace-nowrap">
                     {dateStarted(c.startDate)}

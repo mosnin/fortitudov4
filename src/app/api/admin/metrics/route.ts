@@ -1,27 +1,23 @@
 import { NextResponse } from "next/server";
 import { db } from "@/db";
-import {
-  users,
-  payments,
-  expenses,
-  agencyClients,
-  clientPayments,
-} from "@/db/schema";
+import { users, payments, agencyClients, clientPayments } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { requireAdmin } from "@/lib/auth-utils";
 
 /**
- * GET /api/admin/metrics — the Financials command center. Admin-only (this is
- * agency P&L: revenue, costs, margin, MRR/ARR, LTV, churn).
+ * GET /api/admin/metrics — the Financials command center. Admin-only.
  *
- * Optional `?from=yyyy-mm-dd&to=yyyy-mm-dd` (to inclusive) window the FLOW
- * metrics — revenue, costs, profit, new clients, churn, top customers — and
- * stretch the chart buckets across the window (capped at 24 months).
- * Point-in-time metrics (MRR, ARR, active clients, LTV, monthly burn) always
- * reflect the current roster.
+ * Revenue-side P&L only: money collected, recurring revenue (MRR/ARR), the
+ * active roster, LTV, churn, and new clients. The agency tracks no expenses,
+ * so there is no cost, profit, margin, or burn number here.
+ *
+ * Optional `?from=yyyy-mm-dd&to=yyyy-mm-dd` (to inclusive) windows the FLOW
+ * metrics — revenue, new clients, churn, top customers — and stretches the
+ * chart buckets across the window (capped at 24 months). Point-in-time
+ * metrics (MRR, ARR, active clients, LTV) always reflect the current roster.
  *
  * Row volumes are agency-sized (hundreds, not millions), so rows are pulled
- * once and aggregated in JS — one pass beats seven aggregate round-trips and
+ * once and aggregated in JS — one pass beats several aggregate round-trips and
  * keeps every metric internally consistent with the same snapshot.
  *
  * All money values are cents.
@@ -62,13 +58,8 @@ export async function GET(req: Request) {
     const inWindow = (d: Date) =>
       (!fromParam || d >= fromParam) && (!toEx || d < toEx);
 
-    const [
-      paymentRows,
-      expenseRows,
-      clientRows,
-      rosterRows,
-      collectedRows,
-    ] = await Promise.all([
+    const [paymentRows, clientRows, rosterRows, collectedRows] =
+      await Promise.all([
         db
           .select({
             amount: payments.amount,
@@ -77,14 +68,6 @@ export async function GET(req: Request) {
             createdAt: payments.createdAt,
           })
           .from(payments),
-        db
-          .select({
-            amount: expenses.amount,
-            cadence: expenses.cadence,
-            category: expenses.category,
-            incurredAt: expenses.incurredAt,
-          })
-          .from(expenses),
         db
           .select({
             id: users.id,
@@ -145,7 +128,9 @@ export async function GET(req: Request) {
     // active, rows outside it are dropped BEFORE bucketing so mid-month
     // custom ranges stay truthful.
     const completed = paymentRows.filter(
-      (p) => p.status === "completed" && (!windowed || inWindow(new Date(p.createdAt)))
+      (p) =>
+        p.status === "completed" &&
+        (!windowed || inWindow(new Date(p.createdAt)))
     );
     const collected = collectedRows.filter(
       (p) => !windowed || inWindow(new Date(p.paidAt))
@@ -163,65 +148,7 @@ export async function GET(req: Request) {
       if (i !== undefined) revenueSeries[i] += p.amount;
     }
 
-    // Costs — one-time expenses land in their month; monthly expenses recur
-    // every month from incurredAt onward. Windowed totals count recurring
-    // expenses once per window month they were live in.
-    const costsSeries = zeros();
-    let totalCosts = 0;
-    for (const e of expenseRows) {
-      const incurred = new Date(e.incurredAt);
-      if (e.cadence === "one_time") {
-        if (windowed && !inWindow(incurred)) continue;
-        totalCosts += e.amount;
-        const i = bucketIndex.get(monthKey(incurred));
-        if (i !== undefined) costsSeries[i] += e.amount;
-      } else {
-        const incurredMonth = new Date(
-          Date.UTC(incurred.getUTCFullYear(), incurred.getUTCMonth(), 1)
-        );
-        let liveMonths = 0;
-        buckets.forEach((b, i) => {
-          if (b.start >= incurredMonth) {
-            costsSeries[i] += e.amount;
-            liveMonths++;
-          }
-        });
-        if (windowed) {
-          totalCosts += e.amount * liveMonths;
-        } else {
-          // Months elapsed since incurred (inclusive of the current month).
-          const elapsed =
-            (now.getUTCFullYear() - incurred.getUTCFullYear()) * 12 +
-            (now.getUTCMonth() - incurred.getUTCMonth()) +
-            1;
-          totalCosts += e.amount * Math.max(elapsed, 1);
-        }
-      }
-    }
-
-    const monthlyRecurringCosts = expenseRows
-      .filter((e) => e.cadence === "monthly")
-      .reduce((s, e) => s + e.amount, 0);
-
-    const profitSeries = revenueSeries.map((r, i) => r - costsSeries[i]);
-    const totalProfit = totalRevenue - totalCosts;
-    const profitMargin = totalRevenue > 0 ? totalProfit / totalRevenue : 0;
-
-    const avgMonthsRetained =
-      rosterRows.length > 0
-        ? rosterRows.reduce(
-            (s, c) =>
-              s +
-              Math.max(
-                0,
-                (now.getTime() - new Date(c.startDate).getTime()) /
-                  (30 * 86_400_000)
-              ),
-            0
-          ) / rosterRows.length
-        : 0;
-
-    // Top customers by completed spend.
+    // Top customers by collected spend.
     const spendByUser = new Map<string, number>();
     for (const p of completed) {
       spendByUser.set(p.userId, (spendByUser.get(p.userId) ?? 0) + p.amount);
@@ -245,7 +172,7 @@ export async function GET(req: Request) {
       .map(([name, total]) => ({ name, total }));
 
     // The agency-client roster is the ONLY source of truth for recurring
-    // revenue, package mix, client counts, and churn. No roster rows means
+    // revenue, offering mix, client counts, and churn. No roster rows means
     // zeros — never estimated numbers.
     let finalMrr = 0;
     let finalArr = 0;
@@ -256,7 +183,9 @@ export async function GET(req: Request) {
     let finalClientsLost = 0;
     let finalNewClientsSeries = zeros();
     let finalNewClientsThisPeriod = 0;
-    let finalPackages: { label: string; count: number }[] = [];
+    // Grouped by the `package` enum key; the UI resolves labels through
+    // PACKAGE_LABELS so the legend always reads as the five offerings.
+    let finalPackages: { key: string; count: number }[] = [];
     if (rosterRows.length > 0) {
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 86_400_000);
       const active = rosterRows.filter((c) => c.status === "active");
@@ -318,13 +247,11 @@ export async function GET(req: Request) {
       ).length;
       const byPackage = new Map<string, number>();
       for (const c of active) {
-        const label = c.package[0].toUpperCase() + c.package.slice(1);
-        byPackage.set(label, (byPackage.get(label) ?? 0) + 1);
+        byPackage.set(c.package, (byPackage.get(c.package) ?? 0) + 1);
       }
-      finalPackages = [...byPackage.entries()].map(([label, count]) => ({
-        label,
-        count,
-      }));
+      finalPackages = [...byPackage.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([key, count]) => ({ key, count }));
     }
 
     // LTV = ARPU per month ÷ churn rate. ARPU is MRR over the active roster,
@@ -333,21 +260,14 @@ export async function GET(req: Request) {
     // infinite lifetime) — report null and let the UI show a dash rather than
     // inventing a number.
     const arpu =
-      finalActiveClients > 0
-        ? Math.round(finalMrr / finalActiveClients)
-        : 0;
-    const avgLtv =
-      finalChurnRate > 0 ? Math.round(arpu / finalChurnRate) : null;
+      finalActiveClients > 0 ? Math.round(finalMrr / finalActiveClients) : 0;
+    const avgLtv = finalChurnRate > 0 ? Math.round(arpu / finalChurnRate) : null;
     const expectedLifetimeMonths =
       finalChurnRate > 0 ? 1 / finalChurnRate : null;
 
     return NextResponse.json({
       totals: {
         totalRevenue,
-        totalCosts,
-        monthlyRecurringCosts,
-        profitMargin,
-        totalProfit,
         mrr: finalMrr,
         arr: finalArr,
         activeClients: finalActiveClients,
@@ -355,15 +275,12 @@ export async function GET(req: Request) {
         avgLtv,
         arpu,
         expectedLifetimeMonths,
-        avgMonthsRetained,
         churnRate: finalChurnRate,
         clientsLost: finalClientsLost,
       },
       months: buckets.map((b) => b.label),
       series: {
         revenue: revenueSeries,
-        costs: costsSeries,
-        profit: profitSeries,
         mrr: finalMrrSeries,
         arr: finalArrSeries,
         newClients: finalNewClientsSeries,

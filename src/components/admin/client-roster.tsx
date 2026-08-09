@@ -8,7 +8,13 @@ import { TableSkeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SortPill } from "@/components/ui/filters";
-import { PAYMENT_METHODS, FEE_METHOD } from "@/lib/payment-methods";
+import { PAYMENT_METHODS } from "@/lib/payment-methods";
+import {
+  CLIENT_PACKAGES,
+  INDUSTRIES,
+  PACKAGE_LABELS,
+  type ClientPackage,
+} from "@/lib/crm";
 import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
@@ -27,18 +33,10 @@ interface ClientRow {
   contactName: string;
   companyName: string;
   businessType: string | null;
-  package:
-    | "bronze"
-    | "silver"
-    | "gold"
-    | "diamond"
-    | "rev_split"
-    | "mentorship"
-    | "custom";
+  package: ClientPackage;
   packageLabel: string | null;
   setupFee: number;
   monthlyFee: number;
-  partnerCut: number;
   startDate: string;
   nextDueDate: string | null;
   status: "active" | "paused" | "churned";
@@ -52,11 +50,6 @@ interface PortalUser {
   email: string;
   firstName: string | null;
   lastName: string | null;
-}
-
-interface AdminOption {
-  id: string;
-  name: string;
 }
 
 /** Local calendar date — UTC would read as tomorrow for evening US users. */
@@ -73,41 +66,17 @@ function daysLeft(due: string | null): number | null {
   return Math.ceil((new Date(due).getTime() - Date.now()) / 86_400_000);
 }
 
-const BUSINESS_TYPES = [
-  "SaaS",
-  "E-commerce",
-  "Home Services",
-  "Coach",
-  "Consultant",
-  "Credit Repair",
-  "Tax Advisory",
-  "Legal",
-  "Dental",
-  "Med Spa",
-  "Custom…",
-];
-
-const PACKAGES = [
-  "bronze",
-  "silver",
-  "gold",
-  "diamond",
-  "rev_split",
-  "mentorship",
-  "custom",
-] as const;
 const STATUSES = ["active", "paused", "churned"] as const;
 
 const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 
-const packageBadge: Record<ClientRow["package"], string> = {
-  bronze: "bg-muted text-foreground",
-  silver: "border border-border bg-background text-muted-foreground",
-  gold: "bg-brand-subtle text-brand",
-  diamond: "bg-foreground text-background",
-  rev_split: "border border-border bg-background text-foreground",
-  mentorship: "bg-muted text-foreground",
+const packageBadge: Record<ClientPackage, string> = {
+  websites: "bg-muted text-foreground",
+  software_solutions: "border border-border bg-background text-foreground",
+  ai_solutions: "bg-foreground text-background",
+  consultation: "border border-border bg-background text-muted-foreground",
+  digital_marketing: "bg-brand-subtle text-brand",
   custom: "border border-dashed border-border bg-background text-foreground",
 };
 
@@ -124,21 +93,17 @@ const selectClass =
 const emptyForm = {
   contactName: "",
   companyName: "",
-  businessType: "Coach",
+  businessType: INDUSTRIES[0],
   businessTypeCustom: "",
-  package: "gold" as string,
+  package: "websites" as string,
   packageLabel: "",
   setupFee: "",
   monthlyFee: "",
-  partnerCut: "0",
   startDate: "",
   nextDueDate: "",
   status: "active" as string,
   userId: "",
   notes: "",
-  setupFeePaid: false,
-  setupReceivedBy: "",
-  setupMethod: "Zelle",
 };
 
 function Field({
@@ -184,7 +149,6 @@ export function ClientRoster({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
-  const [admins, setAdmins] = useState<AdminOption[]>([]);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   // Default to the collections view the agency works from: overdue first,
@@ -194,8 +158,6 @@ export function ClientRoster({
   const [payForm, setPayForm] = useState({
     paymentType: "monthly_retainer",
     method: PAYMENT_METHODS[0],
-    receivedBy: "",
-    fees: "",
     paidAt: today(),
   });
 
@@ -206,7 +168,6 @@ export function ClientRoster({
         if (data && Array.isArray(data.clients)) {
           setClients(data.clients);
           setPortalUsers(data.portalUsers ?? []);
-          setAdmins(data.admins ?? []);
         }
       })
       .catch(() => {})
@@ -229,7 +190,6 @@ export function ClientRoster({
 
   useEffect(() => {
     if (addTrigger > 0) openAdd();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [addTrigger]);
 
   function openEdit(c: ClientRow) {
@@ -238,26 +198,22 @@ export function ClientRoster({
       contactName: c.contactName,
       companyName: c.companyName,
       businessType:
-        c.businessType && BUSINESS_TYPES.includes(c.businessType)
+        c.businessType && INDUSTRIES.includes(c.businessType)
           ? c.businessType
-          : "Custom…",
+          : "Custom",
       businessTypeCustom:
-        c.businessType && !BUSINESS_TYPES.includes(c.businessType)
+        c.businessType && !INDUSTRIES.includes(c.businessType)
           ? c.businessType
           : "",
       package: c.package,
       packageLabel: c.packageLabel ?? "",
       setupFee: String(c.setupFee / 100),
       monthlyFee: String(c.monthlyFee / 100),
-      partnerCut: String(c.partnerCut / 100),
       startDate: c.startDate.slice(0, 10),
       nextDueDate: c.nextDueDate ? c.nextDueDate.slice(0, 10) : "",
       status: c.status,
       userId: c.userId ?? "",
       notes: c.notes ?? "",
-      setupFeePaid: false,
-      setupReceivedBy: "",
-      setupMethod: "Zelle",
     });
     setError(null);
     setModalOpen(true);
@@ -271,22 +227,11 @@ export function ClientRoster({
       return;
     }
     const cents = (v: string) => Math.round((parseFloat(v) || 0) * 100);
-    const setupFeeCents = cents(form.setupFee);
-    if (!editingId && form.setupFeePaid) {
-      if (setupFeeCents <= 0) {
-        setError("Enter a setup fee before marking it paid.");
-        return;
-      }
-      if (!form.setupReceivedBy) {
-        setError("Pick who received the setup fee.");
-        return;
-      }
-    }
     const payload = {
       contactName: form.contactName.trim(),
       companyName: form.companyName.trim(),
       businessType:
-        form.businessType === "Custom…"
+        form.businessType === "Custom"
           ? form.businessTypeCustom.trim() || "Custom"
           : form.businessType,
       package: form.package,
@@ -294,7 +239,6 @@ export function ClientRoster({
         form.package === "custom" ? form.packageLabel.trim() || null : null,
       setupFee: cents(form.setupFee),
       monthlyFee: cents(form.monthlyFee),
-      partnerCut: cents(form.partnerCut),
       startDate: new Date(form.startDate + "T00:00:00Z").toISOString(),
       nextDueDate: form.nextDueDate
         ? new Date(form.nextDueDate + "T00:00:00Z").toISOString()
@@ -321,23 +265,6 @@ export function ClientRoster({
         throw new Error(body?.error ?? "failed");
       }
 
-      // "Setup fee already paid" → log the setup payment against the new
-      // client, which auto-generates the 50/50 partner split on the ledger.
-      if (!editingId && form.setupFeePaid && setupFeeCents > 0) {
-        const created = await res.json().catch(() => null);
-        if (created?.id) {
-          await fetch(`/api/admin/clients/${created.id}/payments`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              paymentType: "setup_fee",
-              method: form.setupMethod,
-              receivedBy: form.setupReceivedBy,
-            }),
-          });
-        }
-      }
-
       setModalOpen(false);
       changed();
     } catch {
@@ -351,18 +278,6 @@ export function ClientRoster({
     e.preventDefault();
     if (!paymentFor) return;
     setError(null);
-    if (!payForm.receivedBy) {
-      setError("Pick who received the payment.");
-      return;
-    }
-    const feeCents =
-      payForm.method === FEE_METHOD && payForm.fees.trim()
-        ? Math.round(parseFloat(payForm.fees) * 100)
-        : undefined;
-    if (feeCents !== undefined && (!Number.isFinite(feeCents) || feeCents < 0)) {
-      setError("Enter the payment link fees (or leave blank).");
-      return;
-    }
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/clients/${paymentFor.id}/payments`, {
@@ -371,8 +286,6 @@ export function ClientRoster({
         body: JSON.stringify({
           paymentType: payForm.paymentType,
           method: payForm.method,
-          receivedBy: payForm.receivedBy,
-          ...(feeCents !== undefined && feeCents > 0 && { fees: feeCents }),
           ...(payForm.paidAt && {
             paidAt: new Date(payForm.paidAt + "T00:00:00Z").toISOString(),
           }),
@@ -575,13 +488,8 @@ export function ClientRoster({
                         >
                           {client.package === "custom" && client.packageLabel
                             ? client.packageLabel
-                            : client.package}
+                            : PACKAGE_LABELS[client.package] ?? "—"}
                         </span>
-                        {client.partnerCut > 0 && (
-                          <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                            Partner cut: {usd(client.partnerCut)}
-                          </p>
-                        )}
                       </td>
                       <td className="py-3 pr-4 font-mono text-muted-foreground">
                         {usd(client.setupFee)}
@@ -653,8 +561,6 @@ export function ClientRoster({
                             setPayForm({
                               paymentType: "monthly_retainer",
                               method: PAYMENT_METHODS[0],
-                              receivedBy: admins[0]?.id ?? "",
-                              fees: "",
                               paidAt: today(),
                             });
                             setError(null);
@@ -784,25 +690,6 @@ export function ClientRoster({
                 </Field>
               </div>
 
-              {payForm.method === FEE_METHOD && (
-                <div className="mt-4">
-                  <Field label="Payment Link Fees ($)">
-                    <Input
-                      inputMode="decimal"
-                      placeholder="e.g. 12.40"
-                      value={payForm.fees}
-                      onChange={(e) =>
-                        setPayForm({ ...payForm, fees: e.target.value })
-                      }
-                    />
-                  </Field>
-                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                    Booked as its own one-time expense (category: Fees) on the
-                    P&amp;L. Splits stay on the full collected amount.
-                  </p>
-                </div>
-              )}
-
               <div className="mt-4">
                 <Field label="Date Received">
                   <Input
@@ -814,29 +701,6 @@ export function ClientRoster({
                     }
                   />
                 </Field>
-              </div>
-
-              <div className="mt-4">
-                <Field label="Received By">
-                  <select
-                    className={selectClass}
-                    value={payForm.receivedBy}
-                    onChange={(e) =>
-                      setPayForm({ ...payForm, receivedBy: e.target.value })
-                    }
-                  >
-                    <option value="">Select partner…</option>
-                    {admins.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-                <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                  Who received this payment directly? The split lands on the
-                  Partner Ledger.
-                </p>
               </div>
 
               {payForm.paymentType === "monthly_retainer" && (
@@ -915,7 +779,7 @@ export function ClientRoster({
                     }
                   />
                 </Field>
-                <Field label="Business Type">
+                <Field label="Industry">
                   <select
                     className={selectClass}
                     value={form.businessType}
@@ -923,16 +787,16 @@ export function ClientRoster({
                       setForm({ ...form, businessType: e.target.value })
                     }
                   >
-                    {BUSINESS_TYPES.map((t) => (
+                    {INDUSTRIES.map((t) => (
                       <option key={t} value={t}>
                         {t}
                       </option>
                     ))}
                   </select>
-                  {form.businessType === "Custom…" && (
+                  {form.businessType === "Custom" && (
                     <Input
                       className="mt-2"
-                      placeholder="Enter custom type"
+                      placeholder="Enter custom industry"
                       value={form.businessTypeCustom}
                       onChange={(e) =>
                         setForm({
@@ -951,18 +815,16 @@ export function ClientRoster({
                       setForm({ ...form, package: e.target.value })
                     }
                   >
-                    {PACKAGES.map((p) => (
+                    {CLIENT_PACKAGES.map((p) => (
                       <option key={p} value={p}>
-                        {p === "custom"
-                          ? "Custom…"
-                          : p[0].toUpperCase() + p.slice(1)}
+                        {PACKAGE_LABELS[p]}
                       </option>
                     ))}
                   </select>
                   {form.package === "custom" && (
                     <Input
                       className="mt-2"
-                      placeholder="Enter custom package name"
+                      placeholder="Enter custom engagement name"
                       value={form.packageLabel}
                       onChange={(e) =>
                         setForm({ ...form, packageLabel: e.target.value })
@@ -972,7 +834,7 @@ export function ClientRoster({
                 </Field>
               </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Setup Fee ($)">
                   <Input
                     inputMode="decimal"
@@ -993,84 +855,7 @@ export function ClientRoster({
                     }
                   />
                 </Field>
-                <Field label="Partner Cut ($)">
-                  <Input
-                    inputMode="decimal"
-                    placeholder="0"
-                    value={form.partnerCut}
-                    onChange={(e) =>
-                      setForm({ ...form, partnerCut: e.target.value })
-                    }
-                  />
-                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                    Deducted before 50/50 split
-                  </p>
-                </Field>
               </div>
-
-              {/* Setup fee already paid — logs the payment + partner split
-                  the moment the client is created (add mode only). */}
-              {!editingId && (
-                <div className="mt-4 rounded-xl border border-border bg-surface p-4">
-                  <label className="flex cursor-pointer items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={form.setupFeePaid}
-                      onChange={(e) =>
-                        setForm({ ...form, setupFeePaid: e.target.checked })
-                      }
-                      className="mt-0.5 h-4 w-4 cursor-pointer accent-[var(--brand)]"
-                    />
-                    <span>
-                      <span className="block text-[13px] font-medium">
-                        Setup fee already paid
-                      </span>
-                      <span className="mt-0.5 block font-mono text-[10px] text-muted-foreground">
-                        Logs the setup payment and generates the partner split
-                        instantly.
-                      </span>
-                    </span>
-                  </label>
-                  {form.setupFeePaid && (
-                    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-                      <Field label="Received By" required>
-                        <select
-                          className={selectClass}
-                          value={form.setupReceivedBy}
-                          onChange={(e) =>
-                            setForm({
-                              ...form,
-                              setupReceivedBy: e.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select partner…</option>
-                          {admins.map((a) => (
-                            <option key={a.id} value={a.id}>
-                              {a.name}
-                            </option>
-                          ))}
-                        </select>
-                      </Field>
-                      <Field label="Payment Method">
-                        <select
-                          className={selectClass}
-                          value={form.setupMethod}
-                          onChange={(e) =>
-                            setForm({ ...form, setupMethod: e.target.value })
-                          }
-                        >
-                          {PAYMENT_METHODS.map((m) => (
-                            <option key={m} value={m}>
-                              {m}
-                            </option>
-                          ))}
-                        </select>
-                      </Field>
-                    </div>
-                  )}
-                </div>
-              )}
 
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Start Date">

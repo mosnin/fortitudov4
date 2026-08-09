@@ -3,18 +3,22 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { CountUp } from "@/components/ui/firecrawl";
+import { BracketLabel, CountUp } from "@/components/ui/firecrawl";
 import { AreaChart } from "@/components/ui/charts";
 import { cascade, cascadeItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, TrendingUp } from "lucide-react";
 
 /**
- * Performance overview — headline results from the weekly reporting loop
- * (leads, cost per lead, revenue, ROAS) with weekly trend charts. Ported from
- * Legendary's performance dashboard, fed by /api/reports instead of Ably-era
- * summary endpoints. Renders nothing until at least one weekly report exists,
- * so build-only clients keep a clean dashboard.
+ * Marketing performance band — headline results from the weekly reporting
+ * loop (leads, cost per lead, revenue, return on spend) with weekly trend
+ * charts, fed by /api/reports.
+ *
+ * DIGITAL MARKETING ONLY. Weekly reports exist for ad-managed engagements;
+ * websites/software/AI/consultation clients never get one, and their
+ * dashboard leads with the delivery pipeline instead. The dashboard decides
+ * server-side whether to mount this at all, and the component still
+ * self-guards: no reports, nothing renders.
  */
 
 interface Report {
@@ -114,6 +118,19 @@ export function PerformanceOverview() {
       animate="visible"
       className="space-y-8"
     >
+      {/* Header mirrors the delivery-pipeline band so the two read as one
+          system — this one only ever appears for marketing engagements. */}
+      <motion.div
+        variants={cascadeItem}
+        className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3"
+      >
+        <div className="flex items-center gap-2">
+          <TrendingUp className="h-4 w-4 text-brand" />
+          <h2 className="text-[15px] font-semibold">Marketing Performance</h2>
+        </div>
+        <BracketLabel n={ordered.length} label="Weeks Reported" />
+      </motion.div>
+
       <div className="grid grid-cols-2 border-b border-border lg:grid-cols-4">
         {tiles.map((tile, i) => (
           <motion.div

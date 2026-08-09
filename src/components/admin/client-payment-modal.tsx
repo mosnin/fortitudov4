@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
-import { PAYMENT_METHODS, FEE_METHOD } from "@/lib/payment-methods";
+import { PAYMENT_METHODS } from "@/lib/payment-methods";
 
 export { PAYMENT_METHODS };
 
@@ -22,7 +22,6 @@ export interface EditablePayment {
   paymentType: "setup_fee" | "monthly_retainer";
   method: string;
   amount: number;
-  receivedBy: string | null;
   notes?: string | null;
 }
 
@@ -44,7 +43,7 @@ const usd = (cents: number) =>
 /**
  * Record / edit a client payment. Create mode picks the roster client and
  * derives the amount from their fee (overridable); edit mode patches an
- * existing payment. Shared by the Payments, Clients, and Partner Ledger pages.
+ * existing payment. Shared by the Payments and Clients pages.
  */
 export function ClientPaymentModal({
   open,
@@ -62,16 +61,13 @@ export function ClientPaymentModal({
   presetClientId?: string;
 }) {
   const [clients, setClients] = useState<RosterClient[]>([]);
-  const [admins, setAdmins] = useState<{ id: string; name: string }[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({
     clientId: "",
     paymentType: "monthly_retainer",
     method: PAYMENT_METHODS[0],
-    receivedBy: "",
     amount: "",
-    fees: "",
     paidAt: today(),
     notes: "",
   });
@@ -84,15 +80,12 @@ export function ClientPaymentModal({
       .then((data) => {
         if (!data) return;
         setClients(data.clients ?? []);
-        setAdmins(data.admins ?? []);
         setForm((f) => ({
           ...f,
           clientId: payment ? "" : presetClientId ?? f.clientId,
           paymentType: payment?.paymentType ?? "monthly_retainer",
           method: payment?.method ?? PAYMENT_METHODS[0],
-          receivedBy: payment?.receivedBy ?? data.admins?.[0]?.id ?? "",
           amount: payment ? String(payment.amount / 100) : "",
-          fees: "",
           paidAt: payment?.paidAt ? payment.paidAt.slice(0, 10) : today(),
           notes: payment?.notes ?? "",
         }));
@@ -115,10 +108,6 @@ export function ClientPaymentModal({
       setError("Pick a client.");
       return;
     }
-    if (!form.receivedBy) {
-      setError("Pick who received the payment.");
-      return;
-    }
     const override = form.amount.trim()
       ? Math.round(parseFloat(form.amount) * 100)
       : undefined;
@@ -126,49 +115,33 @@ export function ClientPaymentModal({
       setError("Enter a positive amount.");
       return;
     }
-    const feeCents =
-      form.method === FEE_METHOD && form.fees.trim()
-        ? Math.round(parseFloat(form.fees) * 100)
-        : undefined;
-    if (feeCents !== undefined && (!Number.isFinite(feeCents) || feeCents < 0)) {
-      setError("Enter the payment link fees (or leave blank).");
-      return;
-    }
     setSaving(true);
     try {
+      const body = {
+        paymentType: form.paymentType,
+        method: form.method,
+        ...(override !== undefined && { amount: override }),
+        ...(form.paidAt && {
+          paidAt: new Date(form.paidAt + "T00:00:00Z").toISOString(),
+        }),
+      };
       const res = payment
         ? await fetch(`/api/admin/client-payments/${payment.id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              paymentType: form.paymentType,
-              method: form.method,
-              receivedBy: form.receivedBy,
-              ...(override !== undefined && { amount: override }),
-              ...(form.paidAt && {
-                paidAt: new Date(form.paidAt + "T00:00:00Z").toISOString(),
-              }),
-              notes: form.notes.trim() || null,
-            }),
+            body: JSON.stringify({ ...body, notes: form.notes.trim() || null }),
           })
         : await fetch(`/api/admin/clients/${form.clientId}/payments`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              paymentType: form.paymentType,
-              method: form.method,
-              receivedBy: form.receivedBy,
-              ...(override !== undefined && { amount: override }),
-              ...(feeCents !== undefined && feeCents > 0 && { fees: feeCents }),
-              ...(form.paidAt && {
-                paidAt: new Date(form.paidAt + "T00:00:00Z").toISOString(),
-              }),
+              ...body,
               notes: form.notes.trim() || undefined,
             }),
           });
       if (!res.ok) {
-        const body = await res.json().catch(() => null);
-        throw new Error(body?.error ?? "failed");
+        const err = await res.json().catch(() => null);
+        throw new Error(err?.error ?? "failed");
       }
       onClose();
       onSaved();
@@ -274,25 +247,6 @@ export function ClientPaymentModal({
                 </div>
                 <div>
                   <span className="mb-1.5 block text-[13px] font-medium">
-                    Received By
-                  </span>
-                  <select
-                    className={selectClass}
-                    value={form.receivedBy}
-                    onChange={(e) =>
-                      setForm({ ...form, receivedBy: e.target.value })
-                    }
-                  >
-                    <option value="">Select partner…</option>
-                    {admins.map((a) => (
-                      <option key={a.id} value={a.id}>
-                        {a.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <span className="mb-1.5 block text-[13px] font-medium">
                     Amount ($)
                   </span>
                   <Input
@@ -327,24 +281,6 @@ export function ClientPaymentModal({
                 </div>
               </div>
 
-              {!payment && form.method === FEE_METHOD && (
-                <div>
-                  <span className="mb-1.5 block text-[13px] font-medium">
-                    Payment Link Fees ($)
-                  </span>
-                  <Input
-                    inputMode="decimal"
-                    placeholder="e.g. 12.40"
-                    value={form.fees}
-                    onChange={(e) => setForm({ ...form, fees: e.target.value })}
-                  />
-                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                    Booked as its own one-time expense (category: Fees) on
-                    the P&amp;L. Splits stay on the full collected amount.
-                  </p>
-                </div>
-              )}
-
               <div>
                 <span className="mb-1.5 block text-[13px] font-medium">
                   Notes
@@ -359,7 +295,7 @@ export function ClientPaymentModal({
               {!payment && form.paymentType === "monthly_retainer" && (
                 <p className="font-mono text-[10px] text-muted-foreground">
                   Recording a retainer moves the client&apos;s next due date one
-                  month out. The split lands on the Partner Ledger.
+                  month out.
                 </p>
               )}
               {error && <p className="text-sm text-destructive">{error}</p>}

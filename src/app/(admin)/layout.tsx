@@ -86,21 +86,9 @@ export default async function AdminLayout({
             section: "Finance",
           },
           {
-            label: "Clients & Payments",
+            label: "Payments",
             href: "/admin/payments",
             icon: "CreditCard",
-            section: "Finance",
-          },
-          {
-            label: "Expenses",
-            href: "/admin/expenses",
-            icon: "Receipt",
-            section: "Finance",
-          },
-          {
-            label: "Partner Ledger",
-            href: "/admin/ledger",
-            icon: "HandCoins",
             section: "Finance",
           },
           {

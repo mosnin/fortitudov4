@@ -1,49 +1,33 @@
 /**
- * Client CRM pipeline model — the 12-stage launch pipeline, the four
- * departments work is routed to, and the default onboarding checklist that is
- * auto-generated for every new client. Shared by the API (task generation,
- * stage auto-progression) and the Client CRM UI (board columns, labels).
+ * Client CRM pipeline model — the delivery stages every engagement walks, and
+ * the default kickoff checklist auto-generated for a new client. Shared by the
+ * API (task generation, stage auto-progression) and the Client CRM UI (board
+ * columns, labels).
+ *
+ * Tasks are created UNASSIGNED — a human picks the owner. There is no built-in
+ * staff roster and no department routing.
  */
 
 export const CRM_STAGES = [
-  "onboarding_form",
-  "onboarding_guide",
-  "crm_access",
-  "funnel_build_out",
-  "automations_build_out",
-  "a2p_submitted",
-  "a2p_verified",
-  "ad_creatives",
-  "launch_form_submitted",
-  "launch_call_completed",
-  "ads_campaign_build_out",
-  "ads_launched",
+  "onboarding",
+  "discovery",
+  "design",
+  "build",
+  "client_review",
+  "launched",
+  "retained",
 ] as const;
 
 export type CrmStage = (typeof CRM_STAGES)[number];
 
 export const STAGE_LABELS: Record<CrmStage, string> = {
-  onboarding_form: "Onboarding form",
-  onboarding_guide: "Onboarding guide",
-  crm_access: "CRM Access",
-  funnel_build_out: "Funnel build out",
-  automations_build_out: "Automations build out",
-  a2p_submitted: "A2P submitted",
-  a2p_verified: "A2P verified",
-  ad_creatives: "Ad creatives",
-  launch_form_submitted: "Launch form submitted",
-  launch_call_completed: "Launch call completed",
-  ads_campaign_build_out: "Ads campaign build out",
-  ads_launched: "Ads launched",
-};
-
-export type Department = "csm" | "funnel" | "automations" | "ads";
-
-export const DEPARTMENT_LABELS: Record<Department, string> = {
-  csm: "CSM",
-  funnel: "Funnel",
-  automations: "Automations",
-  ads: "Ads",
+  onboarding: "Onboarding",
+  discovery: "Discovery",
+  design: "Design",
+  build: "Build",
+  client_review: "Client review",
+  launched: "Launched",
+  retained: "Ongoing",
 };
 
 export type TaskPriority = "low" | "medium" | "high";
@@ -54,45 +38,63 @@ export const PRIORITY_LABELS: Record<TaskPriority, string> = {
   high: "High",
 };
 
-/** SaaS subscription tiers tracked per client. "Custom" reveals a free-text
- * input — the column itself is free-form. */
-export const SAAS_PLANS = ["$69/mo", "$97/mo", "$297/mo", "Custom"];
+/**
+ * The offering a client bought — mirrors lib/services.ts. "custom" reveals a
+ * free-text label input for bespoke engagements.
+ */
+export const CLIENT_PACKAGES = [
+  "websites",
+  "software_solutions",
+  "ai_solutions",
+  "consultation",
+  "digital_marketing",
+  "custom",
+] as const;
+
+export type ClientPackage = (typeof CLIENT_PACKAGES)[number];
+
+export const PACKAGE_LABELS: Record<ClientPackage, string> = {
+  websites: "Websites",
+  software_solutions: "Software Solutions",
+  ai_solutions: "AI Solutions",
+  consultation: "Consultation",
+  digital_marketing: "Digital Marketing",
+  custom: "Custom",
+};
 
 /**
- * The default onboarding checklist — 15 steps routed to the four departments.
- * The API resolves each step to a live staff member by department at creation
- * time (first staff user in that department, oldest account first).
- * Launch-pipeline tasks default to high priority; the onboarding guide is the
- * one medium-priority step.
+ * The default kickoff checklist auto-created with every new client. Steps
+ * carry a stage (so completing them advances the pipeline) and a priority,
+ * but never an assignee — staff claim their own work.
  */
 export const DEFAULT_TASKS: {
   title: string;
-  department: Department;
   stage: CrmStage;
   priority: TaskPriority;
 }[] = [
-  { title: "Onboarding form", department: "csm", stage: "onboarding_form", priority: "high" },
-  { title: "Onboarding guide", department: "csm", stage: "onboarding_guide", priority: "medium" },
-  { title: "CRM Access", department: "csm", stage: "crm_access", priority: "high" },
-  { title: "Funnel build out", department: "funnel", stage: "funnel_build_out", priority: "high" },
-  { title: "Domain connected", department: "funnel", stage: "funnel_build_out", priority: "high" },
-  { title: "Automations build out", department: "automations", stage: "automations_build_out", priority: "high" },
-  { title: "Forms & Surveys", department: "automations", stage: "automations_build_out", priority: "high" },
-  { title: "A2P submitted", department: "automations", stage: "a2p_submitted", priority: "high" },
-  { title: "A2P website & form", department: "automations", stage: "a2p_submitted", priority: "high" },
-  { title: "A2P verified", department: "automations", stage: "a2p_verified", priority: "high" },
-  { title: "Ad creatives", department: "ads", stage: "ad_creatives", priority: "high" },
-  { title: "Launch form submitted", department: "csm", stage: "launch_form_submitted", priority: "high" },
-  { title: "Launch call completed", department: "csm", stage: "launch_call_completed", priority: "high" },
-  { title: "Ads campaign build out", department: "ads", stage: "ads_campaign_build_out", priority: "high" },
-  { title: "Ads launched", department: "ads", stage: "ads_launched", priority: "high" },
+  { title: "Kickoff call scheduled", stage: "onboarding", priority: "high" },
+  { title: "Access & assets collected", stage: "onboarding", priority: "high" },
+  { title: "Contract & deposit confirmed", stage: "onboarding", priority: "high" },
+  { title: "Requirements documented", stage: "discovery", priority: "high" },
+  { title: "Scope & fixed quote approved", stage: "discovery", priority: "high" },
+  { title: "Design direction approved", stage: "design", priority: "high" },
+  { title: "Build environment set up", stage: "build", priority: "medium" },
+  { title: "Core build complete", stage: "build", priority: "high" },
+  { title: "QA & testing pass", stage: "build", priority: "high" },
+  { title: "Client review round", stage: "client_review", priority: "high" },
+  { title: "Revisions complete", stage: "client_review", priority: "high" },
+  { title: "Launch checklist complete", stage: "launched", priority: "high" },
+  { title: "Handover & credentials delivered", stage: "launched", priority: "high" },
 ];
 
 export const INDUSTRIES = [
-  "Credit Repair",
-  "Car Rentals",
-  "Coaches",
-  "Webinar",
+  "SaaS",
+  "Ecommerce",
+  "Professional services",
+  "Health & wellness",
+  "Hospitality",
+  "Real estate",
+  "Nonprofit",
   "Custom",
 ];
 
@@ -109,7 +111,7 @@ export function stageFromTasks(
     .sort((a, b) => a.order - b.order);
   // No stage-bearing tasks (all custom, or the checklist was cleared) tells
   // us nothing — returning the final stage here would falsely mark a brand
-  // new client "Ads launched". Callers keep the persisted stage instead.
+  // new client "Launched". Callers keep the persisted stage instead.
   if (ordered.length === 0) return null;
   const nextIncomplete = ordered.find((t) => t.status !== "completed");
   if (nextIncomplete) return nextIncomplete.stage as CrmStage;

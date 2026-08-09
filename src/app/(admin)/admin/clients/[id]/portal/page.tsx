@@ -7,6 +7,7 @@ import { BracketLabel, MetricRing } from "@/components/ui/firecrawl";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cascade, cascadeItem } from "@/lib/motion";
+import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -26,6 +27,7 @@ interface PortalView {
     email: string | null;
     status: string;
     package: string;
+    packageLabel: string | null;
     driveUrl: string | null;
     landingPageUrl: string | null;
     hasPortalLogin: boolean;
@@ -57,14 +59,6 @@ interface PortalView {
   };
   project: { id: string; name: string; status: string } | null;
   phases: { id: string; name: string; status: string }[];
-  campaigns: {
-    id: string;
-    name: string;
-    platform: string;
-    status: string;
-    leadsGenerated: number;
-    totalSpend: number;
-  }[];
 }
 
 const usd = (cents: number) =>
@@ -82,8 +76,9 @@ const fmtDay = (s: string) =>
 
 /**
  * View Portal — a read-only mirror of what this client sees in their own
- * portal (launch pipeline, weekly reports and ROAS, project phases, ad
- * campaigns). Admin-only; works before a portal login exists.
+ * portal: delivery pipeline and project phases for everyone, plus the
+ * performance tiles and weekly reports for digital-marketing engagements
+ * only. Admin-only; works before a portal login exists.
  */
 export default function ClientPortalPreviewPage({
   params,
@@ -132,10 +127,21 @@ export default function ClientPortalPreviewPage({
     );
   }
 
-  const { client, pipeline, reports, totals, project, phases, campaigns } = data;
+  const { client, pipeline, reports, totals, project, phases } = data;
   const pct = pipeline.total
     ? Math.round((pipeline.done / pipeline.total) * 100)
     : 0;
+
+  // Leads / CPL / spend / ROAS and the weekly reporting loop only exist for
+  // digital-marketing engagements. A websites or consultation client never
+  // sees them — unless reports were already filed against them.
+  const showMarketing =
+    client.package === "digital_marketing" || reports.length > 0;
+
+  const offering =
+    client.package === "custom" && client.packageLabel
+      ? client.packageLabel
+      : PACKAGE_LABELS[client.package as ClientPackage] ?? "—";
 
   const tiles = [
     { label: "Total Leads", value: totals.totalLeads.toLocaleString("en-US") },
@@ -205,6 +211,9 @@ export default function ClientPortalPreviewPage({
           <span className="font-semibold">Viewing as client</span> — read-only
           mirror of their portal.
         </p>
+        <span className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+          {offering}
+        </span>
         <span className="ml-auto flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
           <span
             className={cn(
@@ -216,35 +225,41 @@ export default function ClientPortalPreviewPage({
         </span>
       </div>
 
-      {/* Their performance tiles */}
-      <motion.section
-        variants={cascade}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-2 divide-border border-b border-border sm:grid-cols-5 sm:divide-x"
-      >
-        {tiles.map((t) => (
-          <motion.div key={t.label} variants={cascadeItem} className="px-5 py-6">
-            <p className="micro-label">{t.label}</p>
-            <p
-              className={cn(
-                "mt-2 font-mono text-2xl font-bold tracking-tight",
-                t.accent
-              )}
+      {/* Their performance tiles — digital marketing only */}
+      {showMarketing && (
+        <motion.section
+          variants={cascade}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-2 divide-border border-b border-border sm:grid-cols-5 sm:divide-x"
+        >
+          {tiles.map((t) => (
+            <motion.div
+              key={t.label}
+              variants={cascadeItem}
+              className="px-5 py-6"
             >
-              {t.value}
-            </p>
-          </motion.div>
-        ))}
-      </motion.section>
+              <p className="micro-label">{t.label}</p>
+              <p
+                className={cn(
+                  "mt-2 font-mono text-2xl font-bold tracking-tight",
+                  t.accent
+                )}
+              >
+                {t.value}
+              </p>
+            </motion.div>
+          ))}
+        </motion.section>
+      )}
 
-      {/* Launch pipeline — the same 12 stages they watch */}
+      {/* Delivery pipeline — the same stages they watch */}
       <section>
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-3">
           <BracketLabel
             n={pipeline.done}
             m={pipeline.total}
-            label={`LAUNCH PIPELINE · ${pipeline.stageLabel.toUpperCase()}`}
+            label={`DELIVERY PIPELINE · ${pipeline.stageLabel.toUpperCase()}`}
           />
           <MetricRing value={pct} max={100} size={44} label={`${pct}% complete`} />
         </div>
@@ -274,7 +289,8 @@ export default function ClientPortalPreviewPage({
         </ol>
       </section>
 
-      {/* Their weekly reports */}
+      {/* Their weekly reports — digital marketing only */}
+      {showMarketing && (
       <section>
         <div className="flex items-center gap-2 border-b border-border pb-3">
           <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
@@ -343,8 +359,9 @@ export default function ClientPortalPreviewPage({
           </div>
         )}
       </section>
+      )}
 
-      {/* Project + ad campaigns, when a portal project exists */}
+      {/* Linked project phases, when a portal project exists */}
       {project && (
         <section>
           <div className="flex items-center gap-2 border-b border-border pb-3">
@@ -376,25 +393,6 @@ export default function ClientPortalPreviewPage({
                 </li>
               ))}
             </ol>
-          )}
-          {campaigns.length > 0 && (
-            <div className="mt-6 divide-y divide-border border-t border-border">
-              {campaigns.map((c) => (
-                <div
-                  key={c.id}
-                  className="flex flex-wrap items-center gap-3 py-3 text-sm"
-                >
-                  <span className="font-medium">{c.name}</span>
-                  <span className="font-mono text-[11px] uppercase text-muted-foreground">
-                    {c.platform} · {c.status}
-                  </span>
-                  <span className="ml-auto font-mono">
-                    {c.leadsGenerated.toLocaleString("en-US")} leads ·{" "}
-                    {usd(c.totalSpend)}
-                  </span>
-                </div>
-              ))}
-            </div>
           )}
         </section>
       )}

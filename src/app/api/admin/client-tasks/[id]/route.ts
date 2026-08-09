@@ -5,7 +5,6 @@ import {
   clientTaskPriorityEnum,
   clientTaskStatusEnum,
   clientTasks,
-  departmentEnum,
   users,
 } from "@/db/schema";
 import { asc, eq } from "drizzle-orm";
@@ -25,7 +24,8 @@ const updateSchema = z
     title: z.string().min(1).max(255).optional(),
     status: z.enum(clientTaskStatusEnum.enumValues).optional(),
     priority: z.enum(clientTaskPriorityEnum.enumValues).optional(),
-    department: z.enum(departmentEnum.enumValues).nullable().optional(),
+    // Assignment is always explicit: a real staff user id, or null to
+    // release the task back to unassigned. Nothing is routed automatically.
     assigneeId: z.string().uuid().nullable().optional(),
     dueDate: z.string().datetime().nullable().optional(),
     notes: z.string().max(2000).nullable().optional(),
