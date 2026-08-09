@@ -66,7 +66,7 @@ const packages: Package[] = [
 
 export function PackagesSection() {
   return (
-    <section className="relative flex items-center overflow-clip border-b border-line bg-surface px-4 py-16 md:min-h-[max(720px,90vh)] md:px-6 md:py-20 lg:px-16">
+    <section className="relative flex items-center overflow-clip border-b border-line bg-band px-4 py-16 md:min-h-[max(720px,90vh)] md:px-6 md:py-20 lg:px-16">
       <SectionRails />
 
       <div className="relative mx-auto flex w-full max-w-[1600px] flex-col gap-4 md:gap-6">

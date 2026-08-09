@@ -11,7 +11,7 @@ export function LandingHero() {
   return (
     <section className="relative overflow-hidden border-b border-line bg-white">
       {/* Bottom fade into the next band, per the reference */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgba(246,246,246,0)] from-[72%] to-surface to-[95%]" />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[rgba(246,246,246,0)] from-[72%] to-band to-[95%]" />
       <SectionRails />
 
       <div className="relative mx-auto flex min-h-[560px] max-w-[1600px] items-center justify-center md:min-h-[640px]">

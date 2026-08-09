@@ -109,7 +109,7 @@ export function AdvantageSection() {
           {/* Legacy agencies */}
           <div className="flex flex-col gap-5">
             <div className="overflow-hidden rounded-[24px] bg-white p-0">
-              <div className="relative aspect-[724/322] overflow-hidden rounded-[24px] bg-surface shadow-[0_8px_28px_0_rgba(0,0,0,0.4)]">
+              <div className="relative aspect-[724/322] overflow-hidden rounded-[24px] bg-band shadow-[0_8px_28px_0_rgba(0,0,0,0.4)]">
                 <PillConveyor pills={legacyPills} tone="alert" />
               </div>
             </div>

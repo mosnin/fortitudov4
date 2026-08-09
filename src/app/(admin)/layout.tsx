@@ -1,15 +1,16 @@
-import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { AdminNav } from "@/components/dashboard/admin-nav";
-import { NotificationBell } from "@/components/dashboard/notification-bell";
-import { GlobalSearch } from "@/components/dashboard/global-search";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { AppShell, type ShellNavItem } from "@/components/shell/app-shell";
+import {
+  isStaff,
+  canManageAgency,
+  canManageLeads,
+  canViewAllProjects,
+  ROLE_LABELS,
+} from "@/lib/permissions";
 
 export default async function AdminLayout({
   children,
@@ -25,41 +26,100 @@ export default async function AdminLayout({
     where: eq(users.clerkId, userId),
   });
 
-  if (!user || user.role !== "admin") {
+  if (!user || !isStaff(user.role)) {
     redirect("/dashboard");
   }
-  return (
-    <div className="min-h-screen bg-charcoal-dark dark:bg-charcoal-dark">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
-        <div className="flex h-16 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-4">
-            <Link href="/admin" className="flex items-center gap-2">
-              <Image
-                src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
-                alt="Fortitudo"
-                width={32}
-                height={32}
-                className="rounded-md"
-              />
-              <span className="font-bold hidden sm:inline">Fortitudo</span>
-              <span className="rounded bg-orange/10 px-2 py-0.5 text-xs font-medium text-orange">
-                Admin
-              </span>
-            </Link>
-            <AdminNav />
-          </div>
-          <div className="flex items-center gap-2">
-            <GlobalSearch />
-            <NotificationBell />
-            <ThemeToggle />
-            <UserButton />
-          </div>
-        </div>
-      </header>
 
-      <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-        {children}
-      </main>
-    </div>
+  // Role-gated nav, expressed as serializable config for the client shell.
+  const navItems: ShellNavItem[] = [
+    {
+      label: "Overview",
+      href: "/admin",
+      icon: "LayoutDashboard",
+      exact: true,
+      section: "Operations",
+    },
+    ...(canViewAllProjects(user.role)
+      ? [
+          {
+            label: "Clients",
+            href: "/admin/clients",
+            icon: "Users",
+            section: "Operations",
+          },
+          {
+            label: "Tasks",
+            href: "/admin/tasks",
+            icon: "ClipboardList",
+            section: "Operations",
+          },
+        ]
+      : []),
+    ...(canManageLeads(user.role)
+      ? [
+          {
+            label: "Leads",
+            href: "/admin/leads",
+            icon: "Inbox",
+            section: "Operations",
+          },
+        ]
+      : []),
+    {
+      label: "Projects",
+      href: "/admin/projects",
+      icon: "FolderKanban",
+      section: "Operations",
+    },
+    {
+      label: "Messages",
+      href: "/admin/messages",
+      icon: "MessageSquare",
+      section: "Operations",
+    },
+    ...(canManageAgency(user.role)
+      ? [
+          {
+            label: "Financials",
+            href: "/admin/financials",
+            icon: "BarChart3",
+            section: "Finance",
+          },
+          {
+            label: "Clients & Payments",
+            href: "/admin/payments",
+            icon: "CreditCard",
+            section: "Finance",
+          },
+          {
+            label: "Expenses",
+            href: "/admin/expenses",
+            icon: "Receipt",
+            section: "Finance",
+          },
+          {
+            label: "Partner Ledger",
+            href: "/admin/ledger",
+            icon: "HandCoins",
+            section: "Finance",
+          },
+          {
+            label: "Team",
+            href: "/admin/team",
+            icon: "UserCog",
+            section: "Manage",
+          },
+        ]
+      : []),
+  ];
+
+  return (
+    <AppShell
+      navItems={navItems}
+      roleLabel={ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] ?? "Staff"}
+      accountEmail={user.email}
+    >
+      {children}
+    </AppShell>
   );
 }

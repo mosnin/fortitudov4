@@ -55,7 +55,7 @@ export function CapabilitiesSection() {
   return (
     <section
       id="services"
-      className="relative overflow-clip border-b border-line bg-surface px-4 py-16 md:px-6 md:py-20 lg:px-16"
+      className="relative overflow-clip border-b border-line bg-band px-4 py-16 md:px-6 md:py-20 lg:px-16"
     >
       <SectionRails />
 

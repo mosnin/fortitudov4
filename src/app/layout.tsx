@@ -29,17 +29,17 @@ export default function RootLayout({
     <ClerkProvider
       appearance={{
         variables: {
-          colorPrimary: "#F97316",
-          colorBackground: "#141414",
-          colorText: "#F5F5F5",
-          colorInputBackground: "#1C1C1C",
-          colorInputText: "#F5F5F5",
+          colorPrimary: "#111113",
+          colorBackground: "#ffffff",
+          colorText: "#111113",
+          colorInputBackground: "#ffffff",
+          colorInputText: "#111113",
         },
       }}
     >
       <html
         lang="en"
-        className={`dark h-full antialiased ${GeistSans.variable} ${GeistMono.variable}`}
+        className={`h-full antialiased ${GeistSans.variable} ${GeistMono.variable}`}
         suppressHydrationWarning
       >
         <body className="min-h-full flex flex-col bg-background text-foreground font-sans">

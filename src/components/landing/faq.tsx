@@ -50,7 +50,7 @@ export function FAQSection() {
               className="overflow-hidden rounded-[12px] border border-line bg-white"
             >
               <Accordion.Header>
-                <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left text-[16px] font-medium tracking-[-0.015em] text-ink transition-colors hover:bg-surface md:px-6">
+                <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left text-[16px] font-medium tracking-[-0.015em] text-ink transition-colors hover:bg-band md:px-6">
                   {faq.q}
                   <Plus className="h-4 w-4 shrink-0 text-ink-soft transition-transform duration-200 group-data-[state=open]:rotate-45" />
                 </Accordion.Trigger>

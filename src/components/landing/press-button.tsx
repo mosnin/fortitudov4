@@ -10,7 +10,7 @@ const faces = {
   orange:
     "bg-orange text-white hover:bg-orange-hover active:bg-orange-active",
   dark: "bg-ink text-white hover:bg-[#2A2A2A] active:bg-[#3A3A3A]",
-  light: "bg-white text-ink hover:bg-surface active:bg-line",
+  light: "bg-white text-ink hover:bg-band active:bg-line",
 } as const;
 
 const edges = {
