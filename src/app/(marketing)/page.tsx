@@ -19,10 +19,13 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { Hero } from '@/components/marketing/giga/hero';
 import { Stats } from '@/components/marketing/giga/stats';
+import { Offerings } from '@/components/marketing/giga/offerings';
 import { AgentCanvas } from '@/components/marketing/giga/agent-canvas';
+import { Advantage } from '@/components/marketing/giga/advantage';
 import { RealtorShowcase } from '@/components/marketing/giga/realtor-showcase';
 import { BrokerageShowcase } from '@/components/marketing/giga/brokerage-showcase';
 import { Complexity } from '@/components/marketing/giga/complexity';
+import { Faq } from '@/components/marketing/giga/faq';
 import { CtaSection } from '@/components/marketing/giga/cta';
 
 export default async function MarketingHomePage() {
@@ -37,10 +40,13 @@ export default async function MarketingHomePage() {
       <div className="dark bg-[#0a0a0a] text-white">
         <Hero />
         <Stats />
+        <Offerings />
         <AgentCanvas />
+        <Advantage />
         <RealtorShowcase />
         <BrokerageShowcase />
         <Complexity />
+        <Faq />
       </div>
       {/* Light/dark-adaptive closing sections */}
       <CtaSection />

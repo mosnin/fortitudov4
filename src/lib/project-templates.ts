@@ -17,7 +17,7 @@ export interface ProjectTemplate {
 
 export const projectTemplates: ProjectTemplate[] = [
   {
-    serviceType: "web_application",
+    serviceType: "software_solutions",
     name: "SaaS Platform",
     description: "Multi-tenant SaaS app with user auth, dashboards, and billing",
     suggestedFields: {
@@ -31,7 +31,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "web_application",
+    serviceType: "software_solutions",
     name: "Marketplace Platform",
     description: "Two-sided marketplace with listings, search, and payments",
     suggestedFields: {
@@ -45,7 +45,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "ecommerce_store",
+    serviceType: "websites",
     name: "Fashion / Apparel Store",
     description: "Online clothing store with size guides, filters, and checkout",
     suggestedFields: {
@@ -59,7 +59,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "ecommerce_store",
+    serviceType: "websites",
     name: "Digital Products Store",
     description: "Sell digital downloads with instant delivery",
     suggestedFields: {
@@ -73,7 +73,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "funnels",
+    serviceType: "digital_marketing",
     name: "Lead Generation Funnel",
     description: "Capture leads with a multi-step form and email sequences",
     suggestedFields: {
@@ -87,7 +87,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "funnels",
+    serviceType: "digital_marketing",
     name: "Webinar Registration Funnel",
     description: "Drive webinar signups with countdown and reminders",
     suggestedFields: {
@@ -101,7 +101,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "ai_automation",
+    serviceType: "ai_solutions",
     name: "Customer Support Bot",
     description: "AI chatbot for handling customer inquiries 24/7",
     suggestedFields: {
@@ -115,7 +115,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "ai_automation",
+    serviceType: "ai_solutions",
     name: "Content Generation Pipeline",
     description: "Automate content creation with AI workflows",
     suggestedFields: {
@@ -129,7 +129,7 @@ export const projectTemplates: ProjectTemplate[] = [
     },
   },
   {
-    serviceType: "open_claw_deployment",
+    serviceType: "consultation",
     name: "Standard Deployment",
     description: "Basic Open Claw setup with monitoring",
     suggestedFields: {

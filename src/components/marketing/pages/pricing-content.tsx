@@ -30,11 +30,11 @@ import {
 /** Starting prices for the full service list (mirrors lib/services.ts /
  *  lib/pricing.ts — the checkout source of truth; keep in sync). */
 const SERVICE_STARTING_USD: Record<string, number> = {
-  web_application: 2500,
-  ecommerce_store: 1800,
-  funnels: 1200,
-  ai_automation: 3000,
-  open_claw_deployment: 2000,
+  websites: 1500,
+  software_solutions: 3500,
+  ai_solutions: 3000,
+  consultation: 500,
+  digital_marketing: 1200,
 };
 
 /** The engagement, by the numbers — figures match the plan cards above. */
@@ -89,7 +89,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
               Two more ways we can build with you.
             </Serif>
             <p className="mx-auto mt-5 max-w-xl text-[14px] leading-relaxed text-white/55">
-              Beyond the core builds, we deploy and operate Open Claw instances, and we
+              Beyond the core builds, we offer senior consultation engagements, and we
               stay on after launch when you want us to — same fixed-quote transparency,
               same live tracking.
             </p>
@@ -97,19 +97,19 @@ export function PricingContent({ lang }: { lang: Lang }) {
           <div className="mx-auto mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
             <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6">
               <p style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
-                Open Claw Deployment
+                Consultation
               </p>
               <p className="mt-1 text-[12.5px] text-white/45">
-                Instance setup, deployment pipeline & monitoring
+                Roadmap, architecture & AI strategy sessions
               </p>
               <p className="mt-4">
                 <span style={{ fontFamily: 'var(--font-sans)' }} className="text-2xl font-light tabular-nums text-white">
-                  <LocalPrice usd={SERVICE_STARTING_USD.open_claw_deployment} lang={lang} />
+                  <LocalPrice usd={SERVICE_STARTING_USD.consultation} lang={lang} />
                 </span>
-                <span className="text-[13px] text-white/45"> / deployment, starting</span>
+                <span className="text-[13px] text-white/45"> / engagement, starting</span>
               </p>
               <p className="mt-1 text-[12px] text-white/40">
-                + scaling infrastructure & ongoing support
+                + a written action plan you keep
               </p>
             </div>
             <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6">
@@ -214,7 +214,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 <p style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
                   <PriceText
                     template={item.q}
-                    tokens={{ validate: SERVICE_STARTING_USD.funnels }}
+                    tokens={{ validate: SERVICE_STARTING_USD.websites }}
                     lang={lang}
                   />
                 </p>
@@ -223,8 +223,8 @@ export function PricingContent({ lang }: { lang: Lang }) {
                   <PriceText
                     template={item.a}
                     tokens={{
-                      validate: SERVICE_STARTING_USD.funnels,
-                      scale: SERVICE_STARTING_USD.web_application,
+                      validate: SERVICE_STARTING_USD.websites,
+                      scale: SERVICE_STARTING_USD.software_solutions,
                     }}
                     lang={lang}
                   />

@@ -9,11 +9,11 @@ const footerColumns = [
   {
     title: "Services",
     links: [
-      { label: "Web Applications", href: "/services#web-application" },
-      { label: "Ecommerce Stores", href: "/services#ecommerce-store" },
-      { label: "Funnels", href: "/services#funnels" },
-      { label: "AI Automation", href: "/services#ai-automation" },
-      { label: "Open Claw Deployment", href: "/services#open-claw-deployment" },
+      { label: "Websites", href: "/services#websites" },
+      { label: "Software Solutions", href: "/services#software-solutions" },
+      { label: "AI Solutions", href: "/services#ai-solutions" },
+      { label: "Consultation", href: "/services#consultation" },
+      { label: "Digital Marketing", href: "/services#digital-marketing" },
     ],
   },
   {

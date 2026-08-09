@@ -6,11 +6,11 @@ import type { ServiceType } from '@/lib/services';
 export const metadata = { title: 'Start your build — Fortitudo' };
 
 const SERVICE_TYPES: ServiceType[] = [
-  'web_application',
-  'ecommerce_store',
-  'funnels',
-  'ai_automation',
-  'open_claw_deployment',
+  'websites',
+  'software_solutions',
+  'ai_solutions',
+  'consultation',
+  'digital_marketing',
 ];
 
 export default async function OnboardingPage({
@@ -29,7 +29,7 @@ export default async function OnboardingPage({
 
   const defaultName = clerkUser.fullName ?? clerkUser.firstName ?? '';
 
-  // Marketing links may preselect a service (?service=web_application) —
+  // Marketing links may preselect a service (?service=websites) —
   // validate against the enum, then let the conversation confirm it.
   const initialService = SERVICE_TYPES.includes(service as ServiceType)
     ? (service as ServiceType)

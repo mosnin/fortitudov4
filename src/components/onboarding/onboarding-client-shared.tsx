@@ -20,13 +20,13 @@ export type Timeline = 'asap' | '1-2mo' | '3-6mo' | 'flexible';
 
 // ── Option constants ────────────────────────────────────────────────────────
 
-/** The five things Fortitudo builds — maps 1:1 onto the API's serviceType. */
+/** The five things Fortitudo offers — maps 1:1 onto the API's serviceType. */
 export const SERVICE_OPTIONS: { value: ServiceType; label: string }[] = [
-  { value: 'web_application', label: 'A web application' },
-  { value: 'ecommerce_store', label: 'An ecommerce store' },
-  { value: 'funnels', label: 'Funnels' },
-  { value: 'ai_automation', label: 'AI automation' },
-  { value: 'open_claw_deployment', label: 'An Open Claw deployment' },
+  { value: 'websites', label: 'A website' },
+  { value: 'software_solutions', label: 'A software solution' },
+  { value: 'ai_solutions', label: 'An AI solution' },
+  { value: 'consultation', label: 'A consultation' },
+  { value: 'digital_marketing', label: 'Digital marketing' },
 ];
 
 /** Budget bucket → the string persisted on the onboarding submission. */

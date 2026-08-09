@@ -18,11 +18,11 @@ export const userRoles = ["client", "admin", "project_manager", "va"] as const;
 export type UserRole = (typeof userRoles)[number];
 
 export const serviceTypeEnum = pgEnum("service_type", [
-  "web_application",
-  "ecommerce_store",
-  "funnels",
-  "ai_automation",
-  "open_claw_deployment",
+  "websites",
+  "software_solutions",
+  "ai_solutions",
+  "consultation",
+  "digital_marketing",
 ]);
 
 export const projectStatusEnum = pgEnum("project_status", [

@@ -26,7 +26,7 @@ import { useDisplayCurrency } from '@/components/marketing/local-price';
 import { Band, BlurRise, Eyebrow } from '@/components/marketing/giga/primitives';
 
 type Cycle = 'monthly' | 'annual';
-type CardId = 'validate' | 'launch' | 'scale' | 'ai_automation';
+type CardId = 'websites' | 'digital_marketing' | 'software_solutions' | 'ai_solutions';
 
 /** Starting prices mirror lib/services.ts (`startingPrice`) and lib/pricing.ts
  *  (amountCents) — keep in sync with those files, never edit here alone. */
@@ -46,81 +46,81 @@ const ENGAGEMENTS: Record<
     featured?: boolean;
   }
 > = {
-  validate: {
-    label: 'Validate',
-    priceUsd: 1200,
-    scopeLine: 'For funnels & landing pages',
-    blurb: 'Prove the idea fast with a high-converting funnel that captures real demand.',
+  websites: {
+    label: 'Websites',
+    priceUsd: 1500,
+    scopeLine: 'For marketing sites & storefronts',
+    blurb: 'A site that sells — designed, built, and launched fast, with checkout when you need it.',
     delivery: '14 days',
-    deliveryLabel: 'typical delivery, kickoff to launch',
-    revisionsLine: '+1 round of revisions included',
-    highlights: [
-      'Landing page design',
-      'Email capture & sequences',
-      'A/B testing ready',
-      'Analytics & tracking',
-    ],
-    cta: 'Start with Validate',
-    href: '/sign-up',
-  },
-  launch: {
-    label: 'Launch',
-    priceUsd: 1800,
-    scopeLine: 'For ecommerce stores',
-    blurb: 'A high-converting online store with seamless checkout, ready to take orders.',
-    delivery: '21 days',
     deliveryLabel: 'typical delivery, kickoff to launch',
     revisionsLine: '+2 rounds of revisions included',
     highlights: [
-      'Product catalog setup',
-      'Payment processing',
-      'Inventory management & order tracking',
-      'SEO optimization',
+      'Custom design & build',
+      'Ecommerce & checkout',
+      'SEO fundamentals',
+      'Analytics wired in',
     ],
-    cta: 'Start with Launch',
+    cta: 'Start a website',
     href: '/sign-up',
+  },
+  digital_marketing: {
+    label: 'Digital Marketing',
+    priceUsd: 1200,
+    scopeLine: 'Monthly — funnels & campaigns',
+    blurb: 'Funnels, campaigns, and conversion work that turn traffic into revenue, measured end to end.',
+    delivery: 'Ongoing',
+    deliveryLabel: 'monthly retainer, cancel anytime',
+    revisionsLine: '+continuous testing & iteration',
+    highlights: [
+      'Funnels & landing pages',
+      'Email & SMS sequences',
+      'A/B testing',
+      'Campaign analytics',
+    ],
+    cta: 'Start marketing',
+    href: '/contact',
     featured: true,
   },
-  scale: {
-    label: 'Scale',
-    priceUsd: 2500,
-    scopeLine: 'For SaaS & web applications',
-    blurb: 'A custom web application built to grow — from SaaS platforms to internal tools.',
+  software_solutions: {
+    label: 'Software Solutions',
+    priceUsd: 3500,
+    scopeLine: 'For applications & internal tools',
+    blurb: 'A custom application built to grow — portals, platforms, and the tools your team runs on.',
     delivery: '21 days',
     deliveryLabel: 'typical delivery, kickoff to launch',
     revisionsLine: '+3 rounds of revisions included',
     highlights: [
-      'Custom UI/UX design',
-      'Database & API integration',
-      'User authentication',
-      'Deployment & hosting',
+      'Product architecture',
+      'Custom UI/UX',
+      'Auth, database & APIs',
+      'Deployment & support',
     ],
-    cta: 'Start with Scale',
+    cta: 'Scope my build',
     href: '/sign-up',
   },
-  ai_automation: {
-    label: 'AI Automation',
+  ai_solutions: {
+    label: 'AI Solutions',
     priceUsd: 3000,
-    scopeLine: 'For AI workflows & operations',
-    blurb: 'Put AI to work on your operations — automated workflows, content, and pipelines.',
+    scopeLine: 'For agents & automation',
+    blurb: 'Put AI to work on your operations — agents, automated workflows, and content pipelines.',
     delivery: '30 days',
     deliveryLabel: 'typical delivery, kickoff to launch',
     revisionsLine: '+3 rounds of revisions included',
     highlights: [
-      'Custom AI workflows',
-      'Chatbot integration',
-      'Data processing pipelines',
-      'API integrations',
+      'Custom AI agents',
+      'Workflow automation',
+      'Data pipelines',
+      'Deployed on your stack',
     ],
-    cta: 'Scope my automation',
+    cta: 'Scope my AI',
     href: '/contact',
     featured: true,
   },
 };
 
 const CARD_ORDER: { individual: CardId[]; team: CardId[] } = {
-  individual: ['validate', 'launch'],
-  team: ['scale', 'ai_automation'],
+  individual: ['websites', 'digital_marketing'],
+  team: ['software_solutions', 'ai_solutions'],
 };
 
 function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {

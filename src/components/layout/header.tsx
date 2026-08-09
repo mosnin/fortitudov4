@@ -36,11 +36,11 @@ interface MegaMenuItem {
 }
 
 const servicesItems: MegaMenuItem[] = [
-  { label: "Web Applications", href: "/services#web-application", icon: Globe, description: "Custom web apps built to scale" },
-  { label: "Ecommerce Stores", href: "/services#ecommerce-store", icon: ShoppingCart, description: "High-converting online stores" },
-  { label: "Funnels", href: "/services#funnels", icon: TrendingUp, description: "Sales funnels that convert" },
-  { label: "AI Automation", href: "/services#ai-automation", icon: Bot, description: "Automate with AI workflows" },
-  { label: "Open Claw Deployment", href: "/services#open-claw-deployment", icon: Server, description: "Deploy & manage Open Claw" },
+  { label: "Websites", href: "/services#websites", icon: Globe, description: "Marketing sites & storefronts" },
+  { label: "Software Solutions", href: "/services#software-solutions", icon: ShoppingCart, description: "Custom applications & tools" },
+  { label: "AI Solutions", href: "/services#ai-solutions", icon: TrendingUp, description: "Agents & automation" },
+  { label: "Consultation", href: "/services#consultation", icon: Bot, description: "Senior product & AI strategy" },
+  { label: "Digital Marketing", href: "/services#digital-marketing", icon: Server, description: "Funnels & campaigns that convert" },
 ];
 
 const companyItems: MegaMenuItem[] = [

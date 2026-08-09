@@ -1,18 +1,18 @@
 import {
   Globe,
-  ShoppingCart,
-  TrendingUp,
+  Code2,
   Bot,
-  Server,
+  Compass,
+  Megaphone,
   type LucideIcon,
 } from "lucide-react";
 
 export type ServiceType =
-  | "web_application"
-  | "ecommerce_store"
-  | "funnels"
-  | "ai_automation"
-  | "open_claw_deployment";
+  | "websites"
+  | "software_solutions"
+  | "ai_solutions"
+  | "consultation"
+  | "digital_marketing";
 
 export interface Service {
   id: ServiceType;
@@ -25,79 +25,79 @@ export interface Service {
 
 export const services: Service[] = [
   {
-    id: "web_application",
-    name: "Web Application",
+    id: "websites",
+    name: "Websites",
     description:
-      "Custom web applications built to scale. From SaaS platforms to internal tools, we bring your vision to life.",
+      "Marketing sites, landing pages, and ecommerce storefronts — designed, built, and launched fast.",
     icon: Globe,
     features: [
-      "Custom UI/UX design",
-      "Responsive & mobile-first",
-      "Database & API integration",
-      "User authentication",
-      "Deployment & hosting",
+      "Custom design & build",
+      "Ecommerce & checkout",
+      "SEO fundamentals",
+      "Analytics wired in",
+      "Hosting & deployment",
     ],
-    startingPrice: "Starting at $2,500",
+    startingPrice: "Starting at $1,500",
   },
   {
-    id: "ecommerce_store",
-    name: "Ecommerce Store",
+    id: "software_solutions",
+    name: "Software Solutions",
     description:
-      "High-converting online stores with seamless checkout, inventory management, and analytics.",
-    icon: ShoppingCart,
+      "Custom web applications, client portals, and internal tools — architected to scale with your business.",
+    icon: Code2,
     features: [
-      "Product catalog setup",
-      "Payment processing",
-      "Inventory management",
-      "Order tracking",
-      "SEO optimization",
+      "Product architecture",
+      "Custom UI/UX",
+      "Auth, database & APIs",
+      "Integrations",
+      "Deployment & support",
     ],
-    startingPrice: "Starting at $1,800",
+    startingPrice: "Starting at $3,500",
   },
   {
-    id: "funnels",
-    name: "Funnels",
+    id: "ai_solutions",
+    name: "AI Solutions",
     description:
-      "High-performance sales funnels designed to convert visitors into customers at every stage.",
-    icon: TrendingUp,
-    features: [
-      "Landing page design",
-      "A/B testing ready",
-      "Email capture & sequences",
-      "Analytics & tracking",
-      "CRM integration",
-    ],
-    startingPrice: "Starting at $1,200",
-  },
-  {
-    id: "ai_automation",
-    name: "AI Automation",
-    description:
-      "Leverage AI to automate workflows, generate content, and streamline your business operations.",
+      "AI agents, automations, and content pipelines that hand hours back to your team every week.",
     icon: Bot,
     features: [
-      "Custom AI workflows",
+      "Custom AI agents",
+      "Workflow automation",
       "Chatbot integration",
-      "Content generation",
-      "Data processing pipelines",
-      "API integrations",
+      "Data pipelines",
+      "Deployed on your stack",
     ],
     startingPrice: "Starting at $3,000",
   },
   {
-    id: "open_claw_deployment",
-    name: "Open Claw Deployment",
+    id: "consultation",
+    name: "Consultation",
     description:
-      "Deploy and manage Open Claw instances with full configuration, monitoring, and support.",
-    icon: Server,
+      "Senior product and engineering guidance — roadmap, architecture, and AI strategy sessions.",
+    icon: Compass,
     features: [
-      "Instance setup & config",
-      "Custom deployment pipeline",
-      "Monitoring & alerts",
-      "Scaling infrastructure",
-      "Ongoing support",
+      "Product roadmap",
+      "Architecture review",
+      "AI-readiness audit",
+      "Vendor & stack advice",
+      "Written action plan",
     ],
-    startingPrice: "Starting at $2,000",
+    startingPrice: "Starting at $500",
+  },
+  {
+    id: "digital_marketing",
+    name: "Digital Marketing",
+    description:
+      "Funnels, campaigns, and conversion work that turn traffic into revenue — measured end to end.",
+    icon: Megaphone,
+    features: [
+      "Funnels & landing pages",
+      "Email & SMS sequences",
+      "A/B testing",
+      "Campaign analytics",
+      "CRO iterations",
+    ],
+    startingPrice: "Starting at $1,200/mo",
   },
 ];
 

@@ -124,11 +124,11 @@ export default function ContactPage() {
                               onChange={(e) => setForm({ ...form, service: e.target.value })}
                             >
                               <option value="">Select a service</option>
-                              <option value="web_application">Web Application</option>
-                              <option value="ecommerce_store">Ecommerce Store</option>
-                              <option value="funnels">Funnels</option>
-                              <option value="ai_automation">AI Automation</option>
-                              <option value="open_claw_deployment">Open Claw Deployment</option>
+                              <option value="websites">Websites</option>
+                              <option value="software_solutions">Software Solutions</option>
+                              <option value="ai_solutions">AI Solutions</option>
+                              <option value="consultation">Consultation</option>
+                              <option value="digital_marketing">Digital Marketing</option>
                               <option value="not_sure">Not sure yet</option>
                             </select>
                           </div>

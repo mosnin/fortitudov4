@@ -70,10 +70,11 @@ const MENUS: Record<MenuKey, MenuConfig> = {
       href: '/services',
     },
     items: [
-      { icon: Aperture, label: 'Web Applications', desc: 'Full product builds, shipped in weeks not months', href: '/services#web-applications' },
-      { icon: UserRound, label: 'Ecommerce & Funnels', desc: 'Storefronts and funnels built to convert', href: '/services#ecommerce' },
-      { icon: Building2, label: 'AI Automation', desc: 'Agents and workflows that clear the busywork', href: '/services#ai-automation' },
-      { icon: Blocks, label: 'Open Claw', desc: 'Custom AI agents, deployed on your stack', href: '/services#open-claw' },
+      { icon: Aperture, label: 'Websites', desc: 'Marketing sites and storefronts, launched fast', href: '/services#websites' },
+      { icon: Building2, label: 'Software Solutions', desc: 'Custom applications, portals, and internal tools', href: '/services#software-solutions' },
+      { icon: Blocks, label: 'AI Solutions', desc: 'Agents and automations that clear the busywork', href: '/services#ai-solutions' },
+      { icon: Compass, label: 'Consultation', desc: 'Senior product, engineering, and AI strategy', href: '/services#consultation' },
+      { icon: UserRound, label: 'Digital Marketing', desc: 'Funnels and campaigns, measured end to end', href: '/services#digital-marketing' },
     ],
   },
   company: {
