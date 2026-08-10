@@ -12,6 +12,7 @@ import {
 } from "@/components/crm";
 import { PhaseTracker, type Phase } from "@/components/dashboard/phase-tracker";
 import { RevisionManager } from "./revision-manager";
+import { AskHelix } from "@/components/admin/ask-helix";
 import { cascade, cascadeItem } from "@/lib/motion";
 import { formatUsd } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
@@ -207,7 +208,16 @@ export function ManageClient({
             section="Projects."
             title={projectName}
             subtitle={`${clientName} · ${serviceLabel} · ${completedCount} of ${phases.length} phases complete.`}
-            action={<RowPill>{statusLabel}</RowPill>}
+            action={
+              <>
+                <AskHelix
+                  resourceKind="project"
+                  resourceId={projectId}
+                  title={projectName}
+                />
+                <RowPill>{statusLabel}</RowPill>
+              </>
+            }
           />
         </div>
 

@@ -15,6 +15,7 @@ import {
   StatStrip,
 } from "@/components/crm";
 import { AnimatedNumber } from "@/components/motion";
+import { HelixWaitingStrip } from "@/components/admin/helix-waiting-strip";
 import { AreaChart, BarList } from "@/components/ui/charts";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -99,6 +100,9 @@ export default function AdminDashboardPage() {
           </div>
         ) : (
           <>
+            {/* Renders only when Helix has queued something. */}
+            <HelixWaitingStrip />
+
             <StatStrip columns={3} ariaLabel="Agency operations">
               <StatCell label="Active Projects">
                 {loading ? (

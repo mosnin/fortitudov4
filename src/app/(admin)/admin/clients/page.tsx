@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { ExternalLink, Pencil, Trash2 } from "lucide-react";
+import { ExternalLink, Pencil, Sparkles, Trash2 } from "lucide-react";
 import {
   CrmPageHeader,
   RecordList,
@@ -14,6 +14,7 @@ import {
 } from "@/components/crm";
 import { NewClientModal } from "@/components/admin/crm-new-client-modal";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
+import { useAskHelix } from "@/components/admin/ask-helix";
 import {
   CRM_STAGES,
   STAGE_LABELS,
@@ -78,6 +79,7 @@ const POLL_MS = 10_000;
 
 export default function ClientCrmPage() {
   const [clients, setClients] = useState<Client[]>([]);
+  const { open: askHelix, busy: askingHelix } = useAskHelix();
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<"board" | "list">("board");
   const [newOpen, setNewOpen] = useState(false);
@@ -285,6 +287,15 @@ export default function ClientCrmPage() {
               }
               actions={
                 <>
+                  <RowAction
+                    label={`Ask Helix about ${c.companyName}`}
+                    disabled={askingHelix}
+                    onClick={() =>
+                      void askHelix("client", c.id, c.companyName)
+                    }
+                  >
+                    <Sparkles size={13} />
+                  </RowAction>
                   <RowAction
                     label={`Edit ${c.companyName}`}
                     onClick={() => setEditId(c.id)}

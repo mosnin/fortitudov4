@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import { and, desc, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { helixActions, helixThreads } from "@/db/schema";
+import {
+  helixActions,
+  helixIntroductions,
+  helixResourceKindEnum,
+  helixThreads,
+} from "@/db/schema";
 import { requireStaff } from "@/lib/auth-utils";
-import { recordEvent } from "@/lib/helix/runtime";
+import { gatekeeperForKind } from "@/lib/helix/registry";
+import { loadContext, recordEvent } from "@/lib/helix/runtime";
 
 /** GET — the staff member's own threads, most recently worked first. */
 export async function GET() {
@@ -47,6 +53,21 @@ export async function GET() {
 
 const createSchema = z.object({
   title: z.string().min(1).max(255).optional(),
+  /**
+   * Resources to introduce as the thread opens. Opening from a client row
+   * already names the client, so making someone re-pick it in a modal would
+   * be ceremony — but it is still a real grant, recorded like any other.
+   */
+  introduce: z
+    .array(
+      z.object({
+        resourceKind: z.enum(helixResourceKindEnum.enumValues),
+        resourceId: z.string().uuid(),
+        allowWrites: z.boolean().optional(),
+      })
+    )
+    .max(5)
+    .optional(),
 });
 
 /**
@@ -74,6 +95,42 @@ export async function POST(request: Request) {
       { threadId: thread.id, userId: user.id },
       { kind: "thread_created", summary: "Thread opened" }
     );
+
+    // One context for the whole loop — resolve only needs it to label a
+    // resource, and rebuilding it per grant would be a query per iteration.
+    const ctx = parsed.data.introduce?.length
+      ? await loadContext(thread.id, user.id)
+      : null;
+
+    for (const grant of parsed.data.introduce ?? []) {
+      const gatekeeper = gatekeeperForKind(grant.resourceKind);
+      if (!gatekeeper || !ctx) continue;
+      const ref = await gatekeeper.resolve(grant.resourceId, ctx);
+      // Silently skipped rather than failing the whole open: a stale link
+      // should still get you a working thread.
+      if (!ref) continue;
+
+      await db.insert(helixIntroductions).values({
+        threadId: thread.id,
+        resourceKind: grant.resourceKind,
+        resourceId: grant.resourceId,
+        resourceLabel: ref.label,
+        status: "granted",
+        allowWrites: grant.allowWrites ?? true,
+        grantedBy: user.id,
+        decidedAt: new Date(),
+      });
+
+      await recordEvent(
+        { threadId: thread.id, userId: user.id },
+        {
+          kind: "introduction_granted",
+          summary: `Introduced ${grant.resourceKind} "${ref.label}"`,
+          resourceKind: grant.resourceKind,
+          resourceId: grant.resourceId,
+        }
+      );
+    }
 
     return NextResponse.json({ thread }, { status: 201 });
   } catch (error) {
