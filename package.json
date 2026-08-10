@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
     "@clerk/nextjs": "^7.0.6",
     "@gsap/react": "^2.1.2",
     "@neondatabase/serverless": "^1.0.2",
