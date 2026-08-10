@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
 import { CrmPageHeader, RowPill, SectionHead } from "@/components/crm";
@@ -24,6 +25,7 @@ import { EASE_APPLE } from "@/lib/motion";
 import {
   BODY_MUTED,
   CAPTION,
+  GHOST_PILL,
   HELIX_PILL,
   META,
   QUIET_LINK,
@@ -75,10 +77,12 @@ export function HelixThread({ threadId }: { threadId: string }) {
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const [picking, setPicking] = useState(false);
   // Set while a person is choosing which resource one of Helix's requests
   // actually refers to. A request names a hint, never an id.
   const [answering, setAnswering] = useState<Introduction | null>(null);
+  const [archiving, setArchiving] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -132,6 +136,31 @@ export function HelixThread({ threadId }: { threadId: string }) {
     [threadId, load]
   );
 
+  const archive = useCallback(async () => {
+    // Queued changes outlive the thread. Archiving is about clearing a working
+    // list, not withdrawing proposals a reviewer still has to rule on — so it
+    // says so rather than silently leaving them in the queue.
+    const queued = (data?.actions ?? []).filter(
+      (action) => action.status === "simulated"
+    ).length;
+    const warning = queued
+      ? `Archive this thread? ${queued} queued change${queued === 1 ? "" : "s"} stay${queued === 1 ? "s" : ""} in the approval queue.`
+      : "Archive this thread?";
+    if (!window.confirm(warning)) return;
+
+    setArchiving(true);
+    try {
+      const response = await fetch(`/api/helix/threads/${threadId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error();
+      router.push("/admin/helix");
+    } catch {
+      setError("Could not archive that thread.");
+      setArchiving(false);
+    }
+  }, [data?.actions, threadId, router]);
+
   const deny = useCallback(
     async (introductionId: string) => {
       await fetch(`/api/helix/threads/${threadId}/introductions`, {
@@ -170,6 +199,18 @@ export function HelixThread({ threadId }: { threadId: string }) {
       <div className="mx-auto max-w-6xl space-y-8">
         <CrmPageHeader
           section="Helix."
+          action={
+            data ? (
+              <button
+                type="button"
+                onClick={() => void archive()}
+                disabled={archiving}
+                className={cn(GHOST_PILL, archiving && "opacity-50")}
+              >
+                {archiving ? "Archiving…" : "Archive"}
+              </button>
+            ) : undefined
+          }
           title={data?.thread.title ?? "Thread"}
           subtitle={
             pendingCount > 0 ? (

@@ -12,10 +12,19 @@ import { requireStaff } from "@/lib/auth-utils";
 import { gatekeeperForKind } from "@/lib/helix/registry";
 import { loadContext, recordEvent } from "@/lib/helix/runtime";
 
-/** GET — the staff member's own threads, most recently worked first. */
-export async function GET() {
+/**
+ * GET — the staff member's own threads, most recently worked first.
+ *
+ * Active only by default. `?archived=1` returns the archived ones instead,
+ * because finished work should not compete for attention with live work — but
+ * it must stay reachable, since a thread carries the reasoning behind changes
+ * that already shipped.
+ */
+export async function GET(request: Request) {
   try {
     const user = await requireStaff();
+    const archived =
+      new URL(request.url).searchParams.get("archived") === "1";
 
     const rows = await db
       .select({
@@ -34,7 +43,7 @@ export async function GET() {
       .where(
         and(
           eq(helixThreads.ownerId, user.id),
-          eq(helixThreads.status, "active")
+          eq(helixThreads.status, archived ? "archived" : "active")
         )
       )
       .orderBy(desc(helixThreads.lastMessageAt))

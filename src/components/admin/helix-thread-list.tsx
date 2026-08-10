@@ -18,7 +18,7 @@ import {
   RowPill,
 } from "@/components/crm";
 import { Reveal } from "@/components/motion";
-import { BODY_MUTED, HELIX_PILL, META } from "@/lib/typography";
+import { BODY_MUTED, GHOST_PILL, HELIX_PILL, META } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
 interface ThreadRow {
@@ -32,23 +32,36 @@ interface ThreadRow {
 export function HelixThreadList() {
   const router = useRouter();
   const [threads, setThreads] = useState<ThreadRow[] | null>(null);
+  const [showArchived, setShowArchived] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    const response = await fetch("/api/helix/threads");
-    if (!response.ok) {
-      setError("Could not load your threads.");
-      setThreads([]);
-      return;
-    }
+  const fetchThreads = useCallback(async (archived: boolean) => {
+    const response = await fetch(
+      `/api/helix/threads${archived ? "?archived=1" : ""}`
+    );
+    if (!response.ok) return null;
     const data = (await response.json()) as { threads: ThreadRow[] };
-    setThreads(data.threads);
+    return data.threads;
   }, []);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    void (async () => {
+      const rows = await fetchThreads(showArchived);
+      if (cancelled) return;
+      if (rows === null) {
+        setError("Could not load your threads.");
+        setThreads([]);
+        return;
+      }
+      setError(null);
+      setThreads(rows);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [showArchived, fetchThreads]);
 
   const open = useCallback(async () => {
     setCreating(true);
@@ -80,21 +93,39 @@ export function HelixThreadList() {
           subtitle={
             threads === null
               ? undefined
-              : threads.length === 0
-                ? "Nothing open. Start a thread and hand Helix something to work on."
-                : waiting > 0
-                  ? `${threads.length} open, ${waiting} change${waiting === 1 ? "" : "s"} waiting on you.`
-                  : `${threads.length} open, nothing waiting.`
+              : showArchived
+                ? threads.length === 0
+                  ? "Nothing archived yet."
+                  : `${threads.length} archived. Their record and reasoning are kept.`
+                : threads.length === 0
+                  ? "Nothing open. Start a thread and hand Helix something to work on."
+                  : waiting > 0
+                    ? `${threads.length} open, ${waiting} change${waiting === 1 ? "" : "s"} waiting on you.`
+                    : `${threads.length} open, nothing waiting.`
           }
           action={
-            <button
-              type="button"
-              onClick={() => void open()}
-              disabled={creating}
-              className={cn(HELIX_PILL, creating && "opacity-50")}
-            >
-              New thread
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  setThreads(null);
+                  setShowArchived((current) => !current);
+                }}
+                className={GHOST_PILL}
+              >
+                {showArchived ? "Active" : "Archived"}
+              </button>
+              {!showArchived && (
+                <button
+                  type="button"
+                  onClick={() => void open()}
+                  disabled={creating}
+                  className={cn(HELIX_PILL, creating && "opacity-50")}
+                >
+                  New thread
+                </button>
+              )}
+            </>
           }
         />
 
@@ -109,9 +140,9 @@ export function HelixThreadList() {
         ) : threads.length === 0 ? (
           <Reveal variant="fade">
             <p className={cn(BODY_MUTED, "py-10")}>
-              A thread starts with access to nothing. You introduce it to a
-              client or a project, ask for what you need, and review whatever it
-              changes.
+              {showArchived
+                ? "Archived threads keep their transcript and their audit trail — nothing here yet."
+                : "A thread starts with access to nothing. You introduce it to a client or a project, ask for what you need, and review whatever it changes."}
             </p>
           </Reveal>
         ) : (
