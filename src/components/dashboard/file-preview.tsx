@@ -29,7 +29,7 @@ function getFileCategory(name: string, type?: string): "image" | "pdf" | "svg" |
   return "other";
 }
 
-/** Category → the WORD, in a neutral pill (design-product.md: no type icons). */
+/** Category → the WORD, in a neutral pill (design.md: no type icons). */
 const CATEGORY_LABELS = {
   image: "Image",
   pdf: "PDF",

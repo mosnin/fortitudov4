@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
- * Badge (design-product.md §Pills).
+ * Badge (design.md §Pills).
  *
  * In the product surface a badge is a WORD in a neutral bordered pill — never
  * a color-coded category chip and never an icon. `default` therefore renders

@@ -40,6 +40,7 @@ import {
   PickerButton,
   SERVICE_OPTIONS, BUDGET_OPTIONS, TIMELINE_OPTIONS,
   AUDIENCE_OPTIONS, FEATURE_OPTIONS,
+  StageWhoYouServe, StageVoice, StageSources,
 } from './onboarding-client-shared';
 
 interface Props {
@@ -340,18 +341,19 @@ export function OnboardingClient({ defaultName, initialService = null }: Props) 
 
       case 'audience':
         return (
-          <AudienceAffordance
+          <StageWhoYouServe
             audiences={audiences}
-            description={description}
-            onToggle={(v) => setAudiences((prev) => toggleCapped(prev, v, 3))}
-            onChangeDescription={setDescription}
+            requirements={description}
+            onToggleAudience={(v) => setAudiences((prev) => toggleCapped(prev, v, 3))}
+            onChangeRequirements={setDescription}
             onContinue={advance}
           />
         );
 
       case 'voice':
         return (
-          <VoiceAffordance
+          <StageVoice
+            name={name}
             businessName={businessName}
             tone={tone}
             onPick={(t) => { setTone(t); setTimeout(advance, 360); }}
@@ -360,7 +362,7 @@ export function OnboardingClient({ defaultName, initialService = null }: Props) 
 
       case 'features':
         return (
-          <FeaturesAffordance
+          <StageSources
             features={features}
             onToggle={(v) => setFeatures((prev) => toggle(prev, v))}
             onContinue={advance}
@@ -545,143 +547,6 @@ function BasicsAffordance({
       {error && <ErrorLine message={error} />}
       <SubmitPill onClick={onContinue} disabled={!canContinue}>
         {submitting ? <Loader2 size={14} className="animate-spin" /> : 'Continue'}
-      </SubmitPill>
-    </div>
-  );
-}
-
-function AudienceAffordance({
-  audiences, description, onToggle, onChangeDescription, onContinue,
-}: {
-  audiences: string[];
-  description: string;
-  onToggle: (v: string) => void;
-  onChangeDescription: (v: string) => void;
-  onContinue: () => void;
-}) {
-  return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {AUDIENCE_OPTIONS.map((opt) => {
-          const selected = audiences.includes(opt.value);
-          const atCap = !selected && audiences.length >= 3;
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              disabled={atCap}
-              onClick={() => onToggle(opt.value)}
-              className={cn(
-                'rounded-xl border px-4 py-3 text-sm font-medium transition-all',
-                selected
-                  ? 'border-foreground bg-foreground text-background'
-                  : 'border-border bg-background text-foreground hover:bg-foreground/[0.04]',
-                atCap && 'cursor-not-allowed opacity-40',
-              )}
-            >
-              {opt.label}
-            </button>
-          );
-        })}
-      </div>
-      <div>
-        <FieldLabel>What should this build do? Goals, must-haves, anything on your mind. (optional)</FieldLabel>
-        <textarea
-          value={description}
-          onChange={(e) => onChangeDescription(e.target.value)}
-          rows={3}
-          maxLength={500}
-          placeholder='e.g. "A booking platform for my studio — clients pick a slot, pay a deposit, and get reminders."'
-          className={cn(INPUT_CLS, 'resize-none text-sm')}
-        />
-      </div>
-      <SubmitPill onClick={onContinue} disabled={audiences.length === 0} />
-    </div>
-  );
-}
-
-function VoiceAffordance({
-  businessName, tone, onPick,
-}: {
-  businessName: string;
-  tone: Tone | null;
-  onPick: (t: Tone) => void;
-}) {
-  const business = businessName.trim() || 'your build';
-  const warm = `Hi! Great progress this week — the main screens are in and checkout is next up. I put a fresh preview link in your portal; take a look whenever suits, no rush. More soon! Helix, on the ${business} build`;
-  const direct = `Hi — status: Phase 2 of 4. Main screens done, checkout in progress, preview updated 6:10pm. Blockers: none. Senior review Tue or Wed — which works? Helix, on the ${business} build`;
-  return (
-    <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-      <VoiceCard label="Warm" body={warm} selected={tone === 'warm'} onClick={() => onPick('warm')} />
-      <VoiceCard label="Direct" body={direct} selected={tone === 'direct'} onClick={() => onPick('direct')} />
-    </div>
-  );
-}
-
-function VoiceCard({
-  label, body, selected, onClick,
-}: {
-  label: string;
-  body: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'rounded-xl border p-5 text-left transition-all',
-        selected
-          ? 'border-foreground bg-foreground/[0.04] ring-2 ring-foreground/10 ring-offset-2 ring-offset-background'
-          : 'border-border bg-background hover:bg-foreground/[0.04]',
-      )}
-    >
-      <p className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="whitespace-pre-line text-sm leading-relaxed text-foreground">{body}</p>
-    </button>
-  );
-}
-
-function FeaturesAffordance({
-  features, onToggle, onContinue,
-}: {
-  features: string[];
-  onToggle: (v: string) => void;
-  onContinue: () => void;
-}) {
-  return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-        {FEATURE_OPTIONS.map((opt) => {
-          const selected = features.includes(opt.value);
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() => onToggle(opt.value)}
-              className={cn(
-                'flex flex-col items-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium transition-all',
-                selected
-                  ? 'border-foreground bg-foreground text-background'
-                  : 'border-border bg-background text-foreground hover:bg-foreground/[0.04]',
-              )}
-            >
-              {opt.icon ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={opt.icon} alt="" aria-hidden className="h-6 w-6 object-contain" />
-              ) : (
-                <span className={cn('inline-flex h-6 w-6 items-center justify-center rounded-md text-xs font-semibold', selected ? 'bg-background/20' : 'bg-muted text-muted-foreground')}>
-                  {opt.label[0]}
-                </span>
-              )}
-              <span className="text-center leading-tight">{opt.label}</span>
-            </button>
-          );
-        })}
-      </div>
-      <SubmitPill onClick={onContinue}>
-        {features.length === 0 ? 'Skip for now' : 'Continue'}
       </SubmitPill>
     </div>
   );

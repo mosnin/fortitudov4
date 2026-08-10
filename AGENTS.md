@@ -7,10 +7,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 # Fortitudo architecture notes
 
 ## Surfaces & design systems
-- **Landing** (`src/app/page.tsx` + `src/components/landing/`): editorial system extracted from the reference site — Geist Mono display headings (100% leading, -0.032em tracking), Georgia italic accents, cream `#FDFBF6`, blueprint hairline rails (`SectionRails`), 3D press buttons (`PressButton`), rotating chips. Image/illustration slots are explicit `ImagePlaceholder`s awaiting final artwork — never replace them with invented graphics.
-- **Product (dashboard + admin)** (`src/app/(dashboard)`, `src/app/(admin)`): **`design-product.md` is canonical** — the CRM reference's premium, Apple-calm surface. Monochrome and text-first: no decorative icons, no gradients, no category colors, no mono/ASCII voice (that belongs to the logged-out site and auth only). Near-black primary, hairline borders, `tabular-nums` for figures, serif `H1` page titles, neutral `STATUS_PILL`s, `divide-y` row lists, `PRIMARY_PILL` buttons. Scale in `src/lib/typography.ts`. Shell: `src/components/shell/app-shell.tsx` (floating rounded sidebar, neutral active bar), driven by serializable nav config in the two layouts.
-- Light theme is the default; `.dark` tokens exist and the toggle lives in the shell.
-- **Auth + onboarding** (`src/app/(auth)`, `src/app/onboarding`) follow the logged-out system and keep the ASCII atmosphere.
+**`design.md` is the single canonical design doc.** Both systems in it were adopted wholesale from the `realestatecrm` repository — that codebase, not a paraphrase of it, is the source of truth. When a component is missing, port the real file from there instead of approximating one.
+
+- **Product (dashboard + admin)** (`src/app/(dashboard)`, `src/app/(admin)`): premium, Apple-calm, monochrome and text-first. Compose from the ported kit in `src/components/crm/` (`CrmPageHeader`, `StatStrip`, `TabStrip`, `Toolbar`, `RecordList`, `SectionHead`) plus `src/components/motion/`. No decorative icons (only nav + functional controls), no gradients, no per-category colour, no mono/ASCII voice. Scale in `src/lib/typography.ts`. Shell: `src/components/shell/app-shell.tsx` (floating rounded sidebar, neutral active bar), driven by serializable nav config in the two layouts.
+- **Logged-out** (`src/app/(marketing)`, `src/app/(auth)`, `src/app/onboarding`): dark, cinematic, photography-led. Kit is `src/components/marketing/giga/` — `primitives.tsx` is the vocabulary. Near-black `#0a0a0a`, serif display via `--font-title`, monospace eyebrows, white pill CTAs, `#ff7a45` used sparingly, `FooterReveal`.
+- The two systems never mix. Light theme is the default in the product; `.dark` tokens exist and the toggle lives in the shell.
+- Onboarding is the source repo's conversational flow, ported: its stages (`StageWhoYouServe`, `StageVoice`, `StageSources`) keep their markup and timings; only the questions and the submit binding are ours.
 
 ## Roles & access
 `users.role`: `client | va | project_manager | admin` (see `src/lib/permissions.ts`). Staff land on `/admin` via `/post-login`; clients on `/dashboard`. VAs only see projects they hold a task on (`getAccessibleProjectIds`). Finance pages require `admin`.

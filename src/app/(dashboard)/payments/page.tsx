@@ -47,7 +47,7 @@ const paymentTypeLabels: Record<string, string> = {
 
 /**
  * Payment status → pill treatment. Statuses are free-form varchar; only a
- * genuine failure earns colour (design-product.md), everything else is the
+ * genuine failure earns colour (design.md), everything else is the
  * neutral pill.
  */
 function isFailedStatus(status: string): boolean {

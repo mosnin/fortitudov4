@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Plain bordered surface (design-product.md). No shadow at rest, no gradient,
+ * Plain bordered surface (design.md). No shadow at rest, no gradient,
  * no accent border — cards are for a genuine gallery of choices, never for a
  * records list.
  */

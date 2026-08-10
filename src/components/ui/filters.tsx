@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Filter-row primitives (design-product.md): pill search field, dropdown pills,
+ * Filter-row primitives (design.md): pill search field, dropdown pills,
  * and a calendar date-range pill that opens a full picker popover — preset rail
  * on the left, dual-month range calendar on the right, with Clear / Apply
  * actions. Shared by the admin finance pages.

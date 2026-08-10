@@ -1,7 +1,7 @@
 /**
  * The product component kit — lifted from the CRM reference's canonical
  * People/Deals surfaces. Every logged-in page composes from these; see
- * design-product.md.
+ * design.md.
  */
 
 export { CrmPageHeader } from './page-header';

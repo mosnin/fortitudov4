@@ -142,3 +142,177 @@ export function ErrorLine({ message }: { message: string }) {
     </div>
   );
 }
+
+// ── Shared stages ────────────────────────────────────────────────────────────
+// Ported verbatim from the reference's onboarding stages: same layout, same
+// classes, same affordances. Only the questions and options are ours.
+
+export function StageWhoYouServe({
+  audiences, requirements, onToggleAudience, onChangeRequirements, onContinue,
+}: {
+  audiences: string[];
+  requirements: string;
+  onToggleAudience: (v: string) => void;
+  onChangeRequirements: (v: string) => void;
+  onContinue: () => void;
+}) {
+  return (
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl tracking-tight text-foreground" style={{ fontFamily: 'var(--font-title)' }}>
+          Who is this being built for?
+        </h2>
+        <p className="text-sm text-muted-foreground">Pick up to 3. I&apos;ll shape the build and my recommendations around them.</p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        {AUDIENCE_OPTIONS.map((opt) => {
+          const selected = audiences.includes(opt.value);
+          const atCap = !selected && audiences.length >= 3;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              disabled={atCap}
+              onClick={() => onToggleAudience(opt.value)}
+              className={cn(
+                'rounded-xl border px-4 py-3 text-sm font-medium transition-all',
+                selected
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border bg-background text-foreground hover:bg-foreground/[0.04]',
+                atCap && 'opacity-40 cursor-not-allowed',
+              )}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <Section label="Anything the build must have - or must avoid? (optional)">
+        <textarea
+          value={requirements}
+          onChange={(e) => onChangeRequirements(e.target.value)}
+          rows={3}
+          maxLength={500}
+          placeholder='e.g. "Must integrate with our Stripe account. Never send marketing email from the app."'
+          className="w-full rounded-lg border border-border bg-background px-3.5 py-2.5 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+      </Section>
+
+      <StageContinue onClick={onContinue} disabled={audiences.length === 0} />
+    </div>
+  );
+}
+
+export function StageVoice({
+  name, businessName, tone, onPick,
+}: {
+  name: string;
+  businessName: string;
+  tone: Tone | null;
+  onPick: (t: Tone) => void;
+}) {
+  const firstName = (name.trim().split(/\s+/)[0]) || 'me';
+  const business = businessName.trim() || 'your team';
+
+  const warm = `Morning! The checkout flow is live on your preview link - I walked it end to end this morning and it feels quick. Want me to send a short clip so you can see it before we call? No rush either way. - Helix, for ${firstName} at ${business}`;
+  const direct = `Preview updated. Checkout flow is live: 3 steps, Stripe wired, 1.2s to first paint. Two open items - refund copy and the mobile nav. Review link is in your dashboard. - Helix, for ${firstName} at ${business}`;
+
+  return (
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl tracking-tight text-foreground" style={{ fontFamily: 'var(--font-title)' }}>
+          Which one sounds more like you?
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Here are two ways I could send you a build update. Pick the one you&apos;d rather get - I&apos;ll match it from here.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <VoiceCard label="Warm" body={warm} selected={tone === 'warm'} onClick={() => onPick('warm')} />
+        <VoiceCard label="Direct" body={direct} selected={tone === 'direct'} onClick={() => onPick('direct')} />
+      </div>
+
+      <p className="text-center text-xs text-muted-foreground">
+        You can change this later in Settings.
+      </p>
+    </div>
+  );
+}
+
+function VoiceCard({
+  label, body, selected, onClick,
+}: {
+  label: string;
+  body: string;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'text-left rounded-xl border p-5 transition-all',
+        // Paper-flat: ring, not shadow, on the selected card.
+        selected
+          ? 'border-foreground bg-foreground/[0.04] ring-2 ring-foreground/10 ring-offset-2 ring-offset-background'
+          : 'border-border bg-background hover:bg-foreground/[0.04]',
+      )}
+    >
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">{label}</p>
+      <p className="text-sm text-foreground leading-relaxed whitespace-pre-line">{body}</p>
+    </button>
+  );
+}
+
+export function StageSources({
+  features, onToggle, onContinue,
+}: {
+  features: string[];
+  onToggle: (v: string) => void;
+  onContinue: () => void;
+}) {
+  return (
+    <div className="space-y-8">
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl tracking-tight text-foreground" style={{ fontFamily: 'var(--font-title)' }}>
+          What should we build first?
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Pick the one or two that matter most - that&apos;s where we&apos;ll start. Everything else can come later.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        {FEATURE_OPTIONS.map((opt) => {
+          const selected = features.includes(opt.value);
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => onToggle(opt.value)}
+              className={cn(
+                'rounded-xl border px-3 py-3 text-sm font-medium transition-all flex flex-col items-center gap-2',
+                selected
+                  ? 'border-foreground bg-foreground text-background'
+                  : 'border-border bg-background text-foreground hover:bg-foreground/[0.04]',
+              )}
+            >
+              <span className={cn('w-6 h-6 rounded-md inline-flex items-center justify-center text-xs font-semibold', selected ? 'bg-background/20' : 'bg-muted text-muted-foreground')}>
+                {opt.label[0]}
+              </span>
+              <span className="leading-tight text-center">{opt.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <StageContinue onClick={onContinue}>
+        {features.length === 0 ? 'Skip for now' : 'Continue'}
+      </StageContinue>
+    </div>
+  );
+}

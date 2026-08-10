@@ -7,7 +7,7 @@ interface StatCardProps {
   label: string;
   value: string | number;
   /**
-   * @deprecated Metric tiles carry no icon (design-product.md — no decorative
+   * @deprecated Metric tiles carry no icon (design.md — no decorative
    * icons). Accepted so existing call sites keep compiling; never rendered.
    */
   icon?: LucideIcon;

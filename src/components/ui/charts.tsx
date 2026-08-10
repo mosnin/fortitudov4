@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Chart primitives for the product surface (design-product.md). Monochrome:
+ * Chart primitives for the product surface (design.md). Monochrome:
  * series are drawn in the neutral chart-1 ink, slices step down in opacity.
  * Color is reserved for genuine semantics, never for category coding.
  * AreaChart (axis-labeled Sparkline sibling), DonutChart, BarList — pure

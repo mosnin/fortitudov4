@@ -12,7 +12,7 @@ interface PageHeaderProps {
 
 /**
  * Legacy alias for the canonical page frame. `PageHero` IS the product header
- * (design-product.md): quiet section line, serif H1, one muted subtitle. This
+ * (design.md): quiet section line, serif H1, one muted subtitle. This
  * wrapper keeps older `PageHeader` call sites on the same frame — prefer
  * importing `PageHero` directly in new code.
  */

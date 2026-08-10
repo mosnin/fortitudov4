@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Shared product primitives (see design-product.md). Monochrome, text-first:
+ * Shared product primitives (see design.md). Monochrome, text-first:
  * PageHero (page frame), StatHeader, BracketLabel (section label), MetricRing,
  * Sparkline, SegmentedTabs — pure SVG/motion, no chart deps, no decoration.
  */
@@ -13,7 +13,7 @@ import { easeOutExpo } from "@/lib/motion";
 import { H1, TITLE_FONT, BODY_MUTED, SECTION_LABEL } from "@/lib/typography";
 
 /**
- * Page frame header — the canonical product header (docs: design-product.md).
+ * Page frame header — the canonical product header (docs: design.md).
  * A quiet section line, a serif title, one muted subtitle. No decoration, no
  * icons, no texture: the eye lands on content, not chrome.
  */

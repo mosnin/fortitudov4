@@ -4,7 +4,7 @@ import { BODY_MUTED } from "@/lib/typography";
 
 interface EmptyStateProps {
   /**
-   * @deprecated Empty states are text-first (design-product.md): a hero icon is
+   * @deprecated Empty states are text-first (design.md): a hero icon is
    * decoration. The prop is accepted so existing call sites keep compiling, but
    * nothing is rendered for it.
    */

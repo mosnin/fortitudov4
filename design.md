@@ -1,118 +1,158 @@
-# Fortitudo — Logged-Out Website Design System
+# Fortitudo Design System
 
-This is the **canonical design reference for every logged-out page** (marketing
-site, auth, onboarding). The system was adopted wholesale from the UI-framework
-reference repo's `(marketing)` shell ("Giga" redesign) — **do not restyle it,
-do not approximate it, do not introduce new visual language.** New sections,
-components, and pages MUST be composed from the primitives and rules below.
-Wording is Fortitudo's; the UI is frozen.
+Adopted wholesale from the **realestatecrm** repository. That codebase — not a
+description of it — is the source of truth. Where this file and the ported code
+disagree, the code wins; where our code and *that repo* disagree, that repo wins.
 
-Live implementation:
-- Shell: `src/app/(marketing)/layout.tsx` (+ `template.tsx` route transition)
-- Kit: `src/components/marketing/giga/` — `primitives.tsx` is the vocabulary
-- Scoped CSS: the `[data-marketing-shell]` blocks at the end of `src/app/globals.css`
+Two systems live here, exactly as they do in the source:
 
-## 1. Character
+| Surface | System | Where |
+| --- | --- | --- |
+| **Product** — client portal + admin | Premium, Apple-calm. Quiet, monochrome, text-first. | `src/app/(dashboard)`, `src/app/(admin)` |
+| **Logged-out** — marketing, auth, onboarding | Dark, cinematic, photography-led. | `src/app/(marketing)`, `src/app/(auth)`, `src/app/onboarding` |
 
-Dark, cinematic, editorial. Near-black canvas, full-bleed photography, thin
+They never mix. Product chrome carries none of the marketing atmosphere, and the
+marketing shell carries none of the product's density.
+
+---
+
+# Part 1 — The product (the Clients/Projects reference)
+
+The **Clients** and **Projects** pages are canonical. Every other logged-in
+surface matches them. Goal: **the eye lands on content, not chrome.**
+
+## Compose from the kit — don't hand-roll
+
+`src/components/crm/` is the component kit, lifted from the source repo's
+canonical People/Deals surfaces. Build pages by composing it. If a page needs
+something the kit lacks, port that component from the source repo and add it to
+the kit — never approximate it inline.
+
+| Component | Use |
+| --- | --- |
+| `CrmPageHeader` | Every page header. Three lines: muted section word *with its period* ("Operations."), serif-Times `H1` revealed word-by-word, one sentence of **status** — not a description of the page. |
+| `StatStrip` · `StatCell` · `Stat` · `StatEmpty` · `StatMeta` | The metric band: a `rounded-xl border` card, cells split by `gap-px` over `bg-border/60`. Focal number is serif Times + `tabular-nums`. With no data, `StatEmpty` states a calm fact — never a misleading `0`. |
+| `TabStrip` | The page's spine, directly under the title: underline text tabs with count chips and a 2px foreground rail on the active one. **Not** a segmented pill control. |
+| `Toolbar` · `ToolbarSearch` · `ToolbarActions` · `FilterSelect` | **One** filter row: search left, everything else pushed right. Triggers are bordered `h-9 rounded-md` buttons reading `Label: Value`. |
+| `RecordList` · `RecordRow` · `RowPill` · `RowAction` · `RowSelect` · `RecordListSkeleton` | The default for **any** list of records: `divide-y`, `py-3` rows, name + status pill, one truncating secondary line, right-hand metadata, action icons that fade in on hover. |
+| `SectionHead` | A heading over a hairline rule. Text only. |
+
+Motion: `src/components/motion/` (`Reveal`, `StaggerReveal`, `SplitReveal`,
+`AnimatedNumber`, `StaggerList`, `PageTransition`) — also ported, GSAP-backed,
+all honoring `prefers-reduced-motion`.
+
+Type + spacing: `src/lib/typography.ts` is the source repo's ladder —
+`30 → 25 → 21 → 17 → 14 → 12 → 11` (H1 · STAT · H2 · H3 · BODY · CAPTION · META),
+plus `PAGE_RHYTHM` (`space-y-8`), `SECTION_RHYTHM` (`space-y-3`), `ROW_PAD`
+(`py-3`), `READING_COL` (`max-w-5xl mx-auto`).
+
+## The one hard rule: no decorative icons
+
+Icons appear in exactly two places:
+
+1. **Sidebar + top navigation.**
+2. **Functional controls** — the icon *is* the action and would otherwise need a
+   label in tight chrome: search glyph, close `×`, kebab `⋯`, view toggle, copy,
+   and the hover-revealed `RowAction` controls.
+
+Remove every other icon: section-heading glyphs, per-row avatar circles, status
+glyphs, empty-state heroes. If an icon conveys a category or status, render the
+**word** in a `RowPill`.
+
+## No gradients, no colour accents
+
+Surfaces are monochrome: `foreground`, `muted-foreground`, `border`, `card`,
+`muted`. No `bg-gradient-*`, no glow, no per-category colour coding — all five
+offerings share the same neutral pill. Colour is reserved for genuine semantics
+(overdue, failed → the destructive token). Charts draw in neutral ink
+(`--chart-1`); donut slices step down in opacity.
+
+**Brand orange is not a product colour.** It belongs to the logo and to
+`HELIX_PILL` (buttons that directly invoke Helix). Nothing else.
+
+## No terminal voice
+
+Monospace, bracketed headers, ASCII fields and dot textures belong to the
+logged-out surface **only**. In the product, figures use `tabular-nums` in the
+sans face, section labels use `SECTION_LABEL`, and the serif appears only as
+`H1` and focal stat numbers.
+
+## Page frame
+
+```tsx
+<div className={cn(PAGE_RHYTHM, 'pb-12')}>
+  <div className={READING_COL}>
+    <CrmPageHeader section="Operations." title="Clients" subtitle="5 on the board, 1 still in onboarding." />
+  </div>
+  {/* reading surfaces stay in READING_COL; only wide working surfaces
+      (a kanban board) span the full frame */}
+</div>
+```
+
+Sections `space-y-8`, within-section `space-y-3`, rows `py-3`. Avoid airy
+`py-5`/`py-6` list spacing — it reads as unstructured, not premium.
+
+## Buttons and pills
+
+`PRIMARY_PILL` (near-black, `rounded-full`, `h-9`) for Save / Add / Confirm;
+`GHOST_PILL`; `QUIET_LINK`; `HELIX_PILL` only for direct-Helix actions. Status
+pills are `STATUS_PILL` / `RowPill` — neutral, bordered, 10px uppercase.
+
+## Sidebar
+
+Floating rounded card (`m-3 rounded-xl border border-border/70 bg-sidebar`). Nav
+rows 13px, `h-9`, `rounded-md`; the active row is `bg-foreground/[0.045]` with a
+2px **foreground** bar on its left edge — never an orange tint. Group labels are
+10px uppercase `text-muted-foreground/70`; icons 15px, `strokeWidth` 1.75 (2.25
+active). Top-bar controls are ghost, not boxed.
+
+---
+
+# Part 2 — The logged-out surface
+
+Dark, cinematic, editorial — the source repo's `(marketing)` shell, ported with
+its assets. Near-black `#0a0a0a` canvas, full-bleed photography, thin
 high-contrast serif headlines, monospace eyebrows, generous air, hairline
-dividers. The site should feel like a film title sequence for a serious tool —
-never like a component library demo.
+dividers.
 
-## 2. Canvas & color
+- **Kit**: `src/components/marketing/giga/` — `primitives.tsx` is the vocabulary
+  (`Serif`, `Eyebrow`, `BlurRise`, `Band`, pill CTAs).
+- **Type**: display serif via `--font-title` (Times), eyebrows in `--font-mono`,
+  body in the system sans. No webfonts.
+- **Colour**: white text on near-black; `text-white/70`–`/60` for body,
+  `text-white/40` for captions; hairlines `border-white/10`. The warm accent
+  `#ff7a45` is used sparingly — eyebrow dots, tiny glyphs, one moment a screen.
+- **CTAs**: `rounded-full` **white** pills with near-black text. Never a filled
+  orange button.
+- **Motion**: the `(marketing)/template.tsx` blur-in on route change; sections
+  enter with `BlurRise` on `EASE_OUT`; nothing bounces; everything respects
+  `prefers-reduced-motion`.
+- **Section rhythm**: eyebrow → serif headline (two lines max) → one muted
+  paragraph (~65ch) → one CTA → the visual. Sections are tall (`py-24`–`py-40`),
+  separated by hairlines or photography — never background-colour stripes.
+- **Footer**: pinned beneath the page, uncovered on the last stretch of scroll
+  (`FooterReveal`).
 
-- Sections are **near-black `#0a0a0a`** with white text. The shell itself is
-  theme-aware (`bg-white dark:bg-[#0a0a0a]`), but the cinematic homepage
-  sections force `dark` on their subtree; follow that pattern for any new
-  full-bleed cinematic section.
-- Text hierarchy on dark: `text-white` for headlines, `text-white/70`–`/60`
-  for body, `text-white/40` for captions/eyebrow rest states.
-- Hairlines: `border-white/10` on dark, `border-neutral-200` on light.
-- **Accent**: the warm brand orange `#ff7a45` (exported as `ACCENT` from
-  `giga/primitives`), used *sparingly* — eyebrow dots, tiny glyphs, one accent
-  moment per screen. The brand gradient (`#ff7a45 → #c77dff`) exists as the
-  shared SVG `linearGradient` defined in the marketing layout; stroke icons
-  with it for the signature two-tone glyph look.
-- Photography: full-bleed scenic imagery with dark scrims/gradients under
-  text. Product UI appears as **composited cards over photography**, never as
-  bare screenshots on flat ground.
+## Auth + onboarding
 
-## 3. Typography (exact — do not substitute)
+Both follow the logged-out system. The onboarding flow is the source repo's
+conversational onboarding, ported: intro cinematic → typed chat thread with
+inline answer stages (`StageWhoYouServe`, `StageVoice`, `StageSources`) → ready
+preloader. Its mechanics, timings, and markup are theirs; only the questions and
+the submit binding are ours.
 
-Pinned in `[data-marketing-shell]` scope:
-- **Display serif** — `"Times New Roman MT", "Times New Roman", Times, serif`
-  via `--font-title`/`--font-serif-display`. Every `h1–h6` in the shell
-  resolves to it automatically. Large headlines are **thin and high-contrast**:
-  use the `<Serif>` primitive (light weight, tight tracking, high optical
-  size). Headline scale ~`text-5xl`–`text-7xl`, line-height ~1.05.
-- **Eyebrow mono** — `"SF Mono", ui-monospace, …` via `--font-mono` in shell
-  scope. Eyebrows are UPPERCASE, letterspaced, small (11–12px), and carry a
-  small colored dot (a styled `<span>`, never an emoji). Use the `<Eyebrow>`
-  primitive.
-- **Body sans** — the system sans stack (SF Pro-class). Body copy is muted
-  (`text-white/70`), ~15–17px, relaxed leading.
-- No webfonts are loaded for the logged-out site; these are system faces.
+---
 
-## 4. Primitives (compose pages ONLY from these)
+# Brand
 
-From `src/components/marketing/giga/primitives.tsx` and siblings:
-- `<Serif>` — display headline (as h1/h2/h3/span/p)
-- `<Eyebrow>` — mono uppercase label with accent dot
-- **Pill CTA** — `rounded-full` **white** button with near-black text
-  (`bg-white text-neutral-900`) + arrow; secondary actions are ghost/underline
-  text links. Never a filled orange button on the marketing site.
-- `<BlurRise>` (in primitives) — the entrance: blur(8px) → crisp with a small
-  rise on `EASE_OUT = [0.16, 1, 0.3, 1]`. Every section enters this way;
-  respects `prefers-reduced-motion`.
-- Showcase cards — dark rounded product-UI mockups composited over
-  photography (`agent-canvas`, `*-showcases`); auto-advancing stepped lists
-  with progress bars for feature walkthroughs.
-- `logos-carousel`, `scroll-direction-carousel`, `text-flip`,
-  `shimmering-text`, `decrypted-text`, `animated-gradient-text`,
-  `animated-gradient-background`, `circuit-board` — the motion garnish kit.
-  Use at most one per section.
-- `<FooterReveal>` — the footer is pinned beneath the page and uncovered on
-  the final stretch of scroll. All logged-out pages get this via the layout.
+Company: **Fortitudo** / **Fortitudo Agency**. The AI delivery agent: **Helix**
+("Helix by Fortitudo Agency" formally). Voice: confident, concrete, short
+sentences. No hype adjectives, no exclamation marks.
 
-## 5. Motion rules
+Offerings — exactly five, everywhere: **Websites, Software Solutions, AI
+Solutions, Consultation, Digital Marketing**.
 
-- Route transitions: the `(marketing)/template.tsx` blur-in — leave it alone.
-- Section entrances: BlurRise with `EASE_OUT`; stagger children ~60–90ms.
-- Feature steppers auto-advance with linear progress bars; hover pauses.
-- Nothing bounces. No springs on the marketing site. Durations 0.45–0.8s.
-- Every animation respects `prefers-reduced-motion`.
+---
 
-## 6. Section anatomy (the rhythm of a page)
-
-1. Eyebrow (mono, dot) → 2. Serif headline (thin, two lines max) →
-3. one muted body paragraph (~65ch) → 4. one CTA (white pill) →
-5. the visual (photo, composited product card, or showcase component).
-Sections are tall (`py-24`–`py-40`), separated by hairlines or photography
-transitions — never by background-color stripes.
-
-## 7. Brand & voice
-
-- Company: **Fortitudo** / **Fortitudo Agency**. The AI delivery agent:
-  **Helix** ("Helix by Fortitudo Agency" formally).
-- Voice: confident, concrete, short sentences. "Helix works your whole
-  build." Never hype adjectives, never exclamation marks.
-- Logo lockup: Fortitudo mark + "Fortitudo" text wordmark (see header/footer).
-- The gradient id `chippi-grad` in the layout is a frozen internal identifier
-  (icon strokes reference it); leave the id alone.
-
-## 8. Auth & onboarding
-
-Auth pages and the onboarding flow use this same shell system (ported from the
-same reference): identical fonts, colors, and motion; Clerk components carry
-the ported `clerk-appearance` theme. The onboarding flow's step/chat mechanics
-are frozen; only its questions/wording are Fortitudo's.
-
-## 9. Hard don'ts
-
-- Don't import from `src/components/landing/` (retired Corgi-style system) or
-  reuse the product/dashboard tokens (`bg-brand`, `.eyebrow-mono`, AsciiField)
-  on the logged-out site — the dashboard has its own separate system.
-- Don't add webfonts, don't change the serif, don't swap photography for
-  illustrations, don't use filled orange CTAs, don't shrink section spacing.
-- New imagery: full-bleed photography in the existing grade (see
-  `public/marketing/`); leave an explicit placeholder slot if no asset exists.
+When in doubt, open the corresponding file in the realestatecrm repo and copy
+its vocabulary. That is the whole rule.

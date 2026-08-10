@@ -14,7 +14,7 @@ export function Skeleton({ className }: { className?: string }) {
 
 /**
  * Stat-tile skeleton. Mirrors the hairline stat band: label, focal number,
- * caption — no icon chip, since the real tile has none (design-product.md).
+ * caption — no icon chip, since the real tile has none (design.md).
  */
 export function StatCardSkeleton() {
   return (
