@@ -77,6 +77,14 @@ export default async function AdminLayout({
       icon: "MessageSquare",
       section: "Operations",
     },
+    // Helix's own surfaces. Approvals is the one every staff member needs —
+    // the agent's changes are queued there and go nowhere until reviewed.
+    {
+      label: "Approvals",
+      href: "/admin/helix/approvals",
+      icon: "CheckCheck",
+      section: "Helix",
+    },
     ...(canManageAgency(user.role)
       ? [
           {
