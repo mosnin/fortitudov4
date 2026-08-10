@@ -22,6 +22,7 @@ import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { AgentCanvas } from '@/components/marketing/giga/agent-canvas';
 import { Advantage } from '@/components/marketing/giga/advantage';
+import { Control } from '@/components/marketing/giga/control';
 import { RealtorShowcase } from '@/components/marketing/giga/realtor-showcase';
 import { BrokerageShowcase } from '@/components/marketing/giga/brokerage-showcase';
 import { Complexity } from '@/components/marketing/giga/complexity';
@@ -42,6 +43,7 @@ export default async function MarketingHomePage() {
         <Stats />
         <Offerings />
         <AgentCanvas />
+        <Control />
         <Advantage />
         <RealtorShowcase />
         <BrokerageShowcase />

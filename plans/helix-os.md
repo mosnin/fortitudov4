@@ -35,25 +35,38 @@ people set it to auto-approve and it stops being safe. Gatekeepers invert this:
 
 This is the whole product in one mechanism: agency speed with agency control.
 
-## Iterations
+## Iterations — all shipped
 
-1. Schema: threads, messages, introductions, actions, gadgets, blueprints, events.
-2. Gatekeeper runtime + registry; the op contract (`read` / `write` with `simulate` + `execute`).
-3. First gatekeepers: clients, projects, tasks.
-4. Agent runtime — pluggable. Anthropic-backed when `ANTHROPIC_API_KEY` is set;
-   a deterministic planner otherwise so every flow is demonstrable without a key.
-5. Approvals queue UI — the flagship screen.
-6. Helix thread UI — chat, introductions rail, inline action cards.
-7. Introductions UX — pick or paste a resource; agent-requested grants.
-8. More gatekeepers: invoices/payments, messages, files, scheduler, publish.
-9. Gadget runtime — sandboxed iframe, strict CSP, scoped RPC bridge.
-10. Gadget builder — Helix writes gadget source; versions; live preview.
-11. Blueprints — install a gadget into a client workspace.
-12. Client-side Helix — restricted to the client's own project.
-13. Command palette (⌘K) tying every surface together.
-14. Activity / audit stream.
-15. Helix surfaced on the existing dashboard pages.
-16. Marketing section for the platform; docs; design.md; final verification.
+1. ✅ Schema: threads, messages, introductions, actions, gadgets, blueprints, events.
+2. ✅ Gatekeeper runtime + registry; the op contract.
+3. ✅ First gatekeepers: clients, projects, tasks.
+4. ✅ Agent runtime — pluggable (Anthropic / rule-based planner).
+5. ✅ Approvals queue.
+6. ✅ Thread UI with the introductions rail.
+7. ✅ Introductions UX, including agent-requested grants.
+8. ✅ Money, conversations, files and reports gatekeepers.
+9. ✅ Gadget runtime — sandboxed iframe, CSP, scoped RPC bridge.
+10. ✅ Gadget builder + version history.
+11. ✅ Blueprints, with three built-ins.
+12. ✅ Client-side Helix — read-only by construction.
+13. ✅ Command palette.
+14. ✅ Activity stream.
+15. ✅ Helix surfaced on existing pages.
+16. ✅ Marketing section, docs, design.md, verification.
+
+## What is not built
+
+Stated plainly so nobody assumes otherwise:
+
+- **No automated tests.** The repo has no test infrastructure, and adding one
+  was outside this build. The invariants below are enforced by types and by
+  code review, not by a suite. That is the largest gap.
+- **No scheduler.** Helix acts when asked. There is no cron, no watcher, no
+  "Helix noticed X overnight".
+- **No streaming.** A turn returns once its actions are persisted; see the
+  reasoning in `threads/[id]/messages/route.ts`.
+- **Reads are logged but never rate-limited.** A long agent turn can write a
+  lot of audit rows.
 
 ## Rules
 

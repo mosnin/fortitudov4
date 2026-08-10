@@ -14,6 +14,22 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - The two systems never mix. Light theme is the default in the product; `.dark` tokens exist and the toggle lives in the shell.
 - Onboarding is the source repo's conversational flow, ported: its stages (`StageWhoYouServe`, `StageVoice`, `StageSources`) keep their markup and timings; only the questions and the submit binding are ours.
 
+## Helix OS
+The agentic layer (`src/lib/helix/`, `plans/helix-os.md`). Architecture adopted from **cloudflare-os** — its Workers runtime is not portable to this stack, its four primitives are:
+
+- **Thread** — a durable agent session. Starts able to touch nothing.
+- **Introduction** — a capability grant, per thread. Helix may request one; a human decides. `allowWrites: false` refuses writes outright rather than queueing them.
+- **Action** — a proposed change. **Never written on first call**: the gatekeeper describes, previews and *simulates* it, and the thread's reads are replayed through that simulated overlay so the agent stays consistent and keeps working. Nothing commits until a human approves, and approval executes in proposal order.
+- **Gadget / Blueprint** — a sandboxed per-client mini-app Helix writes; a blueprint is its source without its data.
+
+Rules that must hold:
+- Every capability lives in `src/lib/helix/registry.ts` and nowhere else — that file is the whole blast radius.
+- A write op must supply **both** `simulate()` and `execute()`; the contract types make an op missing either half unregisterable.
+- Every op is authorised by an introduction. Ops that *create* a row declare a `guard` naming the parent (a task is guarded by its client), because the new row could never have been introduced.
+- Gadgets **read but never write** — generated code on a loop could flood the queue, and approval only protects you while the queue stays readable. They run `sandbox="allow-scripts"` with **no** `allow-same-origin` plus `connect-src 'none'`; never add either.
+- Client-portal threads are **read-only, always**. A client has no authority over their own delivery stage or fees, so their requests must not enter the agency's approval queue.
+- The agent driver is pluggable: Anthropic-backed with `ANTHROPIC_API_KEY`, otherwise a rule-based planner that says so. Both go through `callOp`.
+
 ## Roles & access
 `users.role`: `client | va | project_manager | admin` (see `src/lib/permissions.ts`). Staff land on `/admin` via `/post-login`; clients on `/dashboard`. VAs only see projects they hold a task on (`getAccessibleProjectIds`). Finance pages require `admin`.
 

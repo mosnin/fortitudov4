@@ -106,6 +106,28 @@ rows 13px, `h-9`, `rounded-md`; the active row is `bg-foreground/[0.045]` with a
 10px uppercase `text-muted-foreground/70`; icons 15px, `strokeWidth` 1.75 (2.25
 active). Top-bar controls are ghost, not boxed.
 
+## Helix surfaces
+
+Helix is part of the product, not a guest in it. Its screens compose from the
+same kit as everything else — no gradient, no glow, no "AI" treatment, and no
+sparkle except the one nav glyph. Four rules it adds:
+
+- **Risk is a word, never a colour.** `Routine` / `Notable` / `Significant`
+  ride in a neutral `RowPill`. Colour stays reserved for genuine semantics, and
+  a red "high risk" pill would be the first crack in that rule.
+- **Who acted is stated, not implied.** Every audit row and every executed
+  action names Helix or a person in the line itself.
+- **The diff is the deliverable.** An approval card leads with a plain-English
+  summary, then field-level `before → after`. Outward-facing content (a client
+  message) shows in full — you cannot approve what you have not read.
+- **Nothing empty is celebrated.** The overview's Helix strip renders *nothing*
+  when nothing is queued; a widget that usually reads "0" trains people to stop
+  looking, and the approval queue cannot afford that.
+
+`HELIX_PILL` marks buttons that directly invoke Helix (Send, Ask, New thread)
+and nothing else. Its surfaces live under `/admin/helix` — Threads, Approvals,
+Gadgets, Activity — plus a read-only `/helix` on the client portal.
+
 ---
 
 # Part 2 — The logged-out surface
