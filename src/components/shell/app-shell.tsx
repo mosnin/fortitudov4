@@ -10,6 +10,7 @@ import { GlobalSearch } from "@/components/dashboard/global-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
+import { CommandPalette } from "./command-palette";
 import { springSnappy } from "@/lib/motion";
 import { PRIMARY_PILL } from "@/lib/typography";
 import {
@@ -209,6 +210,8 @@ export function AppShell({
 
   return (
     <div className="flex min-h-screen bg-background">
+      {/* ⌘K from anywhere in the product. Mounted once, at the shell. */}
+      <CommandPalette />
       {/* Desktop sidebar — floating white card with a soft shadow */}
       <motion.aside
         animate={{ width: collapsed ? 76 : 244 }}

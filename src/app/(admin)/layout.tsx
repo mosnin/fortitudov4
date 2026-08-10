@@ -98,6 +98,12 @@ export default async function AdminLayout({
       icon: "Boxes",
       section: "Helix",
     },
+    {
+      label: "Activity",
+      href: "/admin/helix/activity",
+      icon: "ScrollText",
+      section: "Helix",
+    },
     ...(canManageAgency(user.role)
       ? [
           {
