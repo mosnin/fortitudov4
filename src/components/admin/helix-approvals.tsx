@@ -138,7 +138,7 @@ export function HelixApprovals() {
 
   const decide = useCallback(
     async (
-      decision: "approve" | "reject",
+      decision: "approve" | "reject" | "retry",
       payload: { actionIds?: string[]; threadId?: string }
     ) => {
       setBusy(true);
@@ -236,7 +236,11 @@ export function HelixApprovals() {
           tabs={[
             { key: "pending", label: "Waiting", count: pending.length },
             { key: "applied", label: "Applied", count: applied.length },
-            { key: "declined", label: "Declined", count: declined.length },
+            {
+              key: "declined",
+              label: "Declined",
+              count: declined.length,
+            },
           ]}
           active={tab}
           onChange={(key) => {
@@ -273,6 +277,15 @@ export function HelixApprovals() {
                         className={cn(GHOST_PILL, busy && "opacity-50")}
                       >
                         Approve all {thread.rows.length}
+                      </button>
+                    ) : thread.rows.some((row) => row.status === "failed") ? (
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => decide("retry", { threadId: thread.id })}
+                        className={cn(GHOST_PILL, busy && "opacity-50")}
+                      >
+                        Retry failures
                       </button>
                     ) : (
                       `${thread.rows.length} change${thread.rows.length === 1 ? "" : "s"}`
@@ -357,7 +370,7 @@ function ActionCard({
   selected: boolean;
   onToggle: () => void;
   busy: boolean;
-  onDecide: (decision: "approve" | "reject") => void;
+  onDecide: (decision: "approve" | "reject" | "retry") => void;
 }) {
   const changes = action.preview?.changes ?? [];
   return (
@@ -447,6 +460,17 @@ function ActionCard({
           </p>
         </div>
 
+        {action.status === "failed" && (
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => onDecide("retry")}
+            className={cn(GHOST_PILL, "shrink-0", busy && "opacity-50")}
+          >
+            Try again
+          </button>
+        )}
+
         {action.status === "simulated" && (
           <div className="flex shrink-0 items-center gap-1.5">
             <button
@@ -478,7 +502,7 @@ function EmptyQueue({ tab }: { tab: TabKey }) {
       ? "Nothing is waiting. When Helix changes something, it lands here first."
       : tab === "applied"
         ? "Nothing has been approved yet."
-        : "Nothing has been declined.";
+        : "Nothing has been declined, and nothing has failed.";
   return (
     <Reveal variant="fade">
       <p className={cn(BODY_MUTED, "py-10")}>{copy}</p>

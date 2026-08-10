@@ -11,7 +11,7 @@
  * client sees it.
  */
 
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import { agencyClients, helixGadgetVersions, helixGadgets } from '@/db/schema';
@@ -48,7 +48,12 @@ const listGadgets = readOp<{ clientId?: string }, unknown>({
         sharedWithClient: helixGadgets.sharedWithClient,
       })
       .from(helixGadgets)
-      .where(eq(helixGadgets.ownerId, ctx.userId))
+      .where(
+        and(
+          eq(helixGadgets.ownerId, ctx.userId),
+          ne(helixGadgets.status, 'archived')
+        )
+      )
       .orderBy(desc(helixGadgets.updatedAt))
       .limit(50);
     return input.clientId

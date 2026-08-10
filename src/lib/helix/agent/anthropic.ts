@@ -77,6 +77,7 @@ export async function runAnthropicTurn(
   const system = systemPrompt({
     scope: driver.ctx.scope,
     introduced: driver.ctx.introduced,
+    denied: driver.ctx.denied,
     pendingActions: driver.ctx.overlay.length,
   });
 

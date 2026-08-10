@@ -46,6 +46,7 @@ function describeOp(op: AnyOp): string {
 export function systemPrompt(context: {
   scope: 'agency' | 'client';
   introduced: { kind: string; label: string; allowWrites: boolean }[];
+  denied: { kind: string; label: string }[];
   pendingActions: number;
 }): string {
   const lines: string[] = [
@@ -86,6 +87,17 @@ export function systemPrompt(context: {
       '# Introduced in this thread',
       'Nothing yet. Ask to be introduced to whatever the work needs.'
     );
+  }
+
+  if (context.denied.length > 0) {
+    lines.push(
+      '',
+      '# Already refused',
+      'You asked for these and were told no. Do not ask again — work around them or say what you cannot do without them.'
+    );
+    for (const ref of context.denied) {
+      lines.push(`- ${ref.kind}: ${ref.label}`);
+    }
   }
 
   if (context.pendingActions > 0) {

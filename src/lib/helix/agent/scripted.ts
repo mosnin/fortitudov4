@@ -28,6 +28,14 @@ export async function runScriptedTurn(
   const clients = ctx.introduced.filter((ref) => ref.kind === 'client');
 
   if (clients.length === 0) {
+    // Asking again for something already refused is the fastest way to make a
+    // person stop reading what the agent says.
+    if (ctx.denied.some((ref) => ref.kind === 'client')) {
+      return {
+        reply: `Access to that was declined, so there is nothing I can read here. Introduce me to a client if you want me to pick this up.\n\n${OFFLINE_NOTE}`,
+        requested: [],
+      };
+    }
     await requestIntroduction(
       ctx,
       'client',

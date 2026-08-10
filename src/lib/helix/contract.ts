@@ -59,6 +59,11 @@ export interface HelixContext {
    * normal starting state, not an error.
    */
   introduced: GrantedRef[];
+  /**
+   * Access this thread asked for and was refused. Surfaced to the agent so it
+   * stops asking — a refusal nobody records is a question repeated forever.
+   */
+  denied: { kind: HelixResourceKind; label: string }[];
   /** Simulated-but-unexecuted actions in this thread, in proposal order. */
   overlay: OverlayEntry[];
 }

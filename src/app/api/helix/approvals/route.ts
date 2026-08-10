@@ -3,7 +3,11 @@ import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { helixActions, helixThreads, users } from "@/db/schema";
 import { requireStaff } from "@/lib/auth-utils";
-import { approveActions, rejectActions } from "@/lib/helix/runtime";
+import {
+  approveActions,
+  rejectActions,
+  requeueActions,
+} from "@/lib/helix/runtime";
 
 /**
  * The approval queue.
@@ -72,28 +76,31 @@ export async function POST(request: Request) {
     const user = await requireStaff();
 
     const body = (await request.json()) as {
-      decision?: "approve" | "reject";
+      decision?: "approve" | "reject" | "retry";
       actionIds?: string[];
       /** Take every pending action in one thread. */
       threadId?: string;
     };
 
-    if (body.decision !== "approve" && body.decision !== "reject") {
+    if (!["approve", "reject", "retry"].includes(body.decision ?? "")) {
       return NextResponse.json(
-        { error: "decision must be 'approve' or 'reject'." },
+        { error: "decision must be 'approve', 'reject' or 'retry'." },
         { status: 400 }
       );
     }
 
     let ids = body.actionIds ?? [];
     if (body.threadId) {
+      // Retrying a whole thread means its failures; approving or declining one
+      // means its pending changes. Same shape, different set.
+      const targetStatus = body.decision === "retry" ? "failed" : "simulated";
       const pending = await db
         .select({ id: helixActions.id })
         .from(helixActions)
         .where(
           and(
             eq(helixActions.threadId, body.threadId),
-            eq(helixActions.status, "simulated")
+            eq(helixActions.status, targetStatus)
           )
         );
       ids = pending.map((row) => row.id);
@@ -104,6 +111,11 @@ export async function POST(request: Request) {
         { error: "Nothing to review." },
         { status: 400 }
       );
+    }
+
+    if (body.decision === "retry") {
+      const requeued = await requeueActions(ids, user.id);
+      return NextResponse.json({ requeued });
     }
 
     if (body.decision === "reject") {

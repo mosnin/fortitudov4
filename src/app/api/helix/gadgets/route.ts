@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { agencyClients, helixGadgets } from "@/db/schema";
@@ -25,7 +25,14 @@ export async function GET() {
       })
       .from(helixGadgets)
       .leftJoin(agencyClients, eq(helixGadgets.clientId, agencyClients.id))
-      .where(eq(helixGadgets.ownerId, user.id))
+      // Archived gadgets are excluded: the PATCH can set that status, and a
+      // list that ignores it would make archiving look like it did nothing.
+      .where(
+        and(
+          eq(helixGadgets.ownerId, user.id),
+          ne(helixGadgets.status, "archived")
+        )
+      )
       .orderBy(desc(helixGadgets.updatedAt))
       .limit(100);
 

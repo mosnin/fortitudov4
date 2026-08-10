@@ -68,6 +68,19 @@ export async function loadContext(
       )
     );
 
+  const refused = await db
+    .select({
+      resourceKind: helixIntroductions.resourceKind,
+      resourceLabel: helixIntroductions.resourceLabel,
+    })
+    .from(helixIntroductions)
+    .where(
+      and(
+        eq(helixIntroductions.threadId, threadId),
+        eq(helixIntroductions.status, 'denied')
+      )
+    );
+
   const pending = await db
     .select()
     .from(helixActions)
@@ -92,6 +105,10 @@ export async function loadContext(
         allowWrites: grant.allowWrites,
       })
     ),
+    denied: refused.map((row) => ({
+      kind: row.resourceKind,
+      label: row.resourceLabel,
+    })),
     overlay: pending.map(
       (action): OverlayEntry => ({
         id: action.id,
@@ -387,6 +404,52 @@ async function failAction(action: HelixAction, userId: string, error: string) {
     resourceKind: action.resourceKind,
     resourceId: action.resourceId,
   });
+}
+
+/**
+ * Put a failed action back in the queue.
+ *
+ * Execution can fail for reasons that have nothing to do with the proposal —
+ * a transient database error, a row a colleague was editing at the same
+ * moment. Leaving those terminal loses an approved change with no way back,
+ * which is the worst outcome this system can produce.
+ *
+ * It returns to `simulated` rather than re-executing, so a human approves it
+ * again. The world may have moved since it was simulated, and re-running on a
+ * button press would commit against state nobody re-read.
+ */
+export async function requeueActions(
+  actionIds: string[],
+  userId: string
+): Promise<number> {
+  if (actionIds.length === 0) return 0;
+  const rows = await db
+    .update(helixActions)
+    .set({
+      status: 'simulated',
+      error: null,
+      reviewedBy: null,
+      reviewedAt: null,
+    })
+    .where(
+      and(
+        inArray(helixActions.id, actionIds),
+        eq(helixActions.status, 'failed')
+      )
+    )
+    .returning({
+      id: helixActions.id,
+      threadId: helixActions.threadId,
+      summary: helixActions.summary,
+    });
+
+  for (const row of rows) {
+    await recordEvent({ threadId: row.threadId, userId } as HelixContext, {
+      kind: 'action_simulated',
+      summary: `Requeued after failure: ${row.summary}`,
+    });
+  }
+  return rows.length;
 }
 
 /** Drop actions from the overlay without committing them. */

@@ -25,6 +25,7 @@ function ctx(
       label: ref.label,
       allowWrites: true,
     })),
+    denied: [],
     overlay: [],
   };
 }

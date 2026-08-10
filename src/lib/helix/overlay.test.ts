@@ -30,6 +30,7 @@ function ctx(overlay: OverlayEntry[]): HelixContext {
     scope: 'agency',
     clientId: null,
     introduced: [],
+    denied: [],
     overlay,
   };
 }
