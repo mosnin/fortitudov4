@@ -1,18 +1,20 @@
-import { cn } from "@/lib/utils";
+import { PageHero } from "@/components/ui/firecrawl";
 
 interface PageHeaderProps {
   title: string;
   description?: string;
   /** Optional right-aligned action(s), e.g. a button. */
   action?: React.ReactNode;
-  /** Optional small eyebrow label above the title. */
+  /** Quiet section line above the title, e.g. "Operations". */
   eyebrow?: string;
   className?: string;
 }
 
 /**
- * Consistent page header used across every dashboard/admin surface so the
- * whole product shares one visual rhythm. Server-safe (CSS-only fade-in).
+ * Legacy alias for the canonical page frame. `PageHero` IS the product header
+ * (design-product.md): quiet section line, serif H1, one muted subtitle. This
+ * wrapper keeps older `PageHeader` call sites on the same frame — prefer
+ * importing `PageHero` directly in new code.
  */
 export function PageHeader({
   title,
@@ -22,24 +24,12 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-4 animate-fade-up sm:flex-row sm:items-end sm:justify-between",
-        className
-      )}
-    >
-      <div className="space-y-1">
-        {eyebrow && (
-          <p className="text-xs font-medium uppercase tracking-wider text-orange">
-            {eyebrow}
-          </p>
-        )}
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
-        {description && (
-          <p className="text-muted-foreground max-w-2xl">{description}</p>
-        )}
-      </div>
-      {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
-    </div>
+    <PageHero
+      title={title}
+      description={description}
+      action={action}
+      section={eyebrow}
+      className={className}
+    />
   );
 }

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BarChart3 } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
-import { CountUp, Sparkline } from "@/components/ui/firecrawl";
+import { CountUp } from "@/components/ui/firecrawl";
+import { AreaChart } from "@/components/ui/charts";
+import { SECTION_LABEL } from "@/lib/typography";
 
 interface AnalyticsEvent {
   id: string;
@@ -15,6 +15,22 @@ interface AnalyticsEvent {
 
 interface AnalyticsOverviewProps {
   projectId: string;
+}
+
+/** Loading placeholder — mirrors the hairline rows it replaces. */
+function RowsSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <ul className="divide-y divide-border/60">
+      {Array.from({ length: rows }).map((_, i) => (
+        <li key={i} className="flex items-start gap-3 py-3">
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
+            <div className="h-3 w-1/5 animate-pulse rounded bg-muted" />
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
@@ -34,25 +50,19 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
   }, [projectId]);
 
   if (loading) {
-    return (
-      <div className="rounded-xl border border-border">
-        <EmptyState
-          icon={BarChart3}
-          title="Loading analytics..."
-          description=""
-        />
-      </div>
-    );
+    return <RowsSkeleton />;
   }
 
   if (events.length === 0) {
     return (
-      <div className="rounded-xl border border-border">
-        <EmptyState
-          icon={BarChart3}
-          title="No analytics data yet"
-          description="Once your project is live and tracking events, metrics will appear here."
-        />
+      <div className="py-10">
+        <p className="text-sm font-medium text-foreground">
+          No analytics data yet
+        </p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Once your project is live and tracking events, metrics will appear
+          here.
+        </p>
       </div>
     );
   }
@@ -102,89 +112,88 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
 
   return (
     <div className="space-y-8">
-      {/* Summary metrics — hairline-divided 3-up with count-up numerals */}
+      {/* Summary metrics — hairline-divided 3-up */}
       <div className="grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         {stats.map((stat) => (
           <div key={stat.label} className="py-5 sm:px-6 sm:first:pl-0">
-            <p className="text-3xl font-bold tracking-tight">
+            <p className="text-2xl tracking-tight tabular-nums text-foreground">
               <CountUp value={stat.value} />
             </p>
-            <p className="micro-label mt-1.5">{stat.label}</p>
+            <p className={`${SECTION_LABEL} mt-1.5`}>{stat.label}</p>
           </div>
         ))}
       </div>
 
       {/* Events over time — only when there's a real multi-point series */}
       {series.length >= 2 && (
-        <section className="border-b border-border pb-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h3 className="text-[15px] font-semibold">Events over time</h3>
-              <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-                {formatDay(dayKeys[0])} — {formatDay(dayKeys[dayKeys.length - 1])}
-              </p>
-            </div>
-            <p className="text-3xl font-bold tracking-tight">
-              <CountUp value={events.length} />
-              <span className="ml-1.5 text-lg font-semibold text-muted-foreground">
-                events
-              </span>
+        <section className="space-y-3">
+          <div className="flex items-baseline justify-between gap-4">
+            <p className={SECTION_LABEL}>Events over time</p>
+            <p className="text-xs tabular-nums text-muted-foreground">
+              {formatDay(dayKeys[0])} — {formatDay(dayKeys[dayKeys.length - 1])}
             </p>
           </div>
-          <Sparkline
+          <AreaChart
             points={series}
-            height={120}
-            className="mt-4"
-            labels={[formatDay(dayKeys[0]), formatDay(dayKeys[dayKeys.length - 1])]}
+            xLabels={dayKeys.map((k, i) =>
+              i === 0 || i === dayKeys.length - 1 ? formatDay(k) : ""
+            )}
+            height={140}
           />
         </section>
       )}
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
         {/* Event breakdown */}
-        <section>
-          <h3 className="micro-label">Event Breakdown</h3>
-          <div className="mt-4 space-y-3">
+        <section className="space-y-3">
+          <p className={SECTION_LABEL}>Event breakdown</p>
+          <ul className="divide-y divide-border/60">
             {sortedEvents.slice(0, 8).map(([event, data]) => (
-              <div key={event}>
-                <div className="flex items-center justify-between text-sm mb-1">
-                  <span className="font-mono text-muted-foreground truncate">{event}</span>
-                  <span className="font-mono font-medium">{data.count}</span>
+              <li key={event} className="py-3">
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <span className="truncate text-sm text-foreground">
+                    {event}
+                  </span>
+                  <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
+                    {data.count}
+                  </span>
                 </div>
-                <div className="h-2 rounded-full bg-muted overflow-hidden">
+                <div className="h-1 overflow-hidden rounded-full bg-muted">
                   <div
                     className="h-full rounded-full bg-foreground transition-all"
                     style={{ width: `${(data.count / maxCount) * 100}%` }}
                   />
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
         {/* Recent events */}
-        <section>
-          <h3 className="micro-label">Recent Events</h3>
-          <div className="mt-2">
+        <section className="space-y-3">
+          <p className={SECTION_LABEL}>Recent events</p>
+          <ul className="divide-y divide-border/60">
             {recentEvents.map((event) => (
-              <div
+              <li
                 key={event.id}
-                className="flex items-center justify-between border-b border-border py-2.5 last:border-0"
+                className="flex items-start justify-between gap-3 py-3"
               >
-                <div>
-                  <p className="text-sm font-medium">{event.event}</p>
-                  <p className="font-mono text-[11px] text-muted-foreground">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {event.event}
+                  </p>
+                  <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">
                     {new Date(event.createdAt).toLocaleDateString()}
                   </p>
                 </div>
                 {event.value !== null && (
-                  <span className="font-mono text-sm font-semibold text-brand">
+                  <span className="shrink-0 text-sm tabular-nums text-foreground">
                     {event.value}
                   </span>
                 )}
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
       </div>
     </div>

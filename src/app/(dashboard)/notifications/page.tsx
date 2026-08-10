@@ -3,24 +3,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Button } from "@/components/ui/button";
-import {
-  Bell,
-  Check,
-  FolderKanban,
-  MessageSquare,
-  CreditCard,
-  Upload,
-  FileText,
-  RefreshCw,
-  CheckCircle,
-  Star,
-} from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { PageHero } from "@/components/ui/firecrawl";
-import { TableSkeleton } from "@/components/ui/skeleton";
 import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import {
+  GHOST_PILL,
+  PAGE_RHYTHM,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 interface Notification {
   id: string;
@@ -31,17 +24,6 @@ interface Notification {
   actionUrl?: string | null;
   createdAt: string;
 }
-
-const typeIcons: Record<string, React.ElementType> = {
-  phase_update: FolderKanban,
-  message_received: MessageSquare,
-  payment_confirmed: CreditCard,
-  file_uploaded: Upload,
-  comment_added: FileText,
-  revision_response: RefreshCw,
-  project_completed: CheckCircle,
-  survey_request: Star,
-};
 
 function formatRelativeTime(dateStr: string): string {
   const date = new Date(dateStr);
@@ -110,96 +92,109 @@ export default function NotificationsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <PageHero title="Notifications" description="Loading your latest updates…" />
-        <div className="rounded-xl border border-border p-6">
-          <TableSkeleton rows={5} />
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
+        <div className={cn(READING_COL, PAGE_RHYTHM)}>
+          <PageHero
+            section="Account"
+            title="Notifications"
+            description="Loading your latest updates…"
+          />
+          <ul className="divide-y divide-border/60">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <li key={i} className="space-y-2 py-3">
+                <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
+                <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <PageHero
-        title="Notifications"
-        description={
-          unreadCount > 0
-            ? `You have ${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}`
-            : "All caught up!"
-        }
-        action={
-          unreadCount > 0 ? (
-            <Button variant="outline" size="sm" onClick={markAllRead}>
-              <Check className="mr-1 h-4 w-4" />
-              Mark all read
-            </Button>
-          ) : undefined
-        }
-      />
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <PageHero
+          section="Account"
+          title="Notifications"
+          description={
+            unreadCount > 0
+              ? `You have ${unreadCount} unread notification${unreadCount > 1 ? "s" : ""}.`
+              : "You're all caught up."
+          }
+          action={
+            unreadCount > 0 ? (
+              <button onClick={markAllRead} className={cn(GHOST_PILL, "cursor-pointer")}>
+                Mark all read
+              </button>
+            ) : undefined
+          }
+        />
 
-      {notifications.length === 0 ? (
-        <div className="rounded-xl border border-border">
-          <EmptyState
-            icon={Bell}
-            title="You're all caught up"
-            description="Project updates, messages, and payment confirmations will show up here."
-          />
-        </div>
-      ) : (
-        <div className="space-y-8">
-          {Object.entries(grouped).map(([date, items]) => (
-            <div key={date}>
-              <h3 className="micro-label mb-3">{date}</h3>
-              <motion.div
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border border-y border-border"
-              >
-                {items.map((notification) => {
-                  const Icon = typeIcons[notification.type] || Bell;
-                  return (
-                    <motion.div key={notification.id} variants={rowItem}>
+        {notifications.length === 0 ? (
+          <div className="border-t border-border py-10">
+            <p className="text-sm font-medium text-foreground">
+              You&rsquo;re all caught up
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Project updates, messages, and payment confirmations will show up
+              here.
+            </p>
+          </div>
+        ) : (
+          <div className={PAGE_RHYTHM}>
+            {Object.entries(grouped).map(([date, items]) => (
+              <section key={date} className={SECTION_RHYTHM}>
+                <p className={SECTION_LABEL}>{date}</p>
+                <motion.ul
+                  variants={rowCascade}
+                  initial="hidden"
+                  animate="visible"
+                  className="divide-y divide-border/60 border-t border-border/60"
+                >
+                  {items.map((notification) => (
+                    <motion.li key={notification.id} variants={rowItem}>
                       <Link
                         href={notification.actionUrl || "#"}
-                        className={cn(
-                          "flex gap-4 px-3 py-4 transition-colors hover:bg-muted/50",
-                          !notification.read && "bg-brand-subtle/40"
-                        )}
+                        className="group/row -mx-2 flex items-start gap-3 rounded-md px-2 py-3 transition-colors hover:bg-muted/30"
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                          <Icon className="h-5 w-5 text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
+                        <div className="min-w-0 flex-1">
                           <div className="flex items-start justify-between gap-2">
-                            <p className={cn("text-sm", !notification.read && "font-semibold")}>
+                            <p
+                              className={cn(
+                                "text-sm",
+                                notification.read
+                                  ? "text-foreground"
+                                  : "font-medium text-foreground"
+                              )}
+                            >
                               {notification.title}
                             </p>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <span className="font-mono text-[11px] text-muted-foreground">
+                            <div className="flex shrink-0 items-center gap-2">
+                              {!notification.read && (
+                                <span className={STATUS_PILL_ACTIVE}>New</span>
+                              )}
+                              <span className="text-xs tabular-nums text-muted-foreground">
                                 {formatRelativeTime(notification.createdAt)}
                               </span>
-                              {!notification.read && (
-                                <span className="h-2 w-2 rounded-full bg-brand" />
-                              )}
                             </div>
                           </div>
                           {notification.body && (
-                            <p className="text-sm text-muted-foreground mt-0.5">
+                            <p className="mt-0.5 text-xs text-muted-foreground">
                               {notification.body}
                             </p>
                           )}
                         </div>
                       </Link>
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            </div>
-          ))}
-        </div>
-      )}
+                    </motion.li>
+                  ))}
+                </motion.ul>
+              </section>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

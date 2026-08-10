@@ -2,10 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { BracketLabel } from "@/components/ui/firecrawl";
-import { EmptyState } from "@/components/ui/empty-state";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SortPill } from "@/components/ui/filters";
 import { PAYMENT_METHODS } from "@/lib/payment-methods";
@@ -18,15 +15,18 @@ import {
 import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
-  Users,
-  Pencil,
-  X,
-  Trash2,
-  CircleCheck,
-  Search,
-  Pause,
-  Play,
-} from "lucide-react";
+  BODY_MUTED,
+  CAPTION,
+  GHOST_PILL,
+  H1,
+  H3,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  SECTION_LABEL,
+  STATUS_PILL,
+  TITLE_FONT,
+} from "@/lib/typography";
+import { X, Search } from "lucide-react";
 
 interface ClientRow {
   id: string;
@@ -71,21 +71,11 @@ const STATUSES = ["active", "paused", "churned"] as const;
 const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 
-const packageBadge: Record<ClientPackage, string> = {
-  websites: "bg-muted text-foreground",
-  software_solutions: "border border-border bg-background text-foreground",
-  ai_solutions: "bg-foreground text-background",
-  consultation: "border border-border bg-background text-muted-foreground",
-  digital_marketing: "bg-brand-subtle text-brand",
-  custom: "border border-dashed border-border bg-background text-foreground",
-};
-
-const statusClass = (s: string) =>
-  s === "active"
-    ? "text-success"
-    : s === "paused"
-      ? "text-warning"
-      : "text-destructive";
+/** Every offering reads the same: a neutral word pill, never a colour code. */
+const packageName = (c: { package: ClientPackage; packageLabel: string | null }) =>
+  c.package === "custom" && c.packageLabel
+    ? c.packageLabel
+    : PACKAGE_LABELS[c.package] ?? "—";
 
 const selectClass =
   "h-10 w-full rounded-full border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
@@ -118,7 +108,7 @@ function Field({
   return (
     <div>
       <span className="mb-1.5 block text-[13px] font-medium">
-        {label} {required && <span className="text-destructive">*</span>}
+        {label} {required && <span aria-hidden>*</span>}
       </span>
       {children}
     </div>
@@ -380,7 +370,7 @@ export function ClientRoster({
     <>
       <section>
         <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
-          <BracketLabel n={visible.length} label="CLIENTS" />
+          <p className={SECTION_LABEL}>{visible.length} clients</p>
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -421,42 +411,48 @@ export function ClientRoster({
         {loading ? (
           <TableSkeleton rows={5} />
         ) : clients.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            title="No clients yet"
-            description="Add your first client with their package and retainer — Financials builds MRR and package metrics from this roster."
-          />
+          <div className="py-14 text-center">
+            <h3 className={H3}>No clients yet</h3>
+            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-md")}>
+              Add your first client with their package and retainer — Financials
+              builds MRR and package metrics from this roster.
+            </p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left align-top">
-                  <th className="micro-label py-3 pr-4">Client &amp; Company</th>
-                  <th className="micro-label py-3 pr-4">Package</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>
+                    Client &amp; Company
+                  </th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Package</th>
                   <th className="py-3 pr-4">
-                    <span className="micro-label block">Setup</span>
-                    <span className="font-mono text-[10px] text-muted-foreground">
+                    <span className={cn(SECTION_LABEL, "block")}>Setup</span>
+                    <span className="text-[10px] tabular-nums text-muted-foreground">
                       {usd(setupTotal)}
                     </span>
                   </th>
                   <th className="py-3 pr-4">
-                    <span className="micro-label block">MRR</span>
-                    <span className="font-mono text-[10px] text-muted-foreground">
+                    <span className={cn(SECTION_LABEL, "block")}>MRR</span>
+                    <span className="text-[10px] tabular-nums text-muted-foreground">
                       {usd(mrrTotal)}
                     </span>
                   </th>
-                  <th className="micro-label py-3 pr-4">Start Date</th>
-                  <th className="micro-label py-3 pr-4">Next Due</th>
-                  <th className="micro-label py-3 pr-4">Days Left</th>
-                  <th className="micro-label py-3 pr-4">Status</th>
-                  <th className="micro-label py-3 text-right">Actions</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Start Date</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Next Due</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Days Left</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Status</th>
+                  <th className={cn(SECTION_LABEL, "py-3 text-right")}>
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <motion.tbody
                 variants={rowCascade}
                 initial="hidden"
                 animate="visible"
-                className="divide-y divide-border"
+                className="divide-y divide-border/60"
               >
                 {visible.map((client) => {
                   const dl = daysLeft(client.nextDueDate);
@@ -466,41 +462,32 @@ export function ClientRoster({
                     <motion.tr
                       key={client.id}
                       variants={rowItem}
-                      className="group transition-colors hover:bg-muted/50"
+                      className="group transition-colors hover:bg-muted/30"
                     >
                       <td className="py-3 pr-4">
-                        <p className="font-medium">{client.companyName}</p>
+                        <p className="font-medium text-foreground">
+                          {client.companyName}
+                        </p>
                         <p className="text-xs text-muted-foreground">
                           {client.contactName}
+                          {client.businessType ? ` · ${client.businessType}` : ""}
                         </p>
-                        {client.businessType && (
-                          <p className="font-mono text-[10px] text-muted-foreground">
-                            {client.businessType}
-                          </p>
-                        )}
                       </td>
                       <td className="py-3 pr-4">
-                        <span
-                          className={cn(
-                            "rounded-full px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide",
-                            packageBadge[client.package],
-                          )}
-                        >
-                          {client.package === "custom" && client.packageLabel
-                            ? client.packageLabel
-                            : PACKAGE_LABELS[client.package] ?? "—"}
+                        <span className={cn(STATUS_PILL, "whitespace-nowrap")}>
+                          {packageName(client)}
                         </span>
                       </td>
-                      <td className="py-3 pr-4 font-mono text-muted-foreground">
+                      <td className="py-3 pr-4 tabular-nums text-muted-foreground">
                         {usd(client.setupFee)}
                       </td>
-                      <td className="py-3 pr-4 font-mono font-semibold">
+                      <td className="py-3 pr-4 font-medium tabular-nums">
                         {usd(client.monthlyFee)}
                         <span className="font-normal text-muted-foreground">
                           /mo
                         </span>
                       </td>
-                      <td className="py-3 pr-4 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                      <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
                         {new Date(client.startDate).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -510,9 +497,9 @@ export function ClientRoster({
                       </td>
                       <td
                         className={cn(
-                          "py-3 pr-4 font-mono text-xs whitespace-nowrap",
+                          "py-3 pr-4 text-xs tabular-nums whitespace-nowrap",
                           isOverdue
-                            ? "font-semibold text-destructive"
+                            ? "font-medium text-destructive"
                             : "text-muted-foreground",
                         )}
                       >
@@ -530,9 +517,9 @@ export function ClientRoster({
                       </td>
                       <td
                         className={cn(
-                          "py-3 pr-4 font-mono text-xs whitespace-nowrap",
+                          "py-3 pr-4 text-xs tabular-nums whitespace-nowrap",
                           isOverdue
-                            ? "font-semibold text-destructive"
+                            ? "font-medium text-destructive"
                             : "text-muted-foreground",
                         )}
                       >
@@ -543,75 +530,62 @@ export function ClientRoster({
                             : `${dl} days`}
                       </td>
                       <td className="py-3 pr-4">
+                        {/* Overdue is a genuine semantic — everything else is
+                            a neutral word pill. */}
                         <span
                           className={cn(
-                            "font-mono text-[11px] font-semibold uppercase tracking-wide",
-                            isOverdue
-                              ? "text-destructive"
-                              : statusClass(client.status),
+                            STATUS_PILL,
+                            isOverdue && "border-destructive/40 text-destructive",
                           )}
                         >
                           {isOverdue ? "Overdue" : client.status}
                         </span>
                       </td>
                       <td className="py-3 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => {
-                            setPaymentFor(client);
-                            setPayForm({
-                              paymentType: "monthly_retainer",
-                              method: PAYMENT_METHODS[0],
-                              paidAt: today(),
-                            });
-                            setError(null);
-                          }}
-                          className="rounded-lg border border-border p-1.5 text-foreground transition-colors hover:border-success/40 hover:bg-success/10 hover:text-success cursor-pointer"
-                          aria-label={`Record payment for ${client.companyName}`}
-                          title="Record payment"
-                        >
-                          <CircleCheck className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => openEdit(client)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
-                          aria-label={`Edit ${client.companyName}`}
-                          title="Edit"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        {client.status !== "churned" && (
+                        <div className="flex items-center justify-end gap-3">
                           <button
-                            onClick={() => togglePause(client)}
-                            className={cn(
-                              "rounded-md p-1.5 text-muted-foreground transition-colors cursor-pointer",
-                              client.status === "paused"
-                                ? "hover:bg-success/10 hover:text-success"
-                                : "hover:bg-warning/10 hover:text-warning",
-                            )}
-                            aria-label={
-                              client.status === "paused"
-                                ? `Resume ${client.companyName}`
-                                : `Pause ${client.companyName}`
-                            }
-                            title={
-                              client.status === "paused" ? "Resume" : "Pause"
-                            }
+                            onClick={() => {
+                              setPaymentFor(client);
+                              setPayForm({
+                                paymentType: "monthly_retainer",
+                                method: PAYMENT_METHODS[0],
+                                paidAt: today(),
+                              });
+                              setError(null);
+                            }}
+                            className={cn(QUIET_LINK, "cursor-pointer")}
+                            aria-label={`Record payment for ${client.companyName}`}
                           >
-                            {client.status === "paused" ? (
-                              <Play className="h-4 w-4" />
-                            ) : (
-                              <Pause className="h-4 w-4" />
-                            )}
+                            Record payment
                           </button>
-                        )}
-                        <button
-                          onClick={() => removeClient(client)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive cursor-pointer"
-                          aria-label={`Delete ${client.companyName}`}
-                          title="Delete"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                          <button
+                            onClick={() => openEdit(client)}
+                            className={cn(QUIET_LINK, "cursor-pointer")}
+                            aria-label={`Edit ${client.companyName}`}
+                          >
+                            Edit
+                          </button>
+                          {client.status !== "churned" && (
+                            <button
+                              onClick={() => togglePause(client)}
+                              className={cn(QUIET_LINK, "cursor-pointer")}
+                              aria-label={
+                                client.status === "paused"
+                                  ? `Resume ${client.companyName}`
+                                  : `Pause ${client.companyName}`
+                              }
+                            >
+                              {client.status === "paused" ? "Resume" : "Pause"}
+                            </button>
+                          )}
+                          <button
+                            onClick={() => removeClient(client)}
+                            className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive"
+                            aria-label={`Delete ${client.companyName}`}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </motion.tr>
                   );
@@ -641,19 +615,19 @@ export function ClientRoster({
               className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
             >
               <div className="flex items-start justify-between pb-1">
-                <h2 className="font-title text-xl tracking-tight">
+                <h2 className={cn(H1, "text-xl")} style={TITLE_FONT}>
                   Record Payment
                 </h2>
                 <button
                   type="button"
                   onClick={() => setPaymentFor(null)}
-                  className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                  className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <p className="pb-6 font-mono text-[11px] text-muted-foreground">
+              <p className={cn(CAPTION, "pb-6 tabular-nums")}>
                 {paymentFor.companyName} ·{" "}
                 {payForm.paymentType === "setup_fee"
                   ? `${usd(paymentFor.setupFee)} setup fee`
@@ -704,7 +678,7 @@ export function ClientRoster({
               </div>
 
               {payForm.paymentType === "monthly_retainer" && (
-                <p className="mt-4 font-mono text-[10px] text-muted-foreground">
+                <p className={cn(CAPTION, "mt-4")}>
                   Recording a retainer moves the next due date one month out.
                 </p>
               )}
@@ -712,16 +686,20 @@ export function ClientRoster({
               {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
               <div className="mt-8 flex justify-end gap-2 border-t border-border pt-5">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
+                  className={GHOST_PILL}
                   onClick={() => setPaymentFor(null)}
                 >
                   Cancel
-                </Button>
-                <Button type="submit" disabled={saving}>
+                </button>
+                <button
+                  type="submit"
+                  className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                  disabled={saving}
+                >
                   {saving ? "Saving…" : "Confirm Payment"}
-                </Button>
+                </button>
               </div>
             </motion.form>
           </div>
@@ -747,13 +725,13 @@ export function ClientRoster({
               className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
             >
               <div className="flex items-start justify-between pb-6">
-                <h2 className="font-title text-xl tracking-tight">
+                <h2 className={cn(H1, "text-xl")} style={TITLE_FONT}>
                   {editingId ? "Edit Client" : "Add New Client"}
                 </h2>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                  className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
@@ -923,16 +901,20 @@ export function ClientRoster({
               {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
 
               <div className="mt-8 flex justify-end gap-2 border-t border-border pt-5">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
+                  className={GHOST_PILL}
                   onClick={() => setModalOpen(false)}
                 >
                   Cancel
-                </Button>
-                <Button type="submit" disabled={saving}>
+                </button>
+                <button
+                  type="submit"
+                  className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                  disabled={saving}
+                >
                   {saving ? "Saving…" : "Save Client"}
-                </Button>
+                </button>
               </div>
             </motion.form>
           </div>

@@ -2,13 +2,20 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { ClipboardEdit, Plus } from "lucide-react";
+import {
+  BODY_MUTED,
+  CAPTION,
+  H3,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  SECTION_LABEL,
+  STATUS_PILL,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 /**
  * Weekly reporting composer — the agency half of the weekly reporting loop
@@ -141,18 +148,18 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
       : null;
 
   return (
-    <section className="space-y-10 border-t border-border pt-8">
-      <p className="bracket-label">
-        [ <b>{feed?.reports.length ?? 0}</b> ] · WEEKLY REPORTS
+    <section className={cn(PAGE_RHYTHM, "border-t border-border pt-8")}>
+      <p className={SECTION_LABEL}>
+        {feed?.reports.length ?? 0} weekly reports
       </p>
 
       {/* Add Weekly Results — hairline-framed form band */}
       {canManage && (
         <div>
           <div className="border-b border-border pb-3">
-            <h2 className="text-[15px] font-semibold">Add Weekly Results</h2>
-            <p className="mt-0.5 font-mono text-[11px] uppercase text-muted-foreground">
-              Update the tracker with the latest data from the ads manager
+            <h2 className={H3}>Add Weekly Results</h2>
+            <p className={cn(BODY_MUTED, "mt-0.5")}>
+              Update the tracker with the latest data from the ads manager.
             </p>
           </div>
           <form
@@ -160,7 +167,7 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
             className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
           >
             <div>
-              <span className="mb-1.5 block text-[13px] font-semibold">
+              <span className="mb-1.5 block text-[13px] font-medium">
                 Client
               </span>
               <select
@@ -177,7 +184,7 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
               </select>
             </div>
             <div>
-              <span className="mb-1.5 block text-[13px] font-semibold">
+              <span className="mb-1.5 block text-[13px] font-medium">
                 Week Ending (Sunday)
               </span>
               <Input
@@ -187,12 +194,12 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
                   setForm({ ...form, weekEnding: e.target.value })
                 }
               />
-              <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+              <p className={cn(CAPTION, "mt-1.5")}>
                 Calculates the previous 7 days.
               </p>
             </div>
             <div>
-              <span className="mb-1.5 block text-[13px] font-semibold">
+              <span className="mb-1.5 block text-[13px] font-medium">
                 Leads Generated
               </span>
               <Input
@@ -203,7 +210,7 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
               />
             </div>
             <div>
-              <span className="mb-1.5 block text-[13px] font-semibold">
+              <span className="mb-1.5 block text-[13px] font-medium">
                 Cost Per Lead ($)
               </span>
               <Input
@@ -213,8 +220,8 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
                 onChange={(e) => setForm({ ...form, cpl: e.target.value })}
               />
               {previewSpend !== null && (
-                <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                  TOTAL SPEND: {usd(previewSpend)}
+                <p className={cn(CAPTION, "mt-1.5 tabular-nums")}>
+                  Total spend: {usd(previewSpend)}
                 </p>
               )}
             </div>
@@ -223,14 +230,17 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
                 <p className="mb-3 text-sm text-destructive">{error}</p>
               )}
               {saved && !error && (
-                <p className="mb-3 font-mono text-[11px] uppercase text-success">
+                <p className={cn(BODY_MUTED, "mb-3")}>
                   Saved — pending the client&apos;s numbers.
                 </p>
               )}
-              <Button type="submit" disabled={saving}>
-                <Plus className="mr-1.5 h-4 w-4" />
+              <button
+                type="submit"
+                className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                disabled={saving}
+              >
                 {saving ? "Saving…" : "Save Results"}
-              </Button>
+              </button>
             </div>
           </form>
         </div>
@@ -238,10 +248,9 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
 
       {/* Recent Entries */}
       <div>
-        <div className="flex items-center gap-2 border-b border-border pb-3">
-          <ClipboardEdit className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-[15px] font-semibold">Recent Entries</h2>
-          <p className="ml-auto font-mono text-[11px] uppercase text-muted-foreground">
+        <div className="flex items-center gap-3 border-b border-border pb-3">
+          <h2 className={H3}>Recent Entries</h2>
+          <p className={cn(SECTION_LABEL, "ml-auto")}>
             History of agency data entries
           </p>
         </div>
@@ -250,76 +259,80 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
             <TableSkeleton rows={5} />
           </div>
         ) : (feed?.reports.length ?? 0) === 0 ? (
-          <EmptyState
-            icon={ClipboardEdit}
-            title="No entries yet"
-            description={
-              canManage
+          <div className="py-14 text-center">
+            <h3 className={H3}>No entries yet</h3>
+            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-md")}>
+              {canManage
                 ? "Save the first week's results above — the report lands on the client's portal for them to add closes and revenue."
-                : "Weekly report entries will appear here once recorded."
-            }
-          />
+                : "Weekly report entries will appear here once recorded."}
+            </p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Client</th>
-                  <th className="micro-label py-3 pr-4">Dates</th>
-                  <th className="micro-label py-3 pr-4 text-right">Leads</th>
-                  <th className="micro-label py-3 pr-4 text-right">CPL</th>
-                  <th className="micro-label py-3 pr-4 text-right">
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Client</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Dates</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                    Leads
+                  </th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                    CPL
+                  </th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
                     Total Spend
                   </th>
-                  <th className="micro-label py-3 pr-4 text-right">Revenue</th>
-                  <th className="micro-label py-3">Status</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                    Revenue
+                  </th>
+                  <th className={cn(SECTION_LABEL, "py-3")}>Status</th>
                 </tr>
               </thead>
               <motion.tbody
                 variants={rowCascade}
                 initial="hidden"
                 animate="visible"
-                className="divide-y divide-border"
+                className="divide-y divide-border/60"
               >
                 {feed?.reports.map((r) => (
                   <motion.tr
                     key={r.id}
                     variants={rowItem}
-                    className="group transition-colors hover:bg-muted/50"
+                    className="group transition-colors hover:bg-muted/30"
                   >
-                    <td className="py-3 pr-4 font-medium">
+                    <td className="py-3 pr-4 font-medium text-foreground">
                       {r.companyName ?? "—"}
                     </td>
-                    <td className="py-3 pr-4 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
                       {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
                     </td>
-                    <td className="py-3 pr-4 text-right font-mono font-semibold">
+                    <td className="py-3 pr-4 text-right font-medium tabular-nums">
                       {r.leads.toLocaleString("en-US")}
                     </td>
-                    <td className="py-3 pr-4 text-right font-mono">
+                    <td className="py-3 pr-4 text-right tabular-nums text-muted-foreground">
                       {usd(r.cpl)}
                     </td>
-                    <td className="py-3 pr-4 text-right font-mono font-semibold">
+                    <td className="py-3 pr-4 text-right font-medium tabular-nums">
                       {usd(r.totalSpend)}
                     </td>
-                    <td className="py-3 pr-4 text-right font-mono">
+                    <td className="py-3 pr-4 text-right tabular-nums">
                       {r.revenue !== null ? (
-                        <span className="text-success">{usd(r.revenue)}</span>
+                        usd(r.revenue)
                       ) : (
                         <span className="text-muted-foreground">—</span>
                       )}
                     </td>
                     <td className="py-3">
                       <span
-                        className={cn(
-                          "font-mono text-[11px] font-semibold uppercase tracking-wide",
+                        className={
                           r.status === "pending_client"
-                            ? "text-warning"
-                            : "text-success"
-                        )}
+                            ? STATUS_PILL
+                            : STATUS_PILL_ACTIVE
+                        }
                       >
                         {r.status === "pending_client"
-                          ? "Pending Client"
+                          ? "Pending client"
                           : "Completed"}
                       </span>
                     </td>

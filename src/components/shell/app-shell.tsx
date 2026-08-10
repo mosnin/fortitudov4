@@ -69,11 +69,13 @@ function NavLink({
       href={item.href}
       onClick={onNavigate}
       className={cn(
-        "group/link relative flex items-center rounded-lg text-[13px] transition-colors",
-        collapsed ? "h-9 justify-center" : "gap-2.5 px-3 py-2",
+        "group/link relative rounded-md text-[13px] transition-colors duration-150",
+        collapsed
+          ? "mx-auto flex h-10 w-10 items-center justify-center"
+          : "flex h-9 items-center gap-2.5 pr-2.5 pl-3",
         isActive
-          ? "font-medium text-foreground"
-          : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+          ? "bg-foreground/[0.045] font-medium text-foreground"
+          : "text-foreground/65 hover:bg-foreground/[0.025] hover:text-foreground"
       )}
       title={collapsed ? item.label : undefined}
     >
@@ -81,7 +83,7 @@ function NavLink({
         <motion.span
           layoutId="nav-pill"
           transition={springSnappy}
-          className="absolute inset-0 rounded-lg bg-accent"
+          className="absolute inset-0 rounded-md bg-foreground/[0.045]"
         />
       )}
       {/* Orange tick — the system's bracket-label accent, marking the live route. */}
@@ -89,19 +91,19 @@ function NavLink({
         <motion.span
           layoutId="nav-tick"
           transition={springSnappy}
-          className="absolute left-0 h-4 w-[3px] rounded-full bg-brand"
+          className="absolute top-1.5 bottom-1.5 left-0 w-[2px] rounded-r bg-foreground"
         />
       )}
       <NavIcon
         name={item.icon}
         className={cn(
-          "relative h-4 w-4 shrink-0 transition-transform duration-200",
-          !isActive && "group-hover/link:scale-110"
+          "relative h-[15px] w-[15px] shrink-0 transition-colors",
+          isActive ? "text-foreground" : "text-foreground/55 group-hover/link:text-foreground"
         )}
       />
       {!collapsed && <span className="relative truncate">{item.label}</span>}
       {isActive && collapsed && (
-        <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-brand" />
+        <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-foreground" />
       )}
     </Link>
   );
@@ -133,25 +135,15 @@ function SidebarBody({
 
   return (
     <>
-      {/* Logo band — hairline close with a dot-texture accent fading in from
-          the right (PageHero's signature). */}
+      {/* Logo band — plain hairline close. */}
       <Link
         href="/"
         className={cn(
-          "relative flex h-16 shrink-0 items-center border-b border-border",
+          "relative flex h-16 shrink-0 items-center border-b border-border/70",
           collapsed ? "justify-center px-2" : "px-5"
         )}
         onClick={onNavigate}
       >
-        {!collapsed && (
-          <span
-            className="dot-texture pointer-events-none absolute inset-y-0 right-0 w-24"
-            style={{
-              maskImage: "linear-gradient(to left, black, transparent)",
-              WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-            }}
-          />
-        )}
         <Logo size={collapsed ? 26 : 36} className="relative" />
       </Link>
 
@@ -161,7 +153,7 @@ function SidebarBody({
         {groups.map((group, gi) => (
           <div key={group.section ?? gi} className={cn(gi > 0 && "mt-4")}>
             {group.section && !collapsed && (
-              <p className="eyebrow-mono px-3 pb-1.5">{group.section}</p>
+              <p className="px-3 pb-1.5 text-[10px] leading-tight tracking-[0.08em] text-muted-foreground/70 uppercase">{group.section}</p>
             )}
             {group.section && collapsed && gi > 0 && (
               <span className="mx-auto mb-3 block h-px w-6 bg-border" />
@@ -188,13 +180,13 @@ function SidebarBody({
             collapsed ? "justify-center px-2 py-3" : "gap-2.5 px-4 py-3.5"
           )}
         >
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-subtle font-mono text-[11px] font-semibold uppercase text-brand">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-foreground/[0.06] text-[11px] font-semibold text-foreground/70 uppercase">
             {accountEmail[0]}
           </span>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="micro-label">Signed in</p>
-              <p className="truncate font-mono text-[11px] text-muted-foreground">
+              <p className="text-[10px] tracking-[0.08em] text-muted-foreground/70 uppercase">Signed in</p>
+              <p className="truncate text-[11px] text-muted-foreground">
                 {accountEmail}
               </p>
             </div>
@@ -220,7 +212,7 @@ export function AppShell({
       <motion.aside
         animate={{ width: collapsed ? 76 : 244 }}
         transition={springSnappy}
-        className="sticky top-0 z-40 hidden h-screen shrink-0 flex-col overflow-hidden border-r border-border bg-sidebar lg:flex"
+        className="sticky top-3 z-40 m-3 hidden h-[calc(100vh-1.5rem)] shrink-0 flex-col overflow-hidden rounded-xl border border-border/70 bg-sidebar lg:flex"
       >
         <SidebarBody
           navItems={navItems}
@@ -230,7 +222,7 @@ export function AppShell({
         <button
           onClick={() => setCollapsed((c) => !c)}
           className={cn(
-            "flex items-center gap-2 border-t border-border py-3 font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground cursor-pointer",
+            "flex cursor-pointer items-center gap-2 border-t border-border/70 py-3 text-[10px] tracking-[0.08em] text-muted-foreground/70 uppercase transition-colors hover:bg-foreground/[0.025] hover:text-foreground",
             collapsed ? "justify-center px-2" : "px-5"
           )}
         >
@@ -342,13 +334,13 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 pb-28 sm:px-8 lg:pb-8">
+        <main className="mx-auto w-full max-w-[1500px] flex-1 px-4 py-5 pb-28 sm:px-6 md:px-10 md:py-7 lg:px-12 lg:pb-12">
           {children}
         </main>
 
         {/* Bottom tab bar (mobile) — floating white card, first five destinations */}
         <nav
-          className="fixed inset-x-3 bottom-3 z-40 rounded-2xl border border-border/70 bg-white/95 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_10px_28px_-10px_rgba(15,16,16,0.22)] backdrop-blur-xl lg:hidden dark:bg-sidebar/95"
+          className="fixed inset-x-3 bottom-3 z-40 rounded-xl border border-border/70 bg-background/95 backdrop-blur-xl lg:hidden"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <div className="flex items-stretch justify-around">
@@ -382,7 +374,7 @@ function SheetNavLink({
       className={cn(
         "flex items-center gap-2.5 rounded-xl border px-3.5 py-3 text-[13px] font-medium transition-colors",
         isActive
-          ? "border-brand/30 bg-brand-subtle text-foreground"
+          ? "border-foreground/20 bg-foreground/[0.06] text-foreground"
           : "border-border text-foreground hover:bg-muted/70"
       )}
     >

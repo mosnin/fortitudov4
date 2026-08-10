@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { PageHero } from "@/components/ui/firecrawl";
 import { PhaseTracker, type Phase } from "@/components/dashboard/phase-tracker";
 import {
   LaunchPipeline,
@@ -14,17 +14,19 @@ import { ProjectComments } from "@/components/dashboard/project-comments";
 import { NPSSurvey } from "@/components/dashboard/nps-survey";
 import { InvoiceCard } from "@/components/dashboard/invoice-card";
 import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
-import { BracketLabel, MetricRing } from "@/components/ui/firecrawl";
 import { UploadDropzone } from "@/lib/uploadthing";
 import * as Tabs from "@radix-ui/react-tabs";
-import {
-  Send,
-  RotateCcw,
-  BarChart3,
-  MessageCircle,
-  ArrowLeft,
-} from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 interface InvoiceData {
   invoiceNumber: string;
@@ -57,9 +59,9 @@ interface ProjectDetailClientProps {
 }
 
 const tabItems = [
-  { value: "progress", label: "Progress", icon: RotateCcw },
-  { value: "comments", label: "Comments", icon: MessageCircle },
-  { value: "analytics", label: "Analytics", icon: BarChart3 },
+  { value: "progress", label: "Progress" },
+  { value: "comments", label: "Comments" },
+  { value: "analytics", label: "Analytics" },
 ];
 
 type FileItem = { name: string; url: string; size: string; type: string };
@@ -74,29 +76,11 @@ interface Revision {
   createdAt: string;
 }
 
-/** Revision status → uppercase-mono text color (fused system semantics). */
-const revisionStatusTone: Record<RevisionStatus, string> = {
-  pending: "text-warning",
-  in_progress: "text-brand",
-  completed: "text-success",
-  rejected: "text-destructive",
-};
-
 const revisionStatusLabels: Record<RevisionStatus, string> = {
   pending: "Pending",
   in_progress: "In Progress",
   completed: "Completed",
   rejected: "Rejected",
-};
-
-/** Project status → uppercase-mono text color. */
-const projectStatusTone: Record<string, string> = {
-  onboarding: "text-muted-foreground",
-  payment_pending: "text-warning",
-  in_progress: "text-brand",
-  revision: "text-warning",
-  completed: "text-success",
-  cancelled: "text-destructive",
 };
 
 function formatBytes(bytes: number): string {
@@ -162,305 +146,285 @@ export function ProjectDetailClient({
   const completedPhases = phases.filter((p) => p.status === "completed").length;
 
   return (
-    <div className="space-y-8">
-      {/* Header — back arrow, big title, uppercase mono status */}
-      <div className="relative border-b border-border pb-8">
-        <div
-          className="dot-texture pointer-events-none absolute inset-y-0 right-0 hidden w-64 sm:block"
-          style={{
-            maskImage: "linear-gradient(to left, black, transparent)",
-            WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-          }}
-        />
-        <div className="relative">
-          <Link
-            href="/projects"
-            className="group inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-            <span className="micro-label">Projects</span>
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <div className="space-y-4">
+          <Link href="/projects" className={QUIET_LINK}>
+            Back to projects
           </Link>
-          <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1 className="font-title text-3xl font-bold tracking-tight sm:text-4xl">
-                {project.name}
-              </h1>
-              <p className="mt-2 text-muted-foreground">{project.serviceType}</p>
-            </div>
-            <span
-              className={cn(
-                "font-mono text-xs font-semibold uppercase tracking-[0.08em]",
-                projectStatusTone[project.statusKey] || "text-muted-foreground"
-              )}
-            >
-              {project.status}
-            </span>
-          </div>
+          <PageHero
+            section="Projects"
+            title={project.name}
+            description={`${project.serviceType} · Started ${project.createdAt}`}
+            action={
+              <span className={STATUS_PILL_ACTIVE}>{project.status}</span>
+            }
+          />
         </div>
-      </div>
 
-      {/* NPS Survey */}
-      {showSurvey && (
-        <NPSSurvey
-          projectId={project.id}
-          projectName={project.name}
-          onDismiss={() => setShowSurvey(false)}
-        />
-      )}
+        {/* NPS Survey */}
+        {showSurvey && (
+          <NPSSurvey
+            projectId={project.id}
+            projectName={project.name}
+            onDismiss={() => setShowSurvey(false)}
+          />
+        )}
 
-      {/* Tabbed content */}
-      <Tabs.Root defaultValue="progress">
-        <Tabs.List className="mb-6 inline-flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
-          {tabItems.map((tab) => {
-            const Icon = tab.icon;
-            return (
+        {/* Tabbed content */}
+        <Tabs.Root defaultValue="progress">
+          <Tabs.List className="mb-6 inline-flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
+            {tabItems.map((tab) => (
               <Tabs.Trigger
                 key={tab.value}
                 value={tab.value}
                 className={cn(
-                  "flex cursor-pointer items-center gap-2 rounded-md border border-transparent px-3 py-1.5 text-[13px] transition-colors",
+                  "cursor-pointer rounded-md border border-transparent px-3 py-1.5 text-[13px] transition-colors",
                   "text-muted-foreground hover:text-foreground",
                   "data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-sm"
                 )}
               >
-                <Icon className="h-4 w-4" />
                 {tab.label}
               </Tabs.Trigger>
-            );
-          })}
-        </Tabs.List>
+            ))}
+          </Tabs.List>
 
-        {/* Progress tab */}
-        <Tabs.Content value="progress">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-8">
-              {/* Launch pipeline — the same stage journey the team tracks in
-                  the Client CRM, mirrored read-only for the client. */}
-              <LaunchPipeline data={pipeline} />
+          {/* Progress tab */}
+          <Tabs.Content value="progress">
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+              <div className="space-y-8 lg:col-span-2">
+                {/* Launch pipeline — the same stage journey the team tracks in
+                    the Client CRM, mirrored read-only for the client. */}
+                <LaunchPipeline data={pipeline} />
 
-              {/* Build Progress */}
-              <section className="border-t border-border pt-5">
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <BracketLabel
-                    n={completedPhases}
-                    m={phases.length}
-                    label="Build Progress"
+                {/* Build progress */}
+                <section className={SECTION_RHYTHM}>
+                  <div className="flex flex-wrap items-baseline justify-between gap-3">
+                    <p className={SECTION_LABEL}>Build progress</p>
+                    {phases.length > 0 && (
+                      <p className="text-xs text-muted-foreground">
+                        <span className="tabular-nums text-foreground/70">
+                          {completedPhases} of {phases.length}
+                        </span>{" "}
+                        phases complete
+                      </p>
+                    )}
+                  </div>
+                  <div className="border-t border-border pt-5">
+                    {phases.length > 0 ? (
+                      <PhaseTracker phases={phases} />
+                    ) : (
+                      <p className="text-sm text-muted-foreground">
+                        Phases will appear here once your project kicks off.
+                      </p>
+                    )}
+                  </div>
+                </section>
+
+                {/* Revision request */}
+                <section className={SECTION_RHYTHM}>
+                  <p className={SECTION_LABEL}>Request a revision</p>
+                  <Textarea
+                    placeholder="Describe what you'd like changed..."
+                    rows={3}
+                    value={revisionText}
+                    onChange={(e) => setRevisionText(e.target.value)}
                   />
-                  {phases.length > 0 && (
-                    <MetricRing
-                      value={completedPhases}
-                      max={phases.length}
-                      size={48}
-                      label={`of ${phases.length} phases complete`}
-                    />
-                  )}
-                </div>
-                <div className="mt-6">
-                  {phases.length > 0 ? (
-                    <PhaseTracker phases={phases} />
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      Phases will appear here once your project kicks off.
-                    </p>
-                  )}
-                </div>
-              </section>
-
-              {/* Revision Request */}
-              <section className="space-y-4 border-t border-border pt-5">
-                <h3 className="micro-label">Request a Revision</h3>
-                <Textarea
-                  placeholder="Describe what you'd like changed..."
-                  rows={3}
-                  value={revisionText}
-                  onChange={(e) => setRevisionText(e.target.value)}
-                />
-                <Button
-                  disabled={!revisionText.trim() || submittingRevision}
-                  onClick={handleSubmitRevision}
-                >
-                  <Send className="mr-1 h-4 w-4" />
-                  {submittingRevision ? "Submitting..." : "Submit Revision Request"}
-                </Button>
-
-                {revisionError && (
-                  <p className="text-sm text-destructive">{revisionError}</p>
-                )}
-
-                {revisions.length > 0 && (
-                  <div className="divide-y divide-border border-t border-border">
-                    {revisions.map((rev) => (
-                      <div key={rev.id} className="space-y-1.5 py-4">
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="text-sm">{rev.description}</p>
-                          <span
-                            className={cn(
-                              "shrink-0 font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
-                              revisionStatusTone[rev.status]
-                            )}
-                          >
-                            {revisionStatusLabels[rev.status]}
-                          </span>
-                        </div>
-                        <span className="font-mono text-[11px] text-muted-foreground">
-                          {new Date(rev.createdAt).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </span>
-                        {rev.adminNotes && (
-                          <p className="text-sm text-muted-foreground">
-                            Response from the team: {rev.adminNotes}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </div>
-
-            {/* Right sidebar */}
-            <div className="space-y-8">
-              {/* Files */}
-              <section className="space-y-4 border-t border-border pt-5 lg:border-t-0 lg:pt-0">
-                <h3 className="micro-label">Files</h3>
-                <UploadDropzone
-                  endpoint="projectFile"
-                  input={{ projectId: project.id }}
-                  onBeforeUploadBegin={(uploadFiles) => {
-                    setUploadError(null);
-                    return uploadFiles;
-                  }}
-                  onClientUploadComplete={async (res) => {
-                    // Record each uploaded file in our DB via /api/files,
-                    // then reflect it in the list. Recording is the source of
-                    // truth; optimistic UI append keeps the view in sync.
-                    const recorded: FileItem[] = [];
-                    for (const upload of res) {
-                      try {
-                        const apiRes = await fetch("/api/files", {
-                          method: "POST",
-                          headers: { "Content-Type": "application/json" },
-                          body: JSON.stringify({
-                            projectId: project.id,
-                            name: upload.name,
-                            url: upload.ufsUrl,
-                            size: upload.size,
-                            type: upload.type || undefined,
-                          }),
-                        });
-                        if (apiRes.ok) {
-                          recorded.push({
-                            name: upload.name,
-                            url: upload.ufsUrl,
-                            size: formatBytes(upload.size),
-                            type: upload.type || "application/octet-stream",
-                          });
-                        }
-                      } catch {
-                        // Ignore a single failed record; others still apply.
-                      }
-                    }
-                    if (recorded.length > 0) {
-                      setFileList((prev) => [...prev, ...recorded]);
-                    }
-                  }}
-                  onUploadError={(error) => {
-                    setUploadError(error.message);
-                  }}
-                  className="ut-button:bg-primary ut-button:text-primary-foreground ut-label:text-foreground ut-upload-icon:text-muted-foreground rounded-lg border-2 border-dashed border-border p-6"
-                />
-
-                {uploadError && (
-                  <p className="text-center text-sm text-destructive">
-                    {uploadError}
-                  </p>
-                )}
-
-                {fileList.length > 0 ? (
-                  <div className="space-y-2">
-                    {fileList.map((file) => (
-                      <FilePreviewCard
-                        key={file.url}
-                        name={file.name}
-                        url={file.url}
-                        type={file.type}
-                        size={file.size}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-sm text-muted-foreground">
-                    No files uploaded yet.
-                  </p>
-                )}
-              </section>
-
-              {/* Invoice */}
-              {invoice && <InvoiceCard invoice={invoice} />}
-
-              {/* Project Info */}
-              <section className="border-t border-border pt-5">
-                <h3 className="micro-label">Project Details</h3>
-                <div className="mt-4 space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Service</span>
-                    <span>{project.serviceType}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Status</span>
-                    <span
+                  <div className="flex justify-end">
+                    <button
+                      disabled={!revisionText.trim() || submittingRevision}
+                      onClick={handleSubmitRevision}
                       className={cn(
-                        "font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
-                        projectStatusTone[project.statusKey] ||
-                          "text-muted-foreground"
+                        PRIMARY_PILL,
+                        "disabled:pointer-events-none disabled:opacity-50"
                       )}
                     >
-                      {project.status}
-                    </span>
+                      {submittingRevision
+                        ? "Submitting…"
+                        : "Submit revision request"}
+                    </button>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Created</span>
-                    <span className="font-mono text-xs">{project.createdAt}</span>
-                  </div>
-                  {invoice && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-muted-foreground">Payment</span>
-                      <span
-                        className={cn(
-                          "font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
-                          invoice.status === "paid"
-                            ? "text-success"
-                            : "text-warning"
-                        )}
-                      >
-                        {invoice.status === "paid" ? "Paid" : "Pending"}
-                      </span>
-                    </div>
+
+                  {revisionError && (
+                    <p className="text-sm text-destructive">{revisionError}</p>
                   )}
-                </div>
-              </section>
-            </div>
-          </div>
-        </Tabs.Content>
 
-        {/* Comments tab */}
-        <Tabs.Content value="comments">
-          <section className="border-t border-border pt-5">
-            <h3 className="micro-label">Comments</h3>
-            <div className="mt-4">
+                  {revisions.length > 0 && (
+                    <ul className="divide-y divide-border/60 border-t border-border/60">
+                      {revisions.map((rev) => (
+                        <li key={rev.id} className="py-3">
+                          <div className="flex items-start justify-between gap-3">
+                            <p className="min-w-0 flex-1 text-sm text-foreground">
+                              {rev.description}
+                            </p>
+                            <span
+                              className={cn(
+                                STATUS_PILL,
+                                "shrink-0",
+                                rev.status === "rejected" &&
+                                  "border-destructive/40 text-destructive"
+                              )}
+                            >
+                              {revisionStatusLabels[rev.status]}
+                            </span>
+                          </div>
+                          <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">
+                            {new Date(rev.createdAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </p>
+                          {rev.adminNotes && (
+                            <p className="mt-1 text-sm text-muted-foreground">
+                              Response from the team: {rev.adminNotes}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              </div>
+
+              {/* Right column */}
+              <div className="space-y-8">
+                {/* Files */}
+                <section className={SECTION_RHYTHM}>
+                  <p className={SECTION_LABEL}>Files</p>
+                  <UploadDropzone
+                    endpoint="projectFile"
+                    input={{ projectId: project.id }}
+                    onBeforeUploadBegin={(uploadFiles) => {
+                      setUploadError(null);
+                      return uploadFiles;
+                    }}
+                    onClientUploadComplete={async (res) => {
+                      // Record each uploaded file in our DB via /api/files,
+                      // then reflect it in the list. Recording is the source of
+                      // truth; optimistic UI append keeps the view in sync.
+                      const recorded: FileItem[] = [];
+                      for (const upload of res) {
+                        try {
+                          const apiRes = await fetch("/api/files", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              projectId: project.id,
+                              name: upload.name,
+                              url: upload.ufsUrl,
+                              size: upload.size,
+                              type: upload.type || undefined,
+                            }),
+                          });
+                          if (apiRes.ok) {
+                            recorded.push({
+                              name: upload.name,
+                              url: upload.ufsUrl,
+                              size: formatBytes(upload.size),
+                              type: upload.type || "application/octet-stream",
+                            });
+                          }
+                        } catch {
+                          // Ignore a single failed record; others still apply.
+                        }
+                      }
+                      if (recorded.length > 0) {
+                        setFileList((prev) => [...prev, ...recorded]);
+                      }
+                    }}
+                    onUploadError={(error) => {
+                      setUploadError(error.message);
+                    }}
+                    className="ut-button:bg-foreground ut-button:text-background ut-label:text-foreground ut-upload-icon:text-muted-foreground rounded-lg border border-dashed border-border p-6"
+                  />
+
+                  {uploadError && (
+                    <p className="text-sm text-destructive">{uploadError}</p>
+                  )}
+
+                  {fileList.length > 0 ? (
+                    <div className="divide-y divide-border/60 border-t border-border/60">
+                      {fileList.map((file) => (
+                        <FilePreviewCard
+                          key={file.url}
+                          name={file.name}
+                          url={file.url}
+                          type={file.type}
+                          size={file.size}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No files uploaded yet.
+                    </p>
+                  )}
+                </section>
+
+                {/* Invoice */}
+                {invoice && <InvoiceCard invoice={invoice} />}
+
+                {/* Project details */}
+                <section className={SECTION_RHYTHM}>
+                  <p className={SECTION_LABEL}>Project details</p>
+                  <dl className="divide-y divide-border/60 border-t border-border/60">
+                    <div className="flex items-center justify-between gap-3 py-3">
+                      <dt className="text-sm text-muted-foreground">Service</dt>
+                      <dd className="truncate text-sm text-foreground">
+                        {project.serviceType}
+                      </dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 py-3">
+                      <dt className="text-sm text-muted-foreground">Status</dt>
+                      <dd>
+                        <span className={STATUS_PILL}>{project.status}</span>
+                      </dd>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 py-3">
+                      <dt className="text-sm text-muted-foreground">Created</dt>
+                      <dd className="text-sm tabular-nums text-foreground">
+                        {project.createdAt}
+                      </dd>
+                    </div>
+                    {invoice && (
+                      <div className="flex items-center justify-between gap-3 py-3">
+                        <dt className="text-sm text-muted-foreground">
+                          Payment
+                        </dt>
+                        <dd>
+                          <span
+                            className={cn(
+                              STATUS_PILL,
+                              invoice.status === "overdue" &&
+                                "border-destructive/40 text-destructive"
+                            )}
+                          >
+                            {invoice.status === "paid" ? "Paid" : "Pending"}
+                          </span>
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
+                </section>
+              </div>
+            </div>
+          </Tabs.Content>
+
+          {/* Comments tab */}
+          <Tabs.Content value="comments">
+            <section className={SECTION_RHYTHM}>
+              <p className={SECTION_LABEL}>Comments</p>
               <ProjectComments projectId={project.id} />
-            </div>
-          </section>
-        </Tabs.Content>
+            </section>
+          </Tabs.Content>
 
-        {/* Analytics tab */}
-        <Tabs.Content value="analytics">
-          <AnalyticsOverview projectId={project.id} />
-        </Tabs.Content>
-      </Tabs.Root>
+          {/* Analytics tab */}
+          <Tabs.Content value="analytics">
+            <AnalyticsOverview projectId={project.id} />
+          </Tabs.Content>
+        </Tabs.Root>
+      </div>
     </div>
   );
 }

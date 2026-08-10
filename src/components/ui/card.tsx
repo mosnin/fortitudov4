@@ -1,6 +1,11 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Plain bordered surface (design-product.md). No shadow at rest, no gradient,
+ * no accent border — cards are for a genuine gallery of choices, never for a
+ * records list.
+ */
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -8,7 +13,7 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-xl border border-border bg-card text-card-foreground shadow-sm",
+      "rounded-xl border border-border bg-card text-card-foreground",
       className
     )}
     {...props}

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, CheckCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PRIMARY_PILL, SECTION_LABEL } from "@/lib/typography";
 
 interface NPSSurveyProps {
   projectId: string;
@@ -41,9 +41,10 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
 
   if (submitted) {
     return (
-      <div className="animate-fade-up rounded-xl border border-border p-6 text-center">
-        <CheckCircle className="mx-auto mb-3 h-10 w-10 text-success" />
-        <p className="font-semibold">Thank you for your feedback!</p>
+      <div className="animate-fade-up rounded-xl border border-border bg-card p-6">
+        <p className="text-sm font-medium text-foreground">
+          Thank you for your feedback
+        </p>
         <p className="mt-1 text-sm text-muted-foreground">
           Your response helps us improve our service.
         </p>
@@ -52,7 +53,7 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
   }
 
   return (
-    <div className="animate-fade-up relative rounded-xl border border-border p-6">
+    <div className="animate-fade-up relative rounded-xl border border-border bg-card p-6">
       <button
         onClick={onDismiss}
         className="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-muted"
@@ -61,11 +62,8 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
         <X className="h-4 w-4 text-muted-foreground" />
       </button>
 
-      <p className="bracket-label flex items-center gap-2">
-        <span className="h-3.5 w-[3px] rounded-full bg-brand" />
-        Project Feedback
-      </p>
-      <h3 className="mt-3 text-lg font-semibold tracking-tight">
+      <p className={SECTION_LABEL}>Project feedback</p>
+      <h3 className="mt-2 text-[17px] font-semibold text-foreground">
         How was your experience?
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -84,17 +82,17 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
                 key={n}
                 onClick={() => setScore(n)}
                 className={cn(
-                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg font-mono text-sm font-medium transition-all",
+                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-sm tabular-nums transition-colors",
                   score === n
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border hover:bg-foreground/[0.04]"
+                    ? "bg-foreground font-medium text-background"
+                    : "border border-border text-foreground hover:bg-foreground/[0.04]"
                 )}
               >
                 {n}
               </button>
             ))}
           </div>
-          <div className="mt-1.5 flex justify-between font-mono text-[10px] uppercase tracking-[0.08em] text-muted-foreground">
+          <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
             <span>Not likely</span>
             <span>Very likely</span>
           </div>
@@ -113,14 +111,13 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
           />
         </div>
 
-        <Button
-          className="w-full"
+        <button
+          className={cn(PRIMARY_PILL, "disabled:pointer-events-none disabled:opacity-50")}
           onClick={handleSubmit}
           disabled={score === null || submitting}
         >
-          <Send className="mr-1 h-4 w-4" />
-          {submitting ? "Submitting..." : "Submit Feedback"}
-        </Button>
+          {submitting ? "Submitting…" : "Submit feedback"}
+        </button>
       </div>
     </div>
   );

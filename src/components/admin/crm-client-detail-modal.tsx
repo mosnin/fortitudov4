@@ -2,10 +2,22 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Plus, Trash2, Send } from "lucide-react";
+import { X } from "lucide-react";
 import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
+import { cn } from "@/lib/utils";
+import {
+  BODY_MUTED,
+  CAPTION,
+  GHOST_PILL,
+  H1,
+  H3,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  SECTION_LABEL,
+  STATUS_PILL,
+  TITLE_FONT,
+} from "@/lib/typography";
 
 const STATUSES = [
   { value: "active", label: "Active" },
@@ -59,7 +71,7 @@ function Field({
 }) {
   return (
     <div>
-      <span className="mb-1.5 block text-[13px] font-semibold">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-medium">{label}</span>
       {children}
     </div>
   );
@@ -262,23 +274,21 @@ export function ClientDetailModal({
             className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-6">
-              <h2 className="font-title text-2xl tracking-tight">
+              <h2 className={cn(H1, "text-2xl")} style={TITLE_FONT}>
                 Client Details &amp; Tasks
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                 aria-label="Close"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             {loading ? (
-              <p className="py-10 text-center text-sm text-muted-foreground">
-                Loading…
-              </p>
+              <p className={cn(BODY_MUTED, "py-10 text-center")}>Loading…</p>
             ) : (
               <>
                 {/* Metadata */}
@@ -309,24 +319,23 @@ export function ClientDetailModal({
                       }
                     />
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <Button
+                      <button
                         type="button"
-                        size="sm"
-                        variant="outline"
                         onClick={sendInvite}
                         disabled={inviting || !form.email.trim()}
+                        className={cn(
+                          GHOST_PILL,
+                          "h-8 border border-border px-3 disabled:cursor-not-allowed disabled:opacity-50"
+                        )}
                       >
-                        <Send className="mr-1.5 h-3.5 w-3.5" />
                         {inviting ? "Sending…" : "Send Portal Invite"}
-                      </Button>
-                      <span className="font-mono text-[10px] text-muted-foreground">
+                      </button>
+                      <span className={CAPTION}>
                         Invites are only sent when you click.
                       </span>
                     </div>
                     {inviteNote && (
-                      <p className="mt-1.5 font-mono text-[10px] text-brand">
-                        {inviteNote}
-                      </p>
+                      <p className={cn(CAPTION, "mt-1.5")}>{inviteNote}</p>
                     )}
                   </Field>
                   <Field label="Status">
@@ -429,13 +438,13 @@ export function ClientDetailModal({
                 </div>
 
                 {/* Onboarding checklist */}
-                <div className="mt-8 flex items-center justify-between">
-                  <h3 className="text-lg font-bold tracking-tight">
-                    Onboarding Checklist{" "}
-                    <span className="font-mono text-sm font-normal text-muted-foreground">
-                      {done}/{total}
-                    </span>
-                  </h3>
+                <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+                  <div>
+                    <h3 className={H3}>Onboarding Checklist</h3>
+                    <p className={cn(SECTION_LABEL, "mt-0.5 tabular-nums")}>
+                      {done} of {total} complete
+                    </p>
+                  </div>
                   <form onSubmit={addTask} className="flex items-center gap-2">
                     <Input
                       className="h-9 w-40"
@@ -443,30 +452,30 @@ export function ClientDetailModal({
                       value={newTask}
                       onChange={(e) => setNewTask(e.target.value)}
                     />
-                    <Button type="submit" size="sm" variant="outline">
-                      <Plus className="mr-1 h-4 w-4" />
+                    <button
+                      type="submit"
+                      className={cn(GHOST_PILL, "border border-border")}
+                    >
                       Add Task
-                    </Button>
+                    </button>
                   </form>
                 </div>
-                <div className="mt-4 space-y-2">
+                <ul className="divide-y divide-border/60">
                   {tasks.map((t) => (
-                    <div
-                      key={t.id}
-                      className="flex items-center gap-3 rounded-xl bg-surface px-4 py-3"
-                    >
+                    <li key={t.id} className="flex items-center gap-3 py-3">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
+                        <p className="truncate text-sm font-medium text-foreground">
                           {t.title}
                         </p>
                         {t.assigneeName && (
-                          <p className="font-mono text-[10px] text-muted-foreground">
+                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
                             {t.assigneeName}
                           </p>
                         )}
                       </div>
                       <select
-                        className="h-9 rounded-lg border border-border bg-background px-2.5 text-sm outline-none transition-colors focus:border-foreground/40"
+                        aria-label={`Status for ${t.title}`}
+                        className="h-8 cursor-pointer rounded-lg border border-border bg-background px-2.5 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors focus:border-foreground/40"
                         value={t.status}
                         onChange={(e) => setTaskStatus(t.id, e.target.value)}
                       >
@@ -478,53 +487,56 @@ export function ClientDetailModal({
                       </select>
                       <button
                         onClick={() => deleteTask(t.id)}
-                        className="rounded-md p-1.5 text-destructive transition-colors hover:bg-destructive/10 cursor-pointer"
+                        className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive"
                         aria-label={`Delete ${t.title}`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        Delete
                       </button>
-                    </div>
+                    </li>
                   ))}
                   {tasks.length === 0 && (
-                    <p className="py-4 text-center text-sm text-muted-foreground">
+                    <li className={cn(BODY_MUTED, "py-4 text-center")}>
                       No tasks yet.
-                    </p>
+                    </li>
                   )}
-                </div>
+                </ul>
 
                 {/* Client requests */}
-                <h3 className="mt-8 border-b border-border pb-3 text-lg font-bold tracking-tight">
+                <h3 className={cn(H3, "mt-8 border-b border-border pb-3")}>
                   Client Requests
                 </h3>
                 {requests.length === 0 ? (
-                  <p className="py-4 text-sm italic text-muted-foreground">
+                  <p className={cn(BODY_MUTED, "py-4")}>
                     No requests from this client.
                   </p>
                 ) : (
-                  <ul className="mt-4 space-y-2">
+                  <ul className="divide-y divide-border/60">
                     {requests.map((r) => (
                       <li
                         key={r.id}
-                        className="rounded-xl border border-border px-4 py-3 text-sm"
+                        className="flex items-start justify-between gap-3 py-3 text-sm"
                       >
-                        <div className="flex items-center justify-between gap-3">
-                          <p className="min-w-0 flex-1">{r.description}</p>
-                          <span className="shrink-0 font-mono text-[11px] uppercase text-muted-foreground">
-                            {r.status}
-                          </span>
-                        </div>
+                        <p className="min-w-0 flex-1">{r.description}</p>
+                        <span className={cn(STATUS_PILL, "shrink-0")}>
+                          {r.status}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 )}
 
-                <div className="mt-8 flex justify-end gap-2 border-t border-border pt-5">
-                  <Button type="button" variant="outline" onClick={onClose}>
+                <div className="mt-8 flex items-center justify-end gap-3 border-t border-border pt-5">
+                  <button type="button" className={QUIET_LINK} onClick={onClose}>
                     Cancel
-                  </Button>
-                  <Button type="button" onClick={save} disabled={saving}>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={save}
+                    disabled={saving}
+                    className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                  >
                     {saving ? "Saving…" : "Save Changes"}
-                  </Button>
+                  </button>
                 </div>
               </>
             )}

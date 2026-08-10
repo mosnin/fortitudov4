@@ -12,33 +12,36 @@ export function Skeleton({ className }: { className?: string }) {
   );
 }
 
-/** A stat-card-shaped skeleton for dashboard tiles. */
+/**
+ * Stat-tile skeleton. Mirrors the hairline stat band: label, focal number,
+ * caption — no icon chip, since the real tile has none (design-product.md).
+ */
 export function StatCardSkeleton() {
   return (
     <div className="rounded-xl border border-border bg-card p-6">
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-12 w-12 rounded-lg" />
-        <div className="space-y-2">
-          <Skeleton className="h-6 w-16" />
-          <Skeleton className="h-3 w-24" />
-        </div>
-      </div>
+      <Skeleton className="h-3 w-24" />
+      <Skeleton className="mt-3 h-8 w-20" />
+      <Skeleton className="mt-2 h-3 w-28" />
     </div>
   );
 }
 
-/** A few table-row skeletons for list pages. */
+/**
+ * List skeleton. Mirrors the `divide-y divide-border/60` row vocabulary at the
+ * same `py-3` rhythm, so the loading state has the shape of the real list.
+ */
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="space-y-3">
+    <ul className="divide-y divide-border/60">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4">
-          <Skeleton className="h-4 w-1/4" />
-          <Skeleton className="h-4 w-1/3" />
-          <Skeleton className="h-4 w-1/5" />
-          <Skeleton className="ml-auto h-6 w-16 rounded-full" />
-        </div>
+        <li key={i} className="flex items-center gap-4 py-3">
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <Skeleton className="h-3.5 w-1/3" />
+            <Skeleton className="h-3 w-1/2" />
+          </div>
+          <Skeleton className="h-3.5 w-16 shrink-0" />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

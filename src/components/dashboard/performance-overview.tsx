@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { BracketLabel, CountUp } from "@/components/ui/firecrawl";
+import { CountUp } from "@/components/ui/firecrawl";
 import { AreaChart } from "@/components/ui/charts";
 import { cascade, cascadeItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { ArrowRight, TrendingUp } from "lucide-react";
+import { QUIET_LINK, SECTION_LABEL } from "@/lib/typography";
 
 /**
  * Marketing performance band — headline results from the weekly reporting
@@ -72,17 +72,11 @@ export function PerformanceOverview() {
       format: (v: number) => Math.round(v).toLocaleString("en-US"),
     },
     { label: "Avg Cost Per Lead", value: avgCpl, format: usd },
-    {
-      label: "Tracked Revenue",
-      value: totalRevenue,
-      format: usdWhole,
-      accent: "text-success",
-    },
+    { label: "Tracked Revenue", value: totalRevenue, format: usdWhole },
     {
       label: "Return on Spend",
       value: roas,
       format: (v: number) => `${v.toFixed(2)}×`,
-      accent: "text-brand",
     },
   ];
 
@@ -98,13 +92,13 @@ export function PerformanceOverview() {
 
   const charts = [
     {
-      title: "Leads per Week",
+      title: "Leads per week",
       caption: "From your weekly reports",
       series: ordered.map((r) => r.leads),
       format: (v: number) => Math.round(v).toLocaleString("en-US"),
     },
     {
-      title: "Revenue per Week",
+      title: "Revenue per week",
       caption: "Closes you reported, in dollars",
       series: ordered.map((r) => r.revenue ?? 0),
       format: usdWhole,
@@ -116,40 +110,35 @@ export function PerformanceOverview() {
       variants={cascade}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="space-y-6"
     >
-      {/* Header mirrors the delivery-pipeline band so the two read as one
-          system — this one only ever appears for marketing engagements. */}
       <motion.div
         variants={cascadeItem}
-        className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3"
+        className="flex flex-wrap items-baseline justify-between gap-3"
       >
-        <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-brand" />
-          <h2 className="text-[15px] font-semibold">Marketing Performance</h2>
-        </div>
-        <BracketLabel n={ordered.length} label="Weeks Reported" />
+        <p className={SECTION_LABEL}>Marketing performance</p>
+        <p className={SECTION_LABEL}>
+          <span className="tabular-nums text-foreground/70">
+            {ordered.length}
+          </span>{" "}
+          weeks reported
+        </p>
       </motion.div>
 
-      <div className="grid grid-cols-2 border-b border-border lg:grid-cols-4">
+      <div className="grid grid-cols-2 border-y border-border lg:grid-cols-4">
         {tiles.map((tile, i) => (
           <motion.div
             key={tile.label}
             variants={cascadeItem}
             className={cn(
-              "px-5 py-6",
+              "px-5 py-5 first:pl-0",
               i % 2 === 1 && "border-l border-border",
               i >= 2 && "max-lg:border-t max-lg:border-border",
               i > 0 && "lg:border-l lg:border-border"
             )}
           >
-            <p className="micro-label">{tile.label}</p>
-            <p
-              className={cn(
-                "mt-2 text-3xl font-bold tracking-tight",
-                "accent" in tile && tile.accent
-              )}
-            >
+            <p className={SECTION_LABEL}>{tile.label}</p>
+            <p className="mt-2 text-2xl tracking-tight tabular-nums text-foreground">
               <CountUp value={tile.value} format={tile.format} />
             </p>
           </motion.div>
@@ -157,12 +146,14 @@ export function PerformanceOverview() {
       </div>
 
       {ordered.length > 1 && (
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {charts.map((chart) => (
             <motion.div key={chart.title} variants={cascadeItem}>
               <div className="border-b border-border pb-3">
-                <h3 className="text-[15px] font-semibold">{chart.title}</h3>
-                <p className="mt-0.5 font-mono text-[11px] uppercase text-muted-foreground">
+                <h3 className="text-sm font-medium text-foreground">
+                  {chart.title}
+                </h3>
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   {chart.caption}
                 </p>
               </div>
@@ -179,12 +170,8 @@ export function PerformanceOverview() {
       )}
 
       <div className="flex justify-end">
-        <Link
-          href="/reports"
-          className="group inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          View Weekly Reports
-          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+        <Link href="/reports" className={QUIET_LINK}>
+          View weekly reports
         </Link>
       </div>
     </motion.section>

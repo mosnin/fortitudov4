@@ -1,20 +1,11 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import {
-  Bell,
-  MessageSquare,
-  CreditCard,
-  FolderKanban,
-  Upload,
-  FileText,
-  RefreshCw,
-  CheckCircle,
-  Star,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePolling } from "@/hooks/use-polling";
+import { QUIET_LINK, SECTION_LABEL, STATUS_PILL_ACTIVE } from "@/lib/typography";
 
 interface NotificationItem {
   id: string;
@@ -25,17 +16,6 @@ interface NotificationItem {
   actionUrl?: string | null;
   createdAt: string;
 }
-
-const typeIcons: Record<string, React.ElementType> = {
-  phase_update: FolderKanban,
-  message_received: MessageSquare,
-  payment_confirmed: CreditCard,
-  file_uploaded: Upload,
-  comment_added: FileText,
-  revision_response: RefreshCw,
-  project_completed: CheckCircle,
-  survey_request: Star,
-};
 
 function formatRelativeTime(dateStr: string): string {
   const date = new Date(dateStr);
@@ -122,14 +102,15 @@ export function NotificationBell() {
 
   return (
     <div ref={ref} className="relative">
+      {/* The bell IS the control — a functional icon button, not decoration. */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background hover:bg-muted transition-colors cursor-pointer"
+        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background transition-colors hover:bg-muted cursor-pointer"
         aria-label="Notifications"
       >
-        <Bell className="h-4 w-4" />
+        <Bell className="h-4 w-4" strokeWidth={1.75} />
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-brand font-mono text-[10px] font-bold text-brand-foreground">
+          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-medium tabular-nums text-background">
             {unreadCount}
           </span>
         )}
@@ -139,11 +120,11 @@ export function NotificationBell() {
         <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-card animate-fade-in sm:w-96">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="micro-label">Notifications</h3>
+            <p className={SECTION_LABEL}>Notifications</p>
             {unreadCount > 0 && (
               <button
                 onClick={markAllRead}
-                className="cursor-pointer font-mono text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                className={cn(QUIET_LINK, "cursor-pointer text-xs")}
               >
                 Mark all read
               </button>
@@ -151,55 +132,58 @@ export function NotificationBell() {
           </div>
 
           {/* List */}
-          <div className="max-h-80 overflow-y-auto">
+          <div className="max-h-80 overflow-y-auto px-4">
             {!loaded ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
-                Loading...
+              <div className="py-6 text-center text-sm text-muted-foreground">
+                Loading…
               </div>
             ) : notifications.length === 0 ? (
-              <div className="p-6 text-center text-sm text-muted-foreground">
+              <div className="py-6 text-center text-sm text-muted-foreground">
                 No notifications yet
               </div>
             ) : (
-              notifications.map((notification) => {
-                const Icon = typeIcons[notification.type] || Bell;
-                return (
-                  <Link
-                    key={notification.id}
-                    href={notification.actionUrl || "#"}
-                    onClick={() => {
-                      markRead(notification.id);
-                      setOpen(false);
-                    }}
-                    className={cn(
-                      "flex gap-3 border-b border-border px-4 py-3 transition-colors last:border-0 hover:bg-muted",
-                      !notification.read && "bg-brand-subtle/40"
-                    )}
-                  >
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted">
-                      <Icon className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className={cn("text-sm", !notification.read && "font-medium")}>
-                          {notification.title}
-                        </p>
-                        {!notification.read && (
-                          <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-brand" />
+              <ul className="divide-y divide-border/60">
+                {notifications.map((notification) => (
+                  <li key={notification.id}>
+                    <Link
+                      href={notification.actionUrl || "#"}
+                      onClick={() => {
+                        markRead(notification.id);
+                        setOpen(false);
+                      }}
+                      className="group/row -mx-2 flex items-start gap-3 rounded-md px-2 py-3 transition-colors hover:bg-muted/30"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <p
+                            className={cn(
+                              "text-sm",
+                              notification.read
+                                ? "text-muted-foreground"
+                                : "font-medium text-foreground"
+                            )}
+                          >
+                            {notification.title}
+                          </p>
+                          {!notification.read && (
+                            <span className={cn(STATUS_PILL_ACTIVE, "shrink-0")}>
+                              New
+                            </span>
+                          )}
+                        </div>
+                        {notification.body && (
+                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                            {notification.body}
+                          </p>
                         )}
-                      </div>
-                      {notification.body && (
-                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          {notification.body}
+                        <p className="mt-1 text-xs tabular-nums text-muted-foreground">
+                          {formatRelativeTime(notification.createdAt)}
                         </p>
-                      )}
-                      <p className="mt-1 font-mono text-[11px] text-muted-foreground">
-                        {formatRelativeTime(notification.createdAt)}
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 

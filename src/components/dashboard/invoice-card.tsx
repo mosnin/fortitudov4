@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Download, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SECTION_LABEL, STATUS_PILL } from "@/lib/typography";
 
 interface InvoiceItem {
   description: string;
@@ -20,13 +20,6 @@ interface InvoiceData {
   projectName: string;
   clientName: string;
 }
-
-/** Invoice status → uppercase-mono text color (fused system semantics). */
-const statusTone: Record<InvoiceData["status"], string> = {
-  paid: "text-success",
-  pending: "text-warning",
-  overdue: "text-destructive",
-};
 
 export function InvoiceCard({ invoice }: { invoice: InvoiceData }) {
   const handleDownload = () => {
@@ -55,64 +48,74 @@ Status: ${invoice.status.toUpperCase()}
   };
 
   return (
-    <section className="border-t border-border pt-5">
-      <div className="flex items-center justify-between">
-        <h3 className="micro-label flex items-center gap-1.5">
-          <Receipt className="h-3.5 w-3.5" />
-          Invoice
-        </h3>
+    <section className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        <p className={SECTION_LABEL}>Invoice</p>
+        {/* Overdue is a genuine semantic; paid/pending stay neutral. */}
         <span
           className={cn(
-            "font-mono text-[11px] font-semibold uppercase tracking-[0.08em]",
-            statusTone[invoice.status]
+            STATUS_PILL,
+            invoice.status === "overdue" &&
+              "border-destructive/40 text-destructive"
           )}
         >
           {invoice.status}
         </span>
       </div>
 
-      <div className="mt-4 space-y-3 text-sm">
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Invoice #</span>
-          <span className="font-mono text-xs">{invoice.invoiceNumber}</span>
+      <dl className="divide-y divide-border/60 border-t border-border/60">
+        <div className="flex justify-between gap-3 py-3">
+          <dt className="text-sm text-muted-foreground">Invoice no.</dt>
+          <dd className="text-sm tabular-nums text-foreground">
+            {invoice.invoiceNumber}
+          </dd>
         </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Date</span>
-          <span className="font-mono text-xs">{invoice.date}</span>
+        <div className="flex justify-between gap-3 py-3">
+          <dt className="text-sm text-muted-foreground">Date</dt>
+          <dd className="text-sm tabular-nums text-foreground">
+            {invoice.date}
+          </dd>
         </div>
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">Project</span>
-          <span>{invoice.projectName}</span>
+        <div className="flex justify-between gap-3 py-3">
+          <dt className="text-sm text-muted-foreground">Project</dt>
+          <dd className="truncate text-sm text-foreground">
+            {invoice.projectName}
+          </dd>
         </div>
-      </div>
+      </dl>
 
-      <div className="mt-3 space-y-2 border-t border-border pt-3">
+      <ul className="divide-y divide-border/60 border-t border-border/60">
         {invoice.items.map((item, i) => (
-          <div key={i} className="flex justify-between gap-3 text-sm">
-            <span className="text-muted-foreground">{item.description}</span>
-            <span className="font-mono">{item.amount}</span>
-          </div>
+          <li key={i} className="flex justify-between gap-3 py-3">
+            <span className="min-w-0 truncate text-sm text-muted-foreground">
+              {item.description}
+            </span>
+            <span className="shrink-0 text-sm tabular-nums text-foreground">
+              {item.amount}
+            </span>
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <div className="mt-3 space-y-1.5 border-t border-border pt-3">
+      <div className="space-y-2 border-t border-border/60 pt-3">
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Subtotal</span>
-          <span className="font-mono">{invoice.subtotal}</span>
+          <span className="tabular-nums text-foreground">
+            {invoice.subtotal}
+          </span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-muted-foreground">Tax</span>
-          <span className="font-mono">{invoice.tax}</span>
+          <span className="tabular-nums text-foreground">{invoice.tax}</span>
         </div>
-        <div className="flex justify-between font-semibold">
-          <span>Total</span>
-          <span className="font-mono">{invoice.total}</span>
+        <div className="flex justify-between text-sm font-medium">
+          <span className="text-foreground">Total</span>
+          <span className="tabular-nums text-foreground">{invoice.total}</span>
         </div>
       </div>
 
-      <Button variant="outline" className="mt-4 w-full" onClick={handleDownload}>
-        <Download className="mr-1 h-4 w-4" />
-        Download Invoice
+      <Button variant="outline" className="w-full" onClick={handleDownload}>
+        Download invoice
       </Button>
     </section>
   );

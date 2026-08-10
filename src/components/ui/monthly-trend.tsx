@@ -1,6 +1,8 @@
 "use client";
 
 import { AreaChart } from "@/components/ui/charts";
+import { cn } from "@/lib/utils";
+import { H3, SECTION_LABEL } from "@/lib/typography";
 
 export interface TrendPoint {
   date: string;
@@ -30,8 +32,11 @@ export function monthlySeries(points: TrendPoint[], months = 6) {
   return { labels, series };
 }
 
-/** House-style trend chart section: hairline header + area chart of
- * monthly-bucketed points. */
+/**
+ * House-style trend section: hairline header + monochrome area chart of
+ * monthly-bucketed points. Caption is quiet sans (`SECTION_LABEL`), the series
+ * is neutral chart ink, values are `tabular-nums` — no mono, no accent.
+ */
 export function TrendCard({
   title,
   caption = "Last 6 months",
@@ -49,12 +54,10 @@ export function TrendCard({
 }) {
   const { labels, series } = monthlySeries(points);
   return (
-    <div className={className}>
-      <div className="flex items-baseline justify-between border-b border-border pb-3">
-        <h3 className="text-[15px] font-semibold">{title}</h3>
-        <p className="font-mono text-[11px] uppercase text-muted-foreground">
-          {caption}
-        </p>
+    <div className={cn("tabular-nums", className)}>
+      <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
+        <h3 className={H3}>{title}</h3>
+        <p className={SECTION_LABEL}>{caption}</p>
       </div>
       <AreaChart
         className="mt-5"

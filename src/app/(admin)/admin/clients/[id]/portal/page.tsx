@@ -3,21 +3,23 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { BracketLabel, MetricRing } from "@/components/ui/firecrawl";
-import { EmptyState } from "@/components/ui/empty-state";
+import { PageHero } from "@/components/ui/firecrawl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cascade, cascadeItem } from "@/lib/motion";
 import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
-  ArrowLeft,
-  Check,
-  Circle,
-  Eye,
-  ClipboardCheck,
-  ExternalLink,
-  FolderKanban,
-} from "lucide-react";
+  BODY_MUTED,
+  GHOST_PILL,
+  H3,
+  PAGE_RHYTHM,
+  QUIET_LINK,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 interface PortalView {
   client: {
@@ -101,28 +103,34 @@ export default function ClientPortalPreviewPage({
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-40 w-full" />
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
+        <div className={cn(READING_COL, PAGE_RHYTHM)}>
+          <Skeleton className="h-24 w-full" />
+          <Skeleton className="h-40 w-full" />
+        </div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="space-y-8">
-        <header className="border-b border-border pb-8">
-          <p className="eyebrow-mono">Operations · CRM</p>
-          <h1 className="font-title mt-1 text-3xl tracking-tight sm:text-4xl">
-            Client Portal
-          </h1>
-          <p className="mt-2 text-muted-foreground">Preview unavailable.</p>
-        </header>
-        <EmptyState
-          icon={Eye}
-          title="Couldn't load this client"
-          description="The client may have been removed. Head back to the CRM."
-        />
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
+        <div className={cn(READING_COL, PAGE_RHYTHM)}>
+          <PageHero
+            section="Portal preview"
+            title="Client Portal"
+            description="Preview unavailable."
+          />
+          <div className="py-14 text-center">
+            <h2 className={H3}>Couldn&apos;t load this client</h2>
+            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+              The client may have been removed.{" "}
+              <Link href="/admin/clients" className={QUIET_LINK}>
+                Back to Clients
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -147,255 +155,227 @@ export default function ClientPortalPreviewPage({
     { label: "Total Leads", value: totals.totalLeads.toLocaleString("en-US") },
     { label: "Avg CPL", value: usd(totals.avgCpl) },
     { label: "Ad Spend", value: usd(totals.totalSpend) },
-    {
-      label: "Revenue",
-      value: usd(totals.totalRevenue),
-      accent: "text-success",
-    },
+    { label: "Revenue", value: usd(totals.totalRevenue) },
     { label: "ROAS", value: `${totals.roas.toFixed(2)}x` },
   ];
 
   return (
-    <div className="space-y-10">
-      <div>
-        <Link
-          href="/admin/clients"
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Client CRM
-        </Link>
-        <header className="border-b border-border pb-8">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="eyebrow-mono">Portal preview</p>
-              <h1 className="font-title mt-1 text-3xl tracking-tight sm:text-4xl">
-                {client.companyName}
-              </h1>
-              <p className="mt-2 text-muted-foreground">
-                Exactly what {client.contactName} sees in their portal.
-              </p>
-            </div>
-            <div className="flex shrink-0 flex-wrap gap-2">
-              {client.driveUrl && (
-                <a
-                  href={client.driveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border px-3 py-1.5 text-sm transition-colors hover:bg-foreground/[0.04]"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Drive
-                </a>
-              )}
-              {client.landingPageUrl && (
-                <a
-                  href={client.landingPageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border px-3 py-1.5 text-sm transition-colors hover:bg-foreground/[0.04]"
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  Landing Page
-                </a>
-              )}
-            </div>
-          </div>
-        </header>
-      </div>
-
-      {/* Read-only banner */}
-      <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3">
-        <Eye className="h-4 w-4 shrink-0 text-muted-foreground" />
-        <p className="text-sm">
-          <span className="font-semibold">Viewing as client</span> — read-only
-          mirror of their portal.
-        </p>
-        <span className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-          {offering}
-        </span>
-        <span className="ml-auto flex items-center gap-2 font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
-          <span
-            className={cn(
-              "h-1.5 w-1.5 rounded-full",
-              client.hasPortalLogin ? "bg-brand" : "bg-muted-foreground/40"
-            )}
-          />
-          {client.hasPortalLogin ? "Portal login active" : "Invite not accepted yet"}
-        </span>
-      </div>
-
-      {/* Their performance tiles — digital marketing only */}
-      {showMarketing && (
-        <motion.section
-          variants={cascade}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-2 divide-border border-b border-border sm:grid-cols-5 sm:divide-x"
-        >
-          {tiles.map((t) => (
-            <motion.div
-              key={t.label}
-              variants={cascadeItem}
-              className="px-5 py-6"
-            >
-              <p className="micro-label">{t.label}</p>
-              <p
-                className={cn(
-                  "mt-2 font-mono text-2xl font-bold tracking-tight",
-                  t.accent
-                )}
-              >
-                {t.value}
-              </p>
-            </motion.div>
-          ))}
-        </motion.section>
-      )}
-
-      {/* Delivery pipeline — the same stages they watch */}
-      <section>
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-3">
-          <BracketLabel
-            n={pipeline.done}
-            m={pipeline.total}
-            label={`DELIVERY PIPELINE · ${pipeline.stageLabel.toUpperCase()}`}
-          />
-          <MetricRing value={pct} max={100} size={44} label={`${pct}% complete`} />
-        </div>
-        <ol className="mt-5 grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2 lg:grid-cols-3">
-          {pipeline.stages.map((s) => (
-            <li key={s.key} className="flex items-center gap-2.5 text-sm">
-              {s.complete ? (
-                <Check className="h-4 w-4 shrink-0 text-success" />
-              ) : (
-                <Circle
-                  className={cn(
-                    "h-4 w-4 shrink-0",
-                    s.active ? "text-brand" : "text-muted-foreground/40"
-                  )}
-                />
-              )}
-              <span
-                className={cn(
-                  s.active && "font-semibold",
-                  !s.active && !s.complete && "text-muted-foreground"
-                )}
-              >
-                {s.label}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* Their weekly reports — digital marketing only */}
-      {showMarketing && (
-      <section>
-        <div className="flex items-center gap-2 border-b border-border pb-3">
-          <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-[15px] font-semibold">Weekly Reports</h2>
-          {totals.pending > 0 && (
-            <span className="ml-auto rounded-full bg-warning/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase text-warning">
-              {totals.pending} awaiting them
-            </span>
-          )}
-        </div>
-        {reports.length === 0 ? (
-          <p className="pt-6 text-sm text-muted-foreground">
-            No weekly results posted yet.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Week</th>
-                  <th className="micro-label py-3 pr-4 text-right">Leads</th>
-                  <th className="micro-label py-3 pr-4 text-right">CPL</th>
-                  <th className="micro-label py-3 pr-4 text-right">Spend</th>
-                  <th className="micro-label py-3 pr-4 text-right">Revenue</th>
-                  <th className="micro-label py-3">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {reports.map((r) => (
-                  <tr key={r.id}>
-                    <td className="py-3 pr-4 font-mono text-xs whitespace-nowrap text-muted-foreground">
-                      {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono font-semibold">
-                      {r.leads.toLocaleString("en-US")}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {usd(r.cpl)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {usd(r.totalSpend)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {r.revenue !== null ? (
-                        <span className="text-success">{usd(r.revenue)}</span>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="py-3">
-                      <span
-                        className={cn(
-                          "rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase",
-                          r.status === "pending_client"
-                            ? "bg-warning/10 text-warning"
-                            : "bg-success/10 text-success"
-                        )}
-                      >
-                        {r.status === "pending_client" ? "Needs them" : "Complete"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-      )}
-
-      {/* Linked project phases, when a portal project exists */}
-      {project && (
-        <section>
-          <div className="flex items-center gap-2 border-b border-border pb-3">
-            <FolderKanban className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-[15px] font-semibold">{project.name}</h2>
-            <Link
-              href={`/admin/projects/${project.id}`}
-              className="ml-auto text-sm underline-offset-4 hover:underline"
-            >
-              Manage →
-            </Link>
-          </div>
-          {phases.length > 0 && (
-            <ol className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {phases.map((ph) => (
-                <li key={ph.id} className="flex items-center gap-2.5 text-sm">
-                  {ph.status === "completed" ? (
-                    <Check className="h-4 w-4 shrink-0 text-success" />
-                  ) : (
-                    <Circle className="h-4 w-4 shrink-0 text-muted-foreground/40" />
-                  )}
-                  <span
-                    className={cn(
-                      ph.status !== "completed" && "text-muted-foreground"
-                    )}
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <div className="space-y-3">
+          <Link href="/admin/clients" className={QUIET_LINK}>
+            Back to Clients
+          </Link>
+          <PageHero
+            section="Portal preview"
+            title={client.companyName}
+            description={`Exactly what ${client.contactName} sees in their portal.`}
+            action={
+              <>
+                {client.driveUrl && (
+                  <a
+                    href={client.driveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={GHOST_PILL}
                   >
-                    {ph.name}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          )}
+                    Drive
+                  </a>
+                )}
+                {client.landingPageUrl && (
+                  <a
+                    href={client.landingPageUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={GHOST_PILL}
+                  >
+                    Landing Page
+                  </a>
+                )}
+              </>
+            }
+          />
+        </div>
+
+        {/* Read-only banner */}
+        <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card px-4 py-3">
+          <p className="text-sm">
+            <span className="font-medium">Viewing as client</span> — read-only
+            mirror of their portal.
+          </p>
+          <span className={STATUS_PILL}>{offering}</span>
+          <span className={cn(STATUS_PILL, "ml-auto")}>
+            {client.hasPortalLogin
+              ? "Portal login active"
+              : "Invite not accepted"}
+          </span>
+        </div>
+
+        {/* Their performance tiles — digital marketing only */}
+        {showMarketing && (
+          <motion.section
+            variants={cascade}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-5 sm:divide-x"
+          >
+            {tiles.map((t) => (
+              <motion.div key={t.label} variants={cascadeItem} className="px-5 py-6">
+                <p className={SECTION_LABEL}>{t.label}</p>
+                <p className="mt-2 text-2xl tracking-tight tabular-nums text-foreground">
+                  {t.value}
+                </p>
+              </motion.div>
+            ))}
+          </motion.section>
+        )}
+
+        {/* Delivery pipeline — the same stages they watch */}
+        <section className={SECTION_RHYTHM}>
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+            <p className={SECTION_LABEL}>
+              Delivery pipeline · {pipeline.stageLabel}
+            </p>
+            <p className={cn(SECTION_LABEL, "tabular-nums")}>
+              {pipeline.done} of {pipeline.total} · {pct}% complete
+            </p>
+          </div>
+          <ol className="grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+            {pipeline.stages.map((s) => (
+              <li
+                key={s.key}
+                className="flex items-center justify-between gap-2 py-2 text-sm"
+              >
+                <span
+                  className={cn(
+                    s.active && "font-medium",
+                    !s.active && !s.complete && "text-muted-foreground"
+                  )}
+                >
+                  {s.label}
+                </span>
+                {s.complete ? (
+                  <span className={STATUS_PILL}>Done</span>
+                ) : s.active ? (
+                  <span className={STATUS_PILL_ACTIVE}>Current</span>
+                ) : null}
+              </li>
+            ))}
+          </ol>
         </section>
-      )}
+
+        {/* Their weekly reports — digital marketing only */}
+        {showMarketing && (
+          <section className={SECTION_RHYTHM}>
+            <div className="flex items-center gap-3 border-b border-border pb-3">
+              <h2 className={H3}>Weekly Reports</h2>
+              {totals.pending > 0 && (
+                <span className={cn(STATUS_PILL, "ml-auto")}>
+                  {totals.pending} awaiting them
+                </span>
+              )}
+            </div>
+            {reports.length === 0 ? (
+              <p className={cn(BODY_MUTED, "pt-3")}>
+                No weekly results posted yet.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border text-left">
+                      <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Week</th>
+                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                        Leads
+                      </th>
+                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                        CPL
+                      </th>
+                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                        Spend
+                      </th>
+                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
+                        Revenue
+                      </th>
+                      <th className={cn(SECTION_LABEL, "py-3")}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/60">
+                    {reports.map((r) => (
+                      <tr key={r.id}>
+                        <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
+                          {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
+                        </td>
+                        <td className="py-3 pr-4 text-right font-medium tabular-nums">
+                          {r.leads.toLocaleString("en-US")}
+                        </td>
+                        <td className="py-3 pr-4 text-right tabular-nums text-muted-foreground">
+                          {usd(r.cpl)}
+                        </td>
+                        <td className="py-3 pr-4 text-right tabular-nums text-muted-foreground">
+                          {usd(r.totalSpend)}
+                        </td>
+                        <td className="py-3 pr-4 text-right tabular-nums">
+                          {r.revenue !== null ? usd(r.revenue) : "—"}
+                        </td>
+                        <td className="py-3">
+                          <span
+                            className={
+                              r.status === "pending_client"
+                                ? STATUS_PILL
+                                : STATUS_PILL_ACTIVE
+                            }
+                          >
+                            {r.status === "pending_client"
+                              ? "Needs them"
+                              : "Complete"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Linked project phases, when a portal project exists */}
+        {project && (
+          <section className={SECTION_RHYTHM}>
+            <div className="flex items-center gap-3 border-b border-border pb-3">
+              <h2 className={H3}>{project.name}</h2>
+              <Link
+                href={`/admin/projects/${project.id}`}
+                className={cn(QUIET_LINK, "ml-auto")}
+              >
+                Manage
+              </Link>
+            </div>
+            {phases.length > 0 && (
+              <ol className="grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+                {phases.map((ph) => (
+                  <li
+                    key={ph.id}
+                    className="flex items-center justify-between gap-2 py-2 text-sm"
+                  >
+                    <span
+                      className={cn(
+                        ph.status !== "completed" && "text-muted-foreground"
+                      )}
+                    >
+                      {ph.name}
+                    </span>
+                    {ph.status === "completed" && (
+                      <span className={STATUS_PILL}>Done</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 }

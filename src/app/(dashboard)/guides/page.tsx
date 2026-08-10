@@ -3,21 +3,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { PageHero } from "@/components/ui/firecrawl";
-import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
-  BookOpen,
-  Rocket,
-  FileText,
-  ChevronUp,
-  GitBranch,
-  MessageSquareText,
-  type LucideIcon,
-} from "lucide-react";
+  GHOST_PILL,
+  PAGE_RHYTHM,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+} from "@/lib/typography";
 
 /**
  * Client Guides — playbooks for working with the Fortitudo build team.
- * Static content curated in code; each guide expands inline below its
- * summary card.
+ * Static content curated in code; each guide expands inline below its row.
  */
 
 interface GuideSection {
@@ -27,7 +24,6 @@ interface GuideSection {
 
 interface Guide {
   key: string;
-  icon: LucideIcon;
   title: string;
   description: string;
   bullets: string[];
@@ -38,7 +34,6 @@ interface Guide {
 const GUIDES: Guide[] = [
   {
     key: "onboarding",
-    icon: BookOpen,
     title: "Getting Started",
     description:
       "What to expect from kickoff to first build — and how to keep things moving fast.",
@@ -70,7 +65,6 @@ const GUIDES: Guide[] = [
   },
   {
     key: "tracker",
-    icon: GitBranch,
     title: "Reading Your Project Tracker",
     description:
       "How the phase tracker, statuses, and launch pipeline tell you exactly where your build stands.",
@@ -84,11 +78,11 @@ const GUIDES: Guide[] = [
     sections: [
       {
         heading: "1 · The six build phases",
-        body: "Every build moves through Discovery, Design, Development, Testing, Review, and Launch. The vertical tracker on your project page shows the finished phases with filled ticks, the active phase pulsing, and what's still ahead — the [ n / 6 ] counter is the fastest read.",
+        body: "Every build moves through Discovery, Design, Development, Testing, Review, and Launch. The tracker on your project page numbers each phase, fills in the ones that are finished, marks the current one In Progress, and leaves what's ahead in grey — the “n of 6 phases complete” line above it is the fastest read.",
       },
       {
         heading: "2 · Project statuses",
-        body: "ONBOARDING means we're waiting on your form; PAYMENT PENDING means the invoice gates the start; IN PROGRESS means we're building; REVISION means we're working through your requested changes; COMPLETED means the project shipped. Statuses are always shown in uppercase mono next to the project name.",
+        body: "Onboarding means we're waiting on your form; Payment Pending means the invoice gates the start; In Progress means we're building; Revision means we're working through your requested changes; Completed means the project shipped. The status always sits in a small pill next to the project name.",
       },
       {
         heading: "3 · Phases vs. the launch pipeline",
@@ -102,7 +96,6 @@ const GUIDES: Guide[] = [
   },
   {
     key: "reviews",
-    icon: MessageSquareText,
     title: "Reviewing Builds & Requesting Revisions",
     description:
       "How to review preview builds, leave feedback that lands, and use the revision queue.",
@@ -128,13 +121,12 @@ const GUIDES: Guide[] = [
       },
       {
         heading: "4 · Track the revision queue",
-        body: "Each request shows its status — PENDING when it's queued, IN PROGRESS while we work it, COMPLETED when it's deployed to the preview, REJECTED (with a note) if it's out of scope. The team's response appears directly under your request.",
+        body: "Each request carries a status pill — Pending when it's queued, In Progress while we work it, Completed when it's deployed to the preview, Rejected (with a note) if it's out of scope. The team's response appears directly under your request.",
       },
     ],
   },
   {
     key: "launch",
-    icon: Rocket,
     title: "Launch Checklist",
     description:
       "Everything that needs to be true before we flip the switch — and what happens after.",
@@ -170,72 +162,77 @@ export default function GuidesPage() {
   const [open, setOpen] = useState<string | null>(null);
 
   return (
-    <div className="space-y-10">
-      <PageHero
-        title="Client Guides"
-        description="Everything you need to get the most out of working with the Fortitudo team."
-      />
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <PageHero
+          section="Learn"
+          title="Client Guides"
+          description="Everything you need to get the most out of working with the Fortitudo team."
+        />
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-        {GUIDES.map((guide) => {
-          const isOpen = open === guide.key;
-          return (
-            <section key={guide.key} className="border-t border-border pt-6">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-muted">
-                <guide.icon className="h-5 w-5 text-foreground" />
-              </span>
-              <h2 className="mt-4 text-xl font-bold tracking-tight">
-                {guide.title}
-              </h2>
-              <p className="mt-1.5 text-sm text-muted-foreground">
-                {guide.description}
-              </p>
-              <ul className="mt-4 space-y-2">
-                {guide.bullets.map((b) => (
-                  <li key={b} className="flex items-start gap-2.5 text-sm">
-                    <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                    {b}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                className="mt-6 w-full"
-                onClick={() => setOpen(isOpen ? null : guide.key)}
-                aria-expanded={isOpen}
-              >
-                {isOpen ? (
-                  <ChevronUp className="mr-1.5 h-4 w-4" />
-                ) : (
-                  <FileText className="mr-1.5 h-4 w-4" />
-                )}
-                {isOpen ? "Close Guide" : guide.cta}
-              </Button>
-
-              <AnimatePresence initial={false}>
-                {isOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="mt-6 space-y-5 border-t border-border pt-5">
-                      {guide.sections.map((s) => (
-                        <div key={s.heading}>
-                          <h3 className="eyebrow-mono">{s.heading}</h3>
-                          <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                            {s.body}
-                          </p>
-                        </div>
-                      ))}
+        <section className={SECTION_RHYTHM}>
+          <p className={SECTION_LABEL}>
+            <span className="tabular-nums text-foreground/70">
+              {GUIDES.length}
+            </span>{" "}
+            guides
+          </p>
+          <ul className="divide-y divide-border/60 border-t border-border/60">
+            {GUIDES.map((guide) => {
+              const isOpen = open === guide.key;
+              return (
+                <li key={guide.key} className="py-5">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-[17px] font-semibold text-foreground">
+                        {guide.title}
+                      </h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {guide.description}
+                      </p>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </section>
-          );
-        })}
+                    <button
+                      onClick={() => setOpen(isOpen ? null : guide.key)}
+                      aria-expanded={isOpen}
+                      className={cn(GHOST_PILL, "shrink-0 cursor-pointer")}
+                    >
+                      {isOpen ? "Close guide" : guide.cta}
+                    </button>
+                  </div>
+
+                  <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-muted-foreground marker:text-border">
+                    {guide.bullets.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.25 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-5 space-y-5 border-t border-border/60 pt-5">
+                          {guide.sections.map((s) => (
+                            <div key={s.heading}>
+                              <p className={SECTION_LABEL}>{s.heading}</p>
+                              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                                {s.body}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       </div>
     </div>
   );

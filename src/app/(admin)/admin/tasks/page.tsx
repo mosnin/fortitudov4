@@ -2,13 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { SegmentedTabs, BracketLabel } from "@/components/ui/firecrawl";
+import { SegmentedTabs, PageHero } from "@/components/ui/firecrawl";
 import { SearchPill, SelectPill, SortPill } from "@/components/ui/filters";
-import { EmptyState } from "@/components/ui/empty-state";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AsciiField } from "@/components/ui/ascii-field";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import {
   CRM_STAGES,
@@ -20,16 +17,18 @@ import {
 import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
-  ChevronLeft,
-  ChevronRight,
-  ClipboardList,
-  Filter,
-  Maximize2,
-  Plus,
-  User,
-  Users,
-  X,
-} from "lucide-react";
+  BODY_MUTED,
+  CAPTION,
+  GHOST_PILL,
+  H1,
+  H3,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  SECTION_LABEL,
+  TITLE_FONT,
+} from "@/lib/typography";
+import { X } from "lucide-react";
 
 interface TaskRow {
   id: string;
@@ -64,18 +63,6 @@ const STATUS_OPTIONS = [
   { value: "in_progress", label: "In Progress" },
   { value: "completed", label: "Completed" },
 ];
-
-const statusTone: Record<string, string> = {
-  pending: "border-border bg-muted text-muted-foreground",
-  in_progress: "border-foreground/25 bg-background text-foreground",
-  completed: "border-success/30 bg-success/10 text-success",
-};
-
-const priorityTone: Record<TaskPriority, string> = {
-  high: "text-destructive",
-  medium: "text-warning",
-  low: "text-muted-foreground",
-};
 
 const selectClass =
   "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
@@ -244,36 +231,17 @@ export default function AdminTasksPage() {
   ]);
 
   return (
-    <div className="space-y-8">
-      {/* Page header — serif title over the studio ASCII band */}
-      <header className="relative border-b border-border pb-8">
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-80 sm:block"
-          style={{
-            maskImage: "linear-gradient(to left, black, transparent)",
-            WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-          }}
-        >
-          <AsciiField />
-        </div>
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow-mono">Operations · Team</p>
-            <h1 className="font-title mt-1 text-3xl tracking-tight sm:text-4xl">
-              Task Manager
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Manage team tasks across all clients.
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <Plus className="mr-1.5 h-4 w-4" />
-              Add Custom Task
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <PageHero
+        section="Operations"
+        title="Tasks"
+        description="Manage team tasks across all clients."
+        action={
+          <button onClick={() => setCreateOpen(true)} className={PRIMARY_PILL}>
+            Add Custom Task
+          </button>
+        }
+      />
 
       {/* Stage tabs + filter row */}
       <div className="space-y-4">
@@ -296,7 +264,6 @@ export default function AdminTasksPage() {
           />
           <SelectPill
             className="sm:w-44"
-            icon={User}
             ariaLabel="Assignee"
             value={assigneeFilter}
             onChange={setAssigneeFilter}
@@ -310,7 +277,6 @@ export default function AdminTasksPage() {
           />
           <SelectPill
             className="sm:w-40"
-            icon={Filter}
             ariaLabel="Status"
             value={statusFilter}
             onChange={setStatusFilter}
@@ -318,7 +284,6 @@ export default function AdminTasksPage() {
           />
           <SelectPill
             className="sm:w-40"
-            icon={Filter}
             ariaLabel="Priority"
             value={priorityFilter}
             onChange={setPriorityFilter}
@@ -331,7 +296,6 @@ export default function AdminTasksPage() {
           />
           <SelectPill
             className="sm:w-44"
-            icon={Users}
             ariaLabel="Client status"
             value={clientFilter}
             onChange={setClientFilter}
@@ -357,36 +321,41 @@ export default function AdminTasksPage() {
         </div>
       </div>
 
-      {/* Task table */}
+      {/* Task table — a wide working surface, spans the full frame */}
       <section>
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
-          <BracketLabel n={tasks.length} label="TASKS" />
-          <BracketLabel n={doneCount} m={tasks.length} label="COMPLETED" />
+          <p className={SECTION_LABEL}>{tasks.length} tasks</p>
+          <p className={SECTION_LABEL}>
+            {doneCount} of {tasks.length} completed
+          </p>
         </div>
         {loading ? (
           <TableSkeleton rows={8} />
         ) : tasks.length === 0 ? (
-          <EmptyState
-            icon={ClipboardList}
-            title={filtersActive ? "No matching tasks" : "No tasks yet"}
-            description={
-              filtersActive
+          <div className="py-14 text-center">
+            <h2 className={H3}>
+              {filtersActive ? "No matching tasks" : "No tasks yet"}
+            </h2>
+            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-md")}>
+              {filtersActive
                 ? "No tasks match the current filters. This view shows active clients by default — switch to All clients to include paused and churned ones."
-                : "Create a client from the Clients page to seed its onboarding checklist, or add a custom task."
-            }
-          />
+                : "Create a client from the Clients page to seed its onboarding checklist, or add a custom task."}
+            </p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Task</th>
-                  <th className="micro-label py-3 pr-4">Client</th>
-                  <th className="micro-label py-3 pr-4">Assignee</th>
-                  <th className="micro-label py-3 pr-4">Due Date</th>
-                  <th className="micro-label py-3 pr-4">Priority</th>
-                  <th className="micro-label py-3 pr-4">Status</th>
-                  <th className="micro-label py-3 text-right">Actions</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Task</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Client</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Assignee</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Due Date</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Priority</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Status</th>
+                  <th className={cn(SECTION_LABEL, "py-3 text-right")}>
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <motion.tbody
@@ -394,35 +363,31 @@ export default function AdminTasksPage() {
                 variants={rowCascade}
                 initial="hidden"
                 animate="visible"
-                className="divide-y divide-border"
+                className="divide-y divide-border/60"
               >
                 {visible.map((t) => (
                   <motion.tr
                     key={t.id}
                     variants={rowItem}
                     className={cn(
-                      "group transition-colors hover:bg-muted/50",
+                      "group transition-colors hover:bg-muted/30",
                       t.status === "completed" && "opacity-70"
                     )}
                   >
-                    <td className="py-3 pr-4 font-medium">{t.title}</td>
+                    <td className="py-3 pr-4 font-medium text-foreground">
+                      {t.title}
+                    </td>
                     <td className="py-3 pr-4 text-muted-foreground">
                       {t.companyName ?? "—"}
                     </td>
-                    <td className="py-3 pr-4">
-                      {t.assigneeName ? (
-                        <span className="rounded-full bg-secondary px-2.5 py-0.5 text-[11px] font-semibold text-secondary-foreground">
-                          {t.assigneeName}
-                        </span>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
+                    <td className="py-3 pr-4 text-muted-foreground">
+                      {t.assigneeName ?? "—"}
                     </td>
                     <td className="py-3 pr-4">
                       <input
                         type="date"
                         aria-label={`Due date for ${t.title}`}
-                        className="h-8 w-[9.5rem] rounded-lg border border-transparent bg-transparent px-2 font-mono text-xs text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40"
+                        className="h-8 w-[9.5rem] rounded-lg border border-transparent bg-transparent px-2 text-xs tabular-nums text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40"
                         value={t.dueDate ? t.dueDate.slice(0, 10) : ""}
                         onChange={(e) =>
                           patchTask(t.id, {
@@ -438,12 +403,9 @@ export default function AdminTasksPage() {
                     <td className="py-3 pr-4">
                       <select
                         aria-label={`Priority for ${t.title}`}
-                        className={cn(
-                          // Fixed width: a native select that resizes with its
-                          // label reflows every column to its right on change.
-                          "h-8 w-[6.5rem] cursor-pointer appearance-none rounded-lg border border-transparent bg-transparent px-2 font-mono text-[11px] font-semibold uppercase tracking-wide outline-none transition-colors hover:border-border focus:border-foreground/40",
-                          priorityTone[t.priority]
-                        )}
+                        // Fixed width: a native select that resizes with its
+                        // label reflows every column to its right on change.
+                        className="h-8 w-[6.5rem] cursor-pointer appearance-none rounded-lg border border-transparent bg-transparent px-2 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40"
                         value={t.priority}
                         onChange={(e) =>
                           patchTask(t.id, { priority: e.target.value })
@@ -459,10 +421,7 @@ export default function AdminTasksPage() {
                     <td className="py-3 pr-4">
                       <select
                         aria-label={`Status for ${t.title}`}
-                        className={cn(
-                          "h-8 w-[8.5rem] cursor-pointer appearance-none rounded-full border px-3 text-center font-mono text-[11px] font-semibold uppercase tracking-wide outline-none transition-colors focus:border-foreground/40",
-                          statusTone[t.status]
-                        )}
+                        className="h-8 w-[8.5rem] cursor-pointer appearance-none rounded-full border border-border bg-background px-3 text-center text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors focus:border-foreground/40"
                         value={t.status}
                         onChange={(e) =>
                           patchTask(t.id, { status: e.target.value })
@@ -478,10 +437,9 @@ export default function AdminTasksPage() {
                     <td className="py-3 text-right whitespace-nowrap">
                       <button
                         onClick={() => setOpenClientId(t.clientId)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-sm transition-colors hover:bg-foreground/[0.04] cursor-pointer"
+                        className={cn(QUIET_LINK, "cursor-pointer")}
                         aria-label={`Open ${t.companyName ?? "client"}`}
                       >
-                        <Maximize2 className="h-3.5 w-3.5" />
                         Open
                       </button>
                     </td>
@@ -494,8 +452,8 @@ export default function AdminTasksPage() {
 
         {/* Pager — the roster carries thousands of checklist tasks. */}
         {!loading && pageCount > 1 && (
-          <div className="flex items-center justify-between gap-3 border-t border-border pt-4">
-            <p className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+          <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
+            <p className={cn(CAPTION, "tabular-nums")}>
               {safePage * PAGE_SIZE + 1}–
               {Math.min((safePage + 1) * PAGE_SIZE, tasks.length)} of{" "}
               {tasks.length.toLocaleString("en-US")}
@@ -504,21 +462,25 @@ export default function AdminTasksPage() {
               <button
                 onClick={() => setPage(safePage - 1)}
                 disabled={safePage === 0}
-                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-sm transition-colors hover:bg-foreground/[0.04] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+                className={cn(
+                  GHOST_PILL,
+                  "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                )}
               >
-                <ChevronLeft className="h-3.5 w-3.5" />
-                Prev
+                Previous
               </button>
-              <span className="font-mono text-[11px] text-muted-foreground">
+              <span className={cn(CAPTION, "tabular-nums")}>
                 {safePage + 1} / {pageCount}
               </span>
               <button
                 onClick={() => setPage(safePage + 1)}
                 disabled={safePage >= pageCount - 1}
-                className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border px-3 text-sm transition-colors hover:bg-foreground/[0.04] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+                className={cn(
+                  GHOST_PILL,
+                  "cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                )}
               >
                 Next
-                <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           </div>
@@ -615,13 +577,13 @@ function AddCustomTaskModal({
             className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-6">
-              <h2 className="font-title text-xl tracking-tight">
+              <h2 className={cn(H1, "text-xl")} style={TITLE_FONT}>
                 Add Task to Client
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -630,7 +592,7 @@ function AddCustomTaskModal({
 
             <div className="space-y-4">
               <div>
-                <span className="mb-1.5 block text-[13px] font-semibold">
+                <span className="mb-1.5 block text-[13px] font-medium">
                   Client
                 </span>
                 <select
@@ -647,7 +609,7 @@ function AddCustomTaskModal({
                 </select>
               </div>
               <div>
-                <span className="mb-1.5 block text-[13px] font-semibold">
+                <span className="mb-1.5 block text-[13px] font-medium">
                   Task Title
                 </span>
                 <Input
@@ -657,7 +619,7 @@ function AddCustomTaskModal({
                 />
               </div>
               <div>
-                <span className="mb-1.5 block text-[13px] font-semibold">
+                <span className="mb-1.5 block text-[13px] font-medium">
                   Assignee
                 </span>
                 <select
@@ -674,16 +636,25 @@ function AddCustomTaskModal({
                     </option>
                   ))}
                 </select>
-                <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                <p className={cn(CAPTION, "mt-1.5")}>
                   Leave unassigned and a teammate can claim it.
                 </p>
               </div>
 
               {error && <p className="text-sm text-destructive">{error}</p>}
 
-              <Button type="submit" className="w-full" disabled={saving}>
-                {saving ? "Creating…" : "Create Task"}
-              </Button>
+              <div className="flex justify-end gap-2 pt-2">
+                <button type="button" onClick={onClose} className={GHOST_PILL}>
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                  disabled={saving}
+                >
+                  {saving ? "Creating…" : "Create Task"}
+                </button>
+              </div>
             </div>
           </motion.form>
         </div>

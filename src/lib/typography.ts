@@ -22,6 +22,9 @@ export const TITLE_FONT = { fontFamily: "var(--font-title)" } as const;
 
 /** Focal stat number — same scale as H1 but treated as data. Use serif. */
 export const STAT_NUMBER = "text-3xl tracking-tight text-foreground tabular-nums";
+/** Compact stat (when 4+ sit in a row). 25px = H1 x 1/1.2. */
+export const STAT_NUMBER_COMPACT =
+  "text-[25px] leading-tight tracking-tight text-foreground tabular-nums";
 
 /* ─── Section headings ─────────────────────────────────────────────────── */
 
@@ -86,3 +89,39 @@ export const GHOST_PILL =
 /** Quiet text link — "Edit", "Cancel" inline within a row. */
 export const QUIET_LINK =
   "text-sm text-muted-foreground hover:text-foreground transition-colors duration-150";
+
+/* ─── Spacing rhythm (the People/Clients reference) ────────────────────── */
+
+/** Between MAJOR page sections. */
+export const PAGE_RHYTHM = "space-y-8";
+/** Between sub-sections within a section. */
+export const SECTION_RHYTHM = "space-y-3";
+/** Between form fields or list rows. */
+export const FIELD_RHYTHM = "space-y-4";
+/** Tight inline cluster (label + pill). */
+export const INLINE_TIGHT = "gap-1.5";
+/** Standard inline cluster (toolbar buttons, action row). */
+export const INLINE = "gap-2";
+/** Between hairline-divided rows: padding only, no margin. */
+export const ROW_PAD = "py-3";
+export const ROW_PAD_TIGHT = "py-2.5";
+
+/* ─── Layout containers ────────────────────────────────────────────────── */
+
+/** Reading column — headers, section labels, row lists. Wide working
+ *  surfaces (boards, wide tables) may span the full frame instead. */
+export const READING_COL = "mx-auto w-full max-w-5xl";
+/** Single-form pages (settings, intake). */
+export const READING_MAX = "max-w-3xl mx-auto";
+
+/* ─── Pills / badges ───────────────────────────────────────────────────── */
+
+/** Neutral status pill — a WORD, never a colored dot or icon. */
+export const STATUS_PILL =
+  "inline-flex items-center rounded-full border border-border px-1.5 py-0.5 " +
+  "text-[10px] uppercase tracking-wide text-muted-foreground";
+
+/** The "active"/emphasised variant of the same pill. Still monochrome. */
+export const STATUS_PILL_ACTIVE =
+  "inline-flex items-center rounded-full bg-foreground/[0.06] px-1.5 py-0.5 " +
+  "text-[10px] uppercase tracking-wide text-foreground/70";

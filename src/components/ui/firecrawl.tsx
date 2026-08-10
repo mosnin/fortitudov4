@@ -1,76 +1,55 @@
 "use client";
 
 /**
- * Signature primitives for the orange-on-white dashboard system (design.md).
- * PageHero, StatHeader (count-up numeral), BracketLabel, MetricRing,
- * Sparkline — all pure SVG/motion, no chart deps.
+ * Shared product primitives (see design-product.md). Monochrome, text-first:
+ * PageHero (page frame), StatHeader, BracketLabel (section label), MetricRing,
+ * Sparkline, SegmentedTabs — pure SVG/motion, no chart deps, no decoration.
  */
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "motion/react";
 import { cn } from "@/lib/utils";
 import { easeOutExpo } from "@/lib/motion";
-import { Typewriter } from "@/components/remocn/typewriter";
+import { H1, TITLE_FONT, BODY_MUTED, SECTION_LABEL } from "@/lib/typography";
 
-/** Oversized page header band with hairline close (Activity-Logs style). */
+/**
+ * Page frame header — the canonical product header (docs: design-product.md).
+ * A quiet section line, a serif title, one muted subtitle. No decoration, no
+ * icons, no texture: the eye lands on content, not chrome.
+ */
 export function PageHero({
   title,
   description,
   action,
+  section,
   className,
-  typewriter = true,
 }: {
   title: string;
   description?: string;
   action?: React.ReactNode;
+  /** Quiet line above the title, e.g. "Operations". */
+  section?: string;
   className?: string;
-  /** Type the title out once on mount. Set false for a plain title. */
+  /** @deprecated retained for call-site compatibility; no longer used. */
   typewriter?: boolean;
 }) {
   return (
-    <div className={cn("relative border-b border-border pb-8", className)}>
-      {/* dotted decoration, fades toward the text */}
-      <div
-        className="dot-texture pointer-events-none absolute inset-y-0 right-0 hidden w-64 sm:block"
-        style={{
-          maskImage: "linear-gradient(to left, black, transparent)",
-          WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-        }}
-      />
-      <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: easeOutExpo }}
-            className="text-3xl font-bold tracking-tight sm:text-4xl"
-          >
-            {typewriter ? (
-              <Typewriter
-                key={title}
-                text={title}
-                cursor
-                charsPerSecond={22}
-                speed={1}
-              />
-            ) : (
-              title
-            )}
-          </motion.h1>
-          {description && (
-            <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.06, ease: easeOutExpo }}
-              className="mt-2 text-muted-foreground"
-            >
-              {description}
-            </motion.p>
-          )}
-        </div>
-        {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
+    <header className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
+      <div className="space-y-1.5">
+        {section && <p className={BODY_MUTED}>{section}</p>}
+        <motion.h1
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: easeOutExpo }}
+          className={H1}
+          style={TITLE_FONT}
+        >
+          {title}
+        </motion.h1>
+        {description && <p className={BODY_MUTED}>{description}</p>}
       </div>
-    </div>
+      {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
+    </header>
   );
 }
 
@@ -129,12 +108,12 @@ export function StatHeader({
       <div>
         <h3 className="text-[15px] font-semibold">{title}</h3>
         {caption && (
-          <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
+          <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">
             {caption}
           </p>
         )}
       </div>
-      <p className="text-3xl font-bold tracking-tight">
+      <p className="text-3xl tracking-tight tabular-nums" style={TITLE_FONT}>
         <CountUp value={value} format={format} />
         {unit && (
           <span className="ml-1.5 text-lg font-semibold text-muted-foreground">
@@ -146,30 +125,42 @@ export function StatHeader({
   );
 }
 
-/** `[ 3 / 5 ] · LABEL` mono micro-header with orange tick. */
+/**
+ * Quiet section label — 11px uppercase muted sans. Replaces the old bracketed
+ * mono header; the product voice is text-first, not terminal.
+ */
 export function BracketLabel({
+  children,
   n,
-  m,
   label,
+  m,
   className,
 }: {
-  n: number | string;
-  m?: number | string;
-  label: string;
+  children?: React.ReactNode;
+  /** Leading value, e.g. a count or a range. Rendered inline, not bracketed. */
+  n?: React.ReactNode;
+  /** The label text. */
+  label?: React.ReactNode;
+  /** Denominator, when `n` is "n of m". */
+  m?: React.ReactNode;
+  /** @deprecated ornamental prop from the previous system; ignored. */
+  total?: number;
   className?: string;
 }) {
   return (
-    <p className={cn("bracket-label flex items-center gap-2", className)}>
-      <span className="h-3.5 w-[3px] rounded-full bg-orange" />
-      <span>
-        [ <b>{n}</b>
-        {m !== undefined && <> / {m}</>} ] · {label}
-      </span>
+    <p className={cn(SECTION_LABEL, className)}>
+      {n != null && (
+        <span className="text-foreground/70">
+          {n}
+          {m != null ? ` of ${m}` : null}
+        </span>
+      )}
+      {n != null && (label || children) ? " · " : null}
+      {label ?? children}
     </p>
   );
 }
 
-/** Circular progress ring ("0 of 2 active browsers" style). */
 export function MetricRing({
   value,
   max,
@@ -204,7 +195,7 @@ export function MetricRing({
           cy={size / 2}
           r={r}
           fill="none"
-          stroke="var(--color-orange)"
+          stroke="var(--chart-1)"
           strokeWidth={stroke}
           strokeLinecap="round"
           strokeDasharray={c}
@@ -215,7 +206,7 @@ export function MetricRing({
         <text
           x="50%"
           y="50%"
-          className="rotate-90 fill-foreground font-mono text-sm font-semibold"
+          className="rotate-90 fill-foreground text-sm font-semibold tabular-nums"
           textAnchor="middle"
           dominantBaseline="central"
           style={{ transformOrigin: "center" }}
@@ -259,7 +250,7 @@ export function Sparkline({
   return (
     <div className={cn("relative", className)}>
       <div
-        className="dot-texture pointer-events-none absolute inset-0 opacity-60"
+        className="pointer-events-none absolute inset-0"
         style={{
           maskImage: "linear-gradient(to top, transparent, black)",
           WebkitMaskImage: "linear-gradient(to top, transparent, black)",
@@ -273,8 +264,8 @@ export function Sparkline({
       >
         <defs>
           <linearGradient id="lm-spark-fill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--color-orange)" stopOpacity="0.22" />
-            <stop offset="100%" stopColor="var(--color-orange)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--chart-1)" stopOpacity="0.16" />
+            <stop offset="100%" stopColor="var(--chart-1)" stopOpacity="0" />
           </linearGradient>
         </defs>
         <motion.path
@@ -290,7 +281,7 @@ export function Sparkline({
         <motion.path
           d={line}
           fill="none"
-          stroke="var(--color-orange)"
+          stroke="var(--chart-1)"
           strokeWidth={1.6}
           vectorEffect="non-scaling-stroke"
           initial={{ opacity: 0 }}
@@ -299,7 +290,7 @@ export function Sparkline({
         />
       </svg>
       {labels && (
-        <div className="mt-1 flex justify-between font-mono text-[10px] text-muted-foreground">
+        <div className="mt-1 flex justify-between text-[10px] tabular-nums text-muted-foreground">
           <span>{labels[0]}</span>
           <span>{labels[1]}</span>
         </div>

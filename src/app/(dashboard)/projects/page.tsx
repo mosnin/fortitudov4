@@ -1,17 +1,21 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { PageHero } from "@/components/ui/firecrawl";
-import { EmptyState } from "@/components/ui/empty-state";
-import { AsciiField } from "@/components/ui/ascii-field";
 import {
   ProjectList,
   type ProjectListItem,
 } from "@/components/dashboard/project-list";
-import { FolderKanban, Plus } from "lucide-react";
 import { db } from "@/db";
 import { projects, projectPhases, users } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
+import { cn } from "@/lib/utils";
+import {
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+} from "@/lib/typography";
 
 export default async function ProjectsPage() {
   const { userId } = await auth();
@@ -24,11 +28,14 @@ export default async function ProjectsPage() {
 
   if (!dbUser) {
     return (
-      <div className="space-y-8">
-        <PageHero
-          title="Projects"
-          description="Your account is being set up. Please refresh in a moment."
-        />
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
+        <div className={READING_COL}>
+          <PageHero
+            section="Workspace"
+            title="Projects"
+            description="Your account is being set up. Please refresh in a moment."
+          />
+        </div>
       </div>
     );
   }
@@ -64,51 +71,44 @@ export default async function ProjectsPage() {
   }));
 
   return (
-    <div className="space-y-10">
-      <PageHero
-        title="Projects"
-        description="Track your builds, phases, and launch pipeline."
-        action={
-          <Button asChild>
-            <Link href="/onboarding">
-              <Plus className="mr-1 h-4 w-4" />
-              New Project
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <PageHero
+          section="Workspace"
+          title="Projects"
+          description="Track your builds, phases, and launch pipeline."
+          action={
+            <Link href="/onboarding" className={PRIMARY_PILL}>
+              New project
             </Link>
-          </Button>
-        }
-      />
+          }
+        />
 
-      {userProjects.length === 0 ? (
-        <div className="animate-fade-up relative overflow-hidden rounded-xl border border-border">
-          <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              maskImage: "linear-gradient(to bottom, black, transparent 70%)",
-              WebkitMaskImage:
-                "linear-gradient(to bottom, black, transparent 70%)",
-            }}
-          >
-            <AsciiField className="h-full w-full opacity-40" />
-          </div>
-          <div className="relative">
-            <EmptyState
-              icon={FolderKanban}
-              title="No projects yet"
-              description="Start your first project and we'll build something great together."
-              action={
-                <Button asChild>
-                  <Link href="/onboarding">
-                    <Plus className="mr-1 h-4 w-4" />
-                    New Project
-                  </Link>
-                </Button>
-              }
-            />
-          </div>
-        </div>
-      ) : (
-        <ProjectList projects={listItems} />
-      )}
+        <section className={SECTION_RHYTHM}>
+          <p className={SECTION_LABEL}>
+            <span className="tabular-nums text-foreground/70">
+              {userProjects.length}
+            </span>{" "}
+            {userProjects.length === 1 ? "project" : "projects"}
+          </p>
+          {userProjects.length === 0 ? (
+            <div className="border-t border-border py-10">
+              <p className="text-sm font-medium text-foreground">
+                No projects yet
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Start your first project and we&rsquo;ll build something great
+                together.
+              </p>
+              <Link href="/onboarding" className={cn(PRIMARY_PILL, "mt-5")}>
+                New project
+              </Link>
+            </div>
+          ) : (
+            <ProjectList projects={listItems} />
+          )}
+        </section>
+      </div>
     </div>
   );
 }

@@ -2,10 +2,17 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, Plus } from "lucide-react";
+import { X } from "lucide-react";
 import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
+import { cn } from "@/lib/utils";
+import {
+  BODY_MUTED,
+  CAPTION,
+  H1,
+  PRIMARY_PILL,
+  TITLE_FONT,
+} from "@/lib/typography";
 
 const selectClass =
   "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
@@ -19,7 +26,7 @@ function Field({
 }) {
   return (
     <div>
-      <span className="mb-1.5 block text-[13px] font-semibold">{label}</span>
+      <span className="mb-1.5 block text-[13px] font-medium">{label}</span>
       {children}
     </div>
   );
@@ -150,19 +157,21 @@ export function NewClientModal({
             className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-1">
-              <h2 className="font-title text-2xl tracking-tight">
+              <h2 className={cn(H1, "text-2xl")} style={TITLE_FONT}>
                 Create New Client
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                 aria-label="Close"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="eyebrow-mono pb-6">New roster entry · seeds checklist</p>
+            <p className={cn(BODY_MUTED, "pb-6")}>
+              A new roster entry — this seeds their delivery checklist.
+            </p>
 
             <div className="space-y-4">
               <Field label="Contact Name">
@@ -190,7 +199,7 @@ export function NewClientModal({
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                 />
-                <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                <p className={cn(CAPTION, "mt-1.5")}>
                   Saved now, but nothing is emailed unless you tick the box
                   below. You can send the invite later from Client Details.
                 </p>
@@ -309,7 +318,7 @@ export function NewClientModal({
               <label className="flex cursor-pointer items-start gap-2.5 rounded-lg border border-border p-3 text-sm">
                 <input
                   type="checkbox"
-                  className="mt-0.5 h-4 w-4 cursor-pointer accent-[var(--brand)]"
+                  className="mt-0.5 h-4 w-4 cursor-pointer accent-[var(--foreground)]"
                   checked={form.sendInvite}
                   onChange={(e) =>
                     setForm({ ...form, sendInvite: e.target.checked })
@@ -317,7 +326,7 @@ export function NewClientModal({
                 />
                 <span>
                   <span className="font-medium">Email the portal invite now</span>
-                  <span className="mt-0.5 block font-mono text-[10px] text-muted-foreground">
+                  <span className={cn(CAPTION, "mt-0.5 block")}>
                     Leave off to onboard them internally first — invite when
                     you&apos;re ready for them to log in.
                   </span>
@@ -326,14 +335,20 @@ export function NewClientModal({
 
               {error && <p className="text-sm text-destructive">{error}</p>}
 
-              <Button type="submit" className="w-full" disabled={saving}>
-                <Plus className="mr-1.5 h-4 w-4" />
+              <button
+                type="submit"
+                className={cn(
+                  PRIMARY_PILL,
+                  "w-full justify-center disabled:opacity-50"
+                )}
+                disabled={saving}
+              >
                 {saving
                   ? "Creating…"
                   : form.sendInvite
                     ? "Create Client & Send Invite"
                     : "Create Client"}
-              </Button>
+              </button>
             </div>
           </motion.form>
         </div>

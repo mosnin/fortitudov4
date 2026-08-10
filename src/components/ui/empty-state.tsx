@@ -1,20 +1,41 @@
 import { type LucideIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { BODY_MUTED } from "@/lib/typography";
 
 interface EmptyStateProps {
-  icon: LucideIcon;
+  /**
+   * @deprecated Empty states are text-first (design-product.md): a hero icon is
+   * decoration. The prop is accepted so existing call sites keep compiling, but
+   * nothing is rendered for it.
+   */
+  icon?: LucideIcon;
   title: string;
   description: string;
   action?: React.ReactNode;
+  className?: string;
 }
 
-export function EmptyState({ icon: Icon, title, description, action }: EmptyStateProps) {
+/**
+ * Text-first empty state — a title, one muted line, an optional action pill.
+ * No hero icon, no illustration, no tinted chip.
+ */
+export function EmptyState({
+  title,
+  description,
+  action,
+  className,
+}: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-14 px-6 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-orange/10 border border-orange/20 mb-5">
-        <Icon className="h-8 w-8 text-orange/60" />
-      </div>
-      <h3 className="text-base font-semibold mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground max-w-xs">{description}</p>
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center px-6 py-14 text-center",
+        className
+      )}
+    >
+      <h3 className="text-[15px] font-medium text-foreground">{title}</h3>
+      {description && (
+        <p className={cn(BODY_MUTED, "mt-1.5 max-w-sm")}>{description}</p>
+      )}
       {action && <div className="mt-5">{action}</div>}
     </div>
   );

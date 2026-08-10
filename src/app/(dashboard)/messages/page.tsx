@@ -1,14 +1,17 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, MessageSquare } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { PageHero } from "@/components/ui/firecrawl";
-import { Skeleton } from "@/components/ui/skeleton";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
+import {
+  CAPTION,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  READING_COL,
+  SECTION_LABEL,
+} from "@/lib/typography";
 
 interface Message {
   id: string;
@@ -108,22 +111,25 @@ export default function MessagesPage() {
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        <PageHero
-          title="Messages"
-          description="Chat with the Fortitudo team about your project."
-        />
-        <div
-          className="flex flex-col rounded-xl border border-border"
-          style={{ height: "calc(100vh - 300px)" }}
-        >
-          <div className="border-b border-border px-4 py-4">
-            <Skeleton className="h-6 w-48" />
-          </div>
-          <div className="flex-1 space-y-4 p-4">
-            <Skeleton className="h-16 w-2/3" />
-            <Skeleton className="ml-auto h-12 w-1/2" />
-            <Skeleton className="h-16 w-3/5" />
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
+        <div className={cn(READING_COL, PAGE_RHYTHM)}>
+          <PageHero
+            section="Workspace"
+            title="Messages"
+            description="Chat with the Fortitudo team about your project."
+          />
+          <div
+            className="flex flex-col rounded-xl border border-border"
+            style={{ height: "calc(100vh - 320px)" }}
+          >
+            <div className="border-b border-border px-4 py-4">
+              <div className="h-4 w-48 animate-pulse rounded bg-muted" />
+            </div>
+            <div className="flex-1 space-y-4 p-4">
+              <div className="h-14 w-2/3 animate-pulse rounded-xl bg-muted" />
+              <div className="ml-auto h-10 w-1/2 animate-pulse rounded-xl bg-muted" />
+              <div className="h-14 w-3/5 animate-pulse rounded-xl bg-muted" />
+            </div>
           </div>
         </div>
       </div>
@@ -131,111 +137,136 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="space-y-8">
-      <PageHero
-        title="Messages"
-        description="Chat with the Fortitudo team about your project."
-        action={
-          selectedProjectId ? (
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
-              [ Auto-refresh · 5s ]
-            </span>
-          ) : undefined
-        }
-      />
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <PageHero
+          section="Workspace"
+          title="Messages"
+          description="Chat with the Fortitudo team about your project."
+          action={
+            selectedProjectId ? (
+              <span className={CAPTION}>Updates every 5 seconds</span>
+            ) : undefined
+          }
+        />
 
-      {projects.length === 0 ? (
-        <div className="rounded-xl border border-border">
-          <EmptyState
-            icon={MessageSquare}
-            title="No messages yet"
-            description="Once you have an active project, you can chat directly with the Fortitudo team here."
-          />
-        </div>
-      ) : (
-        <>
-          {/* Project selector */}
-          {projects.length > 1 && (
-            <div className="flex gap-2 flex-wrap">
-              {projects.map((project) => (
-                <Button
-                  key={project.id}
-                  variant={selectedProjectId === project.id ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedProjectId(project.id)}
-                >
-                  {project.name}
-                </Button>
-              ))}
-            </div>
-          )}
-
-          <div
-            className="flex flex-col overflow-hidden rounded-xl border border-border"
-            style={{ height: "calc(100vh - 300px)" }}
-          >
-            <div className="border-b border-border px-4 py-3.5">
-              <h2 className="text-[15px] font-semibold">
-                {selectedProject?.name || "Select a project"}
-              </h2>
-            </div>
-
-            {/* Messages area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <MessageSquare className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
-                    <p className="text-sm text-muted-foreground">No messages yet.</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Send one below to get started.</p>
-                  </div>
+        {projects.length === 0 ? (
+          <div className="border-t border-border py-10">
+            <p className="text-sm font-medium text-foreground">
+              No messages yet
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Once you have an active project, you can chat directly with the
+              Fortitudo team here.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Project selector */}
+            {projects.length > 1 && (
+              <div className="space-y-2">
+                <p className={SECTION_LABEL}>Project</p>
+                <div className="flex flex-wrap gap-2">
+                  {projects.map((project) => {
+                    const active = selectedProjectId === project.id;
+                    return (
+                      <button
+                        key={project.id}
+                        onClick={() => setSelectedProjectId(project.id)}
+                        className={cn(
+                          "cursor-pointer rounded-full border px-3 h-8 text-[13px] transition-colors",
+                          active
+                            ? "border-foreground bg-foreground text-background"
+                            : "border-border text-muted-foreground hover:text-foreground hover:bg-foreground/[0.04]"
+                        )}
+                      >
+                        {project.name}
+                      </button>
+                    );
+                  })}
                 </div>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={cn(
-                      "flex flex-col max-w-[80%]",
-                      message.role === "client" ? "ml-auto items-end" : "items-start"
-                    )}
-                  >
+              </div>
+            )}
+
+            <div
+              className="flex flex-col overflow-hidden rounded-xl border border-border"
+              style={{ height: "calc(100vh - 320px)" }}
+            >
+              <div className="border-b border-border px-4 py-3.5">
+                <h2 className="text-sm font-medium text-foreground">
+                  {selectedProject?.name || "Select a project"}
+                </h2>
+              </div>
+
+              {/* Messages area */}
+              <div className="flex-1 space-y-4 overflow-y-auto p-4">
+                {messages.length === 0 ? (
+                  <div className="flex h-full items-center justify-center">
+                    <div className="text-center">
+                      <p className="text-sm text-muted-foreground">
+                        No messages yet.
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        Send one below to get started.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  messages.map((message) => (
                     <div
+                      key={message.id}
                       className={cn(
-                        "rounded-2xl px-4 py-3 text-sm",
+                        "flex max-w-[80%] flex-col",
                         message.role === "client"
-                          ? "bg-primary text-primary-foreground rounded-br-md"
-                          : "bg-muted rounded-bl-md"
+                          ? "ml-auto items-end"
+                          : "items-start"
                       )}
                     >
-                      {message.content}
+                      <div
+                        className={cn(
+                          "rounded-2xl px-4 py-3 text-sm",
+                          message.role === "client"
+                            ? "rounded-br-md bg-foreground text-background"
+                            : "rounded-bl-md bg-muted text-foreground"
+                        )}
+                      >
+                        {message.content}
+                      </div>
+                      <span className="mt-1 text-xs tabular-nums text-muted-foreground">
+                        {message.role === "admin" ? "Fortitudo Team" : "You"}{" "}
+                        &middot; {new Date(message.createdAt).toLocaleString()}
+                      </span>
                     </div>
-                    <span className="mt-1 font-mono text-[11px] text-muted-foreground">
-                      {message.role === "admin" ? "Fortitudo Team" : "You"} &middot;{" "}
-                      {new Date(message.createdAt).toLocaleString()}
-                    </span>
-                  </div>
-                ))
-              )}
-              <div ref={messagesEndRef} />
-            </div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
+              </div>
 
-            {/* Message input */}
-            <div className="border-t border-border p-4">
-              <form className="flex gap-2" onSubmit={handleSend}>
-                <Input
-                  placeholder="Type your message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  className="flex-1"
-                />
-                <Button type="submit" disabled={!newMessage.trim() || sending}>
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
+              {/* Message input */}
+              <div className="border-t border-border p-4">
+                <form className="flex gap-2" onSubmit={handleSend}>
+                  <Input
+                    placeholder="Type your message..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    className="flex-1"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!newMessage.trim() || sending}
+                    className={cn(
+                      PRIMARY_PILL,
+                      "shrink-0 disabled:pointer-events-none disabled:opacity-50"
+                    )}
+                  >
+                    Send
+                  </button>
+                </form>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 }

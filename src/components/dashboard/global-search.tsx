@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, FolderKanban, MessageSquare, FileText, Loader2, AlertCircle } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { SECTION_LABEL, STATUS_PILL } from "@/lib/typography";
 
 interface SearchResult {
   id: string;
@@ -11,12 +13,6 @@ interface SearchResult {
   subtitle: string;
   href: string;
 }
-
-const typeIcons = {
-  project: FolderKanban,
-  message: MessageSquare,
-  file: FileText,
-};
 
 const typeLabels: Record<SearchResult["type"], string> = {
   project: "Projects",
@@ -175,7 +171,7 @@ export function GlobalSearch() {
       >
         <Search className="h-3.5 w-3.5" />
         <span className="hidden sm:inline">Search...</span>
-        <kbd className="hidden sm:inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 text-[10px] font-mono text-muted-foreground">
+        <kbd className="hidden sm:inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 text-[10px] text-muted-foreground">
           ⌘K
         </kbd>
       </button>
@@ -211,8 +207,7 @@ export function GlobalSearch() {
             <div className="max-h-72 overflow-y-auto">
               {/* Error state */}
               {error && (
-                <div className="p-6 flex flex-col items-center gap-2 text-center text-sm text-destructive">
-                  <AlertCircle className="h-5 w-5" />
+                <div className="p-6 text-center text-sm text-destructive">
                   <p>{error}</p>
                 </div>
               )}
@@ -231,36 +226,37 @@ export function GlobalSearch() {
                     const items = grouped[type];
                     if (!items || items.length === 0) return null;
                     return (
-                      <div key={type}>
-                        <div className="px-4 pt-3 pb-1">
-                          <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                            {typeLabels[type]}
-                          </p>
-                        </div>
-                        {items.map((result) => {
-                          const Icon = typeIcons[result.type];
-                          return (
-                            <button
-                              key={result.id}
-                              onClick={() => {
-                                setOpen(false);
-                                router.push(result.href);
-                              }}
-                              className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors cursor-pointer"
-                            >
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-orange/10">
-                                <Icon className="h-4 w-4 text-orange" />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium truncate">{result.title}</p>
-                                <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
-                              </div>
-                              <span className="text-[10px] uppercase text-muted-foreground shrink-0">
-                                {result.type}
-                              </span>
-                            </button>
-                          );
-                        })}
+                      <div key={type} className="px-4">
+                        <p className={cn(SECTION_LABEL, "pt-3 pb-1")}>
+                          {typeLabels[type]}
+                        </p>
+                        <ul className="divide-y divide-border/60">
+                          {items.map((result) => (
+                            <li key={result.id}>
+                              <button
+                                onClick={() => {
+                                  setOpen(false);
+                                  router.push(result.href);
+                                }}
+                                className="group/row -mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-muted/30 cursor-pointer"
+                              >
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className="truncate text-sm font-medium text-foreground">
+                                      {result.title}
+                                    </span>
+                                    <span className={cn(STATUS_PILL, "shrink-0")}>
+                                      {result.type}
+                                    </span>
+                                  </div>
+                                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                                    {result.subtitle}
+                                  </p>
+                                </div>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     );
                   })}
@@ -278,10 +274,10 @@ export function GlobalSearch() {
             {/* Footer */}
             <div className="border-t border-border px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
               <span>
-                <kbd className="rounded border border-border px-1 font-mono">↑↓</kbd> Navigate
+                <kbd className="rounded border border-border px-1">↑↓</kbd> Navigate
               </span>
               <span>
-                <kbd className="rounded border border-border px-1 font-mono">Esc</kbd> Close
+                <kbd className="rounded border border-border px-1">Esc</kbd> Close
               </span>
             </div>
           </div>

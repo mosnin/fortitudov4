@@ -2,22 +2,27 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { EmptyState } from "@/components/ui/empty-state";
-import { BracketLabel } from "@/components/ui/firecrawl";
+import { PageHero } from "@/components/ui/firecrawl";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { AsciiField } from "@/components/ui/ascii-field";
 import { rowCascade, rowItem } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import {
-  UserCog,
-  ShieldCheck,
-  UserPlus,
-  Pencil,
-  X,
-  Send,
-  Trash2,
-} from "lucide-react";
+  BODY_MUTED,
+  CAPTION,
+  GHOST_PILL,
+  H1,
+  H3,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL,
+  TITLE_FONT,
+} from "@/lib/typography";
+import { X } from "lucide-react";
 import { ROLE_LABELS } from "@/lib/permissions";
 import type { UserRole } from "@/db/schema";
 
@@ -224,156 +229,124 @@ export default function AdminTeamPage() {
   const staff = users.filter((u) => u.role !== "client");
 
   return (
-    <div className="space-y-10">
-      {/* Page header — serif title over the studio ASCII band */}
-      <header className="relative border-b border-border pb-8">
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-80 sm:block"
-          style={{
-            maskImage: "linear-gradient(to left, black, transparent)",
-            WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-          }}
-        >
-          <AsciiField />
-        </div>
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow-mono">Operations · Access</p>
-            <h1 className="font-title mt-1 text-3xl tracking-tight sm:text-4xl">
-              Team
-            </h1>
-            <p className="mt-2 max-w-2xl text-muted-foreground">
-              Manage staff access. Add a team member to send them a portal
-              invite — they become assignable across the Client CRM instantly.
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <Button onClick={openAdd}>
-              <UserPlus className="mr-1.5 h-4 w-4" />
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <PageHero
+          section="Operations"
+          title="Team"
+          description="Manage staff access. Add a team member to send them a portal invite — they become assignable across the CRM instantly."
+          action={
+            <button onClick={openAdd} className={PRIMARY_PILL}>
               Add Team Member
-            </Button>
-          </div>
-        </div>
-      </header>
+            </button>
+          }
+        />
 
-      {notice && (
-        <p className="rounded-lg bg-success/10 px-4 py-2 text-sm text-success">
-          {notice}
-        </p>
-      )}
-      {error && <p className="text-sm text-destructive">{error}</p>}
-
-      {/* Staff members */}
-      <section>
-        <div className="flex items-center justify-between border-b border-border pb-3">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-            <h2 className="text-[15px] font-semibold">Staff Members</h2>
-          </div>
-          <BracketLabel n={staff.length} label="STAFF" />
-        </div>
-        {loading ? (
-          <div className="pt-4">
-            <TableSkeleton rows={4} />
-          </div>
-        ) : staff.length === 0 ? (
-          <EmptyState
-            icon={UserCog}
-            title="No staff members yet"
-            description="Add a team member to send them a portal invite and start assigning work."
-          />
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Name</th>
-                  <th className="micro-label py-3 pr-4">Email</th>
-                  <th className="micro-label py-3 pr-4">Role</th>
-                  <th className="micro-label py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border"
-              >
-                {staff.map((member) => {
-                  const pending = member.clerkId?.startsWith("invite:") ?? false;
-                  return (
-                    <motion.tr
-                      key={member.id}
-                      variants={rowItem}
-                      className="group transition-colors hover:bg-muted/50"
-                    >
-                      <td className="py-3 pr-4 font-medium">
-                        {[member.firstName, member.lastName]
-                          .filter(Boolean)
-                          .join(" ") || "—"}
-                      </td>
-                      <td className="py-3 pr-4 text-muted-foreground">
-                        {member.email}
-                        {pending && (
-                          <span className="ml-2 rounded-full bg-warning/10 px-2 py-0.5 font-mono text-[10px] uppercase text-warning">
-                            Invited
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3 pr-4">
-                        <select
-                          className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 font-mono text-[11px] uppercase transition-colors hover:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                          value={member.role}
-                          disabled={updating === member.id}
-                          onChange={(e) =>
-                            updateRole(member.id, e.target.value as UserRole)
-                          }
-                        >
-                          {roleOptions.map((role) => (
-                            <option key={role} value={role}>
-                              {ROLE_LABELS[role]}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="py-3 text-right whitespace-nowrap">
-                        <button
-                          onClick={() => resendInvite(member)}
-                          disabled={updating === member.id}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer disabled:opacity-50"
-                          aria-label="Resend invite"
-                          title="Resend invite"
-                        >
-                          <Send className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => openEdit(member)}
-                          className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
-                          aria-label="Edit member"
-                          title="Edit"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        {member.role !== "admin" && (
-                          <button
-                            onClick={() => removeMember(member)}
-                            disabled={updating === member.id}
-                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive cursor-pointer disabled:opacity-50"
-                            aria-label={`Remove ${member.firstName ?? member.email}`}
-                            title="Remove from team"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        )}
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </motion.tbody>
-            </table>
-          </div>
+        {notice && (
+          <p className="rounded-lg border border-border bg-muted/40 px-4 py-2 text-sm text-foreground">
+            {notice}
+          </p>
         )}
-      </section>
+        {error && <p className="text-sm text-destructive">{error}</p>}
+
+        {/* Staff members */}
+        <section className={SECTION_RHYTHM}>
+          <div className="flex items-center justify-between border-b border-border pb-3">
+            <h2 className={H3}>Staff Members</h2>
+            <p className={SECTION_LABEL}>{staff.length} staff</p>
+          </div>
+          {loading ? (
+            <TableSkeleton rows={4} />
+          ) : staff.length === 0 ? (
+            <div className="py-14 text-center">
+              <h3 className={H3}>No staff members yet</h3>
+              <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+                Add a team member to send them a portal invite and start
+                assigning work.
+              </p>
+            </div>
+          ) : (
+            <motion.ul
+              variants={rowCascade}
+              initial="hidden"
+              animate="visible"
+              className="divide-y divide-border/60"
+            >
+              {staff.map((member) => {
+                const pending = member.clerkId?.startsWith("invite:") ?? false;
+                const name =
+                  [member.firstName, member.lastName]
+                    .filter(Boolean)
+                    .join(" ") || "—";
+                return (
+                  <motion.li
+                    key={member.id}
+                    variants={rowItem}
+                    className="group/row -mx-2 flex flex-wrap items-start gap-3 rounded-md px-2 py-3 transition-colors hover:bg-muted/30"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-sm font-medium text-foreground">
+                          {name}
+                        </span>
+                        {pending && (
+                          <span className={STATUS_PILL}>Invited</span>
+                        )}
+                      </div>
+                      <div className="mt-0.5 truncate text-xs text-muted-foreground">
+                        {member.email}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-3">
+                      <select
+                        aria-label={`Role for ${name}`}
+                        className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] uppercase tracking-wide text-muted-foreground transition-colors hover:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        value={member.role}
+                        disabled={updating === member.id}
+                        onChange={(e) =>
+                          updateRole(member.id, e.target.value as UserRole)
+                        }
+                      >
+                        {roleOptions.map((role) => (
+                          <option key={role} value={role}>
+                            {ROLE_LABELS[role]}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={() => resendInvite(member)}
+                        disabled={updating === member.id}
+                        className={cn(
+                          QUIET_LINK,
+                          "cursor-pointer disabled:opacity-50"
+                        )}
+                      >
+                        Resend invite
+                      </button>
+                      <button
+                        onClick={() => openEdit(member)}
+                        className={cn(QUIET_LINK, "cursor-pointer")}
+                      >
+                        Edit
+                      </button>
+                      {member.role !== "admin" && (
+                        <button
+                          onClick={() => removeMember(member)}
+                          disabled={updating === member.id}
+                          className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
+                          aria-label={`Remove ${member.firstName ?? member.email}`}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </motion.li>
+                );
+              })}
+            </motion.ul>
+          )}
+        </section>
+      </div>
 
       {/* Add / edit member modal */}
       <AnimatePresence>
@@ -394,23 +367,23 @@ export default function AdminTeamPage() {
               className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
             >
               <div className="flex items-start justify-between pb-6">
-                <h2 className="font-title text-2xl tracking-tight">
+                <h2 className={cn(H1, "text-2xl")} style={TITLE_FONT}>
                   {editing ? "Edit Team Member" : "Add Team Member"}
                 </h2>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                  className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                   aria-label="Close"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4 w-4" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div>
-                    <span className="mb-1.5 block text-[13px] font-semibold">
+                    <span className="mb-1.5 block text-[13px] font-medium">
                       First Name
                     </span>
                     <Input
@@ -422,7 +395,7 @@ export default function AdminTeamPage() {
                     />
                   </div>
                   <div>
-                    <span className="mb-1.5 block text-[13px] font-semibold">
+                    <span className="mb-1.5 block text-[13px] font-medium">
                       Last Name
                     </span>
                     <Input
@@ -435,7 +408,7 @@ export default function AdminTeamPage() {
                   </div>
                 </div>
                 <div>
-                  <span className="mb-1.5 block text-[13px] font-semibold">
+                  <span className="mb-1.5 block text-[13px] font-medium">
                     Email
                   </span>
                   <Input
@@ -444,12 +417,12 @@ export default function AdminTeamPage() {
                     onChange={(e) => setForm({ ...form, email: e.target.value })}
                     placeholder="teammate@example.com"
                   />
-                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                  <p className={cn(CAPTION, "mt-1.5")}>
                     We&apos;ll email them a secure invite to set their password.
                   </p>
                 </div>
                 <div>
-                  <span className="mb-1.5 block text-[13px] font-semibold">
+                  <span className="mb-1.5 block text-[13px] font-medium">
                     Role
                   </span>
                   <select
@@ -467,8 +440,9 @@ export default function AdminTeamPage() {
                       )
                     )}
                   </select>
-                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
-                    Roles set what they can see — access is per-role, not per-team.
+                  <p className={cn(CAPTION, "mt-1.5")}>
+                    Roles set what they can see — access is per-role, not
+                    per-team.
                   </p>
                 </div>
 
@@ -479,16 +453,20 @@ export default function AdminTeamPage() {
               </div>
 
               <div className="mt-8 flex justify-end gap-2 border-t border-border pt-5">
-                <Button
+                <button
                   type="button"
-                  variant="outline"
+                  className={GHOST_PILL}
                   onClick={() => setModalOpen(false)}
                 >
                   Cancel
-                </Button>
-                <Button type="submit" disabled={saving}>
+                </button>
+                <button
+                  type="submit"
+                  className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                  disabled={saving}
+                >
                   {saving ? "Saving…" : editing ? "Save" : "Add & Invite"}
-                </Button>
+                </button>
               </div>
             </motion.form>
           </div>

@@ -15,8 +15,16 @@ import {
 } from "@/components/ui/filters";
 import { cascade, cascadeItem } from "@/lib/motion";
 import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
+import {
+  PAGE_RHYTHM,
+  SECTION_LABEL,
+  CAPTION,
+  STAT_NUMBER,
+  TITLE_FONT,
+  H3,
+  BODY_MUTED,
+} from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { BarChart3, Users2 } from "lucide-react";
 
 interface Metrics {
   totals: {
@@ -62,6 +70,16 @@ const statCell = (i: number) =>
     i >= 3 && "lg:border-t lg:border-border"
   );
 
+/** Section heading over a hairline rule — no glyph, no accent. */
+function SectionHead({ title, caption }: { title: string; caption?: string }) {
+  return (
+    <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
+      <h2 className={H3}>{title}</h2>
+      {caption && <p className={SECTION_LABEL}>{caption}</p>}
+    </div>
+  );
+}
+
 export default function AdminFinancialsPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -95,13 +113,13 @@ export default function AdminFinancialsPage() {
 
   if (!loading && !metrics) {
     return (
-      <div className="space-y-10">
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <PageHero
+          section="Finance"
           title="Financials"
           description="Revenue, recurring revenue, and client growth across the agency."
         />
         <EmptyState
-          icon={BarChart3}
           title="Metrics unavailable"
           description="Financial metrics are admin-only. If you should have access, try refreshing."
         />
@@ -117,7 +135,6 @@ export default function AdminFinancialsPage() {
     format: (v: number) => string;
     /** Rendered verbatim instead of counting up (for "no answer" states). */
     display?: string;
-    accent?: string;
   }[] = t
     ? [
         {
@@ -154,7 +171,6 @@ export default function AdminFinancialsPage() {
           caption: `${t.clientsLost} client${t.clientsLost === 1 ? "" : "s"} lost`,
           value: t.churnRate,
           format: pct,
-          accent: t.churnRate > 0 ? "text-warning" : "text-success",
         },
         {
           label: "New Clients",
@@ -184,8 +200,9 @@ export default function AdminFinancialsPage() {
     })) ?? [];
 
   return (
-    <div className="space-y-10">
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <PageHero
+        section="Finance"
         title="Financials"
         description="Revenue, recurring revenue, and client growth across the agency."
         action={<DateRangePill value={range} onChange={setRange} />}
@@ -194,7 +211,7 @@ export default function AdminFinancialsPage() {
       {range.preset !== "all" && (
         <BracketLabel
           n={rangeLabel(range)}
-          label="FLOW METRICS + CHURN WINDOWED · MRR/ARR ALWAYS CURRENT"
+          label="Flow metrics and churn windowed · MRR/ARR always current"
         />
       )}
 
@@ -214,18 +231,13 @@ export default function AdminFinancialsPage() {
                   variants={cascadeItem}
                   className={statCell(i)}
                 >
-                  <p className="micro-label">{tile.label}</p>
-                  <p
-                    className={cn(
-                      "mt-2 text-3xl font-bold tracking-tight",
-                      tile.accent
-                    )}
-                  >
+                  <p className={SECTION_LABEL}>{tile.label}</p>
+                  <p className={cn(STAT_NUMBER, "mt-2")} style={TITLE_FONT}>
                     {tile.display ?? (
                       <CountUp value={tile.value} format={tile.format} />
                     )}
                   </p>
-                  <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+                  <p className={cn(CAPTION, "mt-1 tabular-nums")}>
                     {tile.caption}
                   </p>
                 </motion.div>
@@ -240,13 +252,8 @@ export default function AdminFinancialsPage() {
               <Skeleton key={i} className="h-56 w-full" />
             ))
           : charts.map((chart) => (
-              <div key={chart.title}>
-                <div className="flex items-baseline justify-between border-b border-border pb-3">
-                  <h2 className="text-[15px] font-semibold">{chart.title}</h2>
-                  <p className="font-mono text-[11px] uppercase text-muted-foreground">
-                    {rangeCaption}
-                  </p>
-                </div>
+              <div key={chart.title} className="tabular-nums">
+                <SectionHead title={chart.title} caption={rangeCaption} />
                 <AreaChart
                   className="mt-5"
                   points={chart.series}
@@ -258,18 +265,13 @@ export default function AdminFinancialsPage() {
             ))}
       </section>
 
-      {/* Top customers + packages */}
+      {/* Top customers + offering mix */}
       {!loading && metrics && (
         <section className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-          <div>
-            <div className="flex items-center gap-2 border-b border-border pb-3">
-              <Users2 className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-[15px] font-semibold">
-                Top Customers by Spend
-              </h2>
-            </div>
+          <div className="tabular-nums">
+            <SectionHead title="Top Customers by Spend" />
             {metrics.topCustomers.length === 0 ? (
-              <p className="pt-6 text-center text-sm text-muted-foreground">
+              <p className={cn(BODY_MUTED, "pt-6 text-center")}>
                 No payment data available.
               </p>
             ) : (
@@ -280,15 +282,10 @@ export default function AdminFinancialsPage() {
               />
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-2 border-b border-border pb-3">
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-[15px] font-semibold">
-                Packages Distribution
-              </h2>
-            </div>
+          <div className="tabular-nums">
+            <SectionHead title="Packages Distribution" />
             {packages.length === 0 ? (
-              <p className="pt-6 text-center text-sm text-muted-foreground">
+              <p className={cn(BODY_MUTED, "pt-6 text-center")}>
                 No active clients yet.
               </p>
             ) : (

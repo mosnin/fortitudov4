@@ -1,10 +1,15 @@
 "use client";
 
 /**
- * Filter-row primitives (design.md §1.3): pill search field, icon dropdown
- * pills, and a calendar date-range pill that opens a full picker popover —
- * preset rail on the left, dual-month range calendar on the right, with
- * Clear / Apply actions. Shared by the admin finance pages.
+ * Filter-row primitives (design-product.md): pill search field, dropdown pills,
+ * and a calendar date-range pill that opens a full picker popover — preset rail
+ * on the left, dual-month range calendar on the right, with Clear / Apply
+ * actions. Shared by the admin finance pages.
+ *
+ * Monochrome throughout: the active/selected state is `bg-foreground/[0.06]`,
+ * never an orange tint. Icons here are functional control chrome (a search
+ * field's leading glyph, the calendar trigger), which is the one exception to
+ * the no-icons rule.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +26,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 const pillClass =
-  "h-9 rounded-full border border-border bg-background text-sm outline-none transition-colors focus:border-orange";
+  "h-9 rounded-full border border-border bg-background text-sm outline-none " +
+  "transition-colors hover:border-foreground/25 focus:border-foreground/40";
 
 export function SearchPill({
   value,
@@ -255,12 +261,12 @@ function MonthGrid({
   const { from, to } = draft.preset === "custom" ? draft : { from: "", to: "" };
   return (
     <div>
-      <p className="pb-3 text-center text-sm font-semibold">{monthTitle(ym)}</p>
+      <p className="pb-3 text-center text-sm font-medium">{monthTitle(ym)}</p>
       <div className="grid grid-cols-7 gap-y-0.5 text-center">
         {WEEKDAYS.map((w) => (
           <span
             key={w}
-            className="pb-1 font-mono text-[10px] uppercase text-muted-foreground"
+            className="pb-1 text-[10px] uppercase tracking-wide text-muted-foreground"
           >
             {w}
           </span>
@@ -279,16 +285,15 @@ function MonthGrid({
               aria-label={fmtDay(day)}
               aria-pressed={isFrom || isTo}
               className={cn(
-                "mx-auto flex h-8 w-8 items-center justify-center rounded-lg text-[13px] transition-colors cursor-pointer",
+                "mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-[13px] tabular-nums transition-colors",
                 !c.inMonth && "text-muted-foreground/40",
                 c.inMonth && !isFrom && !isTo && "hover:bg-muted",
-                between && "bg-accent text-orange",
-                (isFrom || isTo) &&
-                  "bg-orange font-semibold text-primary-foreground",
+                between && "bg-foreground/[0.06] text-foreground",
+                (isFrom || isTo) && "bg-foreground font-medium text-background",
                 day === today &&
                   !isFrom &&
                   !isTo &&
-                  "border border-orange font-semibold"
+                  "border border-foreground/30 font-medium"
               )}
             >
               {c.d}
@@ -386,8 +391,8 @@ export function DateRangePill({
         aria-expanded={open}
         className={cn(
           pillClass,
-          "flex items-center gap-2 px-3 cursor-pointer hover:bg-muted/50",
-          value.preset !== "all" && "border-orange/40 bg-accent"
+          "flex cursor-pointer items-center gap-2 px-3 hover:bg-muted/50",
+          value.preset !== "all" && "bg-foreground/[0.06] text-foreground"
         )}
       >
         <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -432,10 +437,10 @@ export function DateRangePill({
                         setOpen(false);
                       }}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors cursor-pointer sm:block sm:w-full sm:text-left",
+                        "shrink-0 cursor-pointer whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors sm:block sm:w-full sm:text-left",
                         active
-                          ? "bg-accent font-medium text-orange"
-                          : "hover:bg-muted"
+                          ? "bg-foreground/[0.06] font-medium text-foreground"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
                       )}
                     >
                       {p.label}
@@ -481,7 +486,7 @@ export function DateRangePill({
 
                 {/* Footer */}
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-                  <p className="font-mono text-[11px] text-muted-foreground">
+                  <p className="text-[11px] tabular-nums text-muted-foreground">
                     {draft.preset === "custom" && draft.from
                       ? `${fmtDay(draft.from)} → ${
                           draft.to ? fmtDay(draft.to) : "pick end date"

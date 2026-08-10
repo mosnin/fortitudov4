@@ -3,10 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/ui/firecrawl";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { EmptyState } from "@/components/ui/empty-state";
-import { AsciiField } from "@/components/ui/ascii-field";
 import { NewClientModal } from "@/components/admin/crm-new-client-modal";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import {
@@ -18,14 +16,15 @@ import {
 } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
-  UserPlus,
-  LayoutGrid,
-  List as ListIcon,
-  ExternalLink,
-  Settings2,
-  Trash2,
-  Users,
-} from "lucide-react";
+  BODY_MUTED,
+  H3,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  SECTION_LABEL,
+  STATUS_PILL,
+} from "@/lib/typography";
+import { LayoutGrid, List as ListIcon } from "lucide-react";
 
 interface Client {
   id: string;
@@ -117,63 +116,43 @@ export default function ClientCrmPage() {
     load();
   }
 
-  function ViewPortalButton({ c }: { c: Client }) {
+  function ViewPortalLink({ c }: { c: Client }) {
     // Always available — the portal preview mirrors their pipeline and
     // reports whether or not a portal login has been accepted yet.
     return (
       <Link
         href={`/admin/clients/${c.id}/portal`}
-        className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg border border-border px-3 py-1.5 text-sm transition-colors hover:bg-foreground/[0.04]"
+        className={QUIET_LINK}
         title={
           c.portalEmail
             ? `View the portal as ${c.portalEmail}`
             : "View the portal this client will see"
         }
       >
-        <ExternalLink className="h-4 w-4" />
-        View Portal
+        Portal
       </Link>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Page header — serif title over the studio ASCII band */}
-      <header className="relative border-b border-border pb-8">
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-80 sm:block"
-          style={{
-            maskImage: "linear-gradient(to left, black, transparent)",
-            WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-          }}
-        >
-          <AsciiField />
-        </div>
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow-mono">Operations · CRM</p>
-            <h1 className="font-title mt-1 text-3xl tracking-tight sm:text-4xl">
-              Client CRM
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Manage clients, track onboarding, and access portals.
-            </p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            <Button onClick={() => setNewOpen(true)}>
-              <UserPlus className="mr-1.5 h-4 w-4" />
-              New Client
-            </Button>
-          </div>
-        </div>
-      </header>
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <PageHero
+        section="Operations"
+        title="Clients"
+        description="Manage clients, track onboarding, and access portals."
+        action={
+          <button onClick={() => setNewOpen(true)} className={PRIMARY_PILL}>
+            New Client
+          </button>
+        }
+      />
 
-      {/* View toggle */}
-      <div className="inline-flex rounded-xl border border-border bg-surface p-1">
+      {/* View toggle — a functional segmented control */}
+      <div className="inline-flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
         {(
           [
-            { key: "board", label: "Board View", icon: LayoutGrid },
-            { key: "list", label: "List View", icon: ListIcon },
+            { key: "board", label: "Board", icon: LayoutGrid },
+            { key: "list", label: "List", icon: ListIcon },
           ] as const
         ).map((v) => {
           const Icon = v.icon;
@@ -182,13 +161,13 @@ export default function ClientCrmPage() {
               key={v.key}
               onClick={() => setView(v.key)}
               className={cn(
-                "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
+                "inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-[13px] transition-colors",
                 view === v.key
-                  ? "bg-background shadow-sm"
+                  ? "border border-border bg-background font-medium shadow-sm"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <Icon className="h-4 w-4" />
+              <Icon className="h-3.5 w-3.5" />
               {v.label}
             </button>
           );
@@ -198,13 +177,15 @@ export default function ClientCrmPage() {
       {loading ? (
         <TableSkeleton rows={5} />
       ) : clients.length === 0 ? (
-        <EmptyState
-          icon={Users}
-          title="No clients yet"
-          description="Create your first client to seed their onboarding pipeline and send a portal invite."
-        />
+        <div className="py-14 text-center">
+          <h2 className={H3}>No clients yet</h2>
+          <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+            Create your first client to seed their onboarding pipeline and send
+            a portal invite.
+          </p>
+        </div>
       ) : view === "board" ? (
-        /* ---- Board view ---- */
+        /* ---- Board view — a wide working surface, spans the full frame ---- */
         <div className="flex gap-4 overflow-x-auto pb-4">
           {CRM_STAGES.map((stage) => {
             const inStage = clients.filter(
@@ -220,11 +201,11 @@ export default function ClientCrmPage() {
                     setDragId(null);
                   }
                 }}
-                className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-surface p-3"
+                className="flex w-72 shrink-0 flex-col rounded-xl border border-border bg-card p-3"
               >
                 <div className="flex items-center justify-between px-1 pb-3">
-                  <h3 className="micro-label">{STAGE_LABELS[stage]}</h3>
-                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full border border-border bg-background px-1.5 font-mono text-[11px] font-semibold text-muted-foreground">
+                  <h3 className={SECTION_LABEL}>{STAGE_LABELS[stage]}</h3>
+                  <span className="text-[11px] tabular-nums text-muted-foreground">
                     {inStage.length}
                   </span>
                 </div>
@@ -237,13 +218,15 @@ export default function ClientCrmPage() {
                       onDragEnd={() => setDragId(null)}
                       className="cursor-grab rounded-lg border border-border bg-background p-4 transition-colors hover:border-foreground/25 active:cursor-grabbing"
                     >
-                      <p className="font-bold">{c.companyName}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm font-medium text-foreground">
+                        {c.companyName}
+                      </p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {c.contactName}
                       </p>
                       <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
                         <span>Tasks</span>
-                        <span className="font-mono">
+                        <span className="tabular-nums">
                           {c.tasksDone}/{c.tasksTotal}
                         </span>
                       </div>
@@ -259,27 +242,16 @@ export default function ClientCrmPage() {
                           }}
                         />
                       </div>
-                      <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
-                        <span className="font-mono text-[11px] uppercase text-muted-foreground">
-                          {packageLabel(c)}
-                        </span>
-                        <div className="flex items-center gap-1">
+                      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3">
+                        <span className={STATUS_PILL}>{packageLabel(c)}</span>
+                        <div className="flex items-center gap-3">
                           <button
                             onClick={() => setEditId(c.id)}
-                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
-                            aria-label="Edit"
-                            title="Edit details"
+                            className={cn(QUIET_LINK, "cursor-pointer")}
                           >
-                            <Settings2 className="h-4 w-4" />
+                            Edit
                           </button>
-                          <Link
-                            href={`/admin/clients/${c.id}/portal`}
-                            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                            aria-label={`View ${c.companyName}'s portal`}
-                            title="View portal"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </Link>
+                          <ViewPortalLink c={c} />
                         </div>
                       </div>
                     </div>
@@ -290,33 +262,38 @@ export default function ClientCrmPage() {
           })}
         </div>
       ) : (
-        /* ---- List view ---- */
+        /* ---- List view — a wide table, spans the full frame ---- */
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left align-top">
-                <th className="micro-label py-3 pr-4">Business / Client</th>
-                <th className="micro-label py-3 pr-3">Stage</th>
-                <th className="micro-label py-3 pr-3">Status</th>
-                <th className="micro-label py-3 pr-3">Industry</th>
-                <th className="micro-label py-3 pr-3">Package</th>
-                <th className="micro-label py-3 pr-3">Date Started</th>
-                <th className="micro-label py-3 text-right">Actions</th>
+                <th className={cn(SECTION_LABEL, "py-3 pr-4")}>
+                  Business / Client
+                </th>
+                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Stage</th>
+                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Status</th>
+                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Industry</th>
+                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Package</th>
+                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Date Started</th>
+                <th className={cn(SECTION_LABEL, "py-3 text-right")}>Actions</th>
               </tr>
             </thead>
-            <motion.tbody className="divide-y divide-border">
+            <motion.tbody className="divide-y divide-border/60">
               {clients.map((c) => (
-                <tr key={c.id} className="transition-colors hover:bg-muted/40">
-                  <td className="py-4 pr-4">
-                    <p className="font-bold">{c.companyName}</p>
+                <tr key={c.id} className="transition-colors hover:bg-muted/30">
+                  <td className="py-3 pr-4">
+                    <p className="font-medium text-foreground">
+                      {c.companyName}
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       {c.contactName}
-                      {c.portalEmail ? ` - ${c.portalEmail}` : ""}
+                      {c.portalEmail ? ` · ${c.portalEmail}` : ""}
                     </p>
                   </td>
-                  <td className="py-4 pr-3">
+                  <td className="py-3 pr-3">
                     <select
                       className={selectClass}
+                      aria-label={`Stage for ${c.companyName}`}
                       value={c.stage}
                       onChange={(e) =>
                         patchClient(c.id, { stage: e.target.value })
@@ -329,9 +306,10 @@ export default function ClientCrmPage() {
                       ))}
                     </select>
                   </td>
-                  <td className="py-4 pr-3">
+                  <td className="py-3 pr-3">
                     <select
                       className={selectClass}
+                      aria-label={`Status for ${c.companyName}`}
                       value={c.status}
                       onChange={(e) =>
                         patchClient(c.id, { status: e.target.value })
@@ -344,31 +322,30 @@ export default function ClientCrmPage() {
                       ))}
                     </select>
                   </td>
-                  <td className="py-4 pr-3 text-muted-foreground">
+                  <td className="py-3 pr-3 text-muted-foreground">
                     {c.industry || "—"}
                   </td>
-                  <td className="py-4 pr-3 text-muted-foreground">
-                    {packageLabel(c)}
+                  <td className="py-3 pr-3">
+                    <span className={STATUS_PILL}>{packageLabel(c)}</span>
                   </td>
-                  <td className="py-4 pr-3 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                  <td className="py-3 pr-3 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
                     {dateStarted(c.startDate)}
                   </td>
-                  <td className="py-4">
-                    <div className="flex items-center justify-end gap-2">
+                  <td className="py-3">
+                    <div className="flex items-center justify-end gap-3">
                       <button
                         onClick={() => setEditId(c.id)}
-                        className="inline-flex cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-lg border border-border px-3 py-1.5 text-sm transition-colors hover:bg-foreground/[0.04]"
+                        className={cn(QUIET_LINK, "cursor-pointer")}
                       >
-                        <Settings2 className="h-4 w-4" />
-                        Edit Details
+                        Edit
                       </button>
-                      <ViewPortalButton c={c} />
+                      <ViewPortalLink c={c} />
                       <button
                         onClick={() => remove(c)}
-                        className="rounded-lg bg-destructive/90 p-2 text-white transition-colors hover:bg-destructive cursor-pointer"
+                        className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive"
                         aria-label={`Delete ${c.companyName}`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        Delete
                       </button>
                     </div>
                   </td>

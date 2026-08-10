@@ -3,32 +3,25 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { MetricRing } from "@/components/ui/firecrawl";
+import { PageHero } from "@/components/ui/firecrawl";
 import { PhaseTracker, type Phase } from "@/components/dashboard/phase-tracker";
 import { RevisionManager } from "./revision-manager";
 import { cascade, cascadeItem } from "@/lib/motion";
 import { formatUsd } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
 import {
-  ArrowLeft,
-  FileText,
-  MessageSquare,
-  Send,
-  SkipForward,
-  RefreshCw,
-} from "lucide-react";
-
-// Status semantics as uppercase mono text — orange stays rare (active only).
-const statusClass: Record<string, string> = {
-  onboarding: "text-muted-foreground",
-  payment_pending: "text-warning",
-  in_progress: "text-brand",
-  revision: "text-warning",
-  completed: "text-success",
-  cancelled: "text-muted-foreground",
-};
+  BODY_MUTED,
+  GHOST_PILL,
+  H3,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  QUIET_LINK,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL,
+} from "@/lib/typography";
 
 const phaseStatusOptions: Phase["status"][] = [
   "pending",
@@ -88,7 +81,6 @@ export function ManageClient({
   canManage,
   projectId,
   projectName,
-  status,
   statusLabel,
   serviceLabel,
   clientName,
@@ -198,339 +190,331 @@ export function ManageClient({
   };
 
   const selectClass =
-    "cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 font-mono text-[11px] transition-colors hover:border-foreground/30 focus:outline-none focus:ring-2 focus:ring-foreground/15 disabled:cursor-not-allowed disabled:opacity-50";
+    "h-8 cursor-pointer rounded-lg border border-border bg-background px-2.5 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:border-foreground/30 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
-    <div className="space-y-10">
-      {/* Header — back arrow + serif title, closed by a hairline */}
-      <div className="flex items-center gap-4 border-b border-border pb-6">
-        <Link
-          href="/admin/projects"
-          aria-label="Back to projects"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-foreground/30 hover:bg-muted hover:text-foreground active:scale-[0.98]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Link>
-        <div className="flex-1">
-          <h1 className="font-title text-2xl tracking-tight sm:text-3xl">
-            {projectName}
-          </h1>
-          <p className="mt-1 text-muted-foreground">
-            Client: {clientName} &middot; {serviceLabel}
-          </p>
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <div className="space-y-3">
+          <Link href="/admin/projects" className={QUIET_LINK}>
+            Back to projects
+          </Link>
+          <PageHero
+            section={`${clientName} · ${serviceLabel}`}
+            title={projectName}
+            action={<span className={STATUS_PILL}>{statusLabel}</span>}
+          />
         </div>
-        <span
-          className={cn(
-            "font-mono text-xs font-semibold uppercase tracking-wide whitespace-nowrap",
-            statusClass[status] ?? "text-muted-foreground"
-          )}
-        >
-          {statusLabel}
-        </span>
-      </div>
 
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-        {/* Left: Phase management, revisions, messaging */}
-        <motion.div
-          variants={cascade}
-          initial="hidden"
-          animate="visible"
-          className="lg:col-span-2 space-y-10"
-        >
-          {/* Phases */}
-          <motion.section
-            variants={cascadeItem}
-            className="border-b border-border pb-8"
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+          {/* Left: Phase management, revisions, messaging */}
+          <motion.div
+            variants={cascade}
+            initial="hidden"
+            animate="visible"
+            className="space-y-10 lg:col-span-2"
           >
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="bracket-label">
-                  [ <b>{completedCount}</b> / {phases.length} ] · PHASES
-                </p>
-                <h2 className="text-[15px] font-semibold">
-                  {canManage ? "Phase Management" : "Phases"}
-                </h2>
-              </div>
-              <div className="flex items-center gap-4">
-                <MetricRing
-                  value={completedCount}
-                  max={phases.length}
-                  label={`of ${phases.length} complete`}
-                />
+            {/* Phases */}
+            <motion.section
+              variants={cascadeItem}
+              className="border-b border-border pb-8"
+            >
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div className="space-y-1">
+                  <p className={SECTION_LABEL}>
+                    {completedCount} of {phases.length} phases complete
+                  </p>
+                  <h2 className={H3}>
+                    {canManage ? "Phase Management" : "Phases"}
+                  </h2>
+                </div>
                 {canManage && (
-                  <Button
+                  <button
                     onClick={advancePhase}
                     disabled={advancing || allDone || phases.length === 0}
-                    size="sm"
+                    className={cn(
+                      PRIMARY_PILL,
+                      "disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
                   >
-                    <SkipForward className="mr-1 h-4 w-4" />
-                    {advancing ? "Advancing..." : "Advance Phase"}
-                  </Button>
+                    {advancing ? "Advancing…" : "Advance Phase"}
+                  </button>
                 )}
               </div>
-            </div>
-            <div className="mt-6 space-y-6">
-              {phaseError && (
-                <p className="text-sm text-destructive">{phaseError}</p>
-              )}
-              {phases.length === 0 ? (
-                <p className="text-sm text-muted-foreground">
-                  No phases have been set up for this project yet.
-                </p>
-              ) : (
-                <>
-                  <PhaseTracker phases={phases} />
-                  {canManage && (
-                    <div className="space-y-2 border-t border-border pt-4">
-                      <p className="micro-label">Set phase status</p>
-                      {[...phases]
-                        .sort((a, b) => a.order - b.order)
-                        .map((phase) => (
-                          <div
-                            key={phase.id}
-                            className="flex items-center justify-between gap-3"
-                          >
-                            <span className="text-sm truncate">{phase.name}</span>
-                            <select
-                              className={selectClass}
-                              value={phase.status}
-                              onChange={(e) =>
-                                setPhaseStatus(
-                                  phase.id,
-                                  e.target.value as Phase["status"]
-                                )
-                              }
-                            >
-                              {phaseStatusOptions.map((opt) => (
-                                <option key={opt} value={opt}>
-                                  {phaseStatusLabels[opt]}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        ))}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-          </motion.section>
-
-          {/* Revision requests */}
-          <motion.section
-            variants={cascadeItem}
-            className="border-b border-border pb-8"
-          >
-            <div className="flex items-center gap-2 pb-4">
-              <RefreshCw className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-[15px] font-semibold">Revision Requests</h2>
-            </div>
-            <RevisionManager projectId={projectId} readOnly={!canManage} />
-          </motion.section>
-
-          {/* Admin message to client */}
-          <motion.section variants={cascadeItem}>
-            <div className="flex items-center gap-2 pb-4">
-              <MessageSquare className="h-4 w-4 text-muted-foreground" />
-              <h2 className="text-[15px] font-semibold">Message Client</h2>
-            </div>
-            <div className="space-y-4">
-              <Textarea
-                placeholder="Send a message to the client..."
-                rows={3}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-              {msgStatus && (
-                <p
-                  className={
-                    msgStatus.ok
-                      ? "text-sm text-success"
-                      : "text-sm text-destructive"
-                  }
-                >
-                  {msgStatus.text}
-                </p>
-              )}
-              <Button disabled={!message.trim() || sending} onClick={sendMessage}>
-                <Send className="mr-1 h-4 w-4" />
-                {sending ? "Sending..." : "Send Message"}
-              </Button>
-            </div>
-          </motion.section>
-        </motion.div>
-
-        {/* Right: Client info, onboarding, files */}
-        <motion.div
-          variants={cascade}
-          initial="hidden"
-          animate="visible"
-          className="space-y-10"
-        >
-          <motion.section variants={cascadeItem}>
-            <p className="micro-label border-b border-border pb-3">
-              Client Details
-            </p>
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">Name</span>
-                <span className="text-right">{clientName}</span>
-              </div>
-              <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">Email</span>
-                <span className="text-right break-all">{clientEmail}</span>
-              </div>
-              <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">Service</span>
-                <span className="text-right">{serviceLabel}</span>
-              </div>
-              <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">Status</span>
-                <span
-                  className={cn(
-                    "font-mono text-[11px] font-semibold uppercase tracking-wide",
-                    statusClass[status] ?? "text-muted-foreground"
-                  )}
-                >
-                  {statusLabel}
-                </span>
-              </div>
-              <div className="flex justify-between gap-3">
-                <span className="text-muted-foreground">Payment</span>
-                {latestPayment ? (
-                  <span className="text-right font-mono text-xs">
-                    {formatUsd(latestPayment.amount)}{" "}
-                    <span
-                      className={cn(
-                        "font-semibold uppercase tracking-wide",
-                        latestPayment.status === "completed" ||
-                          latestPayment.status === "paid"
-                          ? "text-success"
-                          : "text-warning"
-                      )}
-                    >
-                      · {latestPayment.status}
-                    </span>
-                  </span>
+              <div className="mt-6 space-y-6">
+                {phaseError && (
+                  <p className="text-sm text-destructive">{phaseError}</p>
+                )}
+                {phases.length === 0 ? (
+                  <p className={BODY_MUTED}>
+                    No phases have been set up for this project yet.
+                  </p>
                 ) : (
-                  <span className="text-muted-foreground">—</span>
+                  <>
+                    <PhaseTracker phases={phases} />
+                    {canManage && (
+                      <div
+                        className={cn(
+                          SECTION_RHYTHM,
+                          "border-t border-border pt-4"
+                        )}
+                      >
+                        <p className={SECTION_LABEL}>Set phase status</p>
+                        <ul className="divide-y divide-border/60">
+                          {[...phases]
+                            .sort((a, b) => a.order - b.order)
+                            .map((phase) => (
+                              <li
+                                key={phase.id}
+                                className="flex items-center justify-between gap-3 py-3"
+                              >
+                                <span className="truncate text-sm text-foreground">
+                                  {phase.name}
+                                </span>
+                                <select
+                                  aria-label={`Status for ${phase.name}`}
+                                  className={selectClass}
+                                  value={phase.status}
+                                  onChange={(e) =>
+                                    setPhaseStatus(
+                                      phase.id,
+                                      e.target.value as Phase["status"]
+                                    )
+                                  }
+                                >
+                                  {phaseStatusOptions.map((opt) => (
+                                    <option key={opt} value={opt}>
+                                      {phaseStatusLabels[opt]}
+                                    </option>
+                                  ))}
+                                </select>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
-            </div>
-          </motion.section>
+            </motion.section>
 
-          <motion.section variants={cascadeItem}>
-            <p className="micro-label border-b border-border pb-3">
-              Onboarding Data
-            </p>
-            <div className="mt-4 space-y-3 text-sm">
-              {onboarding ? (
-                <>
-                  <div>
-                    <span className="text-muted-foreground block mb-1">Business</span>
-                    <span>{onboarding.businessName}</span>
-                  </div>
-                  {onboarding.industry && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">
-                        Industry
-                      </span>
-                      <span>{onboarding.industry}</span>
-                    </div>
-                  )}
-                  {onboarding.website && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">
-                        Website
-                      </span>
-                      <span className="break-all">{onboarding.website}</span>
-                    </div>
-                  )}
-                  {onboarding.budget && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">Budget</span>
-                      <span>{onboarding.budget}</span>
-                    </div>
-                  )}
-                  {onboarding.timeline && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">
-                        Timeline
-                      </span>
-                      <span>{onboarding.timeline}</span>
-                    </div>
-                  )}
-                  {onboarding.targetAudience && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">
-                        Target Audience
-                      </span>
-                      <p className="text-muted-foreground">
-                        {onboarding.targetAudience}
-                      </p>
-                    </div>
-                  )}
-                  {onboarding.description && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">
-                        Description
-                      </span>
-                      <p className="text-muted-foreground">
-                        {onboarding.description}
-                      </p>
-                    </div>
-                  )}
-                  {onboarding.additionalNotes && (
-                    <div>
-                      <span className="text-muted-foreground block mb-1">
-                        Additional Notes
-                      </span>
-                      <p className="text-muted-foreground">
-                        {onboarding.additionalNotes}
-                      </p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <p className="text-muted-foreground">
-                  No onboarding submission on file yet.
-                </p>
-              )}
-            </div>
-          </motion.section>
+            {/* Revision requests */}
+            <motion.section
+              variants={cascadeItem}
+              className="border-b border-border pb-8"
+            >
+              <h2 className={cn(H3, "pb-4")}>Revision Requests</h2>
+              <RevisionManager projectId={projectId} readOnly={!canManage} />
+            </motion.section>
 
-          <motion.section variants={cascadeItem}>
-            <p className="micro-label border-b border-border pb-3">
-              Client Files
-            </p>
-            {files.length === 0 ? (
-              <p className="mt-4 text-sm text-muted-foreground">
-                No files uploaded for this project yet.
-              </p>
-            ) : (
-              <ul className="mt-4 divide-y divide-border">
-                {files.map((f) => (
-                  <li key={f.id} className="py-2.5">
-                    <a
-                      href={f.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group flex items-center gap-3"
+            {/* Admin message to client */}
+            <motion.section variants={cascadeItem}>
+              <h2 className={cn(H3, "pb-4")}>Message Client</h2>
+              <div className="space-y-4">
+                <Textarea
+                  placeholder="Send a message to the client…"
+                  rows={3}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+                {msgStatus && (
+                  <p
+                    className={
+                      msgStatus.ok
+                        ? "text-sm text-muted-foreground"
+                        : "text-sm text-destructive"
+                    }
+                  >
+                    {msgStatus.text}
+                  </p>
+                )}
+                <div className="flex justify-end gap-2">
+                  {message.trim() && (
+                    <button
+                      type="button"
+                      className={GHOST_PILL}
+                      onClick={() => setMessage("")}
                     >
-                      <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                      <span className="min-w-0 flex-1 truncate text-sm group-hover:underline">
-                        {f.name}
+                      Discard
+                    </button>
+                  )}
+                  <button
+                    disabled={!message.trim() || sending}
+                    onClick={sendMessage}
+                    className={cn(
+                      PRIMARY_PILL,
+                      "disabled:cursor-not-allowed disabled:opacity-50"
+                    )}
+                  >
+                    {sending ? "Sending…" : "Send Message"}
+                  </button>
+                </div>
+              </div>
+            </motion.section>
+          </motion.div>
+
+          {/* Right: Client info, onboarding, files */}
+          <motion.div
+            variants={cascade}
+            initial="hidden"
+            animate="visible"
+            className="space-y-10"
+          >
+            <motion.section variants={cascadeItem}>
+              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
+                Client Details
+              </p>
+              <div className="mt-4 space-y-3 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">Name</span>
+                  <span className="text-right">{clientName}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">Email</span>
+                  <span className="break-all text-right">{clientEmail}</span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-muted-foreground">Service</span>
+                  <span className="text-right">{serviceLabel}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-muted-foreground">Status</span>
+                  <span className={STATUS_PILL}>{statusLabel}</span>
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-muted-foreground">Payment</span>
+                  {latestPayment ? (
+                    <span className="flex items-center gap-2 text-right">
+                      <span className="tabular-nums">
+                        {formatUsd(latestPayment.amount)}
                       </span>
-                      <span className="shrink-0 font-mono text-[11px] text-muted-foreground">
-                        {formatSize(f.size)}
+                      <span className={STATUS_PILL}>
+                        {latestPayment.status}
                       </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </motion.section>
-        </motion.div>
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </div>
+              </div>
+            </motion.section>
+
+            <motion.section variants={cascadeItem}>
+              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
+                Onboarding Data
+              </p>
+              <div className="mt-4 space-y-3 text-sm">
+                {onboarding ? (
+                  <>
+                    <div>
+                      <span className="mb-1 block text-muted-foreground">
+                        Business
+                      </span>
+                      <span>{onboarding.businessName}</span>
+                    </div>
+                    {onboarding.industry && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Industry
+                        </span>
+                        <span>{onboarding.industry}</span>
+                      </div>
+                    )}
+                    {onboarding.website && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Website
+                        </span>
+                        <span className="break-all">{onboarding.website}</span>
+                      </div>
+                    )}
+                    {onboarding.budget && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Budget
+                        </span>
+                        <span>{onboarding.budget}</span>
+                      </div>
+                    )}
+                    {onboarding.timeline && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Timeline
+                        </span>
+                        <span>{onboarding.timeline}</span>
+                      </div>
+                    )}
+                    {onboarding.targetAudience && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Target Audience
+                        </span>
+                        <p className="text-muted-foreground">
+                          {onboarding.targetAudience}
+                        </p>
+                      </div>
+                    )}
+                    {onboarding.description && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Description
+                        </span>
+                        <p className="text-muted-foreground">
+                          {onboarding.description}
+                        </p>
+                      </div>
+                    )}
+                    {onboarding.additionalNotes && (
+                      <div>
+                        <span className="mb-1 block text-muted-foreground">
+                          Additional Notes
+                        </span>
+                        <p className="text-muted-foreground">
+                          {onboarding.additionalNotes}
+                        </p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className={BODY_MUTED}>
+                    No onboarding submission on file yet.
+                  </p>
+                )}
+              </div>
+            </motion.section>
+
+            <motion.section variants={cascadeItem}>
+              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
+                Client Files
+              </p>
+              {files.length === 0 ? (
+                <p className={cn(BODY_MUTED, "mt-4")}>
+                  No files uploaded for this project yet.
+                </p>
+              ) : (
+                <ul className="mt-2 divide-y divide-border/60">
+                  {files.map((f) => (
+                    <li key={f.id} className="py-3">
+                      <a
+                        href={f.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex items-center gap-3"
+                      >
+                        <span className="min-w-0 flex-1 truncate text-sm group-hover:underline">
+                          {f.name}
+                        </span>
+                        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                          {formatSize(f.size)}
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </motion.section>
+          </motion.div>
+        </div>
       </div>
     </div>
   );

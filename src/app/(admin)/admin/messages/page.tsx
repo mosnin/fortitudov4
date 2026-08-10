@@ -1,14 +1,20 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, MessageSquare } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
+import { PageHero } from "@/components/ui/firecrawl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
 import { services } from "@/lib/services";
+import {
+  BODY_MUTED,
+  H3,
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  READING_COL,
+  SECTION_LABEL,
+} from "@/lib/typography";
 
 const serviceLabels: Record<string, string> = Object.fromEntries(
   services.map((s) => [s.id, s.name])
@@ -112,138 +118,146 @@ export default function AdminMessagesPage() {
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
   const header = (
-    <header className="border-b border-border pb-6">
-      <p className="eyebrow-mono">Fortitudo · Admin</p>
-      <h1 className="font-title mt-2 text-3xl tracking-tight sm:text-4xl">
-        Messages
-      </h1>
-      <p className="mt-2 text-muted-foreground">
-        Chat with clients across every project.
-      </p>
-    </header>
+    <PageHero
+      section="Operations"
+      title="Messages"
+      description="Chat with clients across every project."
+    />
   );
 
   if (loading) {
     return (
-      <div className="space-y-8">
-        {header}
-        <Skeleton className="h-96 w-full" />
+      <div className={cn(PAGE_RHYTHM, "pb-12")}>
+        <div className={cn(READING_COL, PAGE_RHYTHM)}>
+          {header}
+          <Skeleton className="h-96 w-full" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {header}
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        {header}
 
-      {projects.length === 0 ? (
-        <EmptyState
-          icon={MessageSquare}
-          title="No projects yet"
-          description="Once projects exist, their message threads appear here."
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_1fr]">
-          {/* Project list */}
-          <aside className="lg:border-r lg:border-border lg:pr-6">
-            <p className="micro-label border-b border-border pb-3">Projects</p>
-            <div className="mt-3 space-y-0.5">
-              {projects.map((project) => (
-                <button
-                  key={project.id}
-                  onClick={() => setSelectedProjectId(project.id)}
-                  className={cn(
-                    "w-full rounded-lg px-3 py-2 text-left text-[13px] transition-colors cursor-pointer",
-                    project.id === selectedProjectId
-                      ? "bg-muted font-medium text-foreground"
-                      : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                  )}
-                >
-                  <span className="block truncate">{project.name}</span>
-                  <span className="block truncate font-mono text-[10px] uppercase text-muted-foreground">
-                    {serviceLabels[project.serviceType] ?? project.serviceType}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </aside>
-
-          {/* Thread */}
-          <section className="flex min-h-[28rem] flex-col">
-            <div className="border-b border-border pb-3">
-              <h2 className="text-[15px] font-semibold">
-                {selectedProject?.name ?? "Select a project"}
-              </h2>
-            </div>
-
-            <div className="flex-1 space-y-3 overflow-y-auto py-5">
-              {messages.length === 0 ? (
-                <p className="pt-10 text-center text-sm text-muted-foreground">
-                  No messages yet — start the conversation.
-                </p>
-              ) : (
-                messages.map((message) => (
-                  <div
-                    key={message.id}
+        {projects.length === 0 ? (
+          <div className="py-14 text-center">
+            <h2 className={H3}>No projects yet</h2>
+            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+              Once projects exist, their message threads appear here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_1fr]">
+            {/* Project list */}
+            <aside className="lg:border-r lg:border-border lg:pr-6">
+              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
+                Projects
+              </p>
+              <div className="mt-3 space-y-0.5">
+                {projects.map((project) => (
+                  <button
+                    key={project.id}
+                    onClick={() => setSelectedProjectId(project.id)}
                     className={cn(
-                      "flex",
-                      message.role === "admin" ? "justify-end" : "justify-start"
+                      "w-full cursor-pointer rounded-lg px-3 py-2 text-left text-[13px] transition-colors",
+                      project.id === selectedProjectId
+                        ? "bg-muted font-medium text-foreground"
+                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
                     )}
                   >
+                    <span className="block truncate">{project.name}</span>
+                    <span className="block truncate text-[11px] text-muted-foreground">
+                      {serviceLabels[project.serviceType] ?? project.serviceType}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </aside>
+
+            {/* Thread */}
+            <section className="flex min-h-[28rem] flex-col">
+              <div className="border-b border-border pb-3">
+                <h2 className={H3}>
+                  {selectedProject?.name ?? "Select a project"}
+                </h2>
+              </div>
+
+              <div className="flex-1 space-y-3 overflow-y-auto py-5">
+                {messages.length === 0 ? (
+                  <p className={cn(BODY_MUTED, "pt-10 text-center")}>
+                    No messages yet — start the conversation.
+                  </p>
+                ) : (
+                  messages.map((message) => (
                     <div
+                      key={message.id}
                       className={cn(
-                        "max-w-[75%] rounded-2xl px-4 py-2.5 text-sm",
+                        "flex",
                         message.role === "admin"
-                          ? "bg-foreground text-background"
-                          : "bg-muted"
+                          ? "justify-end"
+                          : "justify-start"
                       )}
                     >
-                      <p className="whitespace-pre-wrap break-words">
-                        {message.content}
-                      </p>
-                      <p
+                      <div
                         className={cn(
-                          "mt-1 font-mono text-[10px]",
+                          "max-w-[75%] rounded-2xl px-4 py-2.5 text-sm",
                           message.role === "admin"
-                            ? "text-background/70"
-                            : "text-muted-foreground"
+                            ? "bg-foreground text-background"
+                            : "bg-muted"
                         )}
                       >
-                        {message.role === "admin" ? "Fortitudo Team" : "Client"} ·{" "}
-                        {new Date(message.createdAt).toLocaleTimeString(
-                          "en-US",
-                          { hour: "numeric", minute: "2-digit" }
-                        )}
-                      </p>
+                        <p className="whitespace-pre-wrap break-words">
+                          {message.content}
+                        </p>
+                        <p
+                          className={cn(
+                            "mt-1 text-[11px] tabular-nums",
+                            message.role === "admin"
+                              ? "text-background/70"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {message.role === "admin" ? "Fortitudo Team" : "Client"}{" "}
+                          ·{" "}
+                          {new Date(message.createdAt).toLocaleTimeString(
+                            "en-US",
+                            { hour: "numeric", minute: "2-digit" }
+                          )}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))
-              )}
-              <div ref={messagesEndRef} />
-            </div>
+                  ))
+                )}
+                <div ref={messagesEndRef} />
+              </div>
 
-            <form
-              onSubmit={handleSend}
-              className="flex items-center gap-2 border-t border-border pt-4"
-            >
-              <Input
-                placeholder="Reply to the client…"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                disabled={!selectedProjectId || sending}
-              />
-              <Button
-                type="submit"
-                size="icon"
-                disabled={!newMessage.trim() || sending}
-                aria-label="Send"
+              <form
+                onSubmit={handleSend}
+                className="flex items-center gap-2 border-t border-border pt-4"
               >
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
-          </section>
-        </div>
-      )}
+                <Input
+                  placeholder="Reply to the client…"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  disabled={!selectedProjectId || sending}
+                />
+                <button
+                  type="submit"
+                  disabled={!newMessage.trim() || sending}
+                  className={cn(
+                    PRIMARY_PILL,
+                    "shrink-0 disabled:cursor-not-allowed disabled:opacity-50"
+                  )}
+                >
+                  {sending ? "Sending…" : "Send"}
+                </button>
+              </form>
+            </section>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

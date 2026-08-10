@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Reply, MessageCircle } from "lucide-react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
+import { PRIMARY_PILL, QUIET_LINK, STATUS_PILL } from "@/lib/typography";
 
 interface CommentData {
   id: string;
@@ -97,40 +95,29 @@ function CommentItem({
   };
 
   return (
-    <div className={cn("space-y-3", depth > 0 && "ml-8 pl-4 border-l-2 border-border")}>
-      <div className="rounded-xl border border-border p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <div
-            className={cn(
-              "h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold",
-              comment.role === "admin"
-                ? "bg-brand-subtle text-brand"
-                : "bg-muted text-muted-foreground"
-            )}
-          >
-            {comment.userName[0]}
-          </div>
-          <span className="text-sm font-medium">{comment.userName}</span>
+    <li className={cn(depth > 0 && "ml-6 border-l border-border pl-4")}>
+      <div className="py-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-foreground">
+            {comment.userName}
+          </span>
           {comment.role === "admin" && (
-            <span className="rounded-full bg-brand-subtle px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-brand">
-              Team
-            </span>
+            <span className={STATUS_PILL}>Team</span>
           )}
-          <span className="text-xs text-muted-foreground ml-auto">
+          <span className="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">
             {comment.createdAt}
           </span>
         </div>
-        <p className="text-sm text-muted-foreground">{comment.content}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{comment.content}</p>
         <button
           onClick={() => setReplyOpen(!replyOpen)}
-          className="flex items-center gap-1 mt-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          className={cn(QUIET_LINK, "mt-2 cursor-pointer text-xs")}
         >
-          <Reply className="h-3 w-3" />
-          Reply
+          {replyOpen ? "Cancel" : "Reply"}
         </button>
 
         {replyOpen && (
-          <div className="mt-3 flex gap-2">
+          <div className="mt-3 space-y-2">
             <Textarea
               placeholder="Write a reply..."
               rows={2}
@@ -138,28 +125,36 @@ function CommentItem({
               onChange={(e) => setReplyText(e.target.value)}
               className="text-sm"
             />
-            <Button
-              size="sm"
-              disabled={!replyText.trim() || submitting}
-              onClick={handleReply}
-              className="shrink-0 self-end"
-            >
-              <Send className="h-3 w-3" />
-            </Button>
+            <div className="flex justify-end">
+              <button
+                disabled={!replyText.trim() || submitting}
+                onClick={handleReply}
+                className={cn(
+                  PRIMARY_PILL,
+                  "disabled:pointer-events-none disabled:opacity-50"
+                )}
+              >
+                {submitting ? "Posting…" : "Post reply"}
+              </button>
+            </div>
           </div>
         )}
       </div>
 
-      {comment.replies.map((reply) => (
-        <CommentItem
-          key={reply.id}
-          comment={reply}
-          depth={depth + 1}
-          projectId={projectId}
-          onReplyPosted={onReplyPosted}
-        />
-      ))}
-    </div>
+      {comment.replies.length > 0 && (
+        <ul className="divide-y divide-border/60 border-t border-border/60">
+          {comment.replies.map((reply) => (
+            <CommentItem
+              key={reply.id}
+              comment={reply}
+              depth={depth + 1}
+              projectId={projectId}
+              onReplyPosted={onReplyPosted}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
   );
 }
 
@@ -212,41 +207,48 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
           onChange={(e) => setNewComment(e.target.value)}
         />
         <div className="flex justify-end">
-          <Button
+          <button
             disabled={!newComment.trim() || submitting}
             onClick={handleNewComment}
+            className={cn(
+              PRIMARY_PILL,
+              "disabled:pointer-events-none disabled:opacity-50"
+            )}
           >
-            <MessageCircle className="mr-1 h-4 w-4" />
-            {submitting ? "Posting..." : "Comment"}
-          </Button>
+            {submitting ? "Posting…" : "Comment"}
+          </button>
         </div>
       </div>
 
       {/* Comments list */}
-      <div className="space-y-4">
-        {loading ? (
-          <div className="py-6">
-            <EmptyState icon={MessageCircle} title="Loading comments..." description="" />
-          </div>
-        ) : tree.length === 0 ? (
-          <div className="py-2">
-            <EmptyState
-              icon={MessageCircle}
-              title="No comments yet"
-              description="Leave a comment above to start the conversation with the team."
-            />
-          </div>
-        ) : (
-          tree.map((comment) => (
+      {loading ? (
+        <ul className="divide-y divide-border/60">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <li key={i} className="space-y-2 py-3">
+              <div className="h-4 w-1/4 animate-pulse rounded bg-muted" />
+              <div className="h-3 w-3/4 animate-pulse rounded bg-muted" />
+            </li>
+          ))}
+        </ul>
+      ) : tree.length === 0 ? (
+        <div className="py-8">
+          <p className="text-sm font-medium text-foreground">No comments yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Leave a comment above to start the conversation with the team.
+          </p>
+        </div>
+      ) : (
+        <ul className="divide-y divide-border/60 border-t border-border/60">
+          {tree.map((comment) => (
             <CommentItem
               key={comment.id}
               comment={comment}
               projectId={projectId}
               onReplyPosted={fetchComments}
             />
-          ))
-        )}
-      </div>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

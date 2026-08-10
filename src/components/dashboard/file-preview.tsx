@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X, Download, FileText, FileImage, File as FileIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { QUIET_LINK, STATUS_PILL } from "@/lib/typography";
 
 interface FilePreviewProps {
   name: string;
@@ -27,44 +28,49 @@ function getFileCategory(name: string, type?: string): "image" | "pdf" | "svg" |
   return "other";
 }
 
-const FILE_ICONS = {
-  image: FileImage,
-  pdf: FileText,
-  svg: FileImage,
-  other: FileIcon,
+/** Category → the WORD, in a neutral pill (design-product.md: no type icons). */
+const CATEGORY_LABELS = {
+  image: "Image",
+  pdf: "PDF",
+  svg: "SVG",
+  other: "File",
 } as const;
 
 export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const category = getFileCategory(name, type);
-  const Icon = FILE_ICONS[category];
-  const canPreview = (category === "image" || category === "pdf");
+  const canPreview = category === "image" || category === "pdf";
 
   return (
     <>
       <div
-        className={`flex items-center gap-3 rounded-lg border border-border p-3 transition-colors ${canPreview ? "hover:bg-muted cursor-pointer" : ""}`}
+        className={cn(
+          "group/row -mx-2 flex items-start gap-3 rounded-md px-2 py-3 transition-colors",
+          canPreview && "cursor-pointer hover:bg-muted/30"
+        )}
         onClick={() => canPreview && setPreviewOpen(true)}
       >
-        {/* Thumbnail */}
-        {category === "image" ? (
-          <div className="relative h-10 w-10 shrink-0 rounded-md overflow-hidden bg-muted">
-            <Image src={url} alt={name} fill className="object-cover" sizes="40px" />
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="truncate text-sm font-medium text-foreground">
+              {name}
+            </span>
+            <span className={STATUS_PILL}>{CATEGORY_LABELS[category]}</span>
           </div>
-        ) : (
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-muted">
-            <Icon className="h-5 w-5 text-muted-foreground" />
-          </div>
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium truncate">{name}</p>
-          {size && <p className="text-xs text-muted-foreground">{size}</p>}
+          {size && (
+            <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
+              {size}
+            </div>
+          )}
         </div>
-        <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8" asChild>
-          <a href={url} download={name} onClick={(e) => e.stopPropagation()}>
-            <Download className="h-4 w-4" />
-          </a>
-        </Button>
+        <a
+          href={url}
+          download={name}
+          onClick={(e) => e.stopPropagation()}
+          className={cn(QUIET_LINK, "shrink-0 text-xs")}
+        >
+          Download
+        </a>
       </div>
 
       {/* Full preview modal */}
@@ -73,17 +79,16 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setPreviewOpen(false)} />
           <div className="relative w-full max-w-4xl max-h-[85vh] rounded-xl border border-border bg-card shadow-2xl overflow-hidden animate-fade-in">
             {/* Preview header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <p className="text-sm font-medium truncate">{name}</p>
-              <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" asChild>
-                  <a href={url} download={name}>
-                    <Download className="mr-1 h-4 w-4" /> Download
-                  </a>
-                </Button>
+            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border">
+              <p className="truncate text-sm font-medium">{name}</p>
+              <div className="flex shrink-0 items-center gap-3">
+                <a href={url} download={name} className={cn(QUIET_LINK, "text-xs")}>
+                  Download
+                </a>
                 <button
                   onClick={() => setPreviewOpen(false)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted cursor-pointer"
+                  aria-label="Close preview"
                 >
                   <X className="h-4 w-4" />
                 </button>

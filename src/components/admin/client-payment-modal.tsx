@@ -2,10 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { X } from "lucide-react";
 import { PAYMENT_METHODS } from "@/lib/payment-methods";
+import { cn } from "@/lib/utils";
+import {
+  CAPTION,
+  GHOST_PILL,
+  H1,
+  PRIMARY_PILL,
+  TITLE_FONT,
+} from "@/lib/typography";
 
 export { PAYMENT_METHODS };
 
@@ -175,13 +182,13 @@ export function ClientPaymentModal({
             className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-6">
-              <h2 className="font-title text-xl tracking-tight">
+              <h2 className={cn(H1, "text-xl")} style={TITLE_FONT}>
                 {payment ? "Edit Payment" : "Record Payment"}
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-1.5 text-muted-foreground hover:bg-muted cursor-pointer"
+                className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -192,7 +199,7 @@ export function ClientPaymentModal({
               {!payment && (
                 <div>
                   <span className="mb-1.5 block text-[13px] font-medium">
-                    Client <span className="text-destructive">*</span>
+                    Client <span aria-hidden>*</span>
                   </span>
                   <select
                     className={selectClass}
@@ -274,7 +281,7 @@ export function ClientPaymentModal({
                       setForm({ ...form, paidAt: e.target.value })
                     }
                   />
-                  <p className="mt-1.5 font-mono text-[10px] text-muted-foreground">
+                  <p className={cn(CAPTION, "mt-1.5")}>
                     Back-date it and the payment lands in that week&apos;s
                     revenue, not today&apos;s.
                   </p>
@@ -293,7 +300,7 @@ export function ClientPaymentModal({
               </div>
 
               {!payment && form.paymentType === "monthly_retainer" && (
-                <p className="font-mono text-[10px] text-muted-foreground">
+                <p className={CAPTION}>
                   Recording a retainer moves the client&apos;s next due date one
                   month out.
                 </p>
@@ -302,12 +309,16 @@ export function ClientPaymentModal({
             </div>
 
             <div className="mt-8 flex justify-end gap-2 border-t border-border pt-5">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <button type="button" className={GHOST_PILL} onClick={onClose}>
                 Cancel
-              </Button>
-              <Button type="submit" disabled={saving}>
+              </button>
+              <button
+                type="submit"
+                className={cn(PRIMARY_PILL, "disabled:opacity-50")}
+                disabled={saving}
+              >
                 {saving ? "Saving…" : payment ? "Save" : "Confirm Payment"}
-              </Button>
+              </button>
             </div>
           </motion.form>
         </div>

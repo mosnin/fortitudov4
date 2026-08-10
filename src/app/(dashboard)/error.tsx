@@ -16,9 +16,9 @@ export default function DashboardError({
     <div className="flex min-h-screen items-center justify-center bg-charcoal-dark p-4">
       <Card className="w-full max-w-md border-border bg-card">
         <CardContent className="flex flex-col items-center gap-6 p-8">
-          <AlertTriangle className="h-12 w-12 text-orange" />
+          <AlertTriangle className="h-8 w-8 text-muted-foreground/50" />
           <div className="space-y-2 text-center">
-            <h1 className="text-2xl font-bold text-orange">
+            <h1 className="text-2xl tracking-tight text-foreground">
               Something went wrong
             </h1>
             <p className="text-sm text-muted-foreground">

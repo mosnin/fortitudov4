@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/ui/empty-state";
-import { CountUp, BracketLabel } from "@/components/ui/firecrawl";
+import { CountUp, PageHero } from "@/components/ui/firecrawl";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { AsciiField } from "@/components/ui/ascii-field";
 import { cascade, cascadeItem, rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { Inbox } from "lucide-react";
+import {
+  BODY_MUTED,
+  H3,
+  PAGE_RHYTHM,
+  SECTION_LABEL,
+  STATUS_PILL,
+} from "@/lib/typography";
 import { services } from "@/lib/services";
 
 type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost";
@@ -122,41 +125,28 @@ export default function AdminLeadsPage() {
   ];
 
   return (
-    <div className="space-y-10">
-      {/* Page header — serif title over the studio ASCII band */}
-      <header className="relative border-b border-border pb-8">
-        <div
-          className="pointer-events-none absolute inset-y-0 right-0 hidden w-80 sm:block"
-          style={{
-            maskImage: "linear-gradient(to left, black, transparent)",
-            WebkitMaskImage: "linear-gradient(to left, black, transparent)",
-          }}
-        >
-          <AsciiField />
-        </div>
-        <div className="relative">
-          <p className="eyebrow-mono">Operations · Pipeline</p>
-          <h1 className="font-title mt-1 text-3xl tracking-tight sm:text-4xl">
-            Leads
-          </h1>
-          <p className="mt-2 max-w-2xl text-muted-foreground">
-            Leads captured from the website — contact form and get-started
-            funnel — triaged through the pipeline.
-          </p>
-        </div>
-      </header>
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <PageHero
+        section="Operations"
+        title="Leads"
+        description="Leads captured from the website — contact form and get-started funnel — triaged through the pipeline."
+      />
 
       {/* Stats — hairline-divided 4-up */}
       <motion.div
         variants={cascade}
         initial="hidden"
         animate="visible"
-        className="grid grid-cols-2 border-b border-border lg:grid-cols-4"
+        className="grid grid-cols-2 border-y border-border lg:grid-cols-4"
       >
         {stats.map((stat, i) => (
-          <motion.div key={stat.label} variants={cascadeItem} className={statCell(i)}>
-            <p className="micro-label">{stat.label}</p>
-            <p className="mt-2 font-mono text-3xl font-bold tracking-tight">
+          <motion.div
+            key={stat.label}
+            variants={cascadeItem}
+            className={statCell(i)}
+          >
+            <p className={SECTION_LABEL}>{stat.label}</p>
+            <p className="mt-2 text-3xl tracking-tight tabular-nums text-foreground">
               <CountUp value={stat.value} />
             </p>
           </motion.div>
@@ -166,72 +156,72 @@ export default function AdminLeadsPage() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       <section className="space-y-4">
-        {/* Toolbar — status pills left, count right */}
+        {/* Toolbar — status filters left, count right */}
         <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-4">
           {(["all", ...statusOptions] as const).map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
               className={cn(
-                "rounded-full border px-3 py-1 text-xs font-medium transition-colors cursor-pointer active:scale-[0.98]",
+                "cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors active:scale-[0.98]",
                 statusFilter === status
-                  ? "border-foreground bg-foreground text-background"
+                  ? "border-foreground bg-foreground font-medium text-background"
                   : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
               {status === "all" ? "All" : statusLabels[status]}
             </button>
           ))}
-          <BracketLabel
-            n={filtered.length}
-            m={leads.length}
-            label="LEADS"
-            className="ml-auto"
-          />
+          <p className={cn(SECTION_LABEL, "ml-auto")}>
+            {filtered.length} of {leads.length} leads
+          </p>
         </div>
 
         {loading ? (
           <TableSkeleton rows={6} />
         ) : filtered.length === 0 ? (
-          <EmptyState
-            icon={Inbox}
-            title={
-              statusFilter === "all" ? "No leads yet" : "No leads with this status"
-            }
-            description={
-              statusFilter === "all"
+          <div className="py-14 text-center">
+            <h2 className={H3}>
+              {statusFilter === "all"
+                ? "No leads yet"
+                : "No leads with this status"}
+            </h2>
+            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+              {statusFilter === "all"
                 ? "Leads from the contact form and get-started funnel will land here."
-                : "Try a different status filter."
-            }
-          />
+                : "Try a different status filter."}
+            </p>
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Name</th>
-                  <th className="micro-label py-3 pr-4">Contact</th>
-                  <th className="micro-label py-3 pr-4">Interested In</th>
-                  <th className="micro-label py-3 pr-4">Budget</th>
-                  <th className="micro-label py-3 pr-4">Source</th>
-                  <th className="micro-label py-3 pr-4">Status</th>
-                  <th className="micro-label py-3">Date</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Name</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Contact</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>
+                    Interested In
+                  </th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Budget</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Source</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Status</th>
+                  <th className={cn(SECTION_LABEL, "py-3")}>Date</th>
                 </tr>
               </thead>
               <motion.tbody
                 variants={rowCascade}
                 initial="hidden"
                 animate="visible"
-                className="divide-y divide-border"
+                className="divide-y divide-border/60"
               >
                 {filtered.map((lead) => (
                   <motion.tr
                     key={lead.id}
                     variants={rowItem}
-                    className="transition-colors hover:bg-muted/50"
+                    className="transition-colors hover:bg-muted/30"
                   >
                     <td className="py-3 pr-4">
-                      <p className="font-medium">{lead.name}</p>
+                      <p className="font-medium text-foreground">{lead.name}</p>
                       {lead.company && (
                         <p className="text-xs text-muted-foreground">
                           {lead.company}
@@ -241,7 +231,7 @@ export default function AdminLeadsPage() {
                     <td className="py-3 pr-4">
                       <p className="text-muted-foreground">{lead.email}</p>
                       {lead.phone && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs tabular-nums text-muted-foreground">
                           {lead.phone}
                         </p>
                       )}
@@ -252,21 +242,19 @@ export default function AdminLeadsPage() {
                           lead.serviceInterest
                         : "—"}
                     </td>
-                    <td className="py-3 pr-4 font-mono text-xs text-muted-foreground">
+                    <td className="py-3 pr-4 text-xs tabular-nums text-muted-foreground">
                       {lead.monthlyBudget || "—"}
                     </td>
                     <td className="py-3 pr-4">
-                      <Badge
-                        variant="secondary"
-                        className="font-mono text-[10px] uppercase whitespace-nowrap"
-                      >
+                      <span className={cn(STATUS_PILL, "whitespace-nowrap")}>
                         {sourceLabels[lead.source] ??
                           lead.source.replace(/_/g, " ")}
-                      </Badge>
+                      </span>
                     </td>
                     <td className="py-3 pr-4">
                       <select
-                        className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 font-mono text-[11px] uppercase transition-colors hover:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label={`Status for ${lead.name}`}
+                        className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] uppercase tracking-wide text-muted-foreground transition-colors hover:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                         value={lead.status}
                         disabled={updating === lead.id}
                         onChange={(e) =>
@@ -280,7 +268,7 @@ export default function AdminLeadsPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="py-3 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="py-3 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
                       {new Date(lead.createdAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",

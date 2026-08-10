@@ -1,32 +1,34 @@
 import type { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { CAPTION, SECTION_LABEL, STAT_NUMBER, TITLE_FONT } from "@/lib/typography";
 
 interface StatCardProps {
   label: string;
   value: string | number;
-  icon: LucideIcon;
+  /**
+   * @deprecated Metric tiles carry no icon (design-product.md — no decorative
+   * icons). Accepted so existing call sites keep compiling; never rendered.
+   */
+  icon?: LucideIcon;
   /** Optional supporting note under the value (e.g. "3 new this week"). */
   hint?: string;
   className?: string;
 }
 
 /**
- * Standard metric tile — icon chip + value + label — used across the admin
- * command center and elsewhere so every KPI reads the same way.
+ * Standard metric tile — quiet label, focal number, optional caption. Neutral
+ * and text-first: no icon chip, no accent color, numbers in `tabular-nums`.
  */
-export function StatCard({ label, value, icon: Icon, hint, className }: StatCardProps) {
+export function StatCard({ label, value, hint, className }: StatCardProps) {
   return (
-    <Card className={cn("transition-shadow hover:shadow-md", className)}>
-      <CardContent className="flex items-center gap-4 p-6">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange/10">
-          <Icon className="h-6 w-6 text-orange" />
-        </div>
-        <div className="min-w-0">
-          <p className="text-2xl font-bold tracking-tight">{value}</p>
-          <p className="truncate text-sm text-muted-foreground">{label}</p>
-          {hint && <p className="mt-0.5 text-xs text-muted-foreground/80">{hint}</p>}
-        </div>
+    <Card className={className}>
+      <CardContent className="p-6">
+        <p className={cn(SECTION_LABEL, "truncate")}>{label}</p>
+        <p className={cn(STAT_NUMBER, "mt-2")} style={TITLE_FONT}>
+          {value}
+        </p>
+        {hint && <p className={cn(CAPTION, "mt-1 tabular-nums")}>{hint}</p>}
       </CardContent>
     </Card>
   );

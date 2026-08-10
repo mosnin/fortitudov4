@@ -2,16 +2,20 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { PageHero, BracketLabel } from "@/components/ui/firecrawl";
-import { EmptyState } from "@/components/ui/empty-state";
-import { TableSkeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+import { PageHero } from "@/components/ui/firecrawl";
 import { Input } from "@/components/ui/input";
 import { TrendCard } from "@/components/ui/monthly-trend";
-import { AsciiField } from "@/components/ui/ascii-field";
 import { rowCascade, rowItem, cascade, cascadeItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import { ClipboardCheck } from "lucide-react";
+import {
+  PAGE_RHYTHM,
+  PRIMARY_PILL,
+  READING_COL,
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 /**
  * Weekly Reports — the client half of the reporting loop for DIGITAL MARKETING
@@ -76,184 +80,209 @@ export default function ClientReportsPage() {
   const roas = totalSpend > 0 ? totalRevenue / totalSpend : 0;
 
   const tiles = [
-    {
-      label: "Total Leads",
-      value: totalLeads.toLocaleString("en-US"),
-    },
-    { label: "Avg Cost Per Lead", value: usd(avgCpl) },
-    { label: "Total Spend", value: usd(totalSpend) },
-    {
-      label: "Total Revenue",
-      value: usd(totalRevenue),
-      accent: "text-success",
-    },
-    {
-      label: "Return on Spend",
-      value: `${roas.toFixed(2)}x`,
-      accent: "text-brand",
-    },
+    { label: "Total leads", value: totalLeads.toLocaleString("en-US") },
+    { label: "Avg cost per lead", value: usd(avgCpl) },
+    { label: "Total spend", value: usd(totalSpend) },
+    { label: "Total revenue", value: usd(totalRevenue) },
+    { label: "Return on spend", value: `${roas.toFixed(2)}x` },
   ];
 
   return (
-    <div className="space-y-10">
-      <PageHero
-        title="Weekly Reports"
-        description="Your results week by week — add your closes and revenue to see the true return on what we build and run for you."
-      />
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <PageHero
+          section="Workspace"
+          title="Weekly Reports"
+          description="Your results week by week — add your closes and revenue to see the true return on what we build and run for you."
+        />
 
-      {/* All-time totals — hairline-divided band */}
-      {completed.length > 0 && (
-        <motion.section
-          variants={cascade}
-          initial="hidden"
-          animate="visible"
-          className="grid grid-cols-2 divide-border border-b border-border sm:grid-cols-5 sm:divide-x"
-        >
-          {tiles.map((t) => (
-            <motion.div key={t.label} variants={cascadeItem} className="px-5 py-6">
-              <p className="micro-label">{t.label}</p>
-              <p
-                className={cn(
-                  "mt-2 text-2xl font-bold tracking-tight",
-                  t.accent
-                )}
+        {/* All-time totals — hairline-divided band */}
+        {completed.length > 0 && (
+          <motion.section
+            variants={cascade}
+            initial="hidden"
+            animate="visible"
+            className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-5 sm:divide-x"
+          >
+            {tiles.map((t) => (
+              <motion.div
+                key={t.label}
+                variants={cascadeItem}
+                className="py-5 sm:px-5 sm:first:pl-0"
               >
-                {t.value}
-              </p>
-            </motion.div>
-          ))}
-        </motion.section>
-      )}
-
-      {/* Action required — pending weeks */}
-      {pending.length > 0 && (
-        <section className="space-y-4">
-          <BracketLabel
-            n={pending.length}
-            label="ACTION REQUIRED · ADD YOUR SALES NUMBERS"
-          />
-          {pending.map((r) => (
-            <PendingReportForm key={r.id} report={r} onDone={load} />
-          ))}
-        </section>
-      )}
-
-      {/* Trends over completed weeks */}
-      {completed.length > 1 && (
-        <section className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-          <TrendCard
-            title="Leads per Week"
-            points={completed.map((r) => ({ date: r.weekEnd, value: r.leads }))}
-            format={(v) => Math.round(v).toLocaleString("en-US")}
-          />
-          <TrendCard
-            title="Revenue per Week"
-            points={completed.map((r) => ({
-              date: r.weekEnd,
-              value: r.revenue ?? 0,
-            }))}
-            format={usd}
-          />
-        </section>
-      )}
-
-      {/* History */}
-      <section>
-        <div className="flex items-center gap-2 border-b border-border pb-3">
-          <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-[15px] font-semibold">Report History</h2>
-        </div>
-        {loading ? (
-          <div className="pt-4">
-            <TableSkeleton rows={4} />
-          </div>
-        ) : reports.length === 0 ? (
-          <div className="relative overflow-hidden">
-            <div
-              className="pointer-events-none absolute inset-0"
-              style={{
-                maskImage: "linear-gradient(to bottom, black, transparent 70%)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, black, transparent 70%)",
-              }}
-            >
-              <AsciiField className="h-full w-full opacity-40" />
-            </div>
-            <div className="relative">
-              <EmptyState
-                icon={ClipboardCheck}
-                title="No reports yet"
-                description="The Fortitudo team posts your results here every week — check back after your project goes live."
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Week</th>
-                  <th className="micro-label py-3 pr-4 text-right">Leads</th>
-                  <th className="micro-label py-3 pr-4 text-right">CPL</th>
-                  <th className="micro-label py-3 pr-4 text-right">Spend</th>
-                  <th className="micro-label py-3 pr-4 text-right">Closes</th>
-                  <th className="micro-label py-3 pr-4 text-right">Revenue</th>
-                  <th className="micro-label py-3">Status</th>
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border"
-              >
-                {reports.map((r) => (
-                  <motion.tr key={r.id} variants={rowItem}>
-                    <td className="py-3 pr-4 font-mono text-xs text-muted-foreground whitespace-nowrap">
-                      {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono font-semibold">
-                      {r.leads.toLocaleString("en-US")}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {usd(r.cpl)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {usd(r.totalSpend)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {r.closes !== null
-                        ? r.closes.toLocaleString("en-US")
-                        : "—"}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-mono">
-                      {r.revenue !== null ? (
-                        <span className="text-success">{usd(r.revenue)}</span>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="py-3">
-                      <span
-                        className={cn(
-                          "rounded-full px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wide",
-                          r.status === "pending_client"
-                            ? "bg-warning/10 text-warning"
-                            : "bg-success/10 text-success"
-                        )}
-                      >
-                        {r.status === "pending_client"
-                          ? "Needs Your Input"
-                          : "Completed"}
-                      </span>
-                    </td>
-                  </motion.tr>
-                ))}
-              </motion.tbody>
-            </table>
-          </div>
+                <p className={SECTION_LABEL}>{t.label}</p>
+                <p className="mt-2 text-xl tracking-tight tabular-nums text-foreground">
+                  {t.value}
+                </p>
+              </motion.div>
+            ))}
+          </motion.section>
         )}
-      </section>
+
+        {/* Action required — pending weeks */}
+        {pending.length > 0 && (
+          <section className={SECTION_RHYTHM}>
+            <p className={SECTION_LABEL}>
+              <span className="tabular-nums text-foreground/70">
+                {pending.length}
+              </span>{" "}
+              {pending.length === 1 ? "week needs" : "weeks need"} your sales
+              numbers
+            </p>
+            <div className="space-y-4">
+              {pending.map((r) => (
+                <PendingReportForm key={r.id} report={r} onDone={load} />
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Trends over completed weeks */}
+        {completed.length > 1 && (
+          <section className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+            <TrendCard
+              title="Leads per week"
+              points={completed.map((r) => ({
+                date: r.weekEnd,
+                value: r.leads,
+              }))}
+              format={(v) => Math.round(v).toLocaleString("en-US")}
+            />
+            <TrendCard
+              title="Revenue per week"
+              points={completed.map((r) => ({
+                date: r.weekEnd,
+                value: r.revenue ?? 0,
+              }))}
+              format={usd}
+            />
+          </section>
+        )}
+
+        {/* History */}
+        <section className={SECTION_RHYTHM}>
+          <p className={SECTION_LABEL}>Report history</p>
+          {loading ? (
+            <ul className="divide-y divide-border/60 border-t border-border/60">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <li key={i} className="space-y-2 py-3">
+                  <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
+                  <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
+                </li>
+              ))}
+            </ul>
+          ) : reports.length === 0 ? (
+            <div className="border-t border-border py-10">
+              <p className="text-sm font-medium text-foreground">
+                No reports yet
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                The Fortitudo team posts your results here every week — check
+                back after your project goes live.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm tabular-nums">
+                <thead>
+                  <tr className="border-b border-border text-left">
+                    <th className={cn(SECTION_LABEL, "py-3 pr-4 font-medium")}>
+                      Week
+                    </th>
+                    <th
+                      className={cn(
+                        SECTION_LABEL,
+                        "py-3 pr-4 text-right font-medium"
+                      )}
+                    >
+                      Leads
+                    </th>
+                    <th
+                      className={cn(
+                        SECTION_LABEL,
+                        "py-3 pr-4 text-right font-medium"
+                      )}
+                    >
+                      CPL
+                    </th>
+                    <th
+                      className={cn(
+                        SECTION_LABEL,
+                        "py-3 pr-4 text-right font-medium"
+                      )}
+                    >
+                      Spend
+                    </th>
+                    <th
+                      className={cn(
+                        SECTION_LABEL,
+                        "py-3 pr-4 text-right font-medium"
+                      )}
+                    >
+                      Closes
+                    </th>
+                    <th
+                      className={cn(
+                        SECTION_LABEL,
+                        "py-3 pr-4 text-right font-medium"
+                      )}
+                    >
+                      Revenue
+                    </th>
+                    <th className={cn(SECTION_LABEL, "py-3 font-medium")}>
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <motion.tbody
+                  variants={rowCascade}
+                  initial="hidden"
+                  animate="visible"
+                  className="divide-y divide-border/60"
+                >
+                  {reports.map((r) => (
+                    <motion.tr key={r.id} variants={rowItem}>
+                      <td className="whitespace-nowrap py-3 pr-4 text-xs text-muted-foreground">
+                        {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
+                      </td>
+                      <td className="py-3 pr-4 text-right font-medium text-foreground">
+                        {r.leads.toLocaleString("en-US")}
+                      </td>
+                      <td className="py-3 pr-4 text-right text-foreground">
+                        {usd(r.cpl)}
+                      </td>
+                      <td className="py-3 pr-4 text-right text-foreground">
+                        {usd(r.totalSpend)}
+                      </td>
+                      <td className="py-3 pr-4 text-right text-foreground">
+                        {r.closes !== null
+                          ? r.closes.toLocaleString("en-US")
+                          : "—"}
+                      </td>
+                      <td className="py-3 pr-4 text-right text-foreground">
+                        {r.revenue !== null ? usd(r.revenue) : "—"}
+                      </td>
+                      <td className="py-3">
+                        <span
+                          className={
+                            r.status === "pending_client"
+                              ? STATUS_PILL_ACTIVE
+                              : STATUS_PILL
+                          }
+                        >
+                          {r.status === "pending_client"
+                            ? "Needs your input"
+                            : "Completed"}
+                        </span>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </motion.tbody>
+              </table>
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
@@ -306,13 +335,13 @@ function PendingReportForm({
   return (
     <form
       onSubmit={submit}
-      className="rounded-xl border border-brand/30 bg-brand-subtle/40 p-5"
+      className="rounded-xl border border-border bg-card p-5"
     >
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="font-semibold">
+        <p className="text-sm font-medium text-foreground">
           Week of {fmtDay(report.weekStart)} – {fmtDay(report.weekEnd)}
         </p>
-        <p className="font-mono text-[11px] uppercase text-muted-foreground">
+        <p className="text-xs tabular-nums text-muted-foreground">
           {report.leads.toLocaleString("en-US")} leads · {usd(report.cpl)} CPL ·{" "}
           {usd(report.totalSpend)} spend
         </p>
@@ -320,7 +349,7 @@ function PendingReportForm({
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div>
           <span className="mb-1.5 block text-[13px] font-medium">
-            Clients Closed
+            Clients closed
           </span>
           <Input
             inputMode="numeric"
@@ -331,7 +360,7 @@ function PendingReportForm({
         </div>
         <div>
           <span className="mb-1.5 block text-[13px] font-medium">
-            Revenue Generated ($)
+            Revenue generated ($)
           </span>
           <Input
             inputMode="decimal"
@@ -341,9 +370,16 @@ function PendingReportForm({
           />
         </div>
         <div className="flex items-end">
-          <Button type="submit" disabled={saving} className="w-full sm:w-auto">
-            {saving ? "Saving…" : "Complete Report"}
-          </Button>
+          <button
+            type="submit"
+            disabled={saving}
+            className={cn(
+              PRIMARY_PILL,
+              "w-full justify-center sm:w-auto disabled:pointer-events-none disabled:opacity-50"
+            )}
+          >
+            {saving ? "Saving…" : "Complete report"}
+          </button>
         </div>
       </div>
       {error && <p className="mt-3 text-sm text-destructive">{error}</p>}

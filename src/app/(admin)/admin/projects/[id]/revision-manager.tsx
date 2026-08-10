@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
-import { RefreshCw } from "lucide-react";
+import {
+  BODY_MUTED,
+  CAPTION,
+  H3,
+  STATUS_PILL,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 type RevisionStatus = "pending" | "in_progress" | "completed" | "rejected";
 
@@ -14,14 +19,6 @@ interface Revision {
   adminNotes: string | null;
   createdAt: string;
 }
-
-// Status semantics as uppercase mono text — orange stays rare (active only).
-const statusClass: Record<RevisionStatus, string> = {
-  pending: "text-warning",
-  in_progress: "text-brand",
-  completed: "text-success",
-  rejected: "text-destructive",
-};
 
 const statusOptions: RevisionStatus[] = [
   "pending",
@@ -87,49 +84,44 @@ export function RevisionManager({
   };
 
   if (loading) {
-    return (
-      <p className="flex items-center gap-2 text-sm text-muted-foreground">
-        <RefreshCw className="h-4 w-4 animate-spin" /> Loading revisions…
-      </p>
-    );
+    return <p className={BODY_MUTED}>Loading revisions…</p>;
   }
 
   if (revisions.length === 0) {
     return (
-      <EmptyState
-        icon={RefreshCw}
-        title="No revision requests"
-        description="When the client requests changes, they'll show up here to triage."
-      />
+      <div className="py-10 text-center">
+        <h3 className={H3}>No revision requests</h3>
+        <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+          When the client requests changes, they&apos;ll show up here to triage.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="divide-y divide-border border-y border-border">
+    <div className="divide-y divide-border/60 border-y border-border">
       {error && <p className="py-3 text-sm text-destructive">{error}</p>}
       {revisions.map((rev) => (
         <div
           key={rev.id}
-          className="space-y-2 py-4 transition-colors hover:bg-muted/50"
+          className="space-y-2 py-3 transition-colors hover:bg-muted/30"
         >
           <div className="flex items-start justify-between gap-3">
-            <p className="text-sm">{rev.description}</p>
+            <p className="text-sm text-foreground">{rev.description}</p>
             <span
               className={cn(
-                "shrink-0 font-mono text-[11px] font-semibold uppercase tracking-wide whitespace-nowrap",
-                statusClass[rev.status]
+                "shrink-0",
+                rev.status === "rejected" ? STATUS_PILL : STATUS_PILL_ACTIVE
               )}
             >
               {statusLabels[rev.status]}
             </span>
           </div>
           {rev.adminNotes && (
-            <p className="font-mono text-[11px] text-muted-foreground">
-              NOTES: {rev.adminNotes}
-            </p>
+            <p className={CAPTION}>Notes: {rev.adminNotes}</p>
           )}
           <div className="flex items-center justify-between gap-3">
-            <span className="font-mono text-xs text-muted-foreground">
+            <span className={cn(CAPTION, "tabular-nums")}>
               {new Date(rev.createdAt).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
@@ -138,10 +130,13 @@ export function RevisionManager({
             </span>
             {!readOnly && (
               <select
-                className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 font-mono text-[11px] transition-colors hover:border-foreground/30 focus:outline-none focus:ring-2 focus:ring-foreground/15 disabled:cursor-not-allowed disabled:opacity-50"
+                aria-label="Revision status"
+                className="h-8 cursor-pointer rounded-lg border border-border bg-background px-2.5 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:border-foreground/30 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50"
                 value={rev.status}
                 disabled={updating === rev.id}
-                onChange={(e) => updateStatus(rev.id, e.target.value as RevisionStatus)}
+                onChange={(e) =>
+                  updateStatus(rev.id, e.target.value as RevisionStatus)
+                }
               >
                 {statusOptions.map((opt) => (
                   <option key={opt} value={opt}>

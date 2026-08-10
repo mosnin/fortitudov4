@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
-import { Check, Circle, Rocket } from "lucide-react";
-import { BracketLabel } from "@/components/ui/firecrawl";
+import {
+  SECTION_LABEL,
+  SECTION_RHYTHM,
+  STATUS_PILL,
+  STATUS_PILL_ACTIVE,
+} from "@/lib/typography";
 
 /**
  * Read-only delivery pipeline — the same stage checklist the team tracks in
@@ -35,29 +39,31 @@ export function LaunchPipeline({ data }: { data: LaunchPipelineData | null }) {
   const pct = data.total ? Math.round((data.done / data.total) * 100) : 0;
 
   return (
-    <section className="animate-fade-up border-b border-border pb-8">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
-        <div className="flex items-center gap-2">
-          <Rocket className="h-4 w-4 text-brand" />
-          <h2 className="text-[15px] font-semibold">Delivery Pipeline</h2>
-        </div>
-        <BracketLabel n={data.done} m={data.total} label="Steps" />
+    <section className={cn("animate-fade-up", SECTION_RHYTHM)}>
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
+        <p className={SECTION_LABEL}>Delivery pipeline</p>
+        <p className={SECTION_LABEL}>
+          <span className="tabular-nums text-foreground/70">
+            {data.done} of {data.total}
+          </span>{" "}
+          steps
+        </p>
       </div>
 
-      {/* Progress bar + current stage */}
-      <div className="mt-5">
-        <div className="flex items-baseline justify-between">
+      {/* Progress + current stage */}
+      <div>
+        <div className="flex items-baseline justify-between gap-3">
           <p className="text-sm text-muted-foreground">
-            Current stage:{" "}
-            <span className="font-semibold text-foreground">
+            Current stage{" "}
+            <span className="font-medium text-foreground">
               {data.stageLabel}
             </span>
           </p>
-          <p className="font-mono text-[11px] text-muted-foreground">
-            {pct}% COMPLETE
+          <p className="text-xs tabular-nums text-muted-foreground">
+            {pct}% complete
           </p>
         </div>
-        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-muted">
+        <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-muted">
           <div
             className="h-full rounded-full bg-foreground transition-all"
             style={{ width: `${pct}%` }}
@@ -65,41 +71,33 @@ export function LaunchPipeline({ data }: { data: LaunchPipelineData | null }) {
         </div>
       </div>
 
-      {/* Stage stepper */}
-      <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 lg:grid-cols-4">
+      {/* Stage list — hairline rows, neutral word pills, no glyphs. */}
+      <ul className="divide-y divide-border/60">
         {data.stages.map((s) => (
-          <div key={s.key} className="flex items-center gap-2">
+          <li
+            key={s.key}
+            className="flex items-center justify-between gap-3 py-3"
+          >
             <span
               className={cn(
-                "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border",
-                s.complete
-                  ? "border-foreground bg-foreground text-background"
-                  : s.active
-                    ? "border-brand text-brand"
-                    : "border-border text-muted-foreground"
-              )}
-            >
-              {s.complete ? (
-                <Check className="h-3 w-3" />
-              ) : (
-                <Circle className="h-2 w-2 fill-current" />
-              )}
-            </span>
-            <span
-              className={cn(
-                "text-xs",
-                s.complete
+                "truncate text-sm",
+                s.complete || s.active
                   ? "text-foreground"
-                  : s.active
-                    ? "font-semibold text-brand"
-                    : "text-muted-foreground"
+                  : "text-muted-foreground"
               )}
             >
               {s.label}
             </span>
-          </div>
+            {s.active ? (
+              <span className={STATUS_PILL_ACTIVE}>Current</span>
+            ) : s.complete ? (
+              <span className={STATUS_PILL}>Done</span>
+            ) : (
+              <span className="text-xs text-muted-foreground">Upcoming</span>
+            )}
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
   );
 }

@@ -1,7 +1,9 @@
 "use client";
 
 /**
- * Financial chart primitives for the orange-on-white system (design.md).
+ * Chart primitives for the product surface (design-product.md). Monochrome:
+ * series are drawn in the neutral chart-1 ink, slices step down in opacity.
+ * Color is reserved for genuine semantics, never for category coding.
  * AreaChart (axis-labeled Sparkline sibling), DonutChart, BarList — pure
  * SVG + motion, no chart deps, mono micro-labels throughout.
  */
@@ -45,7 +47,7 @@ export function AreaChart({
     <div className={cn("flex gap-3", className)}>
       {/* y-axis */}
       <div
-        className="flex flex-col justify-between text-right font-mono text-[10px] text-muted-foreground"
+        className="flex flex-col justify-between text-right text-[10px] text-muted-foreground"
         style={{ height }}
       >
         {[...ticks].reverse().map((t, i) => (
@@ -70,12 +72,12 @@ export function AreaChart({
               <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
                 <stop
                   offset="0%"
-                  stopColor="var(--color-orange)"
+                  stopColor="var(--chart-1)"
                   stopOpacity="0.25"
                 />
                 <stop
                   offset="100%"
-                  stopColor="var(--color-orange)"
+                  stopColor="var(--chart-1)"
                   stopOpacity="0"
                 />
               </linearGradient>
@@ -92,7 +94,7 @@ export function AreaChart({
             <motion.path
               d={line}
               fill="none"
-              stroke="var(--color-orange)"
+              stroke="var(--chart-1)"
               strokeWidth={1.6}
               vectorEffect="non-scaling-stroke"
               initial={{ opacity: 0 }}
@@ -101,7 +103,7 @@ export function AreaChart({
             />
           </svg>
         </div>
-        <div className="mt-1.5 flex justify-between font-mono text-[10px] text-muted-foreground">
+        <div className="mt-1.5 flex justify-between text-[10px] text-muted-foreground">
           {xLabels.map((l, i) => (
             <span key={i}>{l}</span>
           ))}
@@ -111,13 +113,14 @@ export function AreaChart({
   );
 }
 
-/** Donut with center total and mono legend. Slices cycle brand oranges. */
+/** Donut with center total. Slices step down in neutral ink opacity. */
 const DONUT_COLORS = [
-  "var(--color-orange)",
-  "#FFB347",
-  "#C2410C",
-  "#FDBA74",
-  "#7C2D12",
+  "var(--chart-1)",
+  "color-mix(in oklab, var(--chart-1) 78%, transparent)",
+  "color-mix(in oklab, var(--chart-1) 58%, transparent)",
+  "color-mix(in oklab, var(--chart-1) 40%, transparent)",
+  "color-mix(in oklab, var(--chart-1) 26%, transparent)",
+  "color-mix(in oklab, var(--chart-1) 15%, transparent)",
 ];
 
 export function DonutChart({
@@ -172,7 +175,7 @@ export function DonutChart({
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-bold tracking-tight">{total}</span>
-          <span className="font-mono text-[10px] uppercase text-muted-foreground">
+          <span className="text-[10px] uppercase text-muted-foreground">
             Active
           </span>
         </div>
@@ -181,7 +184,7 @@ export function DonutChart({
         {slices.map((s) => (
           <span
             key={s.label}
-            className="flex items-center gap-1.5 font-mono text-[11px] text-muted-foreground"
+            className="flex items-center gap-1.5 text-[11px] text-muted-foreground"
           >
             <span
               className="h-2.5 w-2.5 rounded-[3px]"
@@ -212,18 +215,18 @@ export function BarList({
         <div key={`${item.name}-${i}`}>
           <div className="flex items-baseline justify-between gap-4 text-sm">
             <span className="flex min-w-0 items-baseline gap-2">
-              <span className="font-mono text-[11px] text-muted-foreground">
+              <span className="text-[11px] text-muted-foreground">
                 {String(i + 1).padStart(2, "0")}
               </span>
               <span className="truncate font-medium">{item.name}</span>
             </span>
-            <span className="shrink-0 font-mono font-semibold">
+            <span className="shrink-0 font-semibold">
               {format(item.total)}
             </span>
           </div>
           <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
             <motion.div
-              className="h-full rounded-full bg-orange"
+              className="h-full rounded-full bg-foreground/80"
               initial={{ width: 0 }}
               animate={{ width: `${(item.total / max) * 100}%` }}
               transition={{ duration: 0.7, delay: i * 0.06, ease: easeOutExpo }}

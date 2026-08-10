@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/empty-state";
-import { PageHero, StatHeader, BracketLabel } from "@/components/ui/firecrawl";
+import { PageHero, CountUp, BracketLabel } from "@/components/ui/firecrawl";
 import {
   SearchPill,
   SelectPill,
@@ -15,15 +15,26 @@ import {
   type DateRange,
 } from "@/components/ui/filters";
 import { TableSkeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { AsciiField } from "@/components/ui/ascii-field";
 import {
   ClientPaymentModal,
   type EditablePayment,
 } from "@/components/admin/client-payment-modal";
 import { TrendCard } from "@/components/ui/monthly-trend";
 import { rowCascade, rowItem } from "@/lib/motion";
-import { CreditCard, Filter, Plus, Pencil, Trash2, Users } from "lucide-react";
+import {
+  PAGE_RHYTHM,
+  SECTION_RHYTHM,
+  SECTION_LABEL,
+  CAPTION,
+  STAT_NUMBER,
+  TITLE_FONT,
+  STATUS_PILL,
+  PRIMARY_PILL,
+  GHOST_PILL,
+  H3,
+} from "@/lib/typography";
+import { cn } from "@/lib/utils";
+import { Filter, Pencil, Trash2 } from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -120,62 +131,58 @@ export default function AdminPaymentsPage() {
     .filter((t) => t.paymentType === "monthly_retainer")
     .reduce((s, t) => s + t.amount, 0);
 
+  const tiles = [
+    { label: "Total Collected", caption: "All time", value: totalCollected },
+    { label: "This Month", caption: "Collected", value: thisMonth },
+    {
+      label: "Retainer Revenue",
+      caption: "All time · recurring",
+      value: retainerCollected,
+    },
+  ];
+
   return (
-    <div className="space-y-10">
+    <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <PageHero
+        section="Finance"
         title="Payments"
         description="Record retainers and setup fees against the client roster."
         action={
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" asChild>
-              <Link href="/admin/clients">
-                <Users className="mr-1.5 h-4 w-4" />
-                Client Roster
-              </Link>
-            </Button>
-            <Button
-              size="sm"
+          <div className="flex items-center gap-2">
+            <Link href="/admin/clients" className={GHOST_PILL}>
+              Client roster
+            </Link>
+            <button
+              type="button"
+              className={cn(PRIMARY_PILL, "cursor-pointer")}
               onClick={() => {
                 setEditing(null);
                 setModalOpen(true);
               }}
             >
-              <Plus className="mr-1.5 h-4 w-4" />
-              Add Payment
-            </Button>
+              Add payment
+            </button>
           </div>
         }
       />
 
       {/* Summary — hairline-divided 3-up */}
       <div className="grid grid-cols-1 divide-y divide-border border-b border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        <StatHeader
-          className="px-5 py-6"
-          title="Total Collected"
-          caption="ALL TIME"
-          value={totalCollected}
-          format={usd}
-        />
-        <StatHeader
-          className="px-5 py-6"
-          title="This Month"
-          caption="COLLECTED"
-          value={thisMonth}
-          format={usd}
-        />
-        <StatHeader
-          className="px-5 py-6"
-          title="Retainer Revenue"
-          caption="ALL TIME · RECURRING"
-          value={retainerCollected}
-          format={usd}
-        />
+        {tiles.map((tile) => (
+          <div key={tile.label} className="px-5 py-6">
+            <p className={SECTION_LABEL}>{tile.label}</p>
+            <p className={cn(STAT_NUMBER, "mt-2")} style={TITLE_FONT}>
+              <CountUp value={tile.value} format={usd} />
+            </p>
+            <p className={cn(CAPTION, "mt-1")}>{tile.caption}</p>
+          </div>
+        ))}
       </div>
 
       {/* Filter row — search + type pill, date range right-aligned.
           Drives the trends and the payment history below. */}
       {!loading && transactions.length > 0 && (
-        <div className="space-y-3">
+        <div className={SECTION_RHYTHM}>
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <SearchPill
               className="lg:w-64"
@@ -214,7 +221,7 @@ export default function AdminPaymentsPage() {
             <BracketLabel
               n={filtered.length}
               m={transactions.length}
-              label={`FILTERED · ${usd(filteredTotal)} COLLECTED`}
+              label={`Filtered · ${usd(filteredTotal)} collected`}
             />
           )}
         </div>
@@ -240,50 +247,33 @@ export default function AdminPaymentsPage() {
       )}
 
       <section>
-        <div className="flex items-center gap-2 border-b border-border pb-3">
-          <CreditCard className="h-4 w-4 text-muted-foreground" />
-          <h2 className="text-[15px] font-semibold">Payment History</h2>
+        <div className="border-b border-border pb-3">
+          <h2 className={H3}>Payment History</h2>
         </div>
         {loading ? (
-          <div className="pt-4">
+          <div className="pt-1">
             <TableSkeleton rows={6} />
           </div>
         ) : filtered.length === 0 ? (
-          <div className="relative overflow-hidden">
-            {!filtersActive && (
-              <div
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  maskImage:
-                    "linear-gradient(to bottom, black, transparent 85%)",
-                  WebkitMaskImage:
-                    "linear-gradient(to bottom, black, transparent 85%)",
-                }}
-              >
-                <AsciiField className="h-full w-full opacity-40" />
-              </div>
-            )}
-            <EmptyState
-              icon={CreditCard}
-              title={filtersActive ? "No matching payments" : "No payments yet"}
-              description={
-                filtersActive
-                  ? "No payments match the current filters — widen the date range or clear the search."
-                  : "Record payments against roster clients — each one feeds the agency revenue metrics automatically."
-              }
-            />
-          </div>
+          <EmptyState
+            title={filtersActive ? "No matching payments" : "No payments yet"}
+            description={
+              filtersActive
+                ? "No payments match the current filters — widen the date range or clear the search."
+                : "Record payments against roster clients — each one feeds the agency revenue metrics automatically."
+            }
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="micro-label py-3 pr-4">Date</th>
-                  <th className="micro-label py-3 pr-4">Client</th>
-                  <th className="micro-label py-3 pr-4">Type</th>
-                  <th className="micro-label py-3 pr-4">Method</th>
-                  <th className="micro-label py-3 pr-4">Amount</th>
-                  <th className="micro-label py-3 pr-4">Notes</th>
+                <tr className="border-b border-border/60 text-left">
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Date</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Client</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Type</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Method</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Amount</th>
+                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Notes</th>
                   <th className="py-3" />
                 </tr>
               </thead>
@@ -291,15 +281,15 @@ export default function AdminPaymentsPage() {
                 variants={rowCascade}
                 initial="hidden"
                 animate="visible"
-                className="divide-y divide-border"
+                className="divide-y divide-border/60"
               >
                 {filtered.map((t) => (
                   <motion.tr
                     key={t.id}
                     variants={rowItem}
-                    className="group transition-colors hover:bg-muted/50"
+                    className="group transition-colors hover:bg-muted/30"
                   >
-                    <td className="py-3 pr-4 font-mono text-xs text-muted-foreground whitespace-nowrap">
+                    <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
                       {new Date(t.paidAt).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -307,16 +297,18 @@ export default function AdminPaymentsPage() {
                         timeZone: "UTC",
                       })}
                     </td>
-                    <td className="py-3 pr-4 font-medium">
+                    <td className="py-3 pr-4 font-medium text-foreground">
                       {t.contactName ?? t.companyName ?? "—"}
                     </td>
-                    <td className="py-3 pr-4 font-mono text-[11px] uppercase text-muted-foreground whitespace-nowrap">
-                      {t.paymentType === "setup_fee" ? "Setup" : "Retainer"}
+                    <td className="py-3 pr-4 whitespace-nowrap">
+                      <span className={STATUS_PILL}>
+                        {t.paymentType === "setup_fee" ? "Setup" : "Retainer"}
+                      </span>
                     </td>
                     <td className="py-3 pr-4 text-muted-foreground">
                       {t.method}
                     </td>
-                    <td className="py-3 pr-4 font-mono font-semibold">
+                    <td className="py-3 pr-4 font-medium tabular-nums whitespace-nowrap">
                       {usd(t.amount)}
                     </td>
                     <td
@@ -338,14 +330,14 @@ export default function AdminPaymentsPage() {
                           });
                           setModalOpen(true);
                         }}
-                        className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-all hover:bg-muted hover:text-foreground group-hover:opacity-100 cursor-pointer"
+                        className="cursor-pointer rounded-md p-1.5 text-muted-foreground opacity-0 transition-all hover:bg-muted hover:text-foreground group-hover:opacity-100"
                         aria-label="Edit payment"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => remove(t)}
-                        className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100 cursor-pointer"
+                        className="cursor-pointer rounded-md p-1.5 text-muted-foreground opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
                         aria-label="Delete payment"
                       >
                         <Trash2 className="h-4 w-4" />
