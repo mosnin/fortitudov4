@@ -20,6 +20,7 @@ import {
 } from "@/components/crm";
 import { Reveal } from "@/components/motion";
 import { GadgetFrame } from "./gadget-frame";
+import { PublishAsBlueprint } from "./helix-blueprints";
 import { BODY_MUTED, CAPTION, GHOST_PILL, META } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
@@ -206,6 +207,13 @@ export function HelixGadgetView({ gadgetId }: { gadgetId: string }) {
               title={gadget.name}
             />
           </>
+        )}
+
+        {gadget && (
+          <section className="space-y-3">
+            <SectionHead title="Reuse" />
+            <PublishAsBlueprint gadgetId={gadget.id} />
+          </section>
         )}
 
         {versions.length > 0 && (

@@ -68,6 +68,11 @@ const BRIDGE = `
   });
 
   window.helix = {
+    /**
+     * Who this gadget is for: { clientId, clientName }. A gadget is written
+     * once and installed per client, so it has to ask rather than assume.
+     */
+    context: function () { return send('context'); },
     /** This gadget's own stored state. Persisted server-side, per gadget. */
     getState: function () { return send('getState'); },
     setState: function (next) { return send('setState', next); },

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
-import { helixGadgets, helixThreads } from "@/db/schema";
+import { agencyClients, helixGadgets, helixThreads } from "@/db/schema";
 import { getAuthenticatedUser } from "@/lib/auth-utils";
 import { isStaff } from "@/lib/permissions";
 import { callOp, loadContext } from "@/lib/helix/runtime";
@@ -24,6 +24,7 @@ import type { HelixContext } from "@/lib/helix/contract";
  */
 
 const rpcSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("context") }),
   z.object({ kind: z.literal("getState") }),
   z.object({ kind: z.literal("setState"), payload: z.unknown() }),
   z.object({
@@ -65,6 +66,23 @@ export async function POST(
       );
     }
     const call = parsed.data;
+
+    if (call.kind === "context") {
+      const [client] = gadget.clientId
+        ? await db
+            .select({ companyName: agencyClients.companyName })
+            .from(agencyClients)
+            .where(eq(agencyClients.id, gadget.clientId))
+            .limit(1)
+        : [];
+      return NextResponse.json({
+        result: {
+          gadgetId: gadget.id,
+          clientId: gadget.clientId,
+          clientName: client?.companyName ?? null,
+        },
+      });
+    }
 
     if (call.kind === "getState") {
       return NextResponse.json({ result: gadget.state ?? {} });
