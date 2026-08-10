@@ -17,7 +17,6 @@ import {
   CalendarCheck,
   TrendingUp,
   Mail,
-  MessageSquare,
   Phone,
   Send,
   CheckCircle2,

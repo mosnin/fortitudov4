@@ -34,7 +34,6 @@ import { motion } from 'motion/react';
 import {
   FeatureShowcase,
   Frost,
-  Row,
   rowV,
   type ShowcaseStep,
 } from './feature-showcase';

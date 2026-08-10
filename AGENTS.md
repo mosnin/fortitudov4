@@ -22,6 +22,10 @@ The agentic layer (`src/lib/helix/`, `plans/helix-os.md`). Architecture adopted 
 - **Action** — a proposed change. **Never written on first call**: the gatekeeper describes, previews and *simulates* it, and the thread's reads are replayed through that simulated overlay so the agent stays consistent and keeps working. Nothing commits until a human approves, and approval executes in proposal order.
 - **Gadget / Blueprint** — a sandboxed per-client mini-app Helix writes; a blueprint is its source without its data.
 
+`pnpm test` (vitest) checks the invariants below mechanically — overlay
+semantics, registry contract, sandbox flags and CSP. Run it after touching
+anything in `src/lib/helix/`; the suite is fast and database-free.
+
 Rules that must hold:
 - Every capability lives in `src/lib/helix/registry.ts` and nowhere else — that file is the whole blast radius.
 - A write op must supply **both** `simulate()` and `execute()`; the contract types make an op missing either half unregisterable.

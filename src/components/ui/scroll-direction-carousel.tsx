@@ -14,7 +14,7 @@
  *   - respects prefers-reduced-motion (renders a static, scrollable row).
  */
 
-import { useEffect, useRef, type ReactNode } from "react";
+import { useRef, type ReactNode } from "react";
 import { Children } from "react";
 import { useGSAP } from "@gsap/react";
 import { useReducedMotion } from "motion/react";

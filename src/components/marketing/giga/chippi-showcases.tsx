@@ -28,7 +28,6 @@ import {
   ScrollText,
   Check,
   Pencil,
-  X,
   Send,
 } from 'lucide-react';
 import { motion } from 'motion/react';

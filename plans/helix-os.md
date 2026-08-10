@@ -58,9 +58,13 @@ This is the whole product in one mechanism: agency speed with agency control.
 
 Stated plainly so nobody assumes otherwise:
 
-- **No automated tests.** The repo has no test infrastructure, and adding one
-  was outside this build. The invariants below are enforced by types and by
-  code review, not by a suite. That is the largest gap.
+- **No integration tests.** `pnpm test` covers the pure logic the invariants
+  live in — the overlay, the registry contract, the sandbox document — and each
+  assertion was verified to fail against a deliberately broken version. Nothing
+  covers a real request against Postgres; that needs a database harness this
+  repo does not have, and mocking one would only test the mock.
+- **No component tests.** The React surfaces are unverified beyond typecheck
+  and build.
 - **No scheduler.** Helix acts when asked. There is no cron, no watcher, no
   "Helix noticed X overnight".
 - **No streaming.** A turn returns once its actions are persisted; see the

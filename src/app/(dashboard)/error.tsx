@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,6 +14,13 @@ export default function DashboardError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Next hands the boundary an error with a digest that ties this render
+  // back to a server log line. The UI stays generic, but discarding the
+  // digest entirely would make the failure unfindable.
+  useEffect(() => {
+    console.error(error);
+  }, [error]);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-charcoal-dark p-4">
       <Card className="w-full max-w-md border-border bg-card">
