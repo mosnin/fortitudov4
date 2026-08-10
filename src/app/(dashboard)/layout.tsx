@@ -23,6 +23,14 @@ const navItems: ShellNavItem[] = [
     icon: "MessageSquare",
     section: "Workspace",
   },
+  // Read-only: Helix answers questions about the client's own engagement and
+  // cannot change anything. Requests go to a person, in Messages.
+  {
+    label: "Ask Helix",
+    href: "/helix",
+    icon: "Sparkles",
+    section: "Workspace",
+  },
   {
     label: "Payments",
     href: "/payments",
