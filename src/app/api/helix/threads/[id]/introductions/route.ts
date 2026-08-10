@@ -137,6 +137,142 @@ export async function POST(
   }
 }
 
+const answerSchema = z.object({
+  introductionId: z.string().uuid(),
+  decision: z.enum(["grant", "deny"]),
+  /** Which resource the request actually refers to. Required to grant. */
+  resourceId: z.string().uuid().optional(),
+  allowWrites: z.boolean().optional(),
+});
+
+/**
+ * PATCH — answer a request Helix made.
+ *
+ * A request names the resource by a hint, because the reason Helix asked is
+ * that it could not identify the thing. Granting therefore requires a person
+ * to pick the real resource — the request is a prompt for a decision, never a
+ * pre-filled one.
+ */
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await requireStaff();
+    const { id } = await params;
+
+    const [thread] = await db
+      .select()
+      .from(helixThreads)
+      .where(and(eq(helixThreads.id, id), eq(helixThreads.ownerId, user.id)))
+      .limit(1);
+    if (!thread) {
+      return NextResponse.json({ error: "No such thread." }, { status: 404 });
+    }
+
+    const parsed = answerSchema.safeParse(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid decision." }, { status: 400 });
+    }
+    const { introductionId, decision, resourceId, allowWrites = true } =
+      parsed.data;
+
+    const [pending] = await db
+      .select()
+      .from(helixIntroductions)
+      .where(
+        and(
+          eq(helixIntroductions.id, introductionId),
+          eq(helixIntroductions.threadId, id),
+          eq(helixIntroductions.status, "requested")
+        )
+      )
+      .limit(1);
+    if (!pending) {
+      return NextResponse.json(
+        { error: "That request is no longer open." },
+        { status: 404 }
+      );
+    }
+
+    if (decision === "deny") {
+      await db
+        .update(helixIntroductions)
+        .set({
+          status: "denied",
+          grantedBy: user.id,
+          decidedAt: new Date(),
+        })
+        .where(eq(helixIntroductions.id, introductionId));
+
+      await recordEvent(
+        { threadId: id, userId: user.id },
+        {
+          kind: "introduction_denied",
+          summary: `Denied access to ${pending.resourceKind} "${pending.resourceLabel}"`,
+        }
+      );
+      return NextResponse.json({ denied: introductionId });
+    }
+
+    if (!resourceId) {
+      return NextResponse.json(
+        { error: "Pick which resource this refers to." },
+        { status: 400 }
+      );
+    }
+
+    const gatekeeper = gatekeeperForKind(pending.resourceKind);
+    if (!gatekeeper) {
+      return NextResponse.json(
+        { error: `Helix has no gatekeeper for ${pending.resourceKind}.` },
+        { status: 400 }
+      );
+    }
+
+    const ctx = await loadContext(id, user.id);
+    const ref = await gatekeeper.resolve(resourceId, ctx);
+    if (!ref) {
+      return NextResponse.json(
+        { error: "That resource no longer exists." },
+        { status: 404 }
+      );
+    }
+
+    const [granted] = await db
+      .update(helixIntroductions)
+      .set({
+        status: "granted",
+        resourceId,
+        resourceLabel: ref.label,
+        allowWrites,
+        grantedBy: user.id,
+        decidedAt: new Date(),
+      })
+      .where(eq(helixIntroductions.id, introductionId))
+      .returning();
+
+    await recordEvent(
+      { threadId: id, userId: user.id },
+      {
+        kind: "introduction_granted",
+        summary: `Granted Helix's request for ${pending.resourceKind} "${ref.label}"${allowWrites ? "" : " (read-only)"}`,
+        resourceKind: pending.resourceKind,
+        resourceId,
+      }
+    );
+
+    return NextResponse.json({ introduction: granted });
+  } catch (error) {
+    if (error instanceof NextResponse) return error;
+    console.error("[helix/introductions] PATCH", error);
+    return NextResponse.json(
+      { error: "Could not answer that request." },
+      { status: 500 }
+    );
+  }
+}
+
 /**
  * DELETE — revoke a grant. Anything Helix already queued against it stays in
  * the approval queue: revoking access does not rewrite what was proposed while

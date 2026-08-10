@@ -12,6 +12,7 @@
 import 'server-only';
 import Anthropic from '@anthropic-ai/sdk';
 import { callOp } from '../runtime';
+import type { HelixResourceKind } from '../contract';
 import { buildTools, systemPrompt, type HelixToolDef } from './tools';
 import { requestIntroduction, type TurnDriverContext } from './index';
 
@@ -136,7 +137,7 @@ export async function runAnthropicTurn(
       calls.map(async (call): Promise<Anthropic.ToolResultBlockParam> => {
         if (call.name === REQUEST_INTRODUCTION.name) {
           const input = call.input as {
-            resourceKind: string;
+            resourceKind: HelixResourceKind;
             hint: string;
             reason: string;
           };

@@ -39,14 +39,26 @@ interface Group {
 
 export function IntroducePicker({
   threadId,
+  answering,
   onClose,
   onGranted,
 }: {
   threadId: string;
+  /**
+   * Set when this is answering a request Helix made rather than a fresh
+   * introduction. The request supplies a hint and a reason, but never the
+   * resource — picking that is the decision being asked for.
+   */
+  answering?: {
+    introductionId: string;
+    resourceKind: string;
+    hint: string;
+    reason: string | null;
+  };
   onClose: () => void;
   onGranted: () => void | Promise<void>;
 }) {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(answering?.hint ?? "");
   const [groups, setGroups] = useState<Group[] | null>(null);
   const [chosen, setChosen] = useState<ResourceRef | null>(null);
   const [allowWrites, setAllowWrites] = useState(true);
@@ -57,10 +69,11 @@ export function IntroducePicker({
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
-        const response = await fetch(
-          `/api/helix/resources?threadId=${threadId}&q=${encodeURIComponent(query)}`,
-          { signal: controller.signal }
-        );
+        const params = new URLSearchParams({ threadId, q: query });
+        if (answering) params.set("kind", answering.resourceKind);
+        const response = await fetch(`/api/helix/resources?${params}`, {
+          signal: controller.signal,
+        });
         if (!response.ok) throw new Error();
         const data = (await response.json()) as { groups: Group[] };
         setGroups(data.groups);
@@ -72,7 +85,7 @@ export function IntroducePicker({
       controller.abort();
       clearTimeout(timer);
     };
-  }, [threadId, query]);
+  }, [threadId, query, answering]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -89,15 +102,26 @@ export function IntroducePicker({
     try {
       const response = await fetch(
         `/api/helix/threads/${threadId}/introductions`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            resourceKind: chosen.kind,
-            resourceId: chosen.id,
-            allowWrites,
-          }),
-        }
+        answering
+          ? {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                introductionId: answering.introductionId,
+                decision: "grant",
+                resourceId: chosen.id,
+                allowWrites,
+              }),
+            }
+          : {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                resourceKind: chosen.kind,
+                resourceId: chosen.id,
+                allowWrites,
+              }),
+            }
       );
       const body = await response.json();
       if (!response.ok) throw new Error(body?.error ?? "Could not grant that.");
@@ -109,7 +133,7 @@ export function IntroducePicker({
     } finally {
       setBusy(false);
     }
-  }, [chosen, allowWrites, threadId, onGranted]);
+  }, [chosen, allowWrites, threadId, answering, onGranted]);
 
   const empty = useMemo(
     () => groups !== null && groups.length === 0,
@@ -129,9 +153,14 @@ export function IntroducePicker({
       <div className="w-full max-w-lg space-y-4 rounded-xl border border-border/70 bg-background p-5 shadow-lg">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className={H3}>Introduce a resource</h2>
+            <h2 className={H3}>
+              {answering ? "Helix asked for access" : "Introduce a resource"}
+            </h2>
             <p className={cn(BODY_MUTED, "mt-0.5")}>
-              Helix can only touch what you hand it, for this thread only.
+              {answering
+                ? (answering.reason ??
+                  "Pick which resource this request refers to.")
+                : "Helix can only touch what you hand it, for this thread only."}
             </p>
           </div>
           <button

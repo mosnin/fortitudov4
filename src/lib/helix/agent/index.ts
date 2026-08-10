@@ -13,9 +13,14 @@
 import 'server-only';
 import { and, asc, eq } from 'drizzle-orm';
 import { db } from '@/db';
-import { helixActions, helixMessages, helixThreads } from '@/db/schema';
+import {
+  helixActions,
+  helixIntroductions,
+  helixMessages,
+  helixThreads,
+} from '@/db/schema';
 import { loadContext, recordEvent } from '../runtime';
-import type { HelixContext } from '../contract';
+import type { HelixContext, HelixResourceKind } from '../contract';
 import { runAnthropicTurn } from './anthropic';
 import { runScriptedTurn } from './scripted';
 
@@ -142,13 +147,52 @@ function titleFrom(message: string): string {
   return line.length > 70 ? `${line.slice(0, 69)}…` : line || 'New thread';
 }
 
-/** Record that Helix asked for access it did not have. */
+/**
+ * Helix asking for access it does not have.
+ *
+ * This writes a real pending grant, not just an audit line. The request has to
+ * be a row a person can act on — an event alone would mean Helix could ask and
+ * nothing in the product could answer.
+ *
+ * The resource is named by a hint rather than an id, because the whole reason
+ * Helix is asking is that it cannot see the thing well enough to identify it.
+ * Whoever grants it picks the actual resource.
+ */
 export async function requestIntroduction(
   ctx: HelixContext,
-  resourceKind: string,
+  resourceKind: HelixResourceKind,
   hint: string,
   reason: string
 ): Promise<void> {
+  const [existing] = await db
+    .select({ id: helixIntroductions.id })
+    .from(helixIntroductions)
+    .where(
+      and(
+        eq(helixIntroductions.threadId, ctx.threadId),
+        eq(helixIntroductions.status, 'requested'),
+        eq(helixIntroductions.resourceKind, resourceKind),
+        eq(helixIntroductions.resourceLabel, hint)
+      )
+    )
+    .limit(1);
+
+  // Asking twice for the same thing is not two requests.
+  if (!existing) {
+    await db.insert(helixIntroductions).values({
+      threadId: ctx.threadId,
+      resourceKind,
+      // A placeholder until someone picks the real resource; the grant flow
+      // overwrites it. Never used to authorise anything, because a request is
+      // not a grant.
+      resourceId: PENDING_RESOURCE_ID,
+      resourceLabel: hint,
+      status: 'requested',
+      requestReason: reason,
+      allowWrites: false,
+    });
+  }
+
   await recordEvent(ctx, {
     kind: 'introduction_requested',
     summary: `Helix asked for access to ${resourceKind} "${hint}": ${reason}`,
@@ -156,5 +200,12 @@ export async function requestIntroduction(
     payload: { resourceKind, hint, reason },
   });
 }
+
+/**
+ * The id a requested-but-ungranted introduction carries. The all-zero uuid is
+ * chosen so that if this ever leaked into an authorisation check it would match
+ * no real row rather than an arbitrary one.
+ */
+export const PENDING_RESOURCE_ID = '00000000-0000-0000-0000-000000000000';
 
 export type { HelixContext };

@@ -76,6 +76,9 @@ export function HelixThread({ threadId }: { threadId: string }) {
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [picking, setPicking] = useState(false);
+  // Set while a person is choosing which resource one of Helix's requests
+  // actually refers to. A request names a hint, never an id.
+  const [answering, setAnswering] = useState<Introduction | null>(null);
   const endRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -124,6 +127,18 @@ export function HelixThread({ threadId }: { threadId: string }) {
         `/api/helix/threads/${threadId}/introductions?introductionId=${introductionId}`,
         { method: "DELETE" }
       );
+      await load();
+    },
+    [threadId, load]
+  );
+
+  const deny = useCallback(
+    async (introductionId: string) => {
+      await fetch(`/api/helix/threads/${threadId}/introductions`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ introductionId, decision: "deny" }),
+      });
       await load();
     },
     [threadId, load]
@@ -318,15 +333,32 @@ export function HelixThread({ threadId }: { threadId: string }) {
             {requested.length > 0 && (
               <div className="space-y-3">
                 <SectionHead title="Asked for" />
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   {requested.map((intro) => (
-                    <li key={intro.id} className="space-y-1">
+                    <li key={intro.id} className="space-y-1.5">
                       <p className="text-[13px] text-foreground">
                         {intro.resourceLabel}
                       </p>
                       {intro.requestReason && (
                         <p className={CAPTION}>{intro.requestReason}</p>
                       )}
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setAnswering(intro)}
+                          className={QUIET_LINK}
+                        >
+                          Grant
+                        </button>
+                        <span className="text-muted-foreground/40">·</span>
+                        <button
+                          type="button"
+                          onClick={() => void deny(intro.id)}
+                          className={QUIET_LINK}
+                        >
+                          Deny
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -336,12 +368,26 @@ export function HelixThread({ threadId }: { threadId: string }) {
         </div>
       </div>
 
-      {picking && (
+      {(picking || answering) && (
         <IntroducePicker
           threadId={threadId}
-          onClose={() => setPicking(false)}
+          answering={
+            answering
+              ? {
+                  introductionId: answering.id,
+                  resourceKind: answering.resourceKind,
+                  hint: answering.resourceLabel,
+                  reason: answering.requestReason,
+                }
+              : undefined
+          }
+          onClose={() => {
+            setPicking(false);
+            setAnswering(null);
+          }}
           onGranted={async () => {
             setPicking(false);
+            setAnswering(null);
             await load();
           }}
         />
