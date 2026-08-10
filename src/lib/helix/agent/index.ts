@@ -23,6 +23,7 @@ import { loadContext, recordEvent } from '../runtime';
 import type { HelixContext, HelixResourceKind } from '../contract';
 import { runAnthropicTurn } from './anthropic';
 import { runScriptedTurn } from './scripted';
+import { standingFor } from './standing';
 
 export interface TurnResult {
   /** What Helix said, for the transcript. */
@@ -116,6 +117,7 @@ export async function runTurn(
     .set({
       lastMessageAt: new Date(),
       updatedAt: new Date(),
+      standing: standingFor(ctx, fresh.length, result.requested.length),
       // The first thing a person says is a better thread title than anything
       // generated, and it stops the list reading as a wall of "New thread".
       ...(sequence === 0 ? { title: titleFrom(message) } : {}),
