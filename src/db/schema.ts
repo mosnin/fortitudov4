@@ -204,6 +204,9 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "file_uploaded",
   "comment_added",
   "survey_request",
+  // Helix queued a change significant enough that it must not be swept up in a
+  // bulk approval. Routine changes deliberately do not notify.
+  "helix_approval_needed",
 ]);
 
 export const notifications = pgTable("notifications", {

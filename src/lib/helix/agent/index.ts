@@ -24,6 +24,7 @@ import type { HelixContext, HelixResourceKind } from '../contract';
 import { runAnthropicTurn } from './anthropic';
 import { runScriptedTurn } from './scripted';
 import { standingFor } from './standing';
+import { notifySignificantQueued } from '../notify';
 
 export interface TurnResult {
   /** What Helix said, for the transcript. */
@@ -123,6 +124,9 @@ export async function runTurn(
       ...(sequence === 0 ? { title: titleFrom(message) } : {}),
     })
     .where(eq(helixThreads.id, threadId));
+
+  // Fires only for high-risk work; see notify.ts for why the rest stays quiet.
+  await notifySignificantQueued(userId, threadId, fresh);
 
   return {
     reply: result.reply,
