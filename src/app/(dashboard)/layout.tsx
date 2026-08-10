@@ -43,6 +43,14 @@ const navItems: ShellNavItem[] = [
     icon: "BarChart3",
     section: "Workspace",
   },
+  // Gadgets the agency built and deliberately shared. Named "Tools" here —
+  // "gadget" is agency-side vocabulary the client has no reason to learn.
+  {
+    label: "Tools",
+    href: "/tools",
+    icon: "Boxes",
+    section: "Workspace",
+  },
   {
     label: "Guides",
     href: "/guides",
