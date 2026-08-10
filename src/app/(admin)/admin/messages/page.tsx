@@ -2,7 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+} from "@/components/crm";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
@@ -118,10 +123,18 @@ export default function AdminMessagesPage() {
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
   const header = (
-    <PageHero
-      section="Operations"
+    <CrmPageHeader
+      section="Operations."
       title="Messages"
-      description="Chat with clients across every project."
+      subtitle={
+        loading
+          ? "Loading the threads."
+          : projects.length === 0
+            ? "No client threads open yet."
+            : `${projects.length} client thread${
+                projects.length === 1 ? "" : "s"
+              }, ${selectedProject?.name ?? "none"} in view.`
+      }
     />
   );
 
@@ -130,7 +143,10 @@ export default function AdminMessagesPage() {
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <div className={cn(READING_COL, PAGE_RHYTHM)}>
           {header}
-          <Skeleton className="h-96 w-full" />
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_1fr]">
+            <RecordListSkeleton rows={5} />
+            <Skeleton className="h-96 w-full" />
+          </div>
         </div>
       </div>
     );
@@ -155,25 +171,20 @@ export default function AdminMessagesPage() {
               <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
                 Projects
               </p>
-              <div className="mt-3 space-y-0.5">
-                {projects.map((project) => (
-                  <button
+              <RecordList className="mt-1">
+                {projects.map((project, i) => (
+                  <RecordRow
                     key={project.id}
+                    index={i}
+                    selected={project.id === selectedProjectId}
                     onClick={() => setSelectedProjectId(project.id)}
-                    className={cn(
-                      "w-full cursor-pointer rounded-lg px-3 py-2 text-left text-[13px] transition-colors",
-                      project.id === selectedProjectId
-                        ? "bg-muted font-medium text-foreground"
-                        : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                    )}
-                  >
-                    <span className="block truncate">{project.name}</span>
-                    <span className="block truncate text-[11px] text-muted-foreground">
-                      {serviceLabels[project.serviceType] ?? project.serviceType}
-                    </span>
-                  </button>
+                    primary={project.name}
+                    secondary={
+                      serviceLabels[project.serviceType] ?? project.serviceType
+                    }
+                  />
                 ))}
-              </div>
+              </RecordList>
             </aside>
 
             {/* Thread */}

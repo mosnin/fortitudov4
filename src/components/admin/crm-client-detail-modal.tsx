@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
-import { X } from "lucide-react";
+import { Trash2, X } from "lucide-react";
+import {
+  RecordList,
+  RecordRow,
+  RowAction,
+  RowPill,
+} from "@/components/crm";
 import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
@@ -15,7 +21,6 @@ import {
   PRIMARY_PILL,
   QUIET_LINK,
   SECTION_LABEL,
-  STATUS_PILL,
   TITLE_FONT,
 } from "@/lib/typography";
 
@@ -460,46 +465,45 @@ export function ClientDetailModal({
                     </button>
                   </form>
                 </div>
-                <ul className="divide-y divide-border/60">
-                  {tasks.map((t) => (
-                    <li key={t.id} className="flex items-center gap-3 py-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground">
-                          {t.title}
-                        </p>
-                        {t.assigneeName && (
-                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                            {t.assigneeName}
-                          </p>
-                        )}
-                      </div>
-                      <select
-                        aria-label={`Status for ${t.title}`}
-                        className="h-8 cursor-pointer rounded-lg border border-border bg-background px-2.5 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors focus:border-foreground/40"
-                        value={t.status}
-                        onChange={(e) => setTaskStatus(t.id, e.target.value)}
-                      >
-                        {TASK_STATUSES.map((s) => (
-                          <option key={s.value} value={s.value}>
-                            {s.label}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        onClick={() => deleteTask(t.id)}
-                        className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive"
-                        aria-label={`Delete ${t.title}`}
-                      >
-                        Delete
-                      </button>
-                    </li>
-                  ))}
-                  {tasks.length === 0 && (
-                    <li className={cn(BODY_MUTED, "py-4 text-center")}>
-                      No tasks yet.
-                    </li>
-                  )}
-                </ul>
+                {tasks.length === 0 ? (
+                  <p className={cn(BODY_MUTED, "py-4 text-center")}>
+                    No tasks yet.
+                  </p>
+                ) : (
+                  <RecordList>
+                    {tasks.map((t, i) => (
+                      <RecordRow
+                        key={t.id}
+                        index={i}
+                        primary={t.title}
+                        secondary={t.assigneeName ?? undefined}
+                        meta={
+                          <select
+                            aria-label={`Status for ${t.title}`}
+                            className="h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40"
+                            value={t.status}
+                            onChange={(e) => setTaskStatus(t.id, e.target.value)}
+                          >
+                            {TASK_STATUSES.map((s) => (
+                              <option key={s.value} value={s.value}>
+                                {s.label}
+                              </option>
+                            ))}
+                          </select>
+                        }
+                        actions={
+                          <RowAction
+                            label={`Delete ${t.title}`}
+                            destructive
+                            onClick={() => deleteTask(t.id)}
+                          >
+                            <Trash2 size={13} />
+                          </RowAction>
+                        }
+                      />
+                    ))}
+                  </RecordList>
+                )}
 
                 {/* Client requests */}
                 <h3 className={cn(H3, "mt-8 border-b border-border pb-3")}>
@@ -510,19 +514,22 @@ export function ClientDetailModal({
                     No requests from this client.
                   </p>
                 ) : (
-                  <ul className="divide-y divide-border/60">
-                    {requests.map((r) => (
-                      <li
+                  <RecordList>
+                    {requests.map((r, i) => (
+                      <RecordRow
                         key={r.id}
-                        className="flex items-start justify-between gap-3 py-3 text-sm"
-                      >
-                        <p className="min-w-0 flex-1">{r.description}</p>
-                        <span className={cn(STATUS_PILL, "shrink-0")}>
-                          {r.status}
-                        </span>
-                      </li>
+                        index={i}
+                        primary={
+                          <span title={r.description}>{r.description}</span>
+                        }
+                        status={<RowPill>{r.status}</RowPill>}
+                        secondary={new Date(r.createdAt).toLocaleDateString(
+                          "en-US",
+                          { month: "short", day: "numeric", year: "numeric" }
+                        )}
+                      />
                     ))}
-                  </ul>
+                  </RecordList>
                 )}
 
                 <div className="mt-8 flex items-center justify-end gap-3 border-t border-border pt-5">

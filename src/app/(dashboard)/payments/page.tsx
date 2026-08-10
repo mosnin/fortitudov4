@@ -1,5 +1,15 @@
 import { auth } from "@clerk/nextjs/server";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordRow,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
 import { db } from "@/db";
 import {
   agencyClients,
@@ -17,7 +27,6 @@ import {
   READING_COL,
   SECTION_LABEL,
   SECTION_RHYTHM,
-  STATUS_PILL,
 } from "@/lib/typography";
 
 /**
@@ -53,6 +62,12 @@ const fmtDay = (d: Date) =>
     timeZone: "UTC",
   });
 
+/** "growth_plus" → "Growth Plus" — the plan reads as a word, not a key. */
+const titleCase = (s: string) =>
+  s
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+
 export default async function PaymentsPage() {
   const { userId } = await auth();
   if (!userId) return null;
@@ -66,10 +81,10 @@ export default async function PaymentsPage() {
     return (
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <div className={READING_COL}>
-          <PageHero
-            section="Workspace"
+          <CrmPageHeader
+            section="Workspace."
             title="Payments"
-            description="Your account is being set up. Please refresh in a moment."
+            subtitle="Your account is still being set up — refresh in a moment."
           />
         </div>
       </div>
@@ -132,13 +147,31 @@ export default async function PaymentsPage() {
     retainerHistory.length > 0 ||
     projectPayments.length > 0;
 
+  const planLabel =
+    roster && roster.package === "custom" && roster.packageLabel
+      ? roster.packageLabel
+      : roster
+        ? titleCase(roster.package)
+        : null;
+
+  // One sentence of status — what the client owes, or doesn't.
+  const status = !hasAnything
+    ? "Nothing billed yet — invoices land here once billing is set up."
+    : overdue
+      ? `Your retainer is ${-daysLeft!} ${
+          daysLeft === -1 ? "day" : "days"
+        } overdue.`
+      : daysLeft !== null
+        ? `Next payment due in ${daysLeft} ${daysLeft === 1 ? "day" : "days"}.`
+        : `${formatUsd(totalPaid)} paid to date, nothing outstanding.`;
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Workspace"
+        <CrmPageHeader
+          section="Workspace."
           title="Payments"
-          description="Your plan, project invoices, and payment history."
+          subtitle={status}
         />
 
         {!hasAnything ? (
@@ -153,102 +186,103 @@ export default async function PaymentsPage() {
           </div>
         ) : (
           <>
-            {/* Plan band — hairline-divided, only when a retainer plan exists */}
-            {roster && (
-              <section className="animate-fade-up grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                <div className="py-5 sm:px-6 sm:first:pl-0">
-                  <p className={SECTION_LABEL}>Your plan</p>
-                  <p className="mt-2 text-xl capitalize tracking-tight text-foreground">
-                    {roster.package === "custom" && roster.packageLabel
-                      ? roster.packageLabel
-                      : roster.package.replace(/_/g, " ")}
-                  </p>
-                  <p className="mt-1 text-xs tabular-nums text-muted-foreground">
+            {roster ? (
+              <StatStrip columns={4} ariaLabel="Plan and billing">
+                <StatCell label="Your plan">
+                  <Stat>{planLabel}</Stat>
+                  <StatMeta>
                     Since{" "}
                     {new Date(roster.startDate).toLocaleDateString("en-US", {
                       month: "short",
                       year: "numeric",
                       timeZone: "UTC",
                     })}
-                  </p>
-                </div>
-                <div className="py-5 sm:px-6">
-                  <p className={SECTION_LABEL}>Monthly retainer</p>
-                  <p className="mt-2 text-xl tracking-tight tabular-nums text-foreground">
-                    {formatUsd(roster.monthlyFee)}
-                    <span className="text-sm text-muted-foreground">/mo</span>
-                  </p>
-                </div>
-                <div className="py-5 sm:px-6">
-                  <p className={SECTION_LABEL}>Next payment due</p>
-                  <p
-                    className={cn(
-                      "mt-2 text-xl tracking-tight tabular-nums",
-                      overdue ? "text-destructive" : "text-foreground"
-                    )}
-                  >
-                    {roster.nextDueDate
-                      ? new Date(roster.nextDueDate).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            timeZone: "UTC",
-                          }
-                        )
-                      : "—"}
-                  </p>
-                  {daysLeft !== null && (
-                    <p
-                      className={cn(
-                        "mt-1 text-xs tabular-nums",
-                        overdue ? "text-destructive" : "text-muted-foreground"
-                      )}
-                    >
-                      {overdue
-                        ? `${-daysLeft} day${daysLeft === -1 ? "" : "s"} overdue`
-                        : `in ${daysLeft} days`}
-                    </p>
-                  )}
-                </div>
-              </section>
-            )}
+                  </StatMeta>
+                </StatCell>
 
-            {/* Lifetime total */}
-            <section className="animate-fade-up">
-              <p className={SECTION_LABEL}>Total paid to date</p>
-              <p className="mt-2 text-3xl tracking-tight tabular-nums text-foreground">
-                {formatUsd(totalPaid)}
-              </p>
-            </section>
+                <StatCell label="Monthly retainer">
+                  <Stat suffix="/mo">{formatUsd(roster.monthlyFee)}</Stat>
+                </StatCell>
+
+                <StatCell label="Next payment due">
+                  {roster.nextDueDate ? (
+                    <Stat>
+                      {new Date(roster.nextDueDate).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        timeZone: "UTC",
+                      })}
+                    </Stat>
+                  ) : (
+                    <StatEmpty>no date scheduled.</StatEmpty>
+                  )}
+                  {daysLeft !== null && (
+                    <StatMeta>
+                      {overdue ? (
+                        <span className="text-destructive">
+                          {-daysLeft} day{daysLeft === -1 ? "" : "s"} overdue
+                        </span>
+                      ) : (
+                        `in ${daysLeft} days`
+                      )}
+                    </StatMeta>
+                  )}
+                </StatCell>
+
+                <StatCell label="Total paid to date">
+                  {totalPaid > 0 ? (
+                    <Stat>{formatUsd(totalPaid)}</Stat>
+                  ) : (
+                    <StatEmpty>nothing settled yet.</StatEmpty>
+                  )}
+                </StatCell>
+              </StatStrip>
+            ) : (
+              <StatStrip columns={2} ariaLabel="Billing summary">
+                <StatCell label="Total paid to date">
+                  {totalPaid > 0 ? (
+                    <Stat>{formatUsd(totalPaid)}</Stat>
+                  ) : (
+                    <StatEmpty>nothing settled yet.</StatEmpty>
+                  )}
+                </StatCell>
+                <StatCell label="Payments recorded">
+                  {projectPayments.length > 0 ? (
+                    <Stat>
+                      {projectPayments.length.toLocaleString("en-US")}
+                    </Stat>
+                  ) : (
+                    <StatEmpty>no payments recorded yet.</StatEmpty>
+                  )}
+                </StatCell>
+              </StatStrip>
+            )}
 
             {/* Retainer history */}
             {retainerHistory.length > 0 && (
               <section className={cn("animate-fade-up", SECTION_RHYTHM)}>
                 <p className={SECTION_LABEL}>Retainer &amp; setup payments</p>
-                <ul className="divide-y divide-border/60 border-t border-border/60">
-                  {retainerHistory.map((p) => (
-                    <li
+                <RecordList className="border-t border-border/60">
+                  {retainerHistory.map((p, i) => (
+                    <RecordRow
                       key={p.id}
-                      className="flex items-start gap-3 py-3"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground">
-                          {paymentTypeLabels[p.paymentType] || p.paymentType}
-                        </p>
-                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          <span className="tabular-nums">
-                            {fmtDay(new Date(p.paidAt))}
-                          </span>{" "}
-                          · {p.method}
-                        </p>
-                      </div>
-                      <span className="shrink-0 text-sm tabular-nums text-foreground">
-                        {formatUsd(p.amount)}
-                      </span>
-                    </li>
+                      index={i}
+                      primary={
+                        paymentTypeLabels[p.paymentType] || p.paymentType
+                      }
+                      secondary={
+                        <span className="tabular-nums">
+                          {fmtDay(new Date(p.paidAt))} · {p.method}
+                        </span>
+                      }
+                      meta={
+                        <span className="text-sm tabular-nums text-foreground">
+                          {formatUsd(p.amount)}
+                        </span>
+                      }
+                    />
                   ))}
-                </ul>
+                </RecordList>
               </section>
             )}
 
@@ -260,45 +294,40 @@ export default async function PaymentsPage() {
                   No project payments recorded yet.
                 </p>
               ) : (
-                <ul className="divide-y divide-border/60 border-t border-border/60">
-                  {projectPayments.map((p) => (
-                    <li key={p.id} className="flex items-start gap-3 py-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="truncate text-sm font-medium text-foreground">
-                            {p.projectName || "—"}
-                          </span>
-                          <span
-                            className={cn(
-                              STATUS_PILL,
-                              "shrink-0",
-                              isFailedStatus(p.status) &&
-                                "border-destructive/40 text-destructive"
-                            )}
-                          >
-                            {p.status.replace(/_/g, " ")}
-                          </span>
-                        </div>
-                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                          <span className="tabular-nums">
-                            {fmtDay(new Date(p.createdAt))}
-                          </span>
-                          {p.invoiceNumber && (
-                            <>
-                              {" · "}
-                              <span className="tabular-nums">
-                                {p.invoiceNumber}
-                              </span>
-                            </>
+                <RecordList className="border-t border-border/60">
+                  {projectPayments.map((p, i) => (
+                    <RecordRow
+                      key={p.id}
+                      index={i}
+                      primary={p.projectName || "—"}
+                      status={
+                        <RowPill
+                          className={cn(
+                            isFailedStatus(p.status) &&
+                              "border-destructive/40 text-destructive"
                           )}
-                        </p>
-                      </div>
-                      <span className="shrink-0 text-sm tabular-nums text-foreground">
-                        {formatUsd(p.amount)}
-                      </span>
-                    </li>
+                        >
+                          {p.status.replace(/_/g, " ")}
+                        </RowPill>
+                      }
+                      secondary={
+                        <span className="tabular-nums">
+                          {[
+                            fmtDay(new Date(p.createdAt)),
+                            p.invoiceNumber,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </span>
+                      }
+                      meta={
+                        <span className="text-sm tabular-nums text-foreground">
+                          {formatUsd(p.amount)}
+                        </span>
+                      }
+                    />
                   ))}
-                </ul>
+                </RecordList>
               )}
             </section>
           </>

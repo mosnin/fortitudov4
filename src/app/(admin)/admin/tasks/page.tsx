@@ -2,9 +2,25 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { SegmentedTabs, PageHero } from "@/components/ui/firecrawl";
-import { SearchPill, SelectPill, SortPill } from "@/components/ui/filters";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import { ExternalLink, X } from "lucide-react";
+import {
+  CrmPageHeader,
+  FilterSelect,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowAction,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+  TabStrip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarSearch,
+} from "@/components/crm";
+import { AnimatedNumber } from "@/components/motion";
 import { Input } from "@/components/ui/input";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import {
@@ -14,21 +30,17 @@ import {
   type CrmStage,
   type TaskPriority,
 } from "@/lib/crm";
-import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
-  BODY_MUTED,
   CAPTION,
   GHOST_PILL,
   H1,
   H3,
+  BODY_MUTED,
   PAGE_RHYTHM,
   PRIMARY_PILL,
-  QUIET_LINK,
-  SECTION_LABEL,
   TITLE_FONT,
 } from "@/lib/typography";
-import { X } from "lucide-react";
 
 interface TaskRow {
   id: string;
@@ -52,11 +64,7 @@ interface Feed {
 
 /** Delivery stages double as the top-level cut of the checklist. Custom
  * (unstaged) tasks only appear under "All Stages". */
-const ALL_STAGES_TAB = "All Stages";
-const STAGE_TABS = [ALL_STAGES_TAB, ...CRM_STAGES.map((s) => STAGE_LABELS[s])];
-const STAGE_BY_TAB = new Map<string, CrmStage>(
-  CRM_STAGES.map((s) => [STAGE_LABELS[s], s])
-);
+const ALL_STAGES = "all";
 
 const STATUS_OPTIONS = [
   { value: "pending", label: "Not Started" },
@@ -67,8 +75,13 @@ const STATUS_OPTIONS = [
 const selectClass =
   "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
 
+/** Inline row control — quiet until reached for, sized to the row. */
+const rowControlClass =
+  "h-8 cursor-pointer rounded-md border border-transparent bg-transparent px-2 text-xs " +
+  "text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40";
+
 /** The roster carries thousands of checklist tasks — render one page at a
- * time. Everything above ~50 rows makes the table (three form controls per
+ * time. Everything above ~50 rows makes the list (three form controls per
  * row) janky and stretches the row cascade into a visible crawl. */
 const PAGE_SIZE = 25;
 
@@ -89,7 +102,7 @@ const STATUS_RANK: Record<string, number> = {
 export default function AdminTasksPage() {
   const [feed, setFeed] = useState<Feed | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState(ALL_STAGES_TAB);
+  const [tab, setTab] = useState<string>(ALL_STAGES);
   const [query, setQuery] = useState("");
   const [assigneeFilter, setAssigneeFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -119,7 +132,7 @@ export default function AdminTasksPage() {
   async function patchTask(id: string, patch: Record<string, unknown>) {
     // Optimistic update, with a rollback if the save is rejected. No blanket
     // reload: refetching the whole feed on every dropdown change is what made
-    // the table flash between renders.
+    // the list flash between renders.
     const before = feed?.tasks.find((t) => t.id === id);
     setFeed((prev) =>
       prev
@@ -150,11 +163,10 @@ export default function AdminTasksPage() {
     }
   }
 
-  const tasks = useMemo(() => {
-    const stage = STAGE_BY_TAB.get(tab);
+  /** Everything except the stage cut — the stage tabs count against this. */
+  const beforeStage = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const rows = (feed?.tasks ?? []).filter((t) => {
-      if (stage && t.stage !== stage) return false;
+    return (feed?.tasks ?? []).filter((t) => {
       if (clientFilter !== "all" && t.clientStatus !== clientFilter)
         return false;
       if (assigneeFilter !== "all" && t.assigneeId !== assigneeFilter)
@@ -171,6 +183,13 @@ export default function AdminTasksPage() {
         return false;
       return true;
     });
+  }, [feed, query, clientFilter, assigneeFilter, statusFilter, priorityFilter]);
+
+  const tasks = useMemo(() => {
+    const rows =
+      tab === ALL_STAGES
+        ? beforeStage
+        : beforeStage.filter((t) => t.stage === tab);
     // "default" keeps the API order (newest client first, checklist order).
     if (sort === "default") return rows;
     return [...rows].sort((a, b) => {
@@ -191,25 +210,31 @@ export default function AdminTasksPage() {
           return 0;
       }
     });
-  }, [
-    feed,
-    tab,
-    query,
-    clientFilter,
-    assigneeFilter,
-    statusFilter,
-    priorityFilter,
-    sort,
-  ]);
+  }, [beforeStage, tab, sort]);
+
+  const stageTabs = useMemo(
+    () => [
+      { key: ALL_STAGES, label: "All Stages", count: beforeStage.length },
+      ...CRM_STAGES.map((s) => ({
+        key: s as string,
+        label: STAGE_LABELS[s],
+        count: beforeStage.filter((t) => t.stage === s).length,
+      })),
+    ],
+    [beforeStage]
+  );
 
   const filtersActive =
-    tab !== ALL_STAGES_TAB ||
+    tab !== ALL_STAGES ||
     query.trim() !== "" ||
     clientFilter !== "active" ||
     assigneeFilter !== "all" ||
     statusFilter !== "all" ||
     priorityFilter !== "all";
   const doneCount = tasks.filter((t) => t.status === "completed").length;
+  const highCount = tasks.filter(
+    (t) => t.priority === "high" && t.status !== "completed"
+  ).length;
 
   const pageCount = Math.max(1, Math.ceil(tasks.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount - 1);
@@ -230,12 +255,18 @@ export default function AdminTasksPage() {
     sort,
   ]);
 
+  const subtitle = loading
+    ? "Loading the checklist."
+    : tasks.length === 0
+      ? "Nothing in this view."
+      : `${tasks.length - doneCount} open across the roster, ${doneCount} done.`;
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
-      <PageHero
-        section="Operations"
+      <CrmPageHeader
+        section="Operations."
         title="Tasks"
-        description="Manage team tasks across all clients."
+        subtitle={subtitle}
         action={
           <button onClick={() => setCreateOpen(true)} className={PRIMARY_PILL}>
             Add Custom Task
@@ -243,94 +274,111 @@ export default function AdminTasksPage() {
         }
       />
 
-      {/* Stage tabs + filter row */}
-      <div className="space-y-4">
-        {/* Eight stage pills overflow a phone — let the strip scroll rather
-            than wrap out of the pill track. */}
-        <div className="-mx-1 overflow-x-auto px-1 pb-1">
-          <SegmentedTabs
-            className="w-max"
-            options={STAGE_TABS}
-            value={tab}
-            onChange={setTab}
-          />
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-          <SearchPill
-            className="sm:w-64"
+      <TabStrip
+        ariaLabel="Delivery stage"
+        active={tab}
+        onChange={setTab}
+        tabs={stageTabs}
+      />
+
+      <StatStrip columns={3} ariaLabel="Checklist totals">
+        <StatCell label="Tasks in view">
+          {tasks.length > 0 ? (
+            <Stat>
+              <AnimatedNumber value={tasks.length} />
+            </Stat>
+          ) : (
+            <StatEmpty>Nothing matches this view.</StatEmpty>
+          )}
+        </StatCell>
+        <StatCell label="Completed">
+          {doneCount > 0 ? (
+            <>
+              <Stat>
+                <AnimatedNumber value={doneCount} />
+              </Stat>
+              <StatMeta>of {tasks.length} in view</StatMeta>
+            </>
+          ) : (
+            <StatEmpty>Nothing signed off yet.</StatEmpty>
+          )}
+        </StatCell>
+        <StatCell label="High priority">
+          {highCount > 0 ? (
+            <Stat>
+              <AnimatedNumber value={highCount} />
+            </Stat>
+          ) : (
+            <StatEmpty>Nothing urgent is open.</StatEmpty>
+          )}
+        </StatCell>
+      </StatStrip>
+
+      <section className="space-y-4">
+        <Toolbar>
+          <ToolbarSearch
             value={query}
             onChange={setQuery}
             placeholder="Search tasks, clients or assignees…"
           />
-          <SelectPill
-            className="sm:w-44"
-            ariaLabel="Assignee"
-            value={assigneeFilter}
-            onChange={setAssigneeFilter}
-            options={[
-              { value: "all", label: "All Assignees" },
-              ...(feed?.staff ?? []).map((s) => ({
-                value: s.id,
-                label: s.name,
-              })),
-            ]}
-          />
-          <SelectPill
-            className="sm:w-40"
-            ariaLabel="Status"
-            value={statusFilter}
-            onChange={setStatusFilter}
-            options={[{ value: "all", label: "All Statuses" }, ...STATUS_OPTIONS]}
-          />
-          <SelectPill
-            className="sm:w-40"
-            ariaLabel="Priority"
-            value={priorityFilter}
-            onChange={setPriorityFilter}
-            options={[
-              { value: "all", label: "All Priorities" },
-              { value: "high", label: "High" },
-              { value: "medium", label: "Medium" },
-              { value: "low", label: "Low" },
-            ]}
-          />
-          <SelectPill
-            className="sm:w-44"
-            ariaLabel="Client status"
-            value={clientFilter}
-            onChange={setClientFilter}
-            options={[
-              { value: "active", label: "Active clients" },
-              { value: "paused", label: "Paused clients" },
-              { value: "churned", label: "Churned clients" },
-              { value: "all", label: "All clients" },
-            ]}
-          />
-          <SortPill
-            className="sm:w-52"
-            value={sort}
-            onChange={setSort}
-            options={[
-              { value: "default", label: "Checklist order" },
-              { value: "due_soon", label: "Due date: soonest first" },
-              { value: "priority", label: "Priority: high → low" },
-              { value: "status", label: "Status: in progress first" },
-              { value: "client", label: "Client A–Z" },
-            ]}
-          />
-        </div>
-      </div>
+          <ToolbarActions>
+            <FilterSelect
+              label="Assignee"
+              value={assigneeFilter}
+              onChange={setAssigneeFilter}
+              options={[
+                { value: "all", label: "All" },
+                ...(feed?.staff ?? []).map((s) => ({
+                  value: s.id,
+                  label: s.name,
+                })),
+              ]}
+            />
+            <FilterSelect
+              label="Status"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              options={[{ value: "all", label: "All" }, ...STATUS_OPTIONS]}
+            />
+            <FilterSelect
+              label="Priority"
+              value={priorityFilter}
+              onChange={setPriorityFilter}
+              options={[
+                { value: "all", label: "All" },
+                { value: "high", label: "High" },
+                { value: "medium", label: "Medium" },
+                { value: "low", label: "Low" },
+              ]}
+            />
+            <FilterSelect
+              label="Clients"
+              value={clientFilter}
+              onChange={setClientFilter}
+              options={[
+                { value: "active", label: "Active" },
+                { value: "paused", label: "Paused" },
+                { value: "churned", label: "Churned" },
+                { value: "all", label: "All" },
+              ]}
+            />
+            <FilterSelect
+              label="Sort"
+              value={sort}
+              onChange={setSort}
+              options={[
+                { value: "default", label: "Checklist order" },
+                { value: "due_soon", label: "Due soonest" },
+                { value: "priority", label: "Priority high → low" },
+                { value: "status", label: "In progress first" },
+                { value: "client", label: "Client A–Z" },
+              ]}
+            />
+          </ToolbarActions>
+        </Toolbar>
 
-      {/* Task table — a wide working surface, spans the full frame */}
-      <section>
-        <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
-          <p className={SECTION_LABEL}>{tasks.length} tasks</p>
-          <p className={SECTION_LABEL}>
-            {doneCount} of {tasks.length} completed
-          </p>
-        </div>
         {loading ? (
-          <TableSkeleton rows={8} />
+          <RecordListSkeleton rows={8} />
         ) : tasks.length === 0 ? (
           <div className="py-14 text-center">
             <h2 className={H3}>
@@ -338,116 +386,82 @@ export default function AdminTasksPage() {
             </h2>
             <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-md")}>
               {filtersActive
-                ? "No tasks match the current filters. This view shows active clients by default — switch to All clients to include paused and churned ones."
+                ? "No tasks match the current filters. This view shows active clients by default — switch Clients to All to include paused and churned ones."
                 : "Create a client from the Clients page to seed its onboarding checklist, or add a custom task."}
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Task</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Client</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Assignee</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Due Date</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Priority</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Status</th>
-                  <th className={cn(SECTION_LABEL, "py-3 text-right")}>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <motion.tbody
-                key={safePage}
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border/60"
-              >
-                {visible.map((t) => (
-                  <motion.tr
-                    key={t.id}
-                    variants={rowItem}
-                    className={cn(
-                      "group transition-colors hover:bg-muted/30",
-                      t.status === "completed" && "opacity-70"
-                    )}
+          <RecordList key={safePage}>
+            {visible.map((t, i) => (
+              <RecordRow
+                key={t.id}
+                index={i}
+                primary={t.title}
+                secondary={[t.companyName ?? "No client", t.assigneeName]
+                  .filter(Boolean)
+                  .join(" · ")}
+                meta={
+                  <>
+                    <input
+                      type="date"
+                      aria-label={`Due date for ${t.title}`}
+                      className={cn(rowControlClass, "w-[9.5rem] tabular-nums")}
+                      value={t.dueDate ? t.dueDate.slice(0, 10) : ""}
+                      onChange={(e) =>
+                        patchTask(t.id, {
+                          dueDate: e.target.value
+                            ? new Date(
+                                e.target.value + "T00:00:00Z"
+                              ).toISOString()
+                            : null,
+                        })
+                      }
+                    />
+                    <select
+                      aria-label={`Priority for ${t.title}`}
+                      // Fixed width: a native select that resizes with its
+                      // label reflows every control to its right on change.
+                      className={cn(rowControlClass, "w-[6.5rem] appearance-none")}
+                      value={t.priority}
+                      onChange={(e) =>
+                        patchTask(t.id, { priority: e.target.value })
+                      }
+                    >
+                      {(["high", "medium", "low"] as const).map((p) => (
+                        <option key={p} value={p}>
+                          {PRIORITY_LABELS[p]}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      aria-label={`Status for ${t.title}`}
+                      className={cn(
+                        "h-8 w-[8.5rem] cursor-pointer appearance-none rounded-md border border-border/70 bg-background px-2 text-center text-xs text-muted-foreground outline-none transition-colors focus:border-foreground/40"
+                      )}
+                      value={t.status}
+                      onChange={(e) =>
+                        patchTask(t.id, { status: e.target.value })
+                      }
+                    >
+                      {STATUS_OPTIONS.map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                }
+                actions={
+                  <RowAction
+                    label={`Open ${t.companyName ?? "client"}`}
+                    onClick={() => setOpenClientId(t.clientId)}
                   >
-                    <td className="py-3 pr-4 font-medium text-foreground">
-                      {t.title}
-                    </td>
-                    <td className="py-3 pr-4 text-muted-foreground">
-                      {t.companyName ?? "—"}
-                    </td>
-                    <td className="py-3 pr-4 text-muted-foreground">
-                      {t.assigneeName ?? "—"}
-                    </td>
-                    <td className="py-3 pr-4">
-                      <input
-                        type="date"
-                        aria-label={`Due date for ${t.title}`}
-                        className="h-8 w-[9.5rem] rounded-lg border border-transparent bg-transparent px-2 text-xs tabular-nums text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40"
-                        value={t.dueDate ? t.dueDate.slice(0, 10) : ""}
-                        onChange={(e) =>
-                          patchTask(t.id, {
-                            dueDate: e.target.value
-                              ? new Date(
-                                  e.target.value + "T00:00:00Z"
-                                ).toISOString()
-                              : null,
-                          })
-                        }
-                      />
-                    </td>
-                    <td className="py-3 pr-4">
-                      <select
-                        aria-label={`Priority for ${t.title}`}
-                        // Fixed width: a native select that resizes with its
-                        // label reflows every column to its right on change.
-                        className="h-8 w-[6.5rem] cursor-pointer appearance-none rounded-lg border border-transparent bg-transparent px-2 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40"
-                        value={t.priority}
-                        onChange={(e) =>
-                          patchTask(t.id, { priority: e.target.value })
-                        }
-                      >
-                        {(["high", "medium", "low"] as const).map((p) => (
-                          <option key={p} value={p}>
-                            {PRIORITY_LABELS[p]}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="py-3 pr-4">
-                      <select
-                        aria-label={`Status for ${t.title}`}
-                        className="h-8 w-[8.5rem] cursor-pointer appearance-none rounded-full border border-border bg-background px-3 text-center text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors focus:border-foreground/40"
-                        value={t.status}
-                        onChange={(e) =>
-                          patchTask(t.id, { status: e.target.value })
-                        }
-                      >
-                        {STATUS_OPTIONS.map((s) => (
-                          <option key={s.value} value={s.value}>
-                            {s.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="py-3 text-right whitespace-nowrap">
-                      <button
-                        onClick={() => setOpenClientId(t.clientId)}
-                        className={cn(QUIET_LINK, "cursor-pointer")}
-                        aria-label={`Open ${t.companyName ?? "client"}`}
-                      >
-                        Open
-                      </button>
-                    </td>
-                  </motion.tr>
-                ))}
-              </motion.tbody>
-            </table>
-          </div>
+                    <ExternalLink size={13} />
+                  </RowAction>
+                }
+              />
+            ))}
+          </RecordList>
         )}
 
         {/* Pager — the roster carries thousands of checklist tasks. */}

@@ -19,6 +19,7 @@ const eslintConfig = defineConfig([
     // lint rules; the UI is frozen, so the rules are relaxed for these trees.
     files: [
       "src/components/marketing/**",
+      "src/components/motion/**",
       "src/components/onboarding/**",
       "src/components/experience/**",
       "src/components/ui/decrypted-text.tsx",

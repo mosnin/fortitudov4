@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { PageHero, SegmentedTabs } from "@/components/ui/firecrawl";
+import { CrmPageHeader, RecordListSkeleton, TabStrip } from "@/components/crm";
 import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
 import { cn } from "@/lib/utils";
 import { PAGE_RHYTHM, READING_COL } from "@/lib/typography";
@@ -37,24 +37,25 @@ export default function AnalyticsPage() {
 
   const selectedProject = projects.find((p) => p.id === selectedProjectId);
 
+  const status = loading
+    ? "Pulling your event data…"
+    : projects.length === 0
+      ? "Nothing to measure yet — analytics start at launch."
+      : selectedProject
+        ? `Tracking ${selectedProject.name}.`
+        : "Pick a project to see its events.";
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Workspace"
+        <CrmPageHeader
+          section="Workspace."
           title="Analytics"
-          description="Performance metrics for your launched projects."
+          subtitle={status}
         />
 
         {loading ? (
-          <ul className="divide-y divide-border/60">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <li key={i} className="space-y-2 py-3">
-                <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
-                <div className="h-3 w-1/5 animate-pulse rounded bg-muted" />
-              </li>
-            ))}
-          </ul>
+          <RecordListSkeleton rows={4} />
         ) : projects.length === 0 ? (
           <div className="border-t border-border py-10">
             <p className="text-sm font-medium text-foreground">
@@ -66,14 +67,12 @@ export default function AnalyticsPage() {
           </div>
         ) : (
           <>
-            {projects.length > 1 && selectedProject && (
-              <SegmentedTabs
-                options={projects.map((p) => p.name)}
-                value={selectedProject.name}
-                onChange={(name) => {
-                  const next = projects.find((p) => p.name === name);
-                  if (next) setSelectedProjectId(next.id);
-                }}
+            {projects.length > 1 && selectedProjectId && (
+              <TabStrip
+                tabs={projects.map((p) => ({ key: p.id, label: p.name }))}
+                active={selectedProjectId}
+                onChange={setSelectedProjectId}
+                ariaLabel="Project"
               />
             )}
 

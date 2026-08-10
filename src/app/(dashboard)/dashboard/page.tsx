@@ -1,6 +1,13 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
 import { LaunchPipeline } from "@/components/dashboard/launch-pipeline";
 import { getLaunchPipeline } from "@/components/dashboard/launch-pipeline-data";
 import { PerformanceOverview } from "@/components/dashboard/performance-overview";
@@ -42,10 +49,10 @@ export default async function DashboardPage() {
     return (
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <div className={READING_COL}>
-          <PageHero
-            section="Workspace"
+          <CrmPageHeader
+            section="Workspace."
             title={`Welcome, ${user.firstName || "there"}`}
-            description="Your account is being set up. Please refresh in a moment."
+            subtitle="Your account is still being set up — refresh in a moment."
           />
         </div>
       </div>
@@ -113,12 +120,6 @@ export default async function DashboardPage() {
     .limit(1);
   const hasMarketingReports = Boolean(reported);
 
-  const stats = [
-    { label: "Active projects", value: activeProjects.length },
-    { label: "Messages", value: messageCount },
-    { label: "Files uploaded", value: fileCount },
-  ];
-
   const listItems: ProjectListItem[] = activeProjects.map((project) => ({
     id: project.id,
     name: project.name,
@@ -134,15 +135,24 @@ export default async function DashboardPage() {
       })),
   }));
 
+  // One sentence of status — where the work actually stands right now.
+  const active = activeProjects.length;
+  const status =
+    active === 0
+      ? userProjects.length > 0
+        ? "Nothing in flight — every project has wrapped."
+        : "Nothing in flight yet — start a project when you're ready."
+      : `${active === 1 ? "One build" : `${active} builds`} in flight${
+          pipeline ? `, currently in ${pipeline.stageLabel.toLowerCase()}` : ""
+        }.`;
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Workspace"
-          title="Dashboard"
-          description={`Welcome back, ${user.firstName || "there"} — track your ${
-            hasMarketingReports ? "builds, files, and results" : "builds and files"
-          } in one place.`}
+        <CrmPageHeader
+          section="Workspace."
+          title={`Welcome back, ${user.firstName || "there"}`}
+          subtitle={status}
           action={
             <Link href="/onboarding" className={PRIMARY_PILL}>
               New project
@@ -150,17 +160,36 @@ export default async function DashboardPage() {
           }
         />
 
-        {/* Stats — hairline-divided 3-up */}
-        <div className="animate-fade-up grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-          {stats.map((stat) => (
-            <div key={stat.label} className="py-5 sm:px-6 sm:first:pl-0">
-              <p className="text-2xl tracking-tight tabular-nums text-foreground">
-                {stat.value.toLocaleString("en-US")}
-              </p>
-              <p className={cn(SECTION_LABEL, "mt-1.5")}>{stat.label}</p>
-            </div>
-          ))}
-        </div>
+        <StatStrip ariaLabel="Workspace summary">
+          <StatCell label="Active projects">
+            {active > 0 ? (
+              <Stat>{active.toLocaleString("en-US")}</Stat>
+            ) : (
+              <StatEmpty>no projects yet.</StatEmpty>
+            )}
+            {userProjects.length > 0 && (
+              <StatMeta>
+                {userProjects.length.toLocaleString("en-US")} in total
+              </StatMeta>
+            )}
+          </StatCell>
+
+          <StatCell label="Messages">
+            {messageCount > 0 ? (
+              <Stat>{messageCount.toLocaleString("en-US")}</Stat>
+            ) : (
+              <StatEmpty>no messages yet.</StatEmpty>
+            )}
+          </StatCell>
+
+          <StatCell label="Files uploaded">
+            {fileCount > 0 ? (
+              <Stat>{fileCount.toLocaleString("en-US")}</Stat>
+            ) : (
+              <StatEmpty>nothing uploaded yet.</StatEmpty>
+            )}
+          </StatCell>
+        </StatStrip>
 
         {/* Delivery pipeline — hidden until the team creates a roster record. */}
         <LaunchPipeline data={pipeline} />

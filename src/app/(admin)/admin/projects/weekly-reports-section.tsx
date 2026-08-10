@@ -1,10 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import {
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowPill,
+} from "@/components/crm";
 import { Input } from "@/components/ui/input";
-import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
@@ -13,8 +16,6 @@ import {
   PAGE_RHYTHM,
   PRIMARY_PILL,
   SECTION_LABEL,
-  STATUS_PILL,
-  STATUS_PILL_ACTIVE,
 } from "@/lib/typography";
 
 /**
@@ -256,7 +257,7 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
         </div>
         {loading ? (
           <div className="pt-4">
-            <TableSkeleton rows={5} />
+            <RecordListSkeleton rows={5} />
           </div>
         ) : (feed?.reports.length ?? 0) === 0 ? (
           <div className="py-14 text-center">
@@ -268,79 +269,34 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Client</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Dates</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                    Leads
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                    CPL
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                    Total Spend
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                    Revenue
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3")}>Status</th>
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border/60"
-              >
-                {feed?.reports.map((r) => (
-                  <motion.tr
-                    key={r.id}
-                    variants={rowItem}
-                    className="group transition-colors hover:bg-muted/30"
-                  >
-                    <td className="py-3 pr-4 font-medium text-foreground">
-                      {r.companyName ?? "—"}
-                    </td>
-                    <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
-                      {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-medium tabular-nums">
-                      {r.leads.toLocaleString("en-US")}
-                    </td>
-                    <td className="py-3 pr-4 text-right tabular-nums text-muted-foreground">
-                      {usd(r.cpl)}
-                    </td>
-                    <td className="py-3 pr-4 text-right font-medium tabular-nums">
-                      {usd(r.totalSpend)}
-                    </td>
-                    <td className="py-3 pr-4 text-right tabular-nums">
-                      {r.revenue !== null ? (
-                        usd(r.revenue)
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    <td className="py-3">
-                      <span
-                        className={
-                          r.status === "pending_client"
-                            ? STATUS_PILL
-                            : STATUS_PILL_ACTIVE
-                        }
-                      >
-                        {r.status === "pending_client"
-                          ? "Pending client"
-                          : "Completed"}
-                      </span>
-                    </td>
-                  </motion.tr>
-                ))}
-              </motion.tbody>
-            </table>
-          </div>
+          <RecordList>
+            {feed?.reports.map((r, i) => (
+              <RecordRow
+                key={r.id}
+                index={i}
+                primary={r.companyName ?? "—"}
+                status={
+                  <RowPill emphasis={r.status !== "pending_client"}>
+                    {r.status === "pending_client"
+                      ? "Pending client"
+                      : "Completed"}
+                  </RowPill>
+                }
+                secondary={
+                  <span className="tabular-nums">
+                    {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)} ·{" "}
+                    {r.leads.toLocaleString("en-US")} leads · {usd(r.cpl)} CPL ·{" "}
+                    {usd(r.totalSpend)} spend
+                  </span>
+                }
+                meta={
+                  <span className="text-xs tabular-nums whitespace-nowrap text-muted-foreground">
+                    {r.revenue !== null ? `${usd(r.revenue)} revenue` : "—"}
+                  </span>
+                }
+              />
+            ))}
+          </RecordList>
         )}
       </div>
     </section>

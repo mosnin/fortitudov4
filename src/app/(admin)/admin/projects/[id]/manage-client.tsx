@@ -4,7 +4,12 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
 import { Textarea } from "@/components/ui/textarea";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordRow,
+  RowPill,
+} from "@/components/crm";
 import { PhaseTracker, type Phase } from "@/components/dashboard/phase-tracker";
 import { RevisionManager } from "./revision-manager";
 import { cascade, cascadeItem } from "@/lib/motion";
@@ -20,7 +25,6 @@ import {
   READING_COL,
   SECTION_LABEL,
   SECTION_RHYTHM,
-  STATUS_PILL,
 } from "@/lib/typography";
 
 const phaseStatusOptions: Phase["status"][] = [
@@ -190,7 +194,7 @@ export function ManageClient({
   };
 
   const selectClass =
-    "h-8 cursor-pointer rounded-lg border border-border bg-background px-2.5 text-[11px] uppercase tracking-wide text-muted-foreground outline-none transition-colors hover:border-foreground/30 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50";
+    "h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50";
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
@@ -199,10 +203,11 @@ export function ManageClient({
           <Link href="/admin/projects" className={QUIET_LINK}>
             Back to projects
           </Link>
-          <PageHero
-            section={`${clientName} · ${serviceLabel}`}
+          <CrmPageHeader
+            section="Projects."
             title={projectName}
-            action={<span className={STATUS_PILL}>{statusLabel}</span>}
+            subtitle={`${clientName} · ${serviceLabel} · ${completedCount} of ${phases.length} phases complete.`}
+            action={<RowPill>{statusLabel}</RowPill>}
           />
         </div>
 
@@ -260,37 +265,36 @@ export function ManageClient({
                         )}
                       >
                         <p className={SECTION_LABEL}>Set phase status</p>
-                        <ul className="divide-y divide-border/60">
+                        <RecordList>
                           {[...phases]
                             .sort((a, b) => a.order - b.order)
-                            .map((phase) => (
-                              <li
+                            .map((phase, i) => (
+                              <RecordRow
                                 key={phase.id}
-                                className="flex items-center justify-between gap-3 py-3"
-                              >
-                                <span className="truncate text-sm text-foreground">
-                                  {phase.name}
-                                </span>
-                                <select
-                                  aria-label={`Status for ${phase.name}`}
-                                  className={selectClass}
-                                  value={phase.status}
-                                  onChange={(e) =>
-                                    setPhaseStatus(
-                                      phase.id,
-                                      e.target.value as Phase["status"]
-                                    )
-                                  }
-                                >
-                                  {phaseStatusOptions.map((opt) => (
-                                    <option key={opt} value={opt}>
-                                      {phaseStatusLabels[opt]}
-                                    </option>
-                                  ))}
-                                </select>
-                              </li>
+                                index={i}
+                                primary={phase.name}
+                                meta={
+                                  <select
+                                    aria-label={`Status for ${phase.name}`}
+                                    className={selectClass}
+                                    value={phase.status}
+                                    onChange={(e) =>
+                                      setPhaseStatus(
+                                        phase.id,
+                                        e.target.value as Phase["status"]
+                                      )
+                                    }
+                                  >
+                                    {phaseStatusOptions.map((opt) => (
+                                      <option key={opt} value={opt}>
+                                        {phaseStatusLabels[opt]}
+                                      </option>
+                                    ))}
+                                  </select>
+                                }
+                              />
                             ))}
-                        </ul>
+                        </RecordList>
                       </div>
                     )}
                   </>
@@ -379,7 +383,7 @@ export function ManageClient({
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-muted-foreground">Status</span>
-                  <span className={STATUS_PILL}>{statusLabel}</span>
+                  <RowPill>{statusLabel}</RowPill>
                 </div>
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-muted-foreground">Payment</span>
@@ -388,9 +392,7 @@ export function ManageClient({
                       <span className="tabular-nums">
                         {formatUsd(latestPayment.amount)}
                       </span>
-                      <span className={STATUS_PILL}>
-                        {latestPayment.status}
-                      </span>
+                      <RowPill>{latestPayment.status}</RowPill>
                     </span>
                   ) : (
                     <span className="text-muted-foreground">—</span>
@@ -492,25 +494,29 @@ export function ManageClient({
                   No files uploaded for this project yet.
                 </p>
               ) : (
-                <ul className="mt-2 divide-y divide-border/60">
-                  {files.map((f) => (
-                    <li key={f.id} className="py-3">
-                      <a
-                        href={f.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group flex items-center gap-3"
-                      >
-                        <span className="min-w-0 flex-1 truncate text-sm group-hover:underline">
+                <RecordList className="mt-2">
+                  {files.map((f, i) => (
+                    <RecordRow
+                      key={f.id}
+                      index={i}
+                      primary={
+                        <a
+                          href={f.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline"
+                        >
                           {f.name}
-                        </span>
-                        <span className="shrink-0 text-[11px] tabular-nums text-muted-foreground">
+                        </a>
+                      }
+                      meta={
+                        <span className="text-[11px] tabular-nums text-muted-foreground">
                           {formatSize(f.size)}
                         </span>
-                      </a>
-                    </li>
+                      }
+                    />
                   ))}
-                </ul>
+                </RecordList>
               )}
             </motion.section>
           </motion.div>

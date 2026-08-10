@@ -1,8 +1,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CountUp } from "@/components/ui/firecrawl";
-import { AreaChart } from "@/components/ui/charts";
+import { AreaChart, BarList } from "@/components/ui/charts";
+import {
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
+import { AnimatedNumber } from "@/components/motion";
 import { SECTION_LABEL } from "@/lib/typography";
 
 interface AnalyticsEvent {
@@ -15,22 +25,6 @@ interface AnalyticsEvent {
 
 interface AnalyticsOverviewProps {
   projectId: string;
-}
-
-/** Loading placeholder — mirrors the hairline rows it replaces. */
-function RowsSkeleton({ rows = 5 }: { rows?: number }) {
-  return (
-    <ul className="divide-y divide-border/60">
-      {Array.from({ length: rows }).map((_, i) => (
-        <li key={i} className="flex items-start gap-3 py-3">
-          <div className="min-w-0 flex-1 space-y-2">
-            <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-1/5 animate-pulse rounded bg-muted" />
-          </div>
-        </li>
-      ))}
-    </ul>
-  );
 }
 
 export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
@@ -50,7 +44,7 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
   }, [projectId]);
 
   if (loading) {
-    return <RowsSkeleton />;
+    return <RecordListSkeleton />;
   }
 
   if (events.length === 0) {
@@ -78,8 +72,6 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
   const sortedEvents = Object.entries(eventCounts)
     .sort(([, a], [, b]) => b.count - a.count);
 
-  const maxCount = sortedEvents[0]?.[1].count || 1;
-
   // Recent events (last 10)
   const recentEvents = [...events]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -104,25 +96,33 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
 
   const totalValue = events.reduce((sum, e) => sum + (e.value || 0), 0);
 
-  const stats = [
-    { label: "Total Events", value: events.length },
-    { label: "Event Types", value: sortedEvents.length },
-    { label: "Total Value", value: totalValue },
-  ];
-
   return (
     <div className="space-y-8">
-      {/* Summary metrics — hairline-divided 3-up */}
-      <div className="grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        {stats.map((stat) => (
-          <div key={stat.label} className="py-5 sm:px-6 sm:first:pl-0">
-            <p className="text-2xl tracking-tight tabular-nums text-foreground">
-              <CountUp value={stat.value} />
-            </p>
-            <p className={`${SECTION_LABEL} mt-1.5`}>{stat.label}</p>
-          </div>
-        ))}
-      </div>
+      {/* Summary metrics */}
+      <StatStrip ariaLabel="Analytics summary">
+        <StatCell label="Total events">
+          <Stat>
+            <AnimatedNumber value={events.length} />
+          </Stat>
+          <StatMeta>
+            over {dayKeys.length} {dayKeys.length === 1 ? "day" : "days"}
+          </StatMeta>
+        </StatCell>
+        <StatCell label="Event types">
+          <Stat>
+            <AnimatedNumber value={sortedEvents.length} />
+          </Stat>
+        </StatCell>
+        <StatCell label="Total value">
+          {totalValue > 0 ? (
+            <Stat>
+              <AnimatedNumber value={totalValue} />
+            </Stat>
+          ) : (
+            <StatEmpty>no valued events yet.</StatEmpty>
+          )}
+        </StatCell>
+      </StatStrip>
 
       {/* Events over time — only when there's a real multi-point series */}
       {series.length >= 2 && (
@@ -147,53 +147,37 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
         {/* Event breakdown */}
         <section className="space-y-3">
           <p className={SECTION_LABEL}>Event breakdown</p>
-          <ul className="divide-y divide-border/60">
-            {sortedEvents.slice(0, 8).map(([event, data]) => (
-              <li key={event} className="py-3">
-                <div className="mb-1.5 flex items-center justify-between gap-3">
-                  <span className="truncate text-sm text-foreground">
-                    {event}
-                  </span>
-                  <span className="shrink-0 text-sm tabular-nums text-muted-foreground">
-                    {data.count}
-                  </span>
-                </div>
-                <div className="h-1 overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-foreground transition-all"
-                    style={{ width: `${(data.count / maxCount) * 100}%` }}
-                  />
-                </div>
-              </li>
-            ))}
-          </ul>
+          <BarList
+            items={sortedEvents
+              .slice(0, 8)
+              .map(([event, data]) => ({ name: event, total: data.count }))}
+          />
         </section>
 
         {/* Recent events */}
         <section className="space-y-3">
           <p className={SECTION_LABEL}>Recent events</p>
-          <ul className="divide-y divide-border/60">
-            {recentEvents.map((event) => (
-              <li
+          <RecordList>
+            {recentEvents.map((event, i) => (
+              <RecordRow
                 key={event.id}
-                className="flex items-start justify-between gap-3 py-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {event.event}
-                  </p>
-                  <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">
+                index={i}
+                primary={event.event}
+                secondary={
+                  <span className="tabular-nums">
                     {new Date(event.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                {event.value !== null && (
-                  <span className="shrink-0 text-sm tabular-nums text-foreground">
-                    {event.value}
                   </span>
-                )}
-              </li>
+                }
+                meta={
+                  event.value !== null ? (
+                    <span className="text-sm tabular-nums text-foreground">
+                      {event.value}
+                    </span>
+                  ) : undefined
+                }
+              />
             ))}
-          </ul>
+          </RecordList>
         </section>
       </div>
     </div>

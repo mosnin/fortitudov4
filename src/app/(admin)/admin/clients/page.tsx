@@ -2,9 +2,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { PageHero } from "@/components/ui/firecrawl";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import { ExternalLink, Pencil, Trash2 } from "lucide-react";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowAction,
+  RowPill,
+  TabStrip,
+} from "@/components/crm";
 import { NewClientModal } from "@/components/admin/crm-new-client-modal";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import {
@@ -22,9 +29,7 @@ import {
   PRIMARY_PILL,
   QUIET_LINK,
   SECTION_LABEL,
-  STATUS_PILL,
 } from "@/lib/typography";
-import { LayoutGrid, List as ListIcon } from "lucide-react";
 
 interface Client {
   id: string;
@@ -63,8 +68,9 @@ const dateStarted = (iso: string) =>
     timeZone: "UTC",
   });
 
-const selectClass =
-  "h-9 rounded-lg border border-border bg-background px-2.5 text-sm outline-none transition-colors focus:border-foreground/40";
+const rowSelectClass =
+  "h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs " +
+  "text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40";
 
 /** No realtime channel here — a calm 10s poll keeps the board in sync when
  * teammates move cards. */
@@ -116,30 +122,28 @@ export default function ClientCrmPage() {
     load();
   }
 
-  function ViewPortalLink({ c }: { c: Client }) {
-    // Always available — the portal preview mirrors their pipeline and
-    // reports whether or not a portal login has been accepted yet.
-    return (
-      <Link
-        href={`/admin/clients/${c.id}/portal`}
-        className={QUIET_LINK}
-        title={
-          c.portalEmail
-            ? `View the portal as ${c.portalEmail}`
-            : "View the portal this client will see"
-        }
-      >
-        Portal
-      </Link>
-    );
-  }
+  /** The portal preview mirrors their pipeline and reports whether or not a
+   * portal login has been accepted yet, so it is always available. */
+  const portalTitle = (c: Client) =>
+    c.portalEmail
+      ? `View the portal as ${c.portalEmail}`
+      : "View the portal this client will see";
+
+  const onBoard = clients.filter((c) => c.status !== "churned");
+  const inOnboarding = clients.filter((c) => c.stage === "onboarding").length;
+
+  const subtitle = loading
+    ? "Loading the roster."
+    : clients.length === 0
+      ? "No clients on the roster yet."
+      : `${onBoard.length} on the board, ${inOnboarding} still in onboarding.`;
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
-      <PageHero
-        section="Operations"
+      <CrmPageHeader
+        section="Operations."
         title="Clients"
-        description="Manage clients, track onboarding, and access portals."
+        subtitle={subtitle}
         action={
           <button onClick={() => setNewOpen(true)} className={PRIMARY_PILL}>
             New Client
@@ -147,35 +151,18 @@ export default function ClientCrmPage() {
         }
       />
 
-      {/* View toggle — a functional segmented control */}
-      <div className="inline-flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
-        {(
-          [
-            { key: "board", label: "Board", icon: LayoutGrid },
-            { key: "list", label: "List", icon: ListIcon },
-          ] as const
-        ).map((v) => {
-          const Icon = v.icon;
-          return (
-            <button
-              key={v.key}
-              onClick={() => setView(v.key)}
-              className={cn(
-                "inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 text-[13px] transition-colors",
-                view === v.key
-                  ? "border border-border bg-background font-medium shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Icon className="h-3.5 w-3.5" />
-              {v.label}
-            </button>
-          );
-        })}
-      </div>
+      <TabStrip
+        ariaLabel="Client view"
+        active={view}
+        onChange={(key) => setView(key as "board" | "list")}
+        tabs={[
+          { key: "board", label: "Board", count: onBoard.length },
+          { key: "list", label: "List", count: clients.length },
+        ]}
+      />
 
       {loading ? (
-        <TableSkeleton rows={5} />
+        <RecordListSkeleton rows={5} />
       ) : clients.length === 0 ? (
         <div className="py-14 text-center">
           <h2 className={H3}>No clients yet</h2>
@@ -188,9 +175,7 @@ export default function ClientCrmPage() {
         /* ---- Board view — a wide working surface, spans the full frame ---- */
         <div className="flex gap-4 overflow-x-auto pb-4">
           {CRM_STAGES.map((stage) => {
-            const inStage = clients.filter(
-              (c) => c.stage === stage && c.status !== "churned"
-            );
+            const inStage = onBoard.filter((c) => c.stage === stage);
             return (
               <div
                 key={stage}
@@ -209,50 +194,40 @@ export default function ClientCrmPage() {
                     {inStage.length}
                   </span>
                 </div>
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-2">
                   {inStage.map((c) => (
                     <div
                       key={c.id}
                       draggable
                       onDragStart={() => setDragId(c.id)}
                       onDragEnd={() => setDragId(null)}
-                      className="cursor-grab rounded-lg border border-border bg-background p-4 transition-colors hover:border-foreground/25 active:cursor-grabbing"
+                      className="cursor-grab rounded-lg border border-border bg-background p-3 transition-colors hover:border-foreground/25 active:cursor-grabbing"
                     >
-                      <p className="text-sm font-medium text-foreground">
-                        {c.companyName}
-                      </p>
-                      <p className="mt-0.5 text-xs text-muted-foreground">
-                        {c.contactName}
-                      </p>
-                      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Tasks</span>
-                        <span className="tabular-nums">
-                          {c.tasksDone}/{c.tasksTotal}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-muted">
-                        <div
-                          className="h-full rounded-full bg-foreground transition-all"
-                          style={{
-                            width: `${
-                              c.tasksTotal
-                                ? (c.tasksDone / c.tasksTotal) * 100
-                                : 0
-                            }%`,
-                          }}
-                        />
-                      </div>
-                      <div className="mt-3 flex items-center justify-between gap-2 border-t border-border pt-3">
-                        <span className={STATUS_PILL}>{packageLabel(c)}</span>
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => setEditId(c.id)}
-                            className={cn(QUIET_LINK, "cursor-pointer")}
-                          >
-                            Edit
-                          </button>
-                          <ViewPortalLink c={c} />
-                        </div>
+                      <button
+                        type="button"
+                        onClick={() => setEditId(c.id)}
+                        className="block w-full cursor-pointer text-left"
+                      >
+                        <p className="truncate text-sm font-medium text-foreground">
+                          {c.companyName}
+                        </p>
+                        <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                          {c.contactName} ·{" "}
+                          <span className="tabular-nums">
+                            {c.tasksDone}/{c.tasksTotal}
+                          </span>{" "}
+                          tasks
+                        </p>
+                      </button>
+                      <div className="mt-3 flex items-center justify-between gap-2">
+                        <RowPill>{packageLabel(c)}</RowPill>
+                        <Link
+                          href={`/admin/clients/${c.id}/portal`}
+                          className={cn(QUIET_LINK, "text-xs")}
+                          title={portalTitle(c)}
+                        >
+                          Portal
+                        </Link>
                       </div>
                     </div>
                   ))}
@@ -262,98 +237,78 @@ export default function ClientCrmPage() {
           })}
         </div>
       ) : (
-        /* ---- List view — a wide table, spans the full frame ---- */
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left align-top">
-                <th className={cn(SECTION_LABEL, "py-3 pr-4")}>
-                  Business / Client
-                </th>
-                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Stage</th>
-                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Status</th>
-                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Industry</th>
-                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Package</th>
-                <th className={cn(SECTION_LABEL, "py-3 pr-3")}>Date Started</th>
-                <th className={cn(SECTION_LABEL, "py-3 text-right")}>Actions</th>
-              </tr>
-            </thead>
-            <motion.tbody className="divide-y divide-border/60">
-              {clients.map((c) => (
-                <tr key={c.id} className="transition-colors hover:bg-muted/30">
-                  <td className="py-3 pr-4">
-                    <p className="font-medium text-foreground">
-                      {c.companyName}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {c.contactName}
-                      {c.portalEmail ? ` · ${c.portalEmail}` : ""}
-                    </p>
-                  </td>
-                  <td className="py-3 pr-3">
-                    <select
-                      className={selectClass}
-                      aria-label={`Stage for ${c.companyName}`}
-                      value={c.stage}
-                      onChange={(e) =>
-                        patchClient(c.id, { stage: e.target.value })
-                      }
-                    >
-                      {CRM_STAGES.map((s) => (
-                        <option key={s} value={s}>
-                          {STAGE_LABELS[s]}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="py-3 pr-3">
-                    <select
-                      className={selectClass}
-                      aria-label={`Status for ${c.companyName}`}
-                      value={c.status}
-                      onChange={(e) =>
-                        patchClient(c.id, { status: e.target.value })
-                      }
-                    >
-                      {Object.entries(STATUS_LABELS).map(([v, l]) => (
-                        <option key={v} value={v}>
-                          {l}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="py-3 pr-3 text-muted-foreground">
-                    {c.industry || "—"}
-                  </td>
-                  <td className="py-3 pr-3">
-                    <span className={STATUS_PILL}>{packageLabel(c)}</span>
-                  </td>
-                  <td className="py-3 pr-3 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
-                    {dateStarted(c.startDate)}
-                  </td>
-                  <td className="py-3">
-                    <div className="flex items-center justify-end gap-3">
-                      <button
-                        onClick={() => setEditId(c.id)}
-                        className={cn(QUIET_LINK, "cursor-pointer")}
-                      >
-                        Edit
-                      </button>
-                      <ViewPortalLink c={c} />
-                      <button
-                        onClick={() => remove(c)}
-                        className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive"
-                        aria-label={`Delete ${c.companyName}`}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </motion.tbody>
-          </table>
-        </div>
+        /* ---- List view ---- */
+        <RecordList>
+          {clients.map((c, i) => (
+            <RecordRow
+              key={c.id}
+              index={i}
+              primary={c.companyName}
+              status={<RowPill>{packageLabel(c)}</RowPill>}
+              secondary={[
+                c.contactName,
+                c.portalEmail,
+                c.industry,
+                `Started ${dateStarted(c.startDate)}`,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+              meta={
+                <>
+                  <select
+                    className={rowSelectClass}
+                    aria-label={`Stage for ${c.companyName}`}
+                    value={c.stage}
+                    onChange={(e) => patchClient(c.id, { stage: e.target.value })}
+                  >
+                    {CRM_STAGES.map((s) => (
+                      <option key={s} value={s}>
+                        {STAGE_LABELS[s]}
+                      </option>
+                    ))}
+                  </select>
+                  <select
+                    className={rowSelectClass}
+                    aria-label={`Status for ${c.companyName}`}
+                    value={c.status}
+                    onChange={(e) =>
+                      patchClient(c.id, { status: e.target.value })
+                    }
+                  >
+                    {Object.entries(STATUS_LABELS).map(([v, l]) => (
+                      <option key={v} value={v}>
+                        {l}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              }
+              actions={
+                <>
+                  <RowAction
+                    label={`Edit ${c.companyName}`}
+                    onClick={() => setEditId(c.id)}
+                  >
+                    <Pencil size={13} />
+                  </RowAction>
+                  <RowAction
+                    label={portalTitle(c)}
+                    href={`/admin/clients/${c.id}/portal`}
+                  >
+                    <ExternalLink size={13} />
+                  </RowAction>
+                  <RowAction
+                    label={`Delete ${c.companyName}`}
+                    destructive
+                    onClick={() => remove(c)}
+                  >
+                    <Trash2 size={13} />
+                  </RowAction>
+                </>
+              }
+            />
+          ))}
+        </RecordList>
       )}
 
       <NewClientModal

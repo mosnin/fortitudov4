@@ -3,7 +3,18 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Textarea } from "@/components/ui/textarea";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordRow,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+  TabStrip,
+} from "@/components/crm";
 import { PhaseTracker, type Phase } from "@/components/dashboard/phase-tracker";
 import {
   LaunchPipeline,
@@ -15,7 +26,6 @@ import { NPSSurvey } from "@/components/dashboard/nps-survey";
 import { InvoiceCard } from "@/components/dashboard/invoice-card";
 import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
 import { UploadDropzone } from "@/lib/uploadthing";
-import * as Tabs from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
 import {
   PAGE_RHYTHM,
@@ -25,7 +35,6 @@ import {
   SECTION_LABEL,
   SECTION_RHYTHM,
   STATUS_PILL,
-  STATUS_PILL_ACTIVE,
 } from "@/lib/typography";
 
 interface InvoiceData {
@@ -57,12 +66,6 @@ interface ProjectDetailClientProps {
   showSurvey: boolean;
   pipeline: LaunchPipelineData | null;
 }
-
-const tabItems = [
-  { value: "progress", label: "Progress" },
-  { value: "comments", label: "Comments" },
-  { value: "analytics", label: "Analytics" },
-];
 
 type FileItem = { name: string; url: string; size: string; type: string };
 
@@ -97,6 +100,7 @@ export function ProjectDetailClient({
   showSurvey: initialShowSurvey,
   pipeline,
 }: ProjectDetailClientProps) {
+  const [tab, setTab] = useState("progress");
   const [revisionText, setRevisionText] = useState("");
   const [submittingRevision, setSubmittingRevision] = useState(false);
   const [revisionError, setRevisionError] = useState<string | null>(null);
@@ -144,6 +148,21 @@ export function ProjectDetailClient({
   };
 
   const completedPhases = phases.filter((p) => p.status === "completed").length;
+  const openRevisions = revisions.filter(
+    (r) => r.status === "pending" || r.status === "in_progress"
+  ).length;
+
+  const tabs = [
+    { key: "progress", label: "Progress" },
+    { key: "comments", label: "Comments" },
+    { key: "analytics", label: "Analytics" },
+  ];
+
+  // One sentence of status, not a description of the page.
+  const status =
+    phases.length > 0
+      ? `${project.status} — ${completedPhases} of ${phases.length} phases complete.`
+      : `${project.status} — phases appear once the build kicks off.`;
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
@@ -152,15 +171,20 @@ export function ProjectDetailClient({
           <Link href="/projects" className={QUIET_LINK}>
             Back to projects
           </Link>
-          <PageHero
-            section="Projects"
+          <CrmPageHeader
+            section="Projects."
             title={project.name}
-            description={`${project.serviceType} · Started ${project.createdAt}`}
-            action={
-              <span className={STATUS_PILL_ACTIVE}>{project.status}</span>
-            }
+            subtitle={status}
+            action={<RowPill emphasis>{project.status}</RowPill>}
           />
         </div>
+
+        <TabStrip
+          tabs={tabs}
+          active={tab}
+          onChange={setTab}
+          ariaLabel="Project view"
+        />
 
         {/* NPS Survey */}
         {showSurvey && (
@@ -171,26 +195,40 @@ export function ProjectDetailClient({
           />
         )}
 
-        {/* Tabbed content */}
-        <Tabs.Root defaultValue="progress">
-          <Tabs.List className="mb-6 inline-flex items-center gap-0.5 rounded-lg bg-muted p-0.5">
-            {tabItems.map((tab) => (
-              <Tabs.Trigger
-                key={tab.value}
-                value={tab.value}
-                className={cn(
-                  "cursor-pointer rounded-md border border-transparent px-3 py-1.5 text-[13px] transition-colors",
-                  "text-muted-foreground hover:text-foreground",
-                  "data-[state=active]:border-border data-[state=active]:bg-background data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+        {/* Progress tab */}
+        {tab === "progress" && (
+          <div className={PAGE_RHYTHM}>
+            <StatStrip ariaLabel="Project summary">
+              <StatCell label="Phases complete">
+                {phases.length > 0 ? (
+                  <Stat suffix={`of ${phases.length}`}>
+                    {completedPhases.toLocaleString("en-US")}
+                  </Stat>
+                ) : (
+                  <StatEmpty>phases start at kickoff.</StatEmpty>
                 )}
-              >
-                {tab.label}
-              </Tabs.Trigger>
-            ))}
-          </Tabs.List>
+              </StatCell>
+              <StatCell label="Files">
+                {fileList.length > 0 ? (
+                  <Stat>{fileList.length.toLocaleString("en-US")}</Stat>
+                ) : (
+                  <StatEmpty>nothing uploaded yet.</StatEmpty>
+                )}
+              </StatCell>
+              <StatCell label="Revisions">
+                {revisions.length > 0 ? (
+                  <Stat>{revisions.length.toLocaleString("en-US")}</Stat>
+                ) : (
+                  <StatEmpty>none requested yet.</StatEmpty>
+                )}
+                {revisions.length > 0 && (
+                  <StatMeta>
+                    {openRevisions.toLocaleString("en-US")} still open
+                  </StatMeta>
+                )}
+              </StatCell>
+            </StatStrip>
 
-          {/* Progress tab */}
-          <Tabs.Content value="progress">
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
               <div className="space-y-8 lg:col-span-2">
                 {/* Launch pipeline — the same stage journey the team tracks in
@@ -210,15 +248,16 @@ export function ProjectDetailClient({
                       </p>
                     )}
                   </div>
-                  <div className="border-t border-border pt-5">
-                    {phases.length > 0 ? (
-                      <PhaseTracker phases={phases} />
-                    ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Phases will appear here once your project kicks off.
-                      </p>
-                    )}
-                  </div>
+                  {phases.length > 0 ? (
+                    <PhaseTracker
+                      phases={phases}
+                      className="border-t border-border"
+                    />
+                  ) : (
+                    <p className="border-t border-border pt-5 text-sm text-muted-foreground">
+                      Phases will appear here once your project kicks off.
+                    </p>
+                  )}
                 </section>
 
                 {/* Revision request */}
@@ -250,39 +289,48 @@ export function ProjectDetailClient({
                   )}
 
                   {revisions.length > 0 && (
-                    <ul className="divide-y divide-border/60 border-t border-border/60">
-                      {revisions.map((rev) => (
-                        <li key={rev.id} className="py-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <p className="min-w-0 flex-1 text-sm text-foreground">
+                    <RecordList className="border-t border-border/60">
+                      {revisions.map((rev, i) => (
+                        <RecordRow
+                          key={rev.id}
+                          index={i}
+                          primary={
+                            <span className="block font-normal whitespace-normal">
                               {rev.description}
-                            </p>
-                            <span
+                            </span>
+                          }
+                          status={
+                            <RowPill
                               className={cn(
-                                STATUS_PILL,
-                                "shrink-0",
                                 rev.status === "rejected" &&
                                   "border-destructive/40 text-destructive"
                               )}
                             >
                               {revisionStatusLabels[rev.status]}
+                            </RowPill>
+                          }
+                          secondary={
+                            /* Team responses wrap rather than truncate — the
+                               reply is the point of the row. */
+                            <span className="block whitespace-normal">
+                              <span className="tabular-nums">
+                                {new Date(rev.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "short",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  }
+                                )}
+                              </span>
+                              {rev.adminNotes
+                                ? ` · Response from the team: ${rev.adminNotes}`
+                                : ""}
                             </span>
-                          </div>
-                          <p className="mt-0.5 text-xs tabular-nums text-muted-foreground">
-                            {new Date(rev.createdAt).toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </p>
-                          {rev.adminNotes && (
-                            <p className="mt-1 text-sm text-muted-foreground">
-                              Response from the team: {rev.adminNotes}
-                            </p>
-                          )}
-                        </li>
+                          }
+                        />
                       ))}
-                    </ul>
+                    </RecordList>
                   )}
                 </section>
               </div>
@@ -344,7 +392,7 @@ export function ProjectDetailClient({
                   )}
 
                   {fileList.length > 0 ? (
-                    <div className="divide-y divide-border/60 border-t border-border/60">
+                    <RecordList className="border-t border-border/60">
                       {fileList.map((file) => (
                         <FilePreviewCard
                           key={file.url}
@@ -354,7 +402,7 @@ export function ProjectDetailClient({
                           size={file.size}
                         />
                       ))}
-                    </div>
+                    </RecordList>
                   ) : (
                     <p className="text-sm text-muted-foreground">
                       No files uploaded yet.
@@ -409,21 +457,19 @@ export function ProjectDetailClient({
                 </section>
               </div>
             </div>
-          </Tabs.Content>
+          </div>
+        )}
 
-          {/* Comments tab */}
-          <Tabs.Content value="comments">
-            <section className={SECTION_RHYTHM}>
-              <p className={SECTION_LABEL}>Comments</p>
-              <ProjectComments projectId={project.id} />
-            </section>
-          </Tabs.Content>
+        {/* Comments tab */}
+        {tab === "comments" && (
+          <section className={SECTION_RHYTHM}>
+            <p className={SECTION_LABEL}>Comments</p>
+            <ProjectComments projectId={project.id} />
+          </section>
+        )}
 
-          {/* Analytics tab */}
-          <Tabs.Content value="analytics">
-            <AnalyticsOverview projectId={project.id} />
-          </Tabs.Content>
-        </Tabs.Root>
+        {/* Analytics tab */}
+        {tab === "analytics" && <AnalyticsOverview projectId={project.id} />}
       </div>
     </div>
   );

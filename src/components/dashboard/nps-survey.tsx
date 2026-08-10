@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PRIMARY_PILL, SECTION_LABEL } from "@/lib/typography";
+import { H3, PRIMARY_PILL, SECTION_LABEL } from "@/lib/typography";
 
 interface NPSSurveyProps {
   projectId: string;
@@ -63,7 +63,7 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
       </button>
 
       <p className={SECTION_LABEL}>Project feedback</p>
-      <h3 className="mt-2 text-[17px] font-semibold text-foreground">
+      <h3 className={cn(H3, "mt-2")}>
         How was your experience?
       </h3>
       <p className="mt-1 text-sm text-muted-foreground">

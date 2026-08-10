@@ -2,10 +2,19 @@
 
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cascade, cascadeItem } from "@/lib/motion";
 import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
@@ -17,8 +26,6 @@ import {
   READING_COL,
   SECTION_LABEL,
   SECTION_RHYTHM,
-  STATUS_PILL,
-  STATUS_PILL_ACTIVE,
 } from "@/lib/typography";
 
 interface PortalView {
@@ -107,6 +114,7 @@ export default function ClientPortalPreviewPage({
         <div className={cn(READING_COL, PAGE_RHYTHM)}>
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-40 w-full" />
+          <RecordListSkeleton rows={4} />
         </div>
       </div>
     );
@@ -116,10 +124,10 @@ export default function ClientPortalPreviewPage({
     return (
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <div className={cn(READING_COL, PAGE_RHYTHM)}>
-          <PageHero
-            section="Portal preview"
+          <CrmPageHeader
+            section="Portal preview."
             title="Client Portal"
-            description="Preview unavailable."
+            subtitle="This preview could not be loaded."
           />
           <div className="py-14 text-center">
             <h2 className={H3}>Couldn&apos;t load this client</h2>
@@ -151,14 +159,6 @@ export default function ClientPortalPreviewPage({
       ? client.packageLabel
       : PACKAGE_LABELS[client.package as ClientPackage] ?? "—";
 
-  const tiles = [
-    { label: "Total Leads", value: totals.totalLeads.toLocaleString("en-US") },
-    { label: "Avg CPL", value: usd(totals.avgCpl) },
-    { label: "Ad Spend", value: usd(totals.totalSpend) },
-    { label: "Revenue", value: usd(totals.totalRevenue) },
-    { label: "ROAS", value: `${totals.roas.toFixed(2)}x` },
-  ];
-
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
@@ -166,10 +166,10 @@ export default function ClientPortalPreviewPage({
           <Link href="/admin/clients" className={QUIET_LINK}>
             Back to Clients
           </Link>
-          <PageHero
-            section="Portal preview"
+          <CrmPageHeader
+            section="Portal preview."
             title={client.companyName}
-            description={`Exactly what ${client.contactName} sees in their portal.`}
+            subtitle={`${pipeline.stageLabel} · ${pipeline.done} of ${pipeline.total} steps done — exactly what ${client.contactName} sees.`}
             action={
               <>
                 {client.driveUrl && (
@@ -203,31 +203,47 @@ export default function ClientPortalPreviewPage({
             <span className="font-medium">Viewing as client</span> — read-only
             mirror of their portal.
           </p>
-          <span className={STATUS_PILL}>{offering}</span>
-          <span className={cn(STATUS_PILL, "ml-auto")}>
-            {client.hasPortalLogin
-              ? "Portal login active"
-              : "Invite not accepted"}
+          <RowPill>{offering}</RowPill>
+          <span className="ml-auto">
+            <RowPill>
+              {client.hasPortalLogin
+                ? "Portal login active"
+                : "Invite not accepted"}
+            </RowPill>
           </span>
         </div>
 
         {/* Their performance tiles — digital marketing only */}
         {showMarketing && (
-          <motion.section
-            variants={cascade}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-5 sm:divide-x"
-          >
-            {tiles.map((t) => (
-              <motion.div key={t.label} variants={cascadeItem} className="px-5 py-6">
-                <p className={SECTION_LABEL}>{t.label}</p>
-                <p className="mt-2 text-2xl tracking-tight tabular-nums text-foreground">
-                  {t.value}
-                </p>
-              </motion.div>
-            ))}
-          </motion.section>
+          <StatStrip columns={3} ariaLabel="Client performance">
+            <StatCell label="Total Leads">
+              {totals.totalLeads > 0 ? (
+                <>
+                  <Stat>{totals.totalLeads.toLocaleString("en-US")}</Stat>
+                  <StatMeta>{usd(totals.avgCpl)} average cost per lead</StatMeta>
+                </>
+              ) : (
+                <StatEmpty>No leads reported yet.</StatEmpty>
+              )}
+            </StatCell>
+            <StatCell label="Ad Spend">
+              {totals.totalSpend > 0 ? (
+                <Stat>{usd(totals.totalSpend)}</Stat>
+              ) : (
+                <StatEmpty>No spend recorded yet.</StatEmpty>
+              )}
+            </StatCell>
+            <StatCell label="Revenue">
+              {totals.totalRevenue > 0 ? (
+                <>
+                  <Stat>{usd(totals.totalRevenue)}</Stat>
+                  <StatMeta>{totals.roas.toFixed(2)}x return on ad spend</StatMeta>
+                </>
+              ) : (
+                <StatEmpty>They haven&apos;t reported revenue yet.</StatEmpty>
+              )}
+            </StatCell>
+          </StatStrip>
         )}
 
         {/* Delivery pipeline — the same stages they watch */}
@@ -240,28 +256,22 @@ export default function ClientPortalPreviewPage({
               {pipeline.done} of {pipeline.total} · {pct}% complete
             </p>
           </div>
-          <ol className="grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
-            {pipeline.stages.map((s) => (
-              <li
+          <RecordList>
+            {pipeline.stages.map((s, i) => (
+              <RecordRow
                 key={s.key}
-                className="flex items-center justify-between gap-2 py-2 text-sm"
-              >
-                <span
-                  className={cn(
-                    s.active && "font-medium",
-                    !s.active && !s.complete && "text-muted-foreground"
-                  )}
-                >
-                  {s.label}
-                </span>
-                {s.complete ? (
-                  <span className={STATUS_PILL}>Done</span>
-                ) : s.active ? (
-                  <span className={STATUS_PILL_ACTIVE}>Current</span>
-                ) : null}
-              </li>
+                index={i}
+                primary={s.label}
+                status={
+                  s.complete ? (
+                    <RowPill>Done</RowPill>
+                  ) : s.active ? (
+                    <RowPill emphasis>Current</RowPill>
+                  ) : undefined
+                }
+              />
             ))}
-          </ol>
+          </RecordList>
         </section>
 
         {/* Their weekly reports — digital marketing only */}
@@ -270,8 +280,8 @@ export default function ClientPortalPreviewPage({
             <div className="flex items-center gap-3 border-b border-border pb-3">
               <h2 className={H3}>Weekly Reports</h2>
               {totals.pending > 0 && (
-                <span className={cn(STATUS_PILL, "ml-auto")}>
-                  {totals.pending} awaiting them
+                <span className="ml-auto">
+                  <RowPill>{totals.pending} awaiting them</RowPill>
                 </span>
               )}
             </div>
@@ -280,62 +290,37 @@ export default function ClientPortalPreviewPage({
                 No weekly results posted yet.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border text-left">
-                      <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Week</th>
-                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                        Leads
-                      </th>
-                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                        CPL
-                      </th>
-                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                        Spend
-                      </th>
-                      <th className={cn(SECTION_LABEL, "py-3 pr-4 text-right")}>
-                        Revenue
-                      </th>
-                      <th className={cn(SECTION_LABEL, "py-3")}>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border/60">
-                    {reports.map((r) => (
-                      <tr key={r.id}>
-                        <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
-                          {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
-                        </td>
-                        <td className="py-3 pr-4 text-right font-medium tabular-nums">
-                          {r.leads.toLocaleString("en-US")}
-                        </td>
-                        <td className="py-3 pr-4 text-right tabular-nums text-muted-foreground">
-                          {usd(r.cpl)}
-                        </td>
-                        <td className="py-3 pr-4 text-right tabular-nums text-muted-foreground">
-                          {usd(r.totalSpend)}
-                        </td>
-                        <td className="py-3 pr-4 text-right tabular-nums">
-                          {r.revenue !== null ? usd(r.revenue) : "—"}
-                        </td>
-                        <td className="py-3">
-                          <span
-                            className={
-                              r.status === "pending_client"
-                                ? STATUS_PILL
-                                : STATUS_PILL_ACTIVE
-                            }
-                          >
-                            {r.status === "pending_client"
-                              ? "Needs them"
-                              : "Complete"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <RecordList>
+                {reports.map((r, i) => (
+                  <RecordRow
+                    key={r.id}
+                    index={i}
+                    primary={
+                      <span className="tabular-nums">
+                        {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
+                      </span>
+                    }
+                    status={
+                      <RowPill emphasis={r.status !== "pending_client"}>
+                        {r.status === "pending_client"
+                          ? "Needs them"
+                          : "Complete"}
+                      </RowPill>
+                    }
+                    secondary={
+                      <span className="tabular-nums">
+                        {r.leads.toLocaleString("en-US")} leads · {usd(r.cpl)}{" "}
+                        CPL · {usd(r.totalSpend)} spend
+                      </span>
+                    }
+                    meta={
+                      <span className="text-xs tabular-nums whitespace-nowrap text-muted-foreground">
+                        {r.revenue !== null ? `${usd(r.revenue)} revenue` : "—"}
+                      </span>
+                    }
+                  />
+                ))}
+              </RecordList>
             )}
           </section>
         )}
@@ -353,25 +338,22 @@ export default function ClientPortalPreviewPage({
               </Link>
             </div>
             {phases.length > 0 && (
-              <ol className="grid grid-cols-1 gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
-                {phases.map((ph) => (
-                  <li
+              <RecordList>
+                {phases.map((ph, i) => (
+                  <RecordRow
                     key={ph.id}
-                    className="flex items-center justify-between gap-2 py-2 text-sm"
-                  >
-                    <span
-                      className={cn(
-                        ph.status !== "completed" && "text-muted-foreground"
-                      )}
-                    >
-                      {ph.name}
-                    </span>
-                    {ph.status === "completed" && (
-                      <span className={STATUS_PILL}>Done</span>
-                    )}
-                  </li>
+                    index={i}
+                    primary={ph.name}
+                    status={
+                      ph.status === "completed" ? (
+                        <RowPill>Done</RowPill>
+                      ) : ph.status === "in_progress" ? (
+                        <RowPill emphasis>Current</RowPill>
+                      ) : undefined
+                    }
+                  />
                 ))}
-              </ol>
+              </RecordList>
             )}
           </section>
         )}

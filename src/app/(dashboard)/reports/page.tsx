@@ -1,11 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { PageHero } from "@/components/ui/firecrawl";
 import { Input } from "@/components/ui/input";
 import { TrendCard } from "@/components/ui/monthly-trend";
-import { rowCascade, rowItem, cascade, cascadeItem } from "@/lib/motion";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
 import { cn } from "@/lib/utils";
 import {
   PAGE_RHYTHM,
@@ -13,8 +22,6 @@ import {
   READING_COL,
   SECTION_LABEL,
   SECTION_RHYTHM,
-  STATUS_PILL,
-  STATUS_PILL_ACTIVE,
 } from "@/lib/typography";
 
 /**
@@ -79,44 +86,63 @@ export default function ClientReportsPage() {
   const avgCpl = totalLeads > 0 ? Math.round(totalSpend / totalLeads) : 0;
   const roas = totalSpend > 0 ? totalRevenue / totalSpend : 0;
 
-  const tiles = [
-    { label: "Total leads", value: totalLeads.toLocaleString("en-US") },
-    { label: "Avg cost per lead", value: usd(avgCpl) },
-    { label: "Total spend", value: usd(totalSpend) },
-    { label: "Total revenue", value: usd(totalRevenue) },
-    { label: "Return on spend", value: `${roas.toFixed(2)}x` },
-  ];
+  // One sentence of status — what, if anything, is waiting on the client.
+  const status = loading
+    ? "Loading your weekly results…"
+    : reports.length === 0
+      ? "No weeks reported yet — the first lands after launch."
+      : pending.length > 0
+        ? `${
+            pending.length === 1
+              ? "One week needs"
+              : `${pending.length} weeks need`
+          } your sales numbers.`
+        : `${completed.length} ${
+            completed.length === 1 ? "week" : "weeks"
+          } complete, nothing waiting on you.`;
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Workspace"
+        <CrmPageHeader
+          section="Workspace."
           title="Weekly Reports"
-          description="Your results week by week — add your closes and revenue to see the true return on what we build and run for you."
+          subtitle={status}
         />
 
-        {/* All-time totals — hairline-divided band */}
+        {/* All-time totals over completed weeks */}
         {completed.length > 0 && (
-          <motion.section
-            variants={cascade}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-2 divide-border border-y border-border sm:grid-cols-5 sm:divide-x"
-          >
-            {tiles.map((t) => (
-              <motion.div
-                key={t.label}
-                variants={cascadeItem}
-                className="py-5 sm:px-5 sm:first:pl-0"
-              >
-                <p className={SECTION_LABEL}>{t.label}</p>
-                <p className="mt-2 text-xl tracking-tight tabular-nums text-foreground">
-                  {t.value}
-                </p>
-              </motion.div>
-            ))}
-          </motion.section>
+          <StatStrip ariaLabel="All-time results">
+            <StatCell label="Total leads">
+              {totalLeads > 0 ? (
+                <Stat>{totalLeads.toLocaleString("en-US")}</Stat>
+              ) : (
+                <StatEmpty>no leads reported yet.</StatEmpty>
+              )}
+              {totalLeads > 0 && (
+                <StatMeta>{usd(avgCpl)} average cost per lead</StatMeta>
+              )}
+            </StatCell>
+
+            <StatCell label="Total spend">
+              {totalSpend > 0 ? (
+                <Stat>{usd(totalSpend)}</Stat>
+              ) : (
+                <StatEmpty>no spend recorded yet.</StatEmpty>
+              )}
+            </StatCell>
+
+            <StatCell label="Total revenue">
+              {totalRevenue > 0 ? (
+                <Stat>{usd(totalRevenue)}</Stat>
+              ) : (
+                <StatEmpty>add your closes to see this.</StatEmpty>
+              )}
+              {totalRevenue > 0 && totalSpend > 0 && (
+                <StatMeta>{roas.toFixed(2)}x return on spend</StatMeta>
+              )}
+            </StatCell>
+          </StatStrip>
         )}
 
         {/* Action required — pending weeks */}
@@ -163,14 +189,7 @@ export default function ClientReportsPage() {
         <section className={SECTION_RHYTHM}>
           <p className={SECTION_LABEL}>Report history</p>
           {loading ? (
-            <ul className="divide-y divide-border/60 border-t border-border/60">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <li key={i} className="space-y-2 py-3">
-                  <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
-                  <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
-                </li>
-              ))}
-            </ul>
+            <RecordListSkeleton rows={4} />
           ) : reports.length === 0 ? (
             <div className="border-t border-border py-10">
               <p className="text-sm font-medium text-foreground">
@@ -182,104 +201,45 @@ export default function ClientReportsPage() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm tabular-nums">
-                <thead>
-                  <tr className="border-b border-border text-left">
-                    <th className={cn(SECTION_LABEL, "py-3 pr-4 font-medium")}>
-                      Week
-                    </th>
-                    <th
-                      className={cn(
-                        SECTION_LABEL,
-                        "py-3 pr-4 text-right font-medium"
-                      )}
-                    >
-                      Leads
-                    </th>
-                    <th
-                      className={cn(
-                        SECTION_LABEL,
-                        "py-3 pr-4 text-right font-medium"
-                      )}
-                    >
-                      CPL
-                    </th>
-                    <th
-                      className={cn(
-                        SECTION_LABEL,
-                        "py-3 pr-4 text-right font-medium"
-                      )}
-                    >
-                      Spend
-                    </th>
-                    <th
-                      className={cn(
-                        SECTION_LABEL,
-                        "py-3 pr-4 text-right font-medium"
-                      )}
-                    >
-                      Closes
-                    </th>
-                    <th
-                      className={cn(
-                        SECTION_LABEL,
-                        "py-3 pr-4 text-right font-medium"
-                      )}
-                    >
-                      Revenue
-                    </th>
-                    <th className={cn(SECTION_LABEL, "py-3 font-medium")}>
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-                <motion.tbody
-                  variants={rowCascade}
-                  initial="hidden"
-                  animate="visible"
-                  className="divide-y divide-border/60"
-                >
-                  {reports.map((r) => (
-                    <motion.tr key={r.id} variants={rowItem}>
-                      <td className="whitespace-nowrap py-3 pr-4 text-xs text-muted-foreground">
-                        {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
-                      </td>
-                      <td className="py-3 pr-4 text-right font-medium text-foreground">
-                        {r.leads.toLocaleString("en-US")}
-                      </td>
-                      <td className="py-3 pr-4 text-right text-foreground">
-                        {usd(r.cpl)}
-                      </td>
-                      <td className="py-3 pr-4 text-right text-foreground">
-                        {usd(r.totalSpend)}
-                      </td>
-                      <td className="py-3 pr-4 text-right text-foreground">
-                        {r.closes !== null
-                          ? r.closes.toLocaleString("en-US")
-                          : "—"}
-                      </td>
-                      <td className="py-3 pr-4 text-right text-foreground">
-                        {r.revenue !== null ? usd(r.revenue) : "—"}
-                      </td>
-                      <td className="py-3">
-                        <span
-                          className={
-                            r.status === "pending_client"
-                              ? STATUS_PILL_ACTIVE
-                              : STATUS_PILL
-                          }
-                        >
-                          {r.status === "pending_client"
-                            ? "Needs your input"
-                            : "Completed"}
-                        </span>
-                      </td>
-                    </motion.tr>
-                  ))}
-                </motion.tbody>
-              </table>
-            </div>
+            <RecordList className="border-t border-border/60">
+              {reports.map((r, i) => (
+                <RecordRow
+                  key={r.id}
+                  index={i}
+                  primary={
+                    <span className="tabular-nums">
+                      {fmtDay(r.weekStart)} – {fmtDay(r.weekEnd)}
+                    </span>
+                  }
+                  status={
+                    r.status === "pending_client" ? (
+                      <RowPill emphasis>Needs your input</RowPill>
+                    ) : (
+                      <RowPill>Completed</RowPill>
+                    )
+                  }
+                  secondary={
+                    <span className="tabular-nums">
+                      {[
+                        `${r.leads.toLocaleString("en-US")} leads`,
+                        `${usd(r.cpl)} CPL`,
+                        `${usd(r.totalSpend)} spend`,
+                        r.closes !== null
+                          ? `${r.closes.toLocaleString("en-US")} closes`
+                          : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  }
+                  meta={
+                    <span className="text-sm tabular-nums text-foreground">
+                      {r.revenue !== null ? usd(r.revenue) : "—"}
+                    </span>
+                  }
+                />
+              ))}
+            </RecordList>
           )}
         </section>
       </div>

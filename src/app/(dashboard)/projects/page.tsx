@@ -1,6 +1,13 @@
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
 import {
   ProjectList,
   type ProjectListItem,
@@ -30,10 +37,10 @@ export default async function ProjectsPage() {
     return (
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <div className={READING_COL}>
-          <PageHero
-            section="Workspace"
+          <CrmPageHeader
+            section="Workspace."
             title="Projects"
-            description="Your account is being set up. Please refresh in a moment."
+            subtitle="Your account is still being set up — refresh in a moment."
           />
         </div>
       </div>
@@ -70,13 +77,30 @@ export default async function ProjectsPage() {
       })),
   }));
 
+  const active = userProjects.filter(
+    (p) => p.status !== "completed" && p.status !== "cancelled"
+  ).length;
+  const shipped = userProjects.filter((p) => p.status === "completed").length;
+  const phasesDone = allPhases.filter((p) => p.status === "completed").length;
+
+  const status =
+    userProjects.length === 0
+      ? "Nothing here yet — your first build starts with onboarding."
+      : active === 0
+        ? "Everything has shipped; nothing is in flight."
+        : `${active === 1 ? "One build" : `${active} builds`} in flight${
+            shipped > 0
+              ? `, ${shipped} already shipped`
+              : ""
+          }.`;
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Workspace"
+        <CrmPageHeader
+          section="Workspace."
           title="Projects"
-          description="Track your builds, phases, and launch pipeline."
+          subtitle={status}
           action={
             <Link href="/onboarding" className={PRIMARY_PILL}>
               New project
@@ -84,13 +108,37 @@ export default async function ProjectsPage() {
           }
         />
 
+        <StatStrip ariaLabel="Project summary">
+          <StatCell label="Projects">
+            {userProjects.length > 0 ? (
+              <Stat>{userProjects.length.toLocaleString("en-US")}</Stat>
+            ) : (
+              <StatEmpty>no projects yet.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="In flight">
+            {active > 0 ? (
+              <Stat>{active.toLocaleString("en-US")}</Stat>
+            ) : (
+              <StatEmpty>nothing in flight.</StatEmpty>
+            )}
+            {shipped > 0 && (
+              <StatMeta>{shipped.toLocaleString("en-US")} shipped</StatMeta>
+            )}
+          </StatCell>
+          <StatCell label="Phases complete">
+            {allPhases.length > 0 ? (
+              <Stat suffix={`of ${allPhases.length}`}>
+                {phasesDone.toLocaleString("en-US")}
+              </Stat>
+            ) : (
+              <StatEmpty>phases start at kickoff.</StatEmpty>
+            )}
+          </StatCell>
+        </StatStrip>
+
         <section className={SECTION_RHYTHM}>
-          <p className={SECTION_LABEL}>
-            <span className="tabular-nums text-foreground/70">
-              {userProjects.length}
-            </span>{" "}
-            {userProjects.length === 1 ? "project" : "projects"}
-          </p>
+          <p className={SECTION_LABEL}>All projects</p>
           {userProjects.length === 0 ? (
             <div className="border-t border-border py-10">
               <p className="text-sm font-medium text-foreground">

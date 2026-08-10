@@ -1,5 +1,13 @@
-import Link from "next/link";
-import { PageHero } from "@/components/ui/firecrawl";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordRow,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatStrip,
+} from "@/components/crm";
 import { cn } from "@/lib/utils";
 import { db } from "@/db";
 import { projects, users, projectPhases } from "@/db/schema";
@@ -11,11 +19,8 @@ import {
   BODY_MUTED,
   H3,
   PAGE_RHYTHM,
-  QUIET_LINK,
   READING_COL,
-  SECTION_LABEL,
   SECTION_RHYTHM,
-  STATUS_PILL,
 } from "@/lib/typography";
 import { WeeklyReportsSection } from "./weekly-reports-section";
 
@@ -80,17 +85,47 @@ export default async function AdminProjectsPage() {
     }
   }
 
+  const inProgress = rows.filter((r) => r.status === "in_progress").length;
+  const completed = rows.filter((r) => r.status === "completed").length;
+  const subtitle =
+    rows.length === 0
+      ? "No projects on the books yet."
+      : `${rows.length} on the books, ${inProgress} actively in build.`;
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Operations"
+        <CrmPageHeader
+          section="Operations."
           title="Projects"
-          description="Manage all client projects and update phases."
+          subtitle={subtitle}
         />
 
+        <StatStrip columns={3} ariaLabel="Project totals">
+          <StatCell label="Projects">
+            {rows.length > 0 ? (
+              <Stat>{rows.length}</Stat>
+            ) : (
+              <StatEmpty>Nothing on the books yet.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="In build">
+            {inProgress > 0 ? (
+              <Stat>{inProgress}</Stat>
+            ) : (
+              <StatEmpty>Nothing in build right now.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Completed">
+            {completed > 0 ? (
+              <Stat>{completed}</Stat>
+            ) : (
+              <StatEmpty>No deliveries signed off yet.</StatEmpty>
+            )}
+          </StatCell>
+        </StatStrip>
+
         <section className={SECTION_RHYTHM}>
-          <p className={SECTION_LABEL}>{rows.length} projects</p>
           {rows.length === 0 ? (
             <div className="py-14 text-center">
               <h2 className={H3}>No projects yet</h2>
@@ -99,8 +134,8 @@ export default async function AdminProjectsPage() {
               </p>
             </div>
           ) : (
-            <ul className="divide-y divide-border/60">
-              {rows.map((project) => {
+            <RecordList>
+              {rows.map((project, i) => {
                 const clientName =
                   [project.clientFirstName, project.clientLastName]
                     .filter(Boolean)
@@ -109,37 +144,27 @@ export default async function AdminProjectsPage() {
                   "—";
                 const phase = phaseMap.get(project.id);
                 return (
-                  <li
+                  <RecordRow
                     key={project.id}
-                    className="group/row -mx-2 flex items-start gap-3 rounded-md px-2 py-3 transition-colors hover:bg-muted/30"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="truncate text-sm font-medium text-foreground">
-                          {project.name}
-                        </span>
-                        <span className={STATUS_PILL}>
-                          {statusLabels[project.status] || project.status}
-                        </span>
-                      </div>
-                      <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {clientName} ·{" "}
-                        {serviceLabels[project.serviceType] ||
-                          project.serviceType}
-                        {phase ? ` · ${phase}` : ""}
-                      </div>
-                    </div>
-                    <Link
-                      href={`/admin/projects/${project.id}`}
-                      aria-label={`Manage ${project.name}`}
-                      className={cn(QUIET_LINK, "shrink-0")}
-                    >
-                      Manage
-                    </Link>
-                  </li>
+                    index={i}
+                    href={`/admin/projects/${project.id}`}
+                    primary={project.name}
+                    status={
+                      <RowPill>
+                        {statusLabels[project.status] || project.status}
+                      </RowPill>
+                    }
+                    secondary={[
+                      clientName,
+                      serviceLabels[project.serviceType] || project.serviceType,
+                      phase,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  />
                 );
               })}
-            </ul>
+            </RecordList>
           )}
         </section>
 

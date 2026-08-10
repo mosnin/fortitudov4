@@ -1,40 +1,50 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { motion } from "motion/react";
 import Link from "next/link";
+import { Pencil, Trash2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/empty-state";
-import { PageHero, CountUp, BracketLabel } from "@/components/ui/firecrawl";
 import {
-  SearchPill,
-  SelectPill,
-  SortPill,
   DateRangePill,
   ALL_TIME,
   inRange,
   type DateRange,
 } from "@/components/ui/filters";
-import { TableSkeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ClientPaymentModal,
   type EditablePayment,
 } from "@/components/admin/client-payment-modal";
 import { TrendCard } from "@/components/ui/monthly-trend";
-import { rowCascade, rowItem } from "@/lib/motion";
+import {
+  CrmPageHeader,
+  StatStrip,
+  StatCell,
+  Stat,
+  StatEmpty,
+  StatMeta,
+  TabStrip,
+  Toolbar,
+  ToolbarSearch,
+  ToolbarActions,
+  FilterSelect,
+  RecordList,
+  RecordRow,
+  RowPill,
+  RowAction,
+  RecordListSkeleton,
+} from "@/components/crm";
+import { AnimatedNumber } from "@/components/motion";
 import {
   PAGE_RHYTHM,
+  READING_COL,
   SECTION_RHYTHM,
-  SECTION_LABEL,
   CAPTION,
-  STAT_NUMBER,
-  TITLE_FONT,
-  STATUS_PILL,
   PRIMARY_PILL,
   GHOST_PILL,
   H3,
 } from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { Filter, Pencil, Trash2 } from "lucide-react";
 
 interface Transaction {
   id: string;
@@ -49,6 +59,14 @@ interface Transaction {
 
 const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
+
+const day = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
 export default function AdminPaymentsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -85,12 +103,11 @@ export default function AdminPaymentsPage() {
     load();
   }
 
-  // Filters + sort drive the trends and the history table; the summary
-  // tiles above stay global (they are labeled all-time / this-month).
-  const filtered = useMemo(() => {
+  // Search + date range scope everything below the strip; the type tabs are
+  // page state on top of that scope, which is why they carry the counts.
+  const scoped = useMemo(() => {
     const q = search.trim().toLowerCase();
-    const rows = transactions.filter((t) => {
-      if (typeFilter !== "all" && t.paymentType !== typeFilter) return false;
+    return transactions.filter((t) => {
       if (!inRange(t.paidAt, range)) return false;
       if (q) {
         const hay = [t.contactName, t.companyName, t.method, t.notes]
@@ -101,6 +118,12 @@ export default function AdminPaymentsPage() {
       }
       return true;
     });
+  }, [transactions, search, range]);
+
+  const filtered = useMemo(() => {
+    const rows = scoped.filter(
+      (t) => typeFilter === "all" || t.paymentType === typeFilter
+    );
     const dir = sort.endsWith("_asc") ? 1 : -1;
     rows.sort((a, b) =>
       sort.startsWith("amount")
@@ -108,7 +131,7 @@ export default function AdminPaymentsPage() {
         : (new Date(a.paidAt).getTime() - new Date(b.paidAt).getTime()) * dir
     );
     return rows;
-  }, [transactions, search, typeFilter, range, sort]);
+  }, [scoped, typeFilter, sort]);
 
   const filtersActive =
     search.trim() !== "" || typeFilter !== "all" || range.preset !== "all";
@@ -125,104 +148,169 @@ export default function AdminPaymentsPage() {
       );
     })
     .reduce((s, t) => s + t.amount, 0);
-  // Retainers are the recurring half of revenue — worth its own tile beside
+  // Retainers are the recurring half of revenue — worth its own cell beside
   // the raw totals so setup-fee spikes don't read as recurring growth.
   const retainerCollected = transactions
     .filter((t) => t.paymentType === "monthly_retainer")
     .reduce((s, t) => s + t.amount, 0);
 
-  const tiles = [
-    { label: "Total Collected", caption: "All time", value: totalCollected },
-    { label: "This Month", caption: "Collected", value: thisMonth },
+  const clientCount = new Set(
+    transactions.map((t) => t.companyName ?? t.contactName ?? "—")
+  ).size;
+
+  const subtitle = loading
+    ? "Reading the payment ledger…"
+    : transactions.length === 0
+      ? "Nothing collected yet."
+      : `${usd(totalCollected)} collected across ${clientCount} client${
+          clientCount === 1 ? "" : "s"
+        }.`;
+
+  const tabs = [
+    { key: "all", label: "All payments", count: scoped.length },
     {
-      label: "Retainer Revenue",
-      caption: "All time · recurring",
-      value: retainerCollected,
+      key: "setup_fee",
+      label: "Setup fees",
+      count: scoped.filter((t) => t.paymentType === "setup_fee").length,
+    },
+    {
+      key: "monthly_retainer",
+      label: "Retainers",
+      count: scoped.filter((t) => t.paymentType === "monthly_retainer").length,
     },
   ];
 
   return (
-    <div className={cn(PAGE_RHYTHM, "pb-12")}>
-      <PageHero
-        section="Finance"
-        title="Payments"
-        description="Record retainers and setup fees against the client roster."
-        action={
-          <div className="flex items-center gap-2">
-            <Link href="/admin/clients" className={GHOST_PILL}>
-              Client roster
-            </Link>
-            <button
-              type="button"
-              className={cn(PRIMARY_PILL, "cursor-pointer")}
-              onClick={() => {
-                setEditing(null);
-                setModalOpen(true);
-              }}
-            >
-              Add payment
-            </button>
-          </div>
-        }
-      />
+    <div className={cn(PAGE_RHYTHM, READING_COL, "pb-12")}>
+      <div className="space-y-5">
+        <CrmPageHeader
+          section="Finance."
+          title="Payments"
+          subtitle={subtitle}
+          action={
+            <>
+              <Link href="/admin/clients" className={GHOST_PILL}>
+                Client roster
+              </Link>
+              <button
+                type="button"
+                className={cn(PRIMARY_PILL, "cursor-pointer")}
+                onClick={() => {
+                  setEditing(null);
+                  setModalOpen(true);
+                }}
+              >
+                Add payment
+              </button>
+            </>
+          }
+        />
 
-      {/* Summary — hairline-divided 3-up */}
-      <div className="grid grid-cols-1 divide-y divide-border border-b border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        {tiles.map((tile) => (
-          <div key={tile.label} className="px-5 py-6">
-            <p className={SECTION_LABEL}>{tile.label}</p>
-            <p className={cn(STAT_NUMBER, "mt-2")} style={TITLE_FONT}>
-              <CountUp value={tile.value} format={usd} />
-            </p>
-            <p className={cn(CAPTION, "mt-1")}>{tile.caption}</p>
-          </div>
-        ))}
+        {!loading && transactions.length > 0 && (
+          <TabStrip
+            tabs={tabs}
+            active={typeFilter}
+            onChange={setTypeFilter}
+            ariaLabel="Payment type"
+          />
+        )}
       </div>
 
-      {/* Filter row — search + type pill, date range right-aligned.
-          Drives the trends and the payment history below. */}
+      {/* Collections at a glance — global, not filtered. */}
+      <StatStrip columns={3} ariaLabel="Collections summary">
+        {loading ? (
+          <>
+            <StatCell label="Total collected">
+              <Skeleton className="h-8 w-24" />
+            </StatCell>
+            <StatCell label="This month">
+              <Skeleton className="h-8 w-24" />
+            </StatCell>
+            <StatCell label="Retainer revenue">
+              <Skeleton className="h-8 w-24" />
+            </StatCell>
+          </>
+        ) : (
+          <>
+            <StatCell label="Total collected">
+              {totalCollected === 0 ? (
+                <StatEmpty>Nothing collected yet.</StatEmpty>
+              ) : (
+                <>
+                  <Stat suffix="collected">
+                    <AnimatedNumber value={totalCollected} format={usd} />
+                  </Stat>
+                  <StatMeta>
+                    All time · {transactions.length} payment
+                    {transactions.length === 1 ? "" : "s"}
+                  </StatMeta>
+                </>
+              )}
+            </StatCell>
+            <StatCell label="This month">
+              {thisMonth === 0 ? (
+                <StatEmpty>Nothing collected this month.</StatEmpty>
+              ) : (
+                <>
+                  <Stat suffix="collected">
+                    <AnimatedNumber value={thisMonth} format={usd} />
+                  </Stat>
+                  <StatMeta>
+                    {now.toLocaleDateString("en-US", {
+                      month: "long",
+                      year: "numeric",
+                      timeZone: "UTC",
+                    })}
+                  </StatMeta>
+                </>
+              )}
+            </StatCell>
+            <StatCell label="Retainer revenue">
+              {retainerCollected === 0 ? (
+                <StatEmpty>No retainers recorded yet.</StatEmpty>
+              ) : (
+                <>
+                  <Stat suffix="recurring">
+                    <AnimatedNumber value={retainerCollected} format={usd} />
+                  </Stat>
+                  <StatMeta>All time · monthly retainers</StatMeta>
+                </>
+              )}
+            </StatCell>
+          </>
+        )}
+      </StatStrip>
+
+      {/* One filter row — search left, sort and range right. Drives the trends
+          and the payment history below. */}
       {!loading && transactions.length > 0 && (
         <div className={SECTION_RHYTHM}>
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-            <SearchPill
-              className="lg:w-64"
-              placeholder="Search client, method, notes…"
+          <Toolbar>
+            <ToolbarSearch
               value={search}
               onChange={setSearch}
+              placeholder="Search client, method, notes…"
             />
-            <SelectPill
-              className="lg:w-44"
-              icon={Filter}
-              ariaLabel="Payment type"
-              value={typeFilter}
-              onChange={setTypeFilter}
-              options={[
-                { value: "all", label: "All Types" },
-                { value: "setup_fee", label: "Setup Fees" },
-                { value: "monthly_retainer", label: "Retainers" },
-              ]}
-            />
-            <SortPill
-              className="lg:w-48"
-              value={sort}
-              onChange={setSort}
-              options={[
-                { value: "date_desc", label: "Newest first" },
-                { value: "date_asc", label: "Oldest first" },
-                { value: "amount_desc", label: "Amount: high → low" },
-                { value: "amount_asc", label: "Amount: low → high" },
-              ]}
-            />
-            <div className="lg:ml-auto">
+            <ToolbarActions>
+              <FilterSelect
+                label="Sort"
+                value={sort}
+                onChange={setSort}
+                options={[
+                  { value: "date_desc", label: "Newest first" },
+                  { value: "date_asc", label: "Oldest first" },
+                  { value: "amount_desc", label: "Amount: high → low" },
+                  { value: "amount_asc", label: "Amount: low → high" },
+                ]}
+              />
               <DateRangePill value={range} onChange={setRange} />
-            </div>
-          </div>
+            </ToolbarActions>
+          </Toolbar>
           {filtersActive && (
-            <BracketLabel
-              n={filtered.length}
-              m={transactions.length}
-              label={`Filtered · ${usd(filteredTotal)} collected`}
-            />
+            <p className={cn(CAPTION, "tabular-nums")}>
+              {filtered.length} of {transactions.length} payments ·{" "}
+              {usd(filteredTotal)} collected
+            </p>
           )}
         </div>
       )}
@@ -251,9 +339,7 @@ export default function AdminPaymentsPage() {
           <h2 className={H3}>Payment History</h2>
         </div>
         {loading ? (
-          <div className="pt-1">
-            <TableSkeleton rows={6} />
-          </div>
+          <RecordListSkeleton rows={6} />
         ) : filtered.length === 0 ? (
           <EmptyState
             title={filtersActive ? "No matching payments" : "No payments yet"}
@@ -264,90 +350,55 @@ export default function AdminPaymentsPage() {
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border/60 text-left">
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Date</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Client</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Type</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Method</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Amount</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Notes</th>
-                  <th className="py-3" />
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border/60"
-              >
-                {filtered.map((t) => (
-                  <motion.tr
-                    key={t.id}
-                    variants={rowItem}
-                    className="group transition-colors hover:bg-muted/30"
-                  >
-                    <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
-                      {new Date(t.paidAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                        timeZone: "UTC",
-                      })}
-                    </td>
-                    <td className="py-3 pr-4 font-medium text-foreground">
-                      {t.contactName ?? t.companyName ?? "—"}
-                    </td>
-                    <td className="py-3 pr-4 whitespace-nowrap">
-                      <span className={STATUS_PILL}>
-                        {t.paymentType === "setup_fee" ? "Setup" : "Retainer"}
-                      </span>
-                    </td>
-                    <td className="py-3 pr-4 text-muted-foreground">
-                      {t.method}
-                    </td>
-                    <td className="py-3 pr-4 font-medium tabular-nums whitespace-nowrap">
-                      {usd(t.amount)}
-                    </td>
-                    <td
-                      className="max-w-40 truncate py-3 pr-4 text-muted-foreground"
-                      title={t.notes ?? undefined}
+          <RecordList>
+            {filtered.map((t, i) => (
+              <RecordRow
+                key={t.id}
+                index={i}
+                primary={t.contactName ?? t.companyName ?? "Unnamed client"}
+                status={
+                  <RowPill>
+                    {t.paymentType === "setup_fee" ? "SETUP" : "RETAINER"}
+                  </RowPill>
+                }
+                secondary={[t.method, day(t.paidAt), t.notes]
+                  .filter(Boolean)
+                  .join(" · ")}
+                meta={
+                  <span className="text-sm font-medium tabular-nums text-foreground">
+                    {usd(t.amount)}
+                  </span>
+                }
+                actions={
+                  <>
+                    <RowAction
+                      label="Edit payment"
+                      onClick={() => {
+                        setEditing({
+                          id: t.id,
+                          paidAt: t.paidAt,
+                          paymentType: t.paymentType,
+                          method: t.method,
+                          amount: t.amount,
+                          notes: t.notes,
+                        });
+                        setModalOpen(true);
+                      }}
                     >
-                      {t.notes ?? "—"}
-                    </td>
-                    <td className="py-3 text-right whitespace-nowrap">
-                      <button
-                        onClick={() => {
-                          setEditing({
-                            id: t.id,
-                            paidAt: t.paidAt,
-                            paymentType: t.paymentType,
-                            method: t.method,
-                            amount: t.amount,
-                            notes: t.notes,
-                          });
-                          setModalOpen(true);
-                        }}
-                        className="cursor-pointer rounded-md p-1.5 text-muted-foreground opacity-0 transition-all hover:bg-muted hover:text-foreground group-hover:opacity-100"
-                        aria-label="Edit payment"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => remove(t)}
-                        className="cursor-pointer rounded-md p-1.5 text-muted-foreground opacity-0 transition-all hover:bg-destructive/10 hover:text-destructive group-hover:opacity-100"
-                        aria-label="Delete payment"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </td>
-                  </motion.tr>
-                ))}
-              </motion.tbody>
-            </table>
-          </div>
+                      <Pencil size={13} />
+                    </RowAction>
+                    <RowAction
+                      label="Delete payment"
+                      destructive
+                      onClick={() => remove(t)}
+                    >
+                      <Trash2 size={13} />
+                    </RowAction>
+                  </>
+                }
+              />
+            ))}
+          </RecordList>
         )}
       </section>
 

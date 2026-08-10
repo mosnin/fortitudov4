@@ -105,7 +105,7 @@ export function NotificationBell() {
       {/* The bell IS the control — a functional icon button, not decoration. */}
       <button
         onClick={() => setOpen(!open)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background transition-colors hover:bg-muted cursor-pointer"
+        className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
         aria-label="Notifications"
       >
         <Bell className="h-4 w-4" strokeWidth={1.75} />

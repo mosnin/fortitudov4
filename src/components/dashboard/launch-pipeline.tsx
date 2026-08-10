@@ -1,10 +1,6 @@
+import { RecordList, RecordRow, RowPill } from "@/components/crm";
 import { cn } from "@/lib/utils";
-import {
-  SECTION_LABEL,
-  SECTION_RHYTHM,
-  STATUS_PILL,
-  STATUS_PILL_ACTIVE,
-} from "@/lib/typography";
+import { SECTION_LABEL, SECTION_RHYTHM } from "@/lib/typography";
 
 /**
  * Read-only delivery pipeline — the same stage checklist the team tracks in
@@ -13,10 +9,11 @@ import {
  * bridge. Stages come from CRM_STAGES/STAGE_LABELS via getLaunchPipeline;
  * nothing here is offering-specific.
  *
- * Purely presentational: server pages load the data with
- * `getLaunchPipeline()` (launch-pipeline-data.ts) and pass it down, so this
- * renders in both server and client trees without its own fetch cycle.
- * Renders nothing until the client has a roster record.
+ * Stages render with the kit's row vocabulary (`RecordList` + `RecordRow`).
+ * Purely presentational: server pages load the data with `getLaunchPipeline()`
+ * (launch-pipeline-data.ts) and pass it down, so this renders in both server
+ * and client trees without its own fetch cycle. Renders nothing until the
+ * client has a roster record.
  */
 
 export interface PipelineStage {
@@ -71,33 +68,38 @@ export function LaunchPipeline({ data }: { data: LaunchPipelineData | null }) {
         </div>
       </div>
 
-      {/* Stage list — hairline rows, neutral word pills, no glyphs. */}
-      <ul className="divide-y divide-border/60">
-        {data.stages.map((s) => (
-          <li
+      {/* Stage list — the kit's rows, neutral word pills, no glyphs. */}
+      <RecordList>
+        {data.stages.map((s, index) => (
+          <RecordRow
             key={s.key}
-            className="flex items-center justify-between gap-3 py-3"
-          >
-            <span
-              className={cn(
-                "truncate text-sm",
-                s.complete || s.active
-                  ? "text-foreground"
-                  : "text-muted-foreground"
-              )}
-            >
-              {s.label}
-            </span>
-            {s.active ? (
-              <span className={STATUS_PILL_ACTIVE}>Current</span>
-            ) : s.complete ? (
-              <span className={STATUS_PILL}>Done</span>
-            ) : (
-              <span className="text-xs text-muted-foreground">Upcoming</span>
-            )}
-          </li>
+            index={index}
+            primary={
+              <span
+                className={
+                  s.complete || s.active
+                    ? "text-foreground"
+                    : "font-normal text-muted-foreground"
+                }
+              >
+                {s.label}
+              </span>
+            }
+            status={
+              s.active ? (
+                <RowPill emphasis>Current</RowPill>
+              ) : s.complete ? (
+                <RowPill>Done</RowPill>
+              ) : undefined
+            }
+            meta={
+              !s.active && !s.complete ? (
+                <span className="text-xs text-muted-foreground">Upcoming</span>
+              ) : undefined
+            }
+          />
         ))}
-      </ul>
+      </RecordList>
     </section>
   );
 }

@@ -6,12 +6,12 @@ import { usePathname } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "motion/react";
 import { Logo } from "@/components/ui/logo";
-import { Button } from "@/components/ui/button";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { cn } from "@/lib/utils";
 import { springSnappy } from "@/lib/motion";
+import { PRIMARY_PILL } from "@/lib/typography";
 import {
   ChevronsLeft,
   ChevronsRight,
@@ -108,6 +108,7 @@ function NavLink({
     </Link>
   );
 }
+
 
 /** Group consecutive items by their section label. */
 function groupNav(navItems: ShellNavItem[]) {
@@ -303,12 +304,13 @@ export function AppShell({
 
       {/* Main column */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Topbar — borderless; PageHero draws its own hairline */}
+        {/* Topbar — borderless and shadowless; the page header draws the first
+            hairline. Controls read as quiet ghosts, the CTA as the one pill. */}
         <header className="sticky top-0 z-30 bg-background/85 backdrop-blur-xl">
           <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
             <div className="flex min-w-0 items-center gap-2">
               <button
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted lg:hidden cursor-pointer"
+                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground lg:hidden"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open navigation"
               >
@@ -316,19 +318,20 @@ export function AppShell({
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1">
               <GlobalSearch />
               <NotificationBell />
               <ThemeToggle />
-              <UserButton />
+              <span className="ml-0.5 flex items-center">
+                <UserButton />
+              </span>
               {cta && (
-                <Button
-                  size="sm"
-                  className="ml-1 hidden active:scale-[0.98] sm:inline-flex"
-                  asChild
+                <Link
+                  href={cta.href}
+                  className={cn(PRIMARY_PILL, "ml-2 hidden sm:inline-flex")}
                 >
-                  <Link href={cta.href}>{cta.label}</Link>
-                </Button>
+                  {cta.label}
+                </Link>
               )}
             </div>
           </div>

@@ -1,18 +1,13 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
-import { PageHero } from "@/components/ui/firecrawl";
+import { CrmPageHeader, RowPill } from "@/components/crm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { ROLE_LABELS } from "@/lib/permissions";
 import type { UserRole } from "@/db/schema";
 import { cn } from "@/lib/utils";
-import {
-  PAGE_RHYTHM,
-  READING_COL,
-  SECTION_LABEL,
-  STATUS_PILL,
-} from "@/lib/typography";
+import { PAGE_RHYTHM, READING_COL, SECTION_LABEL } from "@/lib/typography";
 
 /**
  * Settings — account details. Sign-in details (email, password, 2FA, profile
@@ -36,13 +31,19 @@ export default async function SettingsPage() {
       })
     : null;
 
+  const roleLabel = ROLE_LABELS[(dbUser?.role ?? "client") as UserRole];
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Account"
+        <CrmPageHeader
+          section="Account."
           title="Settings"
-          description="Your account details and how billing works."
+          subtitle={
+            memberSince
+              ? `Signed in as ${roleLabel.toLowerCase()}, with us since ${memberSince}.`
+              : `Signed in as ${roleLabel.toLowerCase()}.`
+          }
         />
 
         <div className="animate-fade-up grid grid-cols-1 divide-y divide-border border-y border-border lg:grid-cols-2 lg:divide-x lg:divide-y-0">
@@ -70,9 +71,7 @@ export default async function SettingsPage() {
               <div className="flex items-center justify-between gap-4 py-3">
                 <dt className="text-sm text-muted-foreground">Role</dt>
                 <dd>
-                  <span className={STATUS_PILL}>
-                    {ROLE_LABELS[(dbUser?.role ?? "client") as UserRole]}
-                  </span>
+                  <RowPill>{roleLabel}</RowPill>
                 </dd>
               </div>
               {memberSince && (

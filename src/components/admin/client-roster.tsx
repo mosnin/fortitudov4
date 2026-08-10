@@ -2,9 +2,23 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { TableSkeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
-import { SortPill } from "@/components/ui/filters";
+import {
+  FilterSelect,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowAction,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+  Toolbar,
+  ToolbarActions,
+  ToolbarSearch,
+} from "@/components/crm";
 import { PAYMENT_METHODS } from "@/lib/payment-methods";
 import {
   CLIENT_PACKAGES,
@@ -12,7 +26,6 @@ import {
   PACKAGE_LABELS,
   type ClientPackage,
 } from "@/lib/crm";
-import { rowCascade, rowItem } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
@@ -21,12 +34,9 @@ import {
   H1,
   H3,
   PRIMARY_PILL,
-  QUIET_LINK,
-  SECTION_LABEL,
-  STATUS_PILL,
   TITLE_FONT,
 } from "@/lib/typography";
-import { X, Search } from "lucide-react";
+import { CreditCard, Pause, Pencil, Play, Trash2, X } from "lucide-react";
 
 interface ClientRow {
   id: string;
@@ -366,50 +376,81 @@ export function ClientRoster({
     .filter((c) => c.status === "active")
     .reduce((s, c) => s + c.monthlyFee, 0);
 
+  const fmtDate = (iso: string) =>
+    new Date(iso).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+
   return (
     <>
-      <section>
-        <div className="flex flex-col gap-3 pb-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className={SECTION_LABEL}>{visible.length} clients</p>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                className="h-9 w-56 rounded-full pl-9"
-                placeholder="Search clients or companies…"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </div>
-            <select
-              className="h-9 rounded-full border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40"
-              aria-label="Filter by status"
+      <section className="space-y-4">
+        <StatStrip columns={3} ariaLabel="Roster totals">
+          <StatCell label="Clients in view">
+            {visible.length > 0 ? (
+              <Stat>{visible.length}</Stat>
+            ) : (
+              <StatEmpty>Nothing matches these filters.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Setup fees">
+            {setupTotal > 0 ? (
+              <Stat>{usd(setupTotal)}</Stat>
+            ) : (
+              <StatEmpty>No setup fees on these clients.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Monthly recurring">
+            {mrrTotal > 0 ? (
+              <>
+                <Stat suffix="/mo">{usd(mrrTotal)}</Stat>
+                <StatMeta>active retainers only</StatMeta>
+              </>
+            ) : (
+              <StatEmpty>No active retainers in view.</StatEmpty>
+            )}
+          </StatCell>
+        </StatStrip>
+
+        <Toolbar>
+          <ToolbarSearch
+            value={query}
+            onChange={setQuery}
+            placeholder="Search clients or companies…"
+          />
+          <ToolbarActions>
+            <FilterSelect
+              label="Status"
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="all">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="overdue">Overdue</option>
-              <option value="paused">Paused</option>
-              <option value="churned">Churned</option>
-            </select>
-            <SortPill
-              className="w-52"
+              onChange={setStatusFilter}
+              options={[
+                { value: "all", label: "All" },
+                { value: "active", label: "Active" },
+                { value: "overdue", label: "Overdue" },
+                { value: "paused", label: "Paused" },
+                { value: "churned", label: "Churned" },
+              ]}
+            />
+            <FilterSelect
+              label="Sort"
               value={sort}
               onChange={setSort}
               options={[
-                { value: "due_soon", label: "Due date: soonest first" },
-                { value: "due_late", label: "Due date: latest first" },
-                { value: "mrr_high", label: "MRR: high → low" },
-                { value: "mrr_low", label: "MRR: low → high" },
+                { value: "due_soon", label: "Due soonest" },
+                { value: "due_late", label: "Due latest" },
+                { value: "mrr_high", label: "MRR high → low" },
+                { value: "mrr_low", label: "MRR low → high" },
                 { value: "name", label: "Company A–Z" },
                 { value: "newest", label: "Newest clients" },
               ]}
             />
-          </div>
-        </div>
+          </ToolbarActions>
+        </Toolbar>
+
         {loading ? (
-          <TableSkeleton rows={5} />
+          <RecordListSkeleton rows={5} />
         ) : clients.length === 0 ? (
           <div className="py-14 text-center">
             <h3 className={H3}>No clients yet</h3>
@@ -419,180 +460,116 @@ export function ClientRoster({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left align-top">
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>
-                    Client &amp; Company
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Package</th>
-                  <th className="py-3 pr-4">
-                    <span className={cn(SECTION_LABEL, "block")}>Setup</span>
-                    <span className="text-[10px] tabular-nums text-muted-foreground">
-                      {usd(setupTotal)}
-                    </span>
-                  </th>
-                  <th className="py-3 pr-4">
-                    <span className={cn(SECTION_LABEL, "block")}>MRR</span>
-                    <span className="text-[10px] tabular-nums text-muted-foreground">
-                      {usd(mrrTotal)}
-                    </span>
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Start Date</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Next Due</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Days Left</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Status</th>
-                  <th className={cn(SECTION_LABEL, "py-3 text-right")}>
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border/60"
-              >
-                {visible.map((client) => {
-                  const dl = daysLeft(client.nextDueDate);
-                  const isOverdue =
-                    client.status === "active" && dl !== null && dl < 0;
-                  return (
-                    <motion.tr
-                      key={client.id}
-                      variants={rowItem}
-                      className="group transition-colors hover:bg-muted/30"
-                    >
-                      <td className="py-3 pr-4">
-                        <p className="font-medium text-foreground">
-                          {client.companyName}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {client.contactName}
-                          {client.businessType ? ` · ${client.businessType}` : ""}
-                        </p>
-                      </td>
-                      <td className="py-3 pr-4">
-                        <span className={cn(STATUS_PILL, "whitespace-nowrap")}>
-                          {packageName(client)}
-                        </span>
-                      </td>
-                      <td className="py-3 pr-4 tabular-nums text-muted-foreground">
-                        {usd(client.setupFee)}
-                      </td>
-                      <td className="py-3 pr-4 font-medium tabular-nums">
+          <RecordList>
+            {visible.map((client, i) => {
+              const dl = daysLeft(client.nextDueDate);
+              const isOverdue =
+                client.status === "active" && dl !== null && dl < 0;
+              const dueLine = !client.nextDueDate
+                ? "No due date"
+                : isOverdue
+                  ? `${-dl!} day${dl === -1 ? "" : "s"} overdue`
+                  : `Due ${fmtDate(client.nextDueDate)} · ${dl} days`;
+              return (
+                <RecordRow
+                  key={client.id}
+                  index={i}
+                  primary={client.companyName}
+                  status={
+                    <>
+                      <RowPill className="whitespace-nowrap">
+                        {packageName(client)}
+                      </RowPill>
+                      {/* Overdue is a genuine semantic — everything else is
+                          a neutral word pill. */}
+                      {isOverdue ? (
+                        <RowPill className="border-destructive/40 text-destructive">
+                          Overdue
+                        </RowPill>
+                      ) : client.status !== "active" ? (
+                        <RowPill>{client.status}</RowPill>
+                      ) : null}
+                    </>
+                  }
+                  secondary={[
+                    client.contactName,
+                    client.businessType,
+                    `Started ${fmtDate(client.startDate)}`,
+                    `${usd(client.setupFee)} setup`,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                  meta={
+                    <>
+                      <span className="text-xs font-medium tabular-nums whitespace-nowrap text-foreground">
                         {usd(client.monthlyFee)}
                         <span className="font-normal text-muted-foreground">
                           /mo
                         </span>
-                      </td>
-                      <td className="py-3 pr-4 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
-                        {new Date(client.startDate).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                          timeZone: "UTC",
-                        })}
-                      </td>
-                      <td
+                      </span>
+                      <span
                         className={cn(
-                          "py-3 pr-4 text-xs tabular-nums whitespace-nowrap",
+                          "hidden text-xs tabular-nums whitespace-nowrap sm:inline",
                           isOverdue
                             ? "font-medium text-destructive"
                             : "text-muted-foreground",
                         )}
                       >
-                        {client.nextDueDate
-                          ? new Date(client.nextDueDate).toLocaleDateString(
-                              "en-US",
-                              {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                                timeZone: "UTC",
-                              },
-                            )
-                          : "—"}
-                      </td>
-                      <td
-                        className={cn(
-                          "py-3 pr-4 text-xs tabular-nums whitespace-nowrap",
-                          isOverdue
-                            ? "font-medium text-destructive"
-                            : "text-muted-foreground",
-                        )}
+                        {dueLine}
+                      </span>
+                    </>
+                  }
+                  actions={
+                    <>
+                      <RowAction
+                        label={`Record payment for ${client.companyName}`}
+                        onClick={() => {
+                          setPaymentFor(client);
+                          setPayForm({
+                            paymentType: "monthly_retainer",
+                            method: PAYMENT_METHODS[0],
+                            paidAt: today(),
+                          });
+                          setError(null);
+                        }}
                       >
-                        {dl === null
-                          ? "—"
-                          : dl < 0
-                            ? `${-dl} day${dl === -1 ? "" : "s"} overdue`
-                            : `${dl} days`}
-                      </td>
-                      <td className="py-3 pr-4">
-                        {/* Overdue is a genuine semantic — everything else is
-                            a neutral word pill. */}
-                        <span
-                          className={cn(
-                            STATUS_PILL,
-                            isOverdue && "border-destructive/40 text-destructive",
-                          )}
+                        <CreditCard size={13} />
+                      </RowAction>
+                      <RowAction
+                        label={`Edit ${client.companyName}`}
+                        onClick={() => openEdit(client)}
+                      >
+                        <Pencil size={13} />
+                      </RowAction>
+                      {client.status !== "churned" && (
+                        <RowAction
+                          label={
+                            client.status === "paused"
+                              ? `Resume ${client.companyName}`
+                              : `Pause ${client.companyName}`
+                          }
+                          onClick={() => togglePause(client)}
                         >
-                          {isOverdue ? "Overdue" : client.status}
-                        </span>
-                      </td>
-                      <td className="py-3 text-right whitespace-nowrap">
-                        <div className="flex items-center justify-end gap-3">
-                          <button
-                            onClick={() => {
-                              setPaymentFor(client);
-                              setPayForm({
-                                paymentType: "monthly_retainer",
-                                method: PAYMENT_METHODS[0],
-                                paidAt: today(),
-                              });
-                              setError(null);
-                            }}
-                            className={cn(QUIET_LINK, "cursor-pointer")}
-                            aria-label={`Record payment for ${client.companyName}`}
-                          >
-                            Record payment
-                          </button>
-                          <button
-                            onClick={() => openEdit(client)}
-                            className={cn(QUIET_LINK, "cursor-pointer")}
-                            aria-label={`Edit ${client.companyName}`}
-                          >
-                            Edit
-                          </button>
-                          {client.status !== "churned" && (
-                            <button
-                              onClick={() => togglePause(client)}
-                              className={cn(QUIET_LINK, "cursor-pointer")}
-                              aria-label={
-                                client.status === "paused"
-                                  ? `Resume ${client.companyName}`
-                                  : `Pause ${client.companyName}`
-                              }
-                            >
-                              {client.status === "paused" ? "Resume" : "Pause"}
-                            </button>
+                          {client.status === "paused" ? (
+                            <Play size={13} />
+                          ) : (
+                            <Pause size={13} />
                           )}
-                          <button
-                            onClick={() => removeClient(client)}
-                            className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive"
-                            aria-label={`Delete ${client.companyName}`}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  );
-                })}
-              </motion.tbody>
-            </table>
-          </div>
+                        </RowAction>
+                      )}
+                      <RowAction
+                        label={`Delete ${client.companyName}`}
+                        destructive
+                        onClick={() => removeClient(client)}
+                      >
+                        <Trash2 size={13} />
+                      </RowAction>
+                    </>
+                  }
+                />
+              );
+            })}
+          </RecordList>
         )}
       </section>
 

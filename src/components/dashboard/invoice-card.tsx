@@ -1,8 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { RecordList, RecordRow, RowPill } from "@/components/crm";
 import { cn } from "@/lib/utils";
-import { SECTION_LABEL, STATUS_PILL } from "@/lib/typography";
+import { GHOST_PILL, SECTION_LABEL } from "@/lib/typography";
 
 interface InvoiceItem {
   description: string;
@@ -52,15 +52,14 @@ Status: ${invoice.status.toUpperCase()}
       <div className="flex items-center justify-between gap-3">
         <p className={SECTION_LABEL}>Invoice</p>
         {/* Overdue is a genuine semantic; paid/pending stay neutral. */}
-        <span
+        <RowPill
           className={cn(
-            STATUS_PILL,
             invoice.status === "overdue" &&
               "border-destructive/40 text-destructive"
           )}
         >
           {invoice.status}
-        </span>
+        </RowPill>
       </div>
 
       <dl className="divide-y divide-border/60 border-t border-border/60">
@@ -84,18 +83,24 @@ Status: ${invoice.status.toUpperCase()}
         </div>
       </dl>
 
-      <ul className="divide-y divide-border/60 border-t border-border/60">
+      <RecordList className="border-t border-border/60">
         {invoice.items.map((item, i) => (
-          <li key={i} className="flex justify-between gap-3 py-3">
-            <span className="min-w-0 truncate text-sm text-muted-foreground">
-              {item.description}
-            </span>
-            <span className="shrink-0 text-sm tabular-nums text-foreground">
-              {item.amount}
-            </span>
-          </li>
+          <RecordRow
+            key={i}
+            index={i}
+            primary={
+              <span className="font-normal text-muted-foreground">
+                {item.description}
+              </span>
+            }
+            meta={
+              <span className="text-sm tabular-nums text-foreground">
+                {item.amount}
+              </span>
+            }
+          />
         ))}
-      </ul>
+      </RecordList>
 
       <div className="space-y-2 border-t border-border/60 pt-3">
         <div className="flex justify-between text-sm">
@@ -114,9 +119,13 @@ Status: ${invoice.status.toUpperCase()}
         </div>
       </div>
 
-      <Button variant="outline" className="w-full" onClick={handleDownload}>
+      <button
+        type="button"
+        onClick={handleDownload}
+        className={cn(GHOST_PILL, "w-full cursor-pointer justify-center")}
+      >
         Download invoice
-      </Button>
+      </button>
     </section>
   );
 }

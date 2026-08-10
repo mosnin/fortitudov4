@@ -3,9 +3,19 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
-import { PageHero } from "@/components/ui/firecrawl";
-import { TableSkeleton } from "@/components/ui/skeleton";
-import { rowCascade, rowItem } from "@/lib/motion";
+import {
+  CrmPageHeader,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowAction,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatStrip,
+} from "@/components/crm";
+import { AnimatedNumber } from "@/components/motion";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
@@ -15,14 +25,11 @@ import {
   H3,
   PAGE_RHYTHM,
   PRIMARY_PILL,
-  QUIET_LINK,
   READING_COL,
-  SECTION_LABEL,
   SECTION_RHYTHM,
-  STATUS_PILL,
   TITLE_FONT,
 } from "@/lib/typography";
-import { X } from "lucide-react";
+import { Pencil, Send, Trash2, X } from "lucide-react";
 import { ROLE_LABELS } from "@/lib/permissions";
 import type { UserRole } from "@/db/schema";
 
@@ -227,20 +234,62 @@ export default function AdminTeamPage() {
   }
 
   const staff = users.filter((u) => u.role !== "client");
+  const invited = staff.filter(
+    (u) => u.clerkId?.startsWith("invite:") ?? false
+  ).length;
+  const admins = staff.filter((u) => u.role === "admin").length;
+
+  const subtitle = loading
+    ? "Loading the roster."
+    : staff.length === 0
+      ? "Nobody on staff yet."
+      : `${staff.length} on staff, ${
+          invited === 0 ? "every invite accepted" : `${invited} invite${invited === 1 ? "" : "s"} outstanding`
+        }.`;
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Operations"
+        <CrmPageHeader
+          section="Operations."
           title="Team"
-          description="Manage staff access. Add a team member to send them a portal invite — they become assignable across the CRM instantly."
+          subtitle={subtitle}
           action={
             <button onClick={openAdd} className={PRIMARY_PILL}>
               Add Team Member
             </button>
           }
         />
+
+        <StatStrip columns={3} ariaLabel="Team totals">
+          <StatCell label="Staff">
+            {staff.length > 0 ? (
+              <Stat>
+                <AnimatedNumber value={staff.length} />
+              </Stat>
+            ) : (
+              <StatEmpty>Nobody on staff yet.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Invites outstanding">
+            {invited > 0 ? (
+              <Stat>
+                <AnimatedNumber value={invited} />
+              </Stat>
+            ) : (
+              <StatEmpty>Every invite has been accepted.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Admins">
+            {admins > 0 ? (
+              <Stat>
+                <AnimatedNumber value={admins} />
+              </Stat>
+            ) : (
+              <StatEmpty>No admin account on file.</StatEmpty>
+            )}
+          </StatCell>
+        </StatStrip>
 
         {notice && (
           <p className="rounded-lg border border-border bg-muted/40 px-4 py-2 text-sm text-foreground">
@@ -251,12 +300,11 @@ export default function AdminTeamPage() {
 
         {/* Staff members */}
         <section className={SECTION_RHYTHM}>
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <h2 className={H3}>Staff Members</h2>
-            <p className={SECTION_LABEL}>{staff.length} staff</p>
-          </div>
+          <h2 className={cn(H3, "border-b border-border pb-3")}>
+            Staff Members
+          </h2>
           {loading ? (
-            <TableSkeleton rows={4} />
+            <RecordListSkeleton rows={4} />
           ) : staff.length === 0 ? (
             <div className="py-14 text-center">
               <h3 className={H3}>No staff members yet</h3>
@@ -266,41 +314,24 @@ export default function AdminTeamPage() {
               </p>
             </div>
           ) : (
-            <motion.ul
-              variants={rowCascade}
-              initial="hidden"
-              animate="visible"
-              className="divide-y divide-border/60"
-            >
-              {staff.map((member) => {
+            <RecordList>
+              {staff.map((member, i) => {
                 const pending = member.clerkId?.startsWith("invite:") ?? false;
                 const name =
                   [member.firstName, member.lastName]
                     .filter(Boolean)
                     .join(" ") || "—";
                 return (
-                  <motion.li
+                  <RecordRow
                     key={member.id}
-                    variants={rowItem}
-                    className="group/row -mx-2 flex flex-wrap items-start gap-3 rounded-md px-2 py-3 transition-colors hover:bg-muted/30"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate text-sm font-medium text-foreground">
-                          {name}
-                        </span>
-                        {pending && (
-                          <span className={STATUS_PILL}>Invited</span>
-                        )}
-                      </div>
-                      <div className="mt-0.5 truncate text-xs text-muted-foreground">
-                        {member.email}
-                      </div>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-3">
+                    index={i}
+                    primary={name}
+                    status={pending ? <RowPill>Invited</RowPill> : undefined}
+                    secondary={member.email}
+                    meta={
                       <select
                         aria-label={`Role for ${name}`}
-                        className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] uppercase tracking-wide text-muted-foreground transition-colors hover:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                        className="h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50"
                         value={member.role}
                         disabled={updating === member.id}
                         onChange={(e) =>
@@ -313,37 +344,36 @@ export default function AdminTeamPage() {
                           </option>
                         ))}
                       </select>
-                      <button
-                        onClick={() => resendInvite(member)}
-                        disabled={updating === member.id}
-                        className={cn(
-                          QUIET_LINK,
-                          "cursor-pointer disabled:opacity-50"
-                        )}
-                      >
-                        Resend invite
-                      </button>
-                      <button
-                        onClick={() => openEdit(member)}
-                        className={cn(QUIET_LINK, "cursor-pointer")}
-                      >
-                        Edit
-                      </button>
-                      {member.role !== "admin" && (
-                        <button
-                          onClick={() => removeMember(member)}
-                          disabled={updating === member.id}
-                          className="cursor-pointer text-sm text-muted-foreground transition-colors hover:text-destructive disabled:opacity-50"
-                          aria-label={`Remove ${member.firstName ?? member.email}`}
+                    }
+                    actions={
+                      <>
+                        <RowAction
+                          label={`Resend invite to ${member.email}`}
+                          onClick={() => resendInvite(member)}
                         >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </motion.li>
+                          <Send size={13} />
+                        </RowAction>
+                        <RowAction
+                          label={`Edit ${name}`}
+                          onClick={() => openEdit(member)}
+                        >
+                          <Pencil size={13} />
+                        </RowAction>
+                        {member.role !== "admin" && (
+                          <RowAction
+                            label={`Remove ${member.firstName ?? member.email}`}
+                            destructive
+                            onClick={() => removeMember(member)}
+                          >
+                            <Trash2 size={13} />
+                          </RowAction>
+                        )}
+                      </>
+                    }
+                  />
                 );
               })}
-            </motion.ul>
+            </RecordList>
           )}
         </section>
       </div>

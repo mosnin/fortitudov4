@@ -2,17 +2,21 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { CountUp } from "@/components/ui/firecrawl";
 import { AreaChart } from "@/components/ui/charts";
-import { cascade, cascadeItem } from "@/lib/motion";
-import { cn } from "@/lib/utils";
+import {
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatMeta,
+  StatStrip,
+} from "@/components/crm";
+import { AnimatedNumber } from "@/components/motion";
 import { QUIET_LINK, SECTION_LABEL } from "@/lib/typography";
 
 /**
  * Marketing performance band — headline results from the weekly reporting
  * loop (leads, cost per lead, revenue, return on spend) with weekly trend
- * charts, fed by /api/reports.
+ * charts, fed by /api/reports. The metric band is the kit's `StatStrip`.
  *
  * DIGITAL MARKETING ONLY. Weekly reports exist for ad-managed engagements;
  * websites/software/AI/consultation clients never get one, and their
@@ -65,21 +69,6 @@ export function PerformanceOverview() {
   const avgCpl = totalLeads > 0 ? Math.round(totalSpend / totalLeads) : 0;
   const roas = totalSpend > 0 ? totalRevenue / totalSpend : 0;
 
-  const tiles = [
-    {
-      label: "Total Leads",
-      value: totalLeads,
-      format: (v: number) => Math.round(v).toLocaleString("en-US"),
-    },
-    { label: "Avg Cost Per Lead", value: avgCpl, format: usd },
-    { label: "Tracked Revenue", value: totalRevenue, format: usdWhole },
-    {
-      label: "Return on Spend",
-      value: roas,
-      format: (v: number) => `${v.toFixed(2)}×`,
-    },
-  ];
-
   const weekLabels = ordered.map((r, i) =>
     i === 0 || i === ordered.length - 1
       ? new Date(r.weekEnd).toLocaleDateString("en-US", {
@@ -106,16 +95,8 @@ export function PerformanceOverview() {
   ];
 
   return (
-    <motion.section
-      variants={cascade}
-      initial="hidden"
-      animate="visible"
-      className="space-y-6"
-    >
-      <motion.div
-        variants={cascadeItem}
-        className="flex flex-wrap items-baseline justify-between gap-3"
-      >
+    <section className="space-y-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
         <p className={SECTION_LABEL}>Marketing performance</p>
         <p className={SECTION_LABEL}>
           <span className="tabular-nums text-foreground/70">
@@ -123,32 +104,58 @@ export function PerformanceOverview() {
           </span>{" "}
           weeks reported
         </p>
-      </motion.div>
-
-      <div className="grid grid-cols-2 border-y border-border lg:grid-cols-4">
-        {tiles.map((tile, i) => (
-          <motion.div
-            key={tile.label}
-            variants={cascadeItem}
-            className={cn(
-              "px-5 py-5 first:pl-0",
-              i % 2 === 1 && "border-l border-border",
-              i >= 2 && "max-lg:border-t max-lg:border-border",
-              i > 0 && "lg:border-l lg:border-border"
-            )}
-          >
-            <p className={SECTION_LABEL}>{tile.label}</p>
-            <p className="mt-2 text-2xl tracking-tight tabular-nums text-foreground">
-              <CountUp value={tile.value} format={tile.format} />
-            </p>
-          </motion.div>
-        ))}
       </div>
+
+      <StatStrip columns={4} ariaLabel="Marketing performance">
+        <StatCell label="Total leads">
+          {totalLeads > 0 ? (
+            <Stat>
+              <AnimatedNumber
+                value={totalLeads}
+                format={(v) => Math.round(v).toLocaleString("en-US")}
+              />
+            </Stat>
+          ) : (
+            <StatEmpty>no leads reported yet.</StatEmpty>
+          )}
+        </StatCell>
+
+        <StatCell label="Avg cost per lead">
+          {totalLeads > 0 ? (
+            <Stat>
+              <AnimatedNumber value={avgCpl} format={usd} />
+            </Stat>
+          ) : (
+            <StatEmpty>waiting on the first week.</StatEmpty>
+          )}
+        </StatCell>
+
+        <StatCell label="Tracked revenue">
+          {totalRevenue > 0 ? (
+            <Stat>
+              <AnimatedNumber value={totalRevenue} format={usdWhole} />
+            </Stat>
+          ) : (
+            <StatEmpty>no closes reported yet.</StatEmpty>
+          )}
+          <StatMeta>{usdWhole(totalSpend)} spent</StatMeta>
+        </StatCell>
+
+        <StatCell label="Return on spend">
+          {totalSpend > 0 && totalRevenue > 0 ? (
+            <Stat>
+              <AnimatedNumber value={roas} format={(v) => `${v.toFixed(2)}×`} />
+            </Stat>
+          ) : (
+            <StatEmpty>needs revenue to compute.</StatEmpty>
+          )}
+        </StatCell>
+      </StatStrip>
 
       {ordered.length > 1 && (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {charts.map((chart) => (
-            <motion.div key={chart.title} variants={cascadeItem}>
+            <div key={chart.title}>
               <div className="border-b border-border pb-3">
                 <h3 className="text-sm font-medium text-foreground">
                   {chart.title}
@@ -164,7 +171,7 @@ export function PerformanceOverview() {
                 height={140}
                 format={chart.format}
               />
-            </motion.div>
+            </div>
           ))}
         </div>
       )}
@@ -174,6 +181,6 @@ export function PerformanceOverview() {
           View weekly reports
         </Link>
       </div>
-    </motion.section>
+    </section>
   );
 }

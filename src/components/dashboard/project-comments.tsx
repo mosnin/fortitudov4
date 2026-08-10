@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { RecordListSkeleton, RowPill } from "@/components/crm";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
-import { PRIMARY_PILL, QUIET_LINK, STATUS_PILL } from "@/lib/typography";
+import { PRIMARY_PILL, QUIET_LINK } from "@/lib/typography";
 
 interface CommentData {
   id: string;
@@ -101,9 +102,7 @@ function CommentItem({
           <span className="text-sm font-medium text-foreground">
             {comment.userName}
           </span>
-          {comment.role === "admin" && (
-            <span className={STATUS_PILL}>Team</span>
-          )}
+          {comment.role === "admin" && <RowPill>Team</RowPill>}
           <span className="ml-auto shrink-0 text-xs tabular-nums text-muted-foreground">
             {comment.createdAt}
           </span>
@@ -222,14 +221,7 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
 
       {/* Comments list */}
       {loading ? (
-        <ul className="divide-y divide-border/60">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <li key={i} className="space-y-2 py-3">
-              <div className="h-4 w-1/4 animate-pulse rounded bg-muted" />
-              <div className="h-3 w-3/4 animate-pulse rounded bg-muted" />
-            </li>
-          ))}
-        </ul>
+        <RecordListSkeleton rows={3} />
       ) : tree.length === 0 ? (
         <div className="py-8">
           <p className="text-sm font-medium text-foreground">No comments yet</p>

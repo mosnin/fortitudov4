@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { PageHero } from "@/components/ui/firecrawl";
+import { CrmPageHeader, RecordList, RecordRow } from "@/components/crm";
 import { cn } from "@/lib/utils";
 import {
-  GHOST_PILL,
   PAGE_RHYTHM,
   READING_COL,
   SECTION_LABEL,
@@ -78,7 +77,7 @@ const GUIDES: Guide[] = [
     sections: [
       {
         heading: "1 · The six build phases",
-        body: "Every build moves through Discovery, Design, Development, Testing, Review, and Launch. The tracker on your project page numbers each phase, fills in the ones that are finished, marks the current one In Progress, and leaves what's ahead in grey — the “n of 6 phases complete” line above it is the fastest read.",
+        body: "Every build moves through Discovery, Design, Development, Testing, Review, and Launch. The tracker on your project page numbers each phase, marks the current one In Progress, and leaves what's ahead in grey — the “n of 6 phases complete” line above it is the fastest read.",
       },
       {
         heading: "2 · Project statuses",
@@ -160,78 +159,71 @@ const GUIDES: Guide[] = [
 
 export default function GuidesPage() {
   const [open, setOpen] = useState<string | null>(null);
+  const openGuide = GUIDES.find((g) => g.key === open);
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Learn"
+        <CrmPageHeader
+          section="Learn."
           title="Client Guides"
-          description="Everything you need to get the most out of working with the Fortitudo team."
+          subtitle={
+            openGuide
+              ? `Reading ${openGuide.title}.`
+              : `${GUIDES.length} playbooks for working with the build team.`
+          }
         />
 
         <section className={SECTION_RHYTHM}>
-          <p className={SECTION_LABEL}>
-            <span className="tabular-nums text-foreground/70">
-              {GUIDES.length}
-            </span>{" "}
-            guides
-          </p>
-          <ul className="divide-y divide-border/60 border-t border-border/60">
-            {GUIDES.map((guide) => {
+          <p className={SECTION_LABEL}>All guides</p>
+          <RecordList className="border-t border-border/60">
+            {GUIDES.map((guide, i) => {
               const isOpen = open === guide.key;
               return (
-                <li key={guide.key} className="py-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <h2 className="text-[17px] font-semibold text-foreground">
-                        {guide.title}
-                      </h2>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {guide.description}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => setOpen(isOpen ? null : guide.key)}
-                      aria-expanded={isOpen}
-                      className={cn(GHOST_PILL, "shrink-0 cursor-pointer")}
+                <Fragment key={guide.key}>
+                <RecordRow
+                  index={i}
+                  selected={isOpen}
+                  onClick={() => setOpen(isOpen ? null : guide.key)}
+                  primary={guide.title}
+                  secondary={guide.description}
+                  meta={
+                    <span className="text-xs text-muted-foreground">
+                      {isOpen ? "Close" : "Read"}
+                    </span>
+                  }
+                />
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.li
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className="overflow-hidden"
                     >
-                      {isOpen ? "Close guide" : guide.cta}
-                    </button>
-                  </div>
-
-                  <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm text-muted-foreground marker:text-border">
-                    {guide.bullets.map((b) => (
-                      <li key={b}>{b}</li>
-                    ))}
-                  </ul>
-
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.25 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="mt-5 space-y-5 border-t border-border/60 pt-5">
-                          {guide.sections.map((s) => (
-                            <div key={s.heading}>
-                              <p className={SECTION_LABEL}>{s.heading}</p>
-                              <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                                {s.body}
-                              </p>
-                            </div>
+                      <div className="space-y-5 py-5">
+                        <ul className="list-disc space-y-1.5 pl-5 text-sm text-muted-foreground marker:text-border">
+                          {guide.bullets.map((b) => (
+                            <li key={b}>{b}</li>
                           ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
+                        </ul>
+                        {guide.sections.map((s) => (
+                          <div key={s.heading}>
+                            <p className={SECTION_LABEL}>{s.heading}</p>
+                            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                              {s.body}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.li>
+                  )}
+                </AnimatePresence>
+                </Fragment>
               );
             })}
-          </ul>
+          </RecordList>
         </section>
       </div>
     </div>

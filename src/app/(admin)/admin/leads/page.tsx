@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { CountUp, PageHero } from "@/components/ui/firecrawl";
-import { TableSkeleton } from "@/components/ui/skeleton";
-import { cascade, cascadeItem, rowCascade, rowItem } from "@/lib/motion";
-import { cn } from "@/lib/utils";
 import {
-  BODY_MUTED,
-  H3,
-  PAGE_RHYTHM,
-  SECTION_LABEL,
-  STATUS_PILL,
-} from "@/lib/typography";
+  CrmPageHeader,
+  RecordList,
+  RecordListSkeleton,
+  RecordRow,
+  RowPill,
+  Stat,
+  StatCell,
+  StatEmpty,
+  StatStrip,
+  TabStrip,
+  Toolbar,
+  ToolbarSearch,
+} from "@/components/crm";
+import { AnimatedNumber } from "@/components/motion";
+import { cn } from "@/lib/utils";
+import { BODY_MUTED, H3, PAGE_RHYTHM, READING_COL } from "@/lib/typography";
 import { services } from "@/lib/services";
 
 type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost";
@@ -52,24 +57,28 @@ const sourceLabels: Record<string, string> = {
   get_started_funnel: "Get Started Funnel",
 };
 
-/** Fortitudo's five services → display names for the "Interested In" column. */
+/** Fortitudo's five services → display names for the row's interest line. */
 const serviceLabels: Record<string, string> = Object.fromEntries(
   services.map((s) => [s.id, s.name])
 );
 
-/** Hairline-divided 4-up grid cell borders (2-up on small screens). */
-const statCell = (i: number) =>
-  cn(
-    "px-5 py-6",
-    i % 2 === 1 && "border-l border-border",
-    i >= 2 && "max-lg:border-t max-lg:border-border",
-    i > 0 && "lg:border-l lg:border-border"
-  );
+const rowSelectClass =
+  "h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs " +
+  "text-muted-foreground outline-none transition-colors hover:border-foreground/25 " +
+  "focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50";
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 
 export default function AdminLeadsPage() {
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<LeadStatus | "all">("all");
+  const [query, setQuery] = useState("");
   const [updating, setUpdating] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -106,182 +115,167 @@ export default function AdminLeadsPage() {
     }
   };
 
-  const filtered =
-    statusFilter === "all"
-      ? leads
-      : leads.filter((l) => l.status === statusFilter);
+  const count = (status: LeadStatus) =>
+    leads.filter((l) => l.status === status).length;
 
-  const stats = [
-    { label: "Total Leads", value: leads.length },
-    { label: "New", value: leads.filter((l) => l.status === "new").length },
-    {
-      label: "Qualified",
-      value: leads.filter((l) => l.status === "qualified").length,
-    },
-    {
-      label: "Converted",
-      value: leads.filter((l) => l.status === "converted").length,
-    },
-  ];
+  const q = query.trim().toLowerCase();
+  const filtered = leads.filter((l) => {
+    if (statusFilter !== "all" && l.status !== statusFilter) return false;
+    if (
+      q &&
+      !l.name.toLowerCase().includes(q) &&
+      !l.email.toLowerCase().includes(q) &&
+      !(l.company ?? "").toLowerCase().includes(q)
+    )
+      return false;
+    return true;
+  });
+
+  const newCount = count("new");
+  const subtitle = loading
+    ? "Loading the capture log."
+    : leads.length === 0
+      ? "Nothing captured from the site yet."
+      : `${leads.length} captured, ${newCount} awaiting first contact.`;
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
-      <PageHero
-        section="Operations"
-        title="Leads"
-        description="Leads captured from the website — contact form and get-started funnel — triaged through the pipeline."
-      />
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <CrmPageHeader section="Operations." title="Leads" subtitle={subtitle} />
 
-      {/* Stats — hairline-divided 4-up */}
-      <motion.div
-        variants={cascade}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-2 border-y border-border lg:grid-cols-4"
-      >
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            variants={cascadeItem}
-            className={statCell(i)}
-          >
-            <p className={SECTION_LABEL}>{stat.label}</p>
-            <p className="mt-2 text-3xl tracking-tight tabular-nums text-foreground">
-              <CountUp value={stat.value} />
-            </p>
-          </motion.div>
-        ))}
-      </motion.div>
+        <StatStrip columns={4} ariaLabel="Lead pipeline">
+          <StatCell label="Total Leads">
+            {leads.length > 0 ? (
+              <Stat>
+                <AnimatedNumber value={leads.length} />
+              </Stat>
+            ) : (
+              <StatEmpty>Nothing captured yet.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="New">
+            {newCount > 0 ? (
+              <Stat>
+                <AnimatedNumber value={newCount} />
+              </Stat>
+            ) : (
+              <StatEmpty>Everyone has been contacted.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Qualified">
+            {count("qualified") > 0 ? (
+              <Stat>
+                <AnimatedNumber value={count("qualified")} />
+              </Stat>
+            ) : (
+              <StatEmpty>None qualified yet.</StatEmpty>
+            )}
+          </StatCell>
+          <StatCell label="Converted">
+            {count("converted") > 0 ? (
+              <Stat>
+                <AnimatedNumber value={count("converted")} />
+              </Stat>
+            ) : (
+              <StatEmpty>No conversions on the books.</StatEmpty>
+            )}
+          </StatCell>
+        </StatStrip>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+        <TabStrip
+          ariaLabel="Lead status"
+          active={statusFilter}
+          onChange={(key) => setStatusFilter(key as LeadStatus | "all")}
+          tabs={[
+            { key: "all", label: "All", count: leads.length },
+            ...statusOptions.map((s) => ({
+              key: s,
+              label: statusLabels[s],
+              count: count(s),
+            })),
+          ]}
+        />
 
-      <section className="space-y-4">
-        {/* Toolbar — status filters left, count right */}
-        <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-4">
-          {(["all", ...statusOptions] as const).map((status) => (
-            <button
-              key={status}
-              onClick={() => setStatusFilter(status)}
-              className={cn(
-                "cursor-pointer rounded-full border px-3 py-1 text-xs transition-colors active:scale-[0.98]",
-                statusFilter === status
-                  ? "border-foreground bg-foreground font-medium text-background"
-                  : "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {status === "all" ? "All" : statusLabels[status]}
-            </button>
-          ))}
-          <p className={cn(SECTION_LABEL, "ml-auto")}>
-            {filtered.length} of {leads.length} leads
-          </p>
-        </div>
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
-        {loading ? (
-          <TableSkeleton rows={6} />
-        ) : filtered.length === 0 ? (
-          <div className="py-14 text-center">
-            <h2 className={H3}>
-              {statusFilter === "all"
-                ? "No leads yet"
-                : "No leads with this status"}
-            </h2>
-            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-              {statusFilter === "all"
-                ? "Leads from the contact form and get-started funnel will land here."
-                : "Try a different status filter."}
-            </p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Name</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Contact</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>
-                    Interested In
-                  </th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Budget</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Source</th>
-                  <th className={cn(SECTION_LABEL, "py-3 pr-4")}>Status</th>
-                  <th className={cn(SECTION_LABEL, "py-3")}>Date</th>
-                </tr>
-              </thead>
-              <motion.tbody
-                variants={rowCascade}
-                initial="hidden"
-                animate="visible"
-                className="divide-y divide-border/60"
-              >
-                {filtered.map((lead) => (
-                  <motion.tr
+        <section className="space-y-4">
+          <Toolbar>
+            <ToolbarSearch
+              value={query}
+              onChange={setQuery}
+              placeholder="Search leads, emails or companies…"
+            />
+          </Toolbar>
+
+          {loading ? (
+            <RecordListSkeleton rows={6} />
+          ) : filtered.length === 0 ? (
+            <div className="py-14 text-center">
+              <h2 className={H3}>
+                {leads.length === 0 ? "No leads yet" : "No matching leads"}
+              </h2>
+              <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
+                {leads.length === 0
+                  ? "Leads from the contact form and get-started funnel will land here."
+                  : "Try a different status or search term."}
+              </p>
+            </div>
+          ) : (
+            <RecordList>
+              {filtered.map((lead, i) => {
+                const interest = lead.serviceInterest
+                  ? serviceLabels[lead.serviceInterest] ?? lead.serviceInterest
+                  : null;
+                const secondary = [
+                  lead.company,
+                  lead.email,
+                  lead.phone,
+                  interest,
+                  lead.monthlyBudget,
+                ]
+                  .filter(Boolean)
+                  .join(" · ");
+                return (
+                  <RecordRow
                     key={lead.id}
-                    variants={rowItem}
-                    className="transition-colors hover:bg-muted/30"
-                  >
-                    <td className="py-3 pr-4">
-                      <p className="font-medium text-foreground">{lead.name}</p>
-                      {lead.company && (
-                        <p className="text-xs text-muted-foreground">
-                          {lead.company}
-                        </p>
-                      )}
-                    </td>
-                    <td className="py-3 pr-4">
-                      <p className="text-muted-foreground">{lead.email}</p>
-                      {lead.phone && (
-                        <p className="text-xs tabular-nums text-muted-foreground">
-                          {lead.phone}
-                        </p>
-                      )}
-                    </td>
-                    <td className="py-3 pr-4 text-muted-foreground">
-                      {lead.serviceInterest
-                        ? serviceLabels[lead.serviceInterest] ??
-                          lead.serviceInterest
-                        : "—"}
-                    </td>
-                    <td className="py-3 pr-4 text-xs tabular-nums text-muted-foreground">
-                      {lead.monthlyBudget || "—"}
-                    </td>
-                    <td className="py-3 pr-4">
-                      <span className={cn(STATUS_PILL, "whitespace-nowrap")}>
+                    index={i}
+                    primary={lead.name}
+                    status={
+                      <RowPill>
                         {sourceLabels[lead.source] ??
                           lead.source.replace(/_/g, " ")}
-                      </span>
-                    </td>
-                    <td className="py-3 pr-4">
-                      <select
-                        aria-label={`Status for ${lead.name}`}
-                        className="cursor-pointer rounded-lg border border-border bg-background px-2.5 py-1 text-[11px] uppercase tracking-wide text-muted-foreground transition-colors hover:border-foreground/25 focus:outline-none focus:ring-2 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                        value={lead.status}
-                        disabled={updating === lead.id}
-                        onChange={(e) =>
-                          updateStatus(lead.id, e.target.value as LeadStatus)
-                        }
-                      >
-                        {statusOptions.map((status) => (
-                          <option key={status} value={status}>
-                            {statusLabels[status]}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="py-3 text-xs tabular-nums whitespace-nowrap text-muted-foreground">
-                      {new Date(lead.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </td>
-                  </motion.tr>
-                ))}
-              </motion.tbody>
-            </table>
-          </div>
-        )}
-      </section>
+                      </RowPill>
+                    }
+                    secondary={secondary}
+                    meta={
+                      <>
+                        <span className="hidden text-[11px] tabular-nums whitespace-nowrap text-muted-foreground sm:inline">
+                          {fmtDate(lead.createdAt)}
+                        </span>
+                        <select
+                          aria-label={`Status for ${lead.name}`}
+                          className={rowSelectClass}
+                          value={lead.status}
+                          disabled={updating === lead.id}
+                          onChange={(e) =>
+                            updateStatus(lead.id, e.target.value as LeadStatus)
+                          }
+                        >
+                          {statusOptions.map((status) => (
+                            <option key={status} value={status}>
+                              {statusLabels[status]}
+                            </option>
+                          ))}
+                        </select>
+                      </>
+                    }
+                  />
+                );
+              })}
+            </RecordList>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

@@ -66,3 +66,22 @@ export const EASE_APPLE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 export const DURATION_FAST = 0.15;
 export const DURATION_BASE = 0.22;
 export const DURATION_SLOW = 0.32;
+
+/** Stagger container — children animate in sequence (framer layer). */
+export const STAGGER_CONTAINER: Variants = {
+  initial: { opacity: 1 },
+  enter: { opacity: 1, transition: { staggerChildren: 0.04 } },
+};
+
+/** Stagger child — fade + tiny y. Use inside STAGGER_CONTAINER. */
+export const STAGGER_ITEM: Variants = {
+  initial: { opacity: 0, y: 4 },
+  enter: { opacity: 1, y: 0, transition: { duration: DURATION_BASE, ease: EASE_OUT } },
+};
+
+/** Page-level fade + tiny y-translate (framer layer). */
+export const PAGE_VARIANTS: Variants = {
+  initial: { opacity: 0, y: 4 },
+  enter: { opacity: 1, y: 0, transition: { duration: DURATION_BASE, ease: EASE_OUT } },
+  exit: { opacity: 0, transition: { duration: DURATION_FAST } },
+};

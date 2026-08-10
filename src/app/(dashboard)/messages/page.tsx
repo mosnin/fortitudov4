@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
-import { PageHero } from "@/components/ui/firecrawl";
+import { CrmPageHeader, TabStrip } from "@/components/crm";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
 import {
@@ -10,7 +10,6 @@ import {
   PAGE_RHYTHM,
   PRIMARY_PILL,
   READING_COL,
-  SECTION_LABEL,
 } from "@/lib/typography";
 
 interface Message {
@@ -113,10 +112,10 @@ export default function MessagesPage() {
     return (
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
         <div className={cn(READING_COL, PAGE_RHYTHM)}>
-          <PageHero
-            section="Workspace"
+          <CrmPageHeader
+            section="Workspace."
             title="Messages"
-            description="Chat with the Fortitudo team about your project."
+            subtitle="Loading your thread with the team…"
           />
           <div
             className="flex flex-col rounded-xl border border-border"
@@ -136,13 +135,23 @@ export default function MessagesPage() {
     );
   }
 
+  // One sentence of status — where the conversation actually stands.
+  const status =
+    projects.length === 0
+      ? "No thread yet — one opens with your first project."
+      : messages.length === 0
+        ? `Nothing said yet on ${selectedProject?.name ?? "this project"}.`
+        : `${messages.length} ${
+            messages.length === 1 ? "message" : "messages"
+          } on ${selectedProject?.name ?? "this project"}.`;
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
-        <PageHero
-          section="Workspace"
+        <CrmPageHeader
+          section="Workspace."
           title="Messages"
-          description="Chat with the Fortitudo team about your project."
+          subtitle={status}
           action={
             selectedProjectId ? (
               <span className={CAPTION}>Updates every 5 seconds</span>
@@ -162,30 +171,14 @@ export default function MessagesPage() {
           </div>
         ) : (
           <>
-            {/* Project selector */}
-            {projects.length > 1 && (
-              <div className="space-y-2">
-                <p className={SECTION_LABEL}>Project</p>
-                <div className="flex flex-wrap gap-2">
-                  {projects.map((project) => {
-                    const active = selectedProjectId === project.id;
-                    return (
-                      <button
-                        key={project.id}
-                        onClick={() => setSelectedProjectId(project.id)}
-                        className={cn(
-                          "cursor-pointer rounded-full border px-3 h-8 text-[13px] transition-colors",
-                          active
-                            ? "border-foreground bg-foreground text-background"
-                            : "border-border text-muted-foreground hover:text-foreground hover:bg-foreground/[0.04]"
-                        )}
-                      >
-                        {project.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+            {/* Project spine */}
+            {projects.length > 1 && selectedProjectId && (
+              <TabStrip
+                tabs={projects.map((p) => ({ key: p.id, label: p.name }))}
+                active={selectedProjectId}
+                onChange={setSelectedProjectId}
+                ariaLabel="Project"
+              />
             )}
 
             <div

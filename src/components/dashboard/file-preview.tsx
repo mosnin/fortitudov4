@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { Download, X } from "lucide-react";
+import { RecordRow, RowAction, RowPill } from "@/components/crm";
 import { cn } from "@/lib/utils";
-import { QUIET_LINK, STATUS_PILL } from "@/lib/typography";
+import { QUIET_LINK } from "@/lib/typography";
 
 interface FilePreviewProps {
   name: string;
@@ -36,87 +37,104 @@ const CATEGORY_LABELS = {
   other: "File",
 } as const;
 
+/**
+ * One uploaded file, rendered as a kit `RecordRow`. Mount inside a
+ * `<RecordList>`: this renders the row's `<li>`.
+ */
 export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
   const [previewOpen, setPreviewOpen] = useState(false);
   const category = getFileCategory(name, type);
   const canPreview = category === "image" || category === "pdf";
 
-  return (
-    <>
-      <div
-        className={cn(
-          "group/row -mx-2 flex items-start gap-3 rounded-md px-2 py-3 transition-colors",
-          canPreview && "cursor-pointer hover:bg-muted/30"
-        )}
-        onClick={() => canPreview && setPreviewOpen(true)}
-      >
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-foreground">
-              {name}
-            </span>
-            <span className={STATUS_PILL}>{CATEGORY_LABELS[category]}</span>
-          </div>
-          {size && (
-            <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
-              {size}
-            </div>
-          )}
-        </div>
-        <a
-          href={url}
-          download={name}
-          onClick={(e) => e.stopPropagation()}
-          className={cn(QUIET_LINK, "shrink-0 text-xs")}
-        >
-          Download
-        </a>
-      </div>
+  // Mirrors the original `<a download>`: same request, same filename hint.
+  const download = () => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    a.click();
+  };
 
-      {/* Full preview modal */}
-      {previewOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setPreviewOpen(false)} />
-          <div className="relative w-full max-w-4xl max-h-[85vh] rounded-xl border border-border bg-card shadow-2xl overflow-hidden animate-fade-in">
-            {/* Preview header */}
-            <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border">
-              <p className="truncate text-sm font-medium">{name}</p>
-              <div className="flex shrink-0 items-center gap-3">
-                <a href={url} download={name} className={cn(QUIET_LINK, "text-xs")}>
-                  Download
-                </a>
-                <button
-                  onClick={() => setPreviewOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted cursor-pointer"
-                  aria-label="Close preview"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+  return (
+    <RecordRow
+      primary={
+        canPreview ? (
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            className="cursor-pointer truncate text-left transition-colors hover:text-muted-foreground"
+          >
+            {name}
+          </button>
+        ) : (
+          name
+        )
+      }
+      status={<RowPill>{CATEGORY_LABELS[category]}</RowPill>}
+      secondary={size ? <span className="tabular-nums">{size}</span> : undefined}
+      meta={
+        <>
+          {/* The row actions only fade in on large screens — keep a reachable
+              download on narrow ones. */}
+          <a
+            href={url}
+            download={name}
+            className={cn(QUIET_LINK, "text-xs lg:hidden")}
+          >
+            Download
+          </a>
+          {previewOpen && (
+          /* Full preview overlay — fixed to the viewport, so its position in
+             the row's DOM is immaterial. */
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setPreviewOpen(false)}
+            />
+            <div className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl animate-fade-in">
+              <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+                <p className="truncate text-sm font-medium">{name}</p>
+                <div className="flex shrink-0 items-center gap-3">
+                  <a href={url} download={name} className={cn(QUIET_LINK, "text-xs")}>
+                    Download
+                  </a>
+                  <button
+                    onClick={() => setPreviewOpen(false)}
+                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-muted"
+                    aria-label="Close preview"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex max-h-[calc(85vh-56px)] items-center justify-center overflow-auto p-4">
+                {category === "image" ? (
+                  <Image
+                    src={url}
+                    alt={name}
+                    width={1200}
+                    height={800}
+                    className="h-auto max-w-full rounded-lg"
+                    style={{ maxHeight: "calc(85vh - 100px)" }}
+                  />
+                ) : category === "pdf" ? (
+                  <iframe
+                    src={url}
+                    className="h-[calc(85vh-100px)] w-full rounded-lg"
+                    title={name}
+                  />
+                ) : null}
               </div>
             </div>
-
-            {/* Preview content */}
-            <div className="overflow-auto max-h-[calc(85vh-56px)] flex items-center justify-center p-4">
-              {category === "image" ? (
-                <Image
-                  src={url}
-                  alt={name}
-                  width={1200}
-                  height={800}
-                  className="max-w-full h-auto rounded-lg"
-                  style={{ maxHeight: "calc(85vh - 100px)" }}
-                />
-              ) : category === "pdf" ? (
-                <iframe
-                  src={url}
-                  className="w-full h-[calc(85vh-100px)] rounded-lg"
-                  title={name}
-                />
-              ) : null}
-            </div>
           </div>
-        </div>
-      )}
-    </>
+          )}
+        </>
+      }
+      actions={
+        <RowAction label="Download" onClick={download}>
+          <Download size={14} />
+        </RowAction>
+      }
+    />
   );
 }

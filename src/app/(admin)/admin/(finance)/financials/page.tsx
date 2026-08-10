@@ -1,8 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { motion } from "motion/react";
-import { PageHero, CountUp, BracketLabel } from "@/components/ui/firecrawl";
 import { AreaChart, DonutChart, BarList } from "@/components/ui/charts";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,14 +11,21 @@ import {
   rangeLabel,
   type DateRange,
 } from "@/components/ui/filters";
-import { cascade, cascadeItem } from "@/lib/motion";
+import {
+  CrmPageHeader,
+  StatStrip,
+  StatCell,
+  Stat,
+  StatEmpty,
+  StatMeta,
+} from "@/components/crm";
+import { AnimatedNumber, Reveal } from "@/components/motion";
 import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import {
   PAGE_RHYTHM,
+  READING_COL,
   SECTION_LABEL,
   CAPTION,
-  STAT_NUMBER,
-  TITLE_FONT,
   H3,
   BODY_MUTED,
 } from "@/lib/typography";
@@ -59,16 +64,6 @@ const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 const pct = (f: number) => `${(f * 100).toFixed(1)}%`;
 const count = (v: number) => Math.round(v).toLocaleString("en-US");
-
-/** Hairline-divided grid cell borders, 2-up small / 3-up large. */
-const statCell = (i: number) =>
-  cn(
-    "px-5 py-6",
-    i % 2 === 1 && "max-lg:border-l max-lg:border-border",
-    i >= 2 && "max-lg:border-t max-lg:border-border",
-    i % 3 !== 0 && "lg:border-l lg:border-border",
-    i >= 3 && "lg:border-t lg:border-border"
-  );
 
 /** Section heading over a hairline rule — no glyph, no accent. */
 function SectionHead({ title, caption }: { title: string; caption?: string }) {
@@ -114,11 +109,13 @@ export default function AdminFinancialsPage() {
   if (!loading && !metrics) {
     return (
       <div className={cn(PAGE_RHYTHM, "pb-12")}>
-        <PageHero
-          section="Finance"
-          title="Financials"
-          description="Revenue, recurring revenue, and client growth across the agency."
-        />
+        <div className={READING_COL}>
+          <CrmPageHeader
+            section="Finance."
+            title="Financials"
+            subtitle="Metrics are unavailable right now."
+          />
+        </div>
         <EmptyState
           title="Metrics unavailable"
           description="Financial metrics are admin-only. If you should have access, try refreshing."
@@ -128,58 +125,16 @@ export default function AdminFinancialsPage() {
   }
 
   const t = metrics?.totals;
-  const tiles: {
-    label: string;
-    caption: string;
-    value: number;
-    format: (v: number) => string;
-    /** Rendered verbatim instead of counting up (for "no answer" states). */
-    display?: string;
-  }[] = t
-    ? [
-        {
-          label: "Total Revenue",
-          caption: "Setup + monthly fees",
-          value: t.totalRevenue,
-          format: usd,
-        },
-        {
-          label: "Total MRR",
-          caption: `ARR: ${usd(t.arr)}`,
-          value: t.mrr,
-          format: usd,
-        },
-        {
-          label: "Active Clients",
-          caption: `${usd(t.arpu)}/mo ARPU`,
-          value: t.activeClients,
-          format: count,
-        },
-        {
-          // ARPU per month ÷ churn rate. Undefined when nobody has churned.
-          label: "Avg LTV",
-          caption:
-            t.avgLtv === null
-              ? `${usd(t.arpu)}/mo ARPU · no churn yet`
-              : `${usd(t.arpu)}/mo ARPU ÷ ${pct(t.churnRate)} churn · ~${t.expectedLifetimeMonths?.toFixed(1)} mo`,
-          value: t.avgLtv ?? 0,
-          display: t.avgLtv === null ? "—" : undefined,
-          format: usd,
-        },
-        {
-          label: "Churn Rate",
-          caption: `${t.clientsLost} client${t.clientsLost === 1 ? "" : "s"} lost`,
-          value: t.churnRate,
-          format: pct,
-        },
-        {
-          label: "New Clients",
-          caption: metrics?.windowed ? "In selected range" : "Last 30 days",
-          value: t.newClientsThisPeriod,
-          format: count,
-        },
-      ]
-    : [];
+
+  // One sentence of status — what the numbers currently say, not what the
+  // page is for.
+  const subtitle = !t
+    ? "Reading the revenue ledger…"
+    : t.totalRevenue === 0
+      ? "Nothing collected yet."
+      : `${usd(t.totalRevenue)} collected · ${usd(t.mrr)} recurring across ${count(
+          t.activeClients
+        )} active client${t.activeClients === 1 ? "" : "s"}.`;
 
   const charts: { title: string; series: number[]; money?: boolean }[] =
     metrics
@@ -199,69 +154,159 @@ export default function AdminFinancialsPage() {
       count: p.count,
     })) ?? [];
 
+  const STAT_LABELS = [
+    "Total revenue",
+    "Monthly recurring",
+    "Active clients",
+    "Average LTV",
+    "Churn rate",
+    "New clients",
+  ];
+
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
-      <PageHero
-        section="Finance"
-        title="Financials"
-        description="Revenue, recurring revenue, and client growth across the agency."
-        action={<DateRangePill value={range} onChange={setRange} />}
-      />
-
-      {range.preset !== "all" && (
-        <BracketLabel
-          n={rangeLabel(range)}
-          label="Flow metrics and churn windowed · MRR/ARR always current"
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <CrmPageHeader
+          section="Finance."
+          title="Financials"
+          subtitle={subtitle}
+          action={<DateRangePill value={range} onChange={setRange} />}
         />
-      )}
 
-      {/* Headline metrics — hairline-divided 3-up grid */}
-      <motion.section variants={cascade} initial="hidden" animate="visible">
-        <div className="grid grid-cols-2 border-b border-border lg:grid-cols-3">
+        {/* Headline metrics — the hairline strip. Cells with nothing to say
+            render a calm fact instead of a misleading zero. */}
+        <StatStrip columns={3} ariaLabel="Agency revenue metrics">
           {loading || !t
-            ? Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className={cn(statCell(i), "space-y-3")}>
-                  <Skeleton className="h-3 w-24" />
-                  <Skeleton className="h-8 w-20" />
-                </div>
+            ? STAT_LABELS.map((label) => (
+                <StatCell key={label} label={label}>
+                  <Skeleton className="h-8 w-24" />
+                </StatCell>
               ))
-            : tiles.map((tile, i) => (
-                <motion.div
-                  key={tile.label}
-                  variants={cascadeItem}
-                  className={statCell(i)}
-                >
-                  <p className={SECTION_LABEL}>{tile.label}</p>
-                  <p className={cn(STAT_NUMBER, "mt-2")} style={TITLE_FONT}>
-                    {tile.display ?? (
-                      <CountUp value={tile.value} format={tile.format} />
-                    )}
-                  </p>
-                  <p className={cn(CAPTION, "mt-1 tabular-nums")}>
-                    {tile.caption}
-                  </p>
-                </motion.div>
-              ))}
-        </div>
-      </motion.section>
+            : [
+                <StatCell key="revenue" label="Total revenue">
+                  {t.totalRevenue === 0 ? (
+                    <StatEmpty>Nothing collected yet.</StatEmpty>
+                  ) : (
+                    <>
+                      <Stat suffix="collected">
+                        <AnimatedNumber value={t.totalRevenue} format={usd} />
+                      </Stat>
+                      <StatMeta>Setup fees + retainers</StatMeta>
+                    </>
+                  )}
+                </StatCell>,
 
-      {/* Trend charts — 2-up grid */}
+                <StatCell key="mrr" label="Monthly recurring">
+                  {t.mrr === 0 ? (
+                    <StatEmpty>No retainers running yet.</StatEmpty>
+                  ) : (
+                    <>
+                      <Stat suffix="per month">
+                        <AnimatedNumber value={t.mrr} format={usd} />
+                      </Stat>
+                      <StatMeta>{usd(t.arr)} annualised</StatMeta>
+                    </>
+                  )}
+                </StatCell>,
+
+                <StatCell key="clients" label="Active clients">
+                  {t.activeClients === 0 ? (
+                    <StatEmpty>No active clients yet.</StatEmpty>
+                  ) : (
+                    <>
+                      <Stat>
+                        <AnimatedNumber value={t.activeClients} format={count} />
+                      </Stat>
+                      <StatMeta>{usd(t.arpu)}/mo ARPU</StatMeta>
+                    </>
+                  )}
+                </StatCell>,
+
+                <StatCell key="ltv" label="Average LTV">
+                  {/* ARPU per month ÷ churn rate — undefined until someone churns. */}
+                  {t.avgLtv === null ? (
+                    <StatEmpty>
+                      No churn yet, so lifetime value is still open-ended.
+                    </StatEmpty>
+                  ) : (
+                    <>
+                      <Stat>
+                        <AnimatedNumber value={t.avgLtv} format={usd} />
+                      </Stat>
+                      <StatMeta>
+                        {usd(t.arpu)}/mo ARPU ÷ {pct(t.churnRate)} churn · ~
+                        {t.expectedLifetimeMonths?.toFixed(1)} mo
+                      </StatMeta>
+                    </>
+                  )}
+                </StatCell>,
+
+                <StatCell key="churn" label="Churn rate">
+                  {t.clientsLost === 0 ? (
+                    <StatEmpty>No clients lost yet.</StatEmpty>
+                  ) : (
+                    <>
+                      <Stat>
+                        <AnimatedNumber value={t.churnRate} format={pct} />
+                      </Stat>
+                      <StatMeta>
+                        {t.clientsLost} client{t.clientsLost === 1 ? "" : "s"} lost
+                      </StatMeta>
+                    </>
+                  )}
+                </StatCell>,
+
+                <StatCell key="new" label="New clients">
+                  {t.newClientsThisPeriod === 0 ? (
+                    <StatEmpty>
+                      {metrics?.windowed
+                        ? "None signed in this range."
+                        : "None signed in the last 30 days."}
+                    </StatEmpty>
+                  ) : (
+                    <>
+                      <Stat suffix="signed">
+                        <AnimatedNumber
+                          value={t.newClientsThisPeriod}
+                          format={count}
+                        />
+                      </Stat>
+                      <StatMeta>
+                        {metrics?.windowed ? "In selected range" : "Last 30 days"}
+                      </StatMeta>
+                    </>
+                  )}
+                </StatCell>,
+              ]}
+        </StatStrip>
+
+        {range.preset !== "all" && (
+          <p className={cn(CAPTION, "tabular-nums")}>
+            Flow metrics and churn are windowed to {rangeLabel(range)}; MRR and
+            ARR always read current.
+          </p>
+        )}
+      </div>
+
+      {/* Trend charts — the one genuinely wide surface, 2-up across the frame */}
       <section className="grid grid-cols-1 gap-10 lg:grid-cols-2">
         {loading || !metrics
           ? Array.from({ length: 4 }).map((_, i) => (
               <Skeleton key={i} className="h-56 w-full" />
             ))
           : charts.map((chart) => (
-              <div key={chart.title} className="tabular-nums">
-                <SectionHead title={chart.title} caption={rangeCaption} />
-                <AreaChart
-                  className="mt-5"
-                  points={chart.series}
-                  xLabels={metrics.months.map((m) => m.split(" ")[0])}
-                  height={170}
-                  format={chart.money ? usd : count}
-                />
-              </div>
+              <Reveal key={chart.title} variant="fade">
+                <div className="tabular-nums">
+                  <SectionHead title={chart.title} caption={rangeCaption} />
+                  <AreaChart
+                    className="mt-5"
+                    points={chart.series}
+                    xLabels={metrics.months.map((m) => m.split(" ")[0])}
+                    height={170}
+                    format={chart.money ? usd : count}
+                  />
+                </div>
+              </Reveal>
             ))}
       </section>
 
