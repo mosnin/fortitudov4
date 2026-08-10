@@ -550,3 +550,315 @@ export type AgencyClient = typeof agencyClients.$inferSelect;
 export type NewAgencyClient = typeof agencyClients.$inferInsert;
 export type ClientPayment = typeof clientPayments.$inferSelect;
 export type NewClientPayment = typeof clientPayments.$inferInsert;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helix OS
+//
+// The agentic layer. Architecture adopted from cloudflare-os (see
+// plans/helix-os.md); their Workers runtime is not portable to this stack, but
+// the four primitives are:
+//
+//   Thread        a durable agent session. Starts with access to NOTHING.
+//   Introduction  a capability grant. A resource must be introduced before
+//                 Helix can touch it; Helix may request one, a human decides.
+//   Action        a proposed side effect. Simulated first, executed only after
+//                 a human approves — so Helix never blocks mid-task.
+//   Gadget        a sandboxed per-client mini-app Helix writes. A Blueprint is
+//                 its shareable source.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const helixThreadStatusEnum = pgEnum("helix_thread_status", [
+  "active",
+  "archived",
+]);
+
+// A thread's scope is its ceiling of authority, enforced before any grant: an
+// agency thread may be introduced to anything its owner can already see; a
+// client thread can only ever reach that client's own records.
+export const helixThreadScopeEnum = pgEnum("helix_thread_scope", [
+  "agency",
+  "client",
+]);
+
+export const helixThreads = pgTable("helix_threads", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  ownerId: uuid("owner_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  scope: helixThreadScopeEnum("scope").notNull().default("agency"),
+  // Set on client-scoped threads — the hard boundary for every introduction.
+  clientId: uuid("client_id").references(() => agencyClients.id, {
+    onDelete: "cascade",
+  }),
+  title: varchar("title", { length: 255 }).notNull().default("New thread"),
+  status: helixThreadStatusEnum("status").notNull().default("active"),
+  // Rolling one-line summary of where the work stands, written by Helix.
+  standing: text("standing"),
+  lastMessageAt: timestamp("last_message_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_threads_owner").on(table.ownerId),
+  index("idx_helix_threads_client").on(table.clientId),
+]);
+
+export const helixMessageRoleEnum = pgEnum("helix_message_role", [
+  "user",
+  "assistant",
+  "system",
+]);
+
+export const helixMessages = pgTable("helix_messages", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  threadId: uuid("thread_id")
+    .references(() => helixThreads.id, { onDelete: "cascade" })
+    .notNull(),
+  role: helixMessageRoleEnum("role").notNull(),
+  content: text("content").notNull().default(""),
+  // Reasoning/among-tools narration kept separate from the spoken answer so the
+  // transcript can render it collapsed.
+  thinking: text("thinking"),
+  // Ordering within the thread. Monotonic; actions reference the turn that
+  // proposed them by message id, but replay reads by sequence.
+  sequence: integer("sequence").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_messages_thread").on(table.threadId),
+]);
+
+// One kind per registered gatekeeper. Adding a kind without registering its
+// gatekeeper is a type error at the registry (see src/lib/helix/gatekeepers).
+export const helixResourceKindEnum = pgEnum("helix_resource_kind", [
+  "client",
+  "project",
+  "task",
+  "invoice",
+  "payment",
+  "conversation",
+  "file",
+  "report",
+  "gadget",
+]);
+
+export const helixIntroductionStatusEnum = pgEnum("helix_introduction_status", [
+  "requested",
+  "granted",
+  "denied",
+  "revoked",
+]);
+
+export const helixIntroductions = pgTable("helix_introductions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  threadId: uuid("thread_id")
+    .references(() => helixThreads.id, { onDelete: "cascade" })
+    .notNull(),
+  resourceKind: helixResourceKindEnum("resource_kind").notNull(),
+  // The row id inside that kind's own table. Kept loose (uuid) rather than a
+  // real FK because the target table varies by kind.
+  resourceId: uuid("resource_id").notNull(),
+  // Denormalized so a revoked or deleted resource still reads correctly in the
+  // audit trail.
+  resourceLabel: varchar("resource_label", { length: 255 }).notNull(),
+  status: helixIntroductionStatusEnum("status").notNull().default("granted"),
+  // Set when Helix asked rather than the human offering — this is what the
+  // "Helix is requesting access" card renders.
+  requestReason: text("request_reason"),
+  // false narrows the grant to read ops only; write ops are refused outright
+  // rather than queued for approval.
+  allowWrites: boolean("allow_writes").notNull().default(true),
+  grantedBy: uuid("granted_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  decidedAt: timestamp("decided_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_introductions_thread").on(table.threadId),
+]);
+
+// The lifecycle that makes deferred approval work. A write op never touches
+// the database on first call: it is simulated, and the thread reads its own
+// simulated overlay from then on, so Helix stays internally consistent while
+// the human is away.
+export const helixActionStatusEnum = pgEnum("helix_action_status", [
+  "simulated",
+  "approved",
+  "executed",
+  "rejected",
+  "failed",
+]);
+
+// Drives ordering in the queue and which actions bulk-approve will take.
+export const helixActionRiskEnum = pgEnum("helix_action_risk", [
+  "low",
+  "medium",
+  "high",
+]);
+
+export const helixActions = pgTable("helix_actions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  threadId: uuid("thread_id")
+    .references(() => helixThreads.id, { onDelete: "cascade" })
+    .notNull(),
+  // The assistant turn that proposed it.
+  messageId: uuid("message_id").references(() => helixMessages.id, {
+    onDelete: "set null",
+  }),
+  gatekeeper: varchar("gatekeeper", { length: 64 }).notNull(),
+  op: varchar("op", { length: 64 }).notNull(),
+  resourceKind: helixResourceKindEnum("resource_kind").notNull(),
+  resourceId: uuid("resource_id"),
+  // One sentence in plain English — the line the approval card leads with.
+  summary: varchar("summary", { length: 500 }).notNull(),
+  risk: helixActionRiskEnum("risk").notNull().default("medium"),
+  input: jsonb("input").notNull().default({}),
+  // What simulate() returned. Serves subsequent reads in this thread.
+  simulatedResult: jsonb("simulated_result"),
+  // Field-level before/after the approval card renders.
+  preview: jsonb("preview"),
+  executedResult: jsonb("executed_result"),
+  status: helixActionStatusEnum("status").notNull().default("simulated"),
+  // Actions execute in proposal order — a later action may depend on an
+  // earlier one's real result.
+  sequence: integer("sequence").notNull().default(0),
+  reviewedBy: uuid("reviewed_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  reviewedAt: timestamp("reviewed_at"),
+  executedAt: timestamp("executed_at"),
+  error: text("error"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_actions_thread").on(table.threadId),
+  index("idx_helix_actions_status").on(table.status),
+]);
+
+export const helixGadgetStatusEnum = pgEnum("helix_gadget_status", [
+  "draft",
+  "live",
+  "archived",
+]);
+
+// A gadget is a private instance of an app. Its source is a flat file map
+// ({ "index.html": "…" }); the runtime serves it into a sandboxed iframe with
+// no network reach except the scoped RPC bridge back to this app.
+export const helixGadgets = pgTable("helix_gadgets", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  ownerId: uuid("owner_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  // Gadgets built for a specific engagement show on that client's portal.
+  clientId: uuid("client_id").references(() => agencyClients.id, {
+    onDelete: "cascade",
+  }),
+  threadId: uuid("thread_id").references(() => helixThreads.id, {
+    onDelete: "set null",
+  }),
+  blueprintId: uuid("blueprint_id"),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull(),
+  summary: text("summary"),
+  source: jsonb("source").notNull().default({}),
+  // Per-gadget key/value the sandbox reads and writes over the bridge.
+  state: jsonb("state").notNull().default({}),
+  version: integer("version").notNull().default(1),
+  status: helixGadgetStatusEnum("status").notNull().default("draft"),
+  // Whether the client can open it from their portal.
+  sharedWithClient: boolean("shared_with_client").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_gadgets_owner").on(table.ownerId),
+  index("idx_helix_gadgets_client").on(table.clientId),
+]);
+
+// Every edit keeps its predecessor so a gadget can be rolled back after Helix
+// changes it — the sandbox makes experimenting safe, history makes it cheap.
+export const helixGadgetVersions = pgTable("helix_gadget_versions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  gadgetId: uuid("gadget_id")
+    .references(() => helixGadgets.id, { onDelete: "cascade" })
+    .notNull(),
+  version: integer("version").notNull(),
+  source: jsonb("source").notNull().default({}),
+  note: varchar("note", { length: 500 }),
+  createdBy: uuid("created_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_gadget_versions_gadget").on(table.gadgetId),
+]);
+
+// A blueprint is a gadget's source without its data — install it and you get
+// your own copy, which you are then free to change.
+export const helixBlueprints = pgTable("helix_blueprints", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  summary: text("summary"),
+  category: varchar("category", { length: 64 }).notNull().default("general"),
+  source: jsonb("source").notNull().default({}),
+  // Seeded blueprints ship with the product and cannot be deleted.
+  builtIn: boolean("built_in").notNull().default(false),
+  installCount: integer("install_count").notNull().default(0),
+  createdBy: uuid("created_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Append-only audit trail. Every gatekeeper call, grant, approval and
+// execution lands here — the record the agency reviews, written as a byproduct
+// of the work rather than typed up afterwards.
+export const helixEventKindEnum = pgEnum("helix_event_kind", [
+  "thread_created",
+  "introduction_requested",
+  "introduction_granted",
+  "introduction_denied",
+  "introduction_revoked",
+  "read",
+  "action_simulated",
+  "action_approved",
+  "action_rejected",
+  "action_executed",
+  "action_failed",
+  "gadget_created",
+  "gadget_updated",
+  "blueprint_installed",
+]);
+
+export const helixEvents = pgTable("helix_events", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  threadId: uuid("thread_id").references(() => helixThreads.id, {
+    onDelete: "cascade",
+  }),
+  kind: helixEventKindEnum("kind").notNull(),
+  // "helix" when the agent acted on its own, otherwise the user who did.
+  actorId: uuid("actor_id").references(() => users.id, { onDelete: "set null" }),
+  byHelix: boolean("by_helix").notNull().default(false),
+  summary: varchar("summary", { length: 500 }).notNull(),
+  resourceKind: helixResourceKindEnum("resource_kind"),
+  resourceId: uuid("resource_id"),
+  payload: jsonb("payload"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_helix_events_thread").on(table.threadId),
+  index("idx_helix_events_created").on(table.createdAt),
+]);
+
+export type HelixThread = typeof helixThreads.$inferSelect;
+export type NewHelixThread = typeof helixThreads.$inferInsert;
+export type HelixMessage = typeof helixMessages.$inferSelect;
+export type NewHelixMessage = typeof helixMessages.$inferInsert;
+export type HelixIntroduction = typeof helixIntroductions.$inferSelect;
+export type NewHelixIntroduction = typeof helixIntroductions.$inferInsert;
+export type HelixAction = typeof helixActions.$inferSelect;
+export type NewHelixAction = typeof helixActions.$inferInsert;
+export type HelixGadget = typeof helixGadgets.$inferSelect;
+export type NewHelixGadget = typeof helixGadgets.$inferInsert;
+export type HelixGadgetVersion = typeof helixGadgetVersions.$inferSelect;
+export type HelixBlueprint = typeof helixBlueprints.$inferSelect;
+export type NewHelixBlueprint = typeof helixBlueprints.$inferInsert;
+export type HelixEvent = typeof helixEvents.$inferSelect;
+export type NewHelixEvent = typeof helixEvents.$inferInsert;

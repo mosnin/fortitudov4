@@ -109,3 +109,15 @@ export const projectPhaseNames = [
   "Review",
   "Launch",
 ];
+
+/**
+ * Plain label map for the five offerings — for server code and agent-facing
+ * strings that want the name without pulling in a service's icon or copy.
+ */
+export const SERVICE_LABELS: Record<ServiceType, string> = {
+  websites: "Websites",
+  software_solutions: "Software Solutions",
+  ai_solutions: "AI Solutions",
+  consultation: "Consultation",
+  digital_marketing: "Digital Marketing",
+};
