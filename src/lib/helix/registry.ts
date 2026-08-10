@@ -10,6 +10,7 @@ import type { AnyOp, Gatekeeper, HelixResourceKind } from './contract';
 import { clientsGatekeeper } from './gatekeepers/clients';
 import { conversationsGatekeeper } from './gatekeepers/conversations';
 import { filesGatekeeper } from './gatekeepers/files';
+import { gadgetsGatekeeper } from './gatekeepers/gadgets';
 import { moneyGatekeeper } from './gatekeepers/money';
 import { projectsGatekeeper } from './gatekeepers/projects';
 import { reportsGatekeeper } from './gatekeepers/reports';
@@ -23,6 +24,7 @@ export const GATEKEEPERS: Gatekeeper[] = [
   conversationsGatekeeper,
   filesGatekeeper,
   reportsGatekeeper,
+  gadgetsGatekeeper,
 ];
 
 const byName = new Map(GATEKEEPERS.map((gk) => [gk.name, gk]));
