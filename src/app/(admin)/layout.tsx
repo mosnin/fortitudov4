@@ -77,8 +77,15 @@ export default async function AdminLayout({
       icon: "MessageSquare",
       section: "Operations",
     },
-    // Helix's own surfaces. Approvals is the one every staff member needs —
-    // the agent's changes are queued there and go nowhere until reviewed.
+    // Helix's own surfaces. Threads is where work is asked for; Approvals is
+    // where its changes wait — they go nowhere until someone reviews them.
+    {
+      label: "Threads",
+      href: "/admin/helix",
+      icon: "Sparkles",
+      exact: true,
+      section: "Helix",
+    },
     {
       label: "Approvals",
       href: "/admin/helix/approvals",
