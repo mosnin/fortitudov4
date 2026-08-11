@@ -23,6 +23,8 @@ import Hero21 from '@/components/originkit/hero-21';
 import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { AgentCanvas } from '@/components/marketing/giga/agent-canvas';
+import { HelixPrimitives } from '@/components/marketing/giga/helix-primitives';
+import { Pipeline } from '@/components/marketing/giga/pipeline';
 import { Advantage } from '@/components/marketing/giga/advantage';
 import { Control } from '@/components/marketing/giga/control';
 import { RealtorShowcase } from '@/components/marketing/giga/realtor-showcase';
@@ -44,6 +46,11 @@ export default async function MarketingHomePage() {
         <Hero21 />
         <Stats />
         <Offerings />
+        {/* The two Helix sections sit together: what the agent is allowed to
+            do, then the pipeline it does it inside. Splitting them puts an
+            unrelated band between a claim and its evidence. */}
+        <HelixPrimitives />
+        <Pipeline />
         <AgentCanvas />
         <Control />
         <Advantage />
