@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, count, desc, eq, inArray, lt } from "drizzle-orm";
 import { db } from "@/db";
 import { helixActions, helixThreads, users } from "@/db/schema";
 import { requireStaff } from "@/lib/auth-utils";
@@ -12,14 +12,43 @@ import {
 /**
  * The approval queue.
  *
- * Everything Helix has proposed but not committed, newest thread first. This
- * is the surface the whole deferred-approval design exists to serve: the agent
+ * The surface the whole deferred-approval design exists to serve: the agent
  * worked while nobody was watching, and this is where a human takes or drops
  * what it did.
+ *
+ * Paged per tab, not per queue. Sharing one window across every status let a
+ * large approval batch — whose rows are the newest — push still-pending work
+ * off the end, so the queue quietly stopped showing what was waiting. Counts
+ * come from a separate tally for the same reason.
  */
-export async function GET() {
+/** The three states a reviewer filters by, and the rows each one holds. */
+const TAB_STATUSES = {
+  pending: ["simulated"],
+  applied: ["executed"],
+  // A failure needs the same attention a decline does — it is work that did
+  // not happen — so they share a tab rather than hiding failures elsewhere.
+  declined: ["rejected", "failed"],
+} as const;
+
+type Tab = keyof typeof TAB_STATUSES;
+
+const PAGE_SIZE = 50;
+
+export async function GET(request: Request) {
   try {
     await requireStaff();
+    const url = new URL(request.url);
+    const tab = (url.searchParams.get("tab") ?? "pending") as Tab;
+    const before = url.searchParams.get("before");
+
+    if (!(tab in TAB_STATUSES)) {
+      return NextResponse.json({ error: "Unknown tab." }, { status: 400 });
+    }
+
+    const filters = [
+      inArray(helixActions.status, [...TAB_STATUSES[tab]]),
+      ...(before ? [lt(helixActions.createdAt, new Date(before))] : []),
+    ];
 
     const rows = await db
       .select({
@@ -44,18 +73,32 @@ export async function GET() {
       .from(helixActions)
       .innerJoin(helixThreads, eq(helixActions.threadId, helixThreads.id))
       .leftJoin(users, eq(helixActions.reviewedBy, users.id))
-      .where(
-        inArray(helixActions.status, [
-          "simulated",
-          "executed",
-          "rejected",
-          "failed",
-        ])
-      )
+      .where(and(...filters))
       .orderBy(desc(helixActions.createdAt))
-      .limit(200);
+      .limit(PAGE_SIZE);
 
-    return NextResponse.json({ actions: rows });
+    // Counted separately rather than derived from the page, so the tab labels
+    // state the true totals instead of "however many fitted".
+    const tallies = await db
+      .select({ status: helixActions.status, count: count() })
+      .from(helixActions)
+      .groupBy(helixActions.status);
+
+    const by = (statuses: readonly string[]) =>
+      tallies
+        .filter((row) => statuses.includes(row.status))
+        .reduce((total, row) => total + row.count, 0);
+
+    return NextResponse.json({
+      actions: rows,
+      nextBefore:
+        rows.length === PAGE_SIZE ? rows[rows.length - 1].createdAt : null,
+      counts: {
+        pending: by(TAB_STATUSES.pending),
+        applied: by(TAB_STATUSES.applied),
+        declined: by(TAB_STATUSES.declined),
+      },
+    });
   } catch (error) {
     if (error instanceof NextResponse) return error;
     console.error("[helix/approvals] GET", error);

@@ -49,6 +49,12 @@ interface PreviewChange {
   after: string;
 }
 
+interface Counts {
+  pending: number;
+  applied: number;
+  declined: number;
+}
+
 interface ActionRow {
   id: string;
   threadId: string;
@@ -79,44 +85,67 @@ type TabKey = "pending" | "applied" | "declined";
 
 export function HelixApprovals() {
   const [actions, setActions] = useState<ActionRow[] | null>(null);
+  const [counts, setCounts] = useState<Counts>({
+    pending: 0,
+    applied: 0,
+    declined: 0,
+  });
   const [tab, setTab] = useState<TabKey>("pending");
+  const [nextBefore, setNextBefore] = useState<string | null>(null);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const response = await fetch("/api/helix/approvals");
-      if (!response.ok) throw new Error("Could not load the queue.");
-      const data = (await response.json()) as { actions: ActionRow[] };
-      setActions(data.actions);
-    } catch {
-      setError("Could not load the approval queue.");
-      setActions([]);
-    }
+  /** One page of one tab. `before` appends; without it the page replaces. */
+  const fetchPage = useCallback(async (which: TabKey, before?: string) => {
+    const params = new URLSearchParams({ tab: which });
+    if (before) params.set("before", before);
+    const response = await fetch(`/api/helix/approvals?${params}`);
+    if (!response.ok) return null;
+    return (await response.json()) as {
+      actions: ActionRow[];
+      nextBefore: string | null;
+      counts: Counts;
+    };
   }, []);
 
+  const [reloadKey, setReloadKey] = useState(0);
+
   useEffect(() => {
-    void load();
-  }, [load]);
+    let cancelled = false;
+    void (async () => {
+      const page = await fetchPage(tab);
+      if (cancelled) return;
+      if (!page) {
+        setError("Could not load the approval queue.");
+        setActions([]);
+        return;
+      }
+      setError(null);
+      setActions(page.actions);
+      setNextBefore(page.nextBefore);
+      setCounts(page.counts);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, reloadKey, fetchPage]);
 
-  const pending = useMemo(
-    () => (actions ?? []).filter((a) => a.status === "simulated"),
-    [actions]
-  );
-  const applied = useMemo(
-    () => (actions ?? []).filter((a) => a.status === "executed"),
-    [actions]
-  );
-  const declined = useMemo(
-    () =>
-      (actions ?? []).filter(
-        (a) => a.status === "rejected" || a.status === "failed"
-      ),
-    [actions]
-  );
+  const loadEarlier = useCallback(async () => {
+    if (!nextBefore) return;
+    setLoadingMore(true);
+    const page = await fetchPage(tab, nextBefore);
+    if (page) {
+      setActions((current) => [...(current ?? []), ...page.actions]);
+      setNextBefore(page.nextBefore);
+    }
+    setLoadingMore(false);
+  }, [fetchPage, tab, nextBefore]);
 
-  const visible = tab === "pending" ? pending : tab === "applied" ? applied : declined;
+  // Memoised because the thread grouping below depends on it; a fresh []
+  // each render would regroup on every keystroke elsewhere in the page.
+  const visible = useMemo(() => actions ?? [], [actions]);
 
   // Grouped by thread: the unit a reviewer actually thinks in is "what did
   // Helix do in this piece of work", not a flat chronological list.
@@ -157,7 +186,7 @@ export function HelixApprovals() {
           );
         }
         setSelected(new Set());
-        await load();
+        setReloadKey((key) => key + 1);
       } catch (caught) {
         setError(
           caught instanceof Error ? caught.message : "That did not apply."
@@ -166,12 +195,18 @@ export function HelixApprovals() {
         setBusy(false);
       }
     },
-    [load]
+    []
   );
 
-  const highRisk = pending.filter((a) => a.risk === "high").length;
-  const oldest = pending.length
-    ? pending.reduce((acc, a) => (a.createdAt < acc ? a.createdAt : acc), pending[0].createdAt)
+  // Risk and age describe the loaded page, and the strip says so — claiming
+  // them as queue-wide totals would be a number the page cannot support.
+  const loadedPending = visible.filter((a) => a.status === "simulated");
+  const highRisk = loadedPending.filter((a) => a.risk === "high").length;
+  const oldest = loadedPending.length
+    ? loadedPending.reduce(
+        (acc, a) => (a.createdAt < acc ? a.createdAt : acc),
+        loadedPending[0].createdAt
+      )
     : null;
 
   const toggle = (id: string) => {
@@ -189,7 +224,7 @@ export function HelixApprovals() {
         <CrmPageHeader
           section="Helix."
           title="Approvals"
-          subtitle={subtitleFor(pending.length, highRisk)}
+          subtitle={subtitleFor(counts.pending, highRisk)}
         />
 
         {actions === null ? (
@@ -197,21 +232,21 @@ export function HelixApprovals() {
         ) : (
           <StatStrip columns={3} ariaLabel="Queue">
             <StatCell label="Waiting on you">
-              {pending.length === 0 ? (
+              {counts.pending === 0 ? (
                 <StatEmpty>Nothing queued.</StatEmpty>
               ) : (
                 <>
-                  <Stat>{pending.length}</Stat>
+                  <Stat>{counts.pending}</Stat>
                   <StatMeta>
-                    across {threadCount(pending)} thread
-                    {threadCount(pending) === 1 ? "" : "s"}
+                    across {threadCount(loadedPending)} thread
+                    {threadCount(loadedPending) === 1 ? "" : "s"} shown
                   </StatMeta>
                 </>
               )}
             </StatCell>
             <StatCell label="Significant">
               {highRisk === 0 ? (
-                <StatEmpty>None — all routine.</StatEmpty>
+                <StatEmpty>None on this page.</StatEmpty>
               ) : (
                 <>
                   <Stat>{highRisk}</Stat>
@@ -234,13 +269,9 @@ export function HelixApprovals() {
 
         <TabStrip
           tabs={[
-            { key: "pending", label: "Waiting", count: pending.length },
-            { key: "applied", label: "Applied", count: applied.length },
-            {
-              key: "declined",
-              label: "Declined",
-              count: declined.length,
-            },
+            { key: "pending", label: "Waiting", count: counts.pending },
+            { key: "applied", label: "Applied", count: counts.applied },
+            { key: "declined", label: "Declined", count: counts.declined },
           ]}
           active={tab}
           onChange={(key) => {
@@ -310,6 +341,16 @@ export function HelixApprovals() {
                 </ul>
               </section>
             ))}
+            {nextBefore && (
+              <button
+                type="button"
+                disabled={loadingMore}
+                onClick={() => void loadEarlier()}
+                className={cn(GHOST_PILL, loadingMore && "opacity-50")}
+              >
+                {loadingMore ? "Loading…" : "Load earlier"}
+              </button>
+            )}
           </div>
         )}
       </div>
