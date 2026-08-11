@@ -1,13 +1,25 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
-import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
+/**
+ * `/faq` — the questions founders actually ask.
+ *
+ * Moved into the `(marketing)` group and rebuilt on the racing-yellow system;
+ * it used to carry its own `<Header/>`/`<Footer/>` on the old orange template.
+ * Every question and answer below is unchanged — only the chrome moved.
+ */
+
+import { ChevronDown } from 'lucide-react';
+import * as Accordion from '@radix-ui/react-accordion';
+import {
+  Band,
+  BlurRise,
+  Eyebrow,
+  PillPrimary,
+  Serif,
+} from '@/components/marketing/giga/primitives';
+import { CtaSection } from '@/components/marketing/giga/cta';
+
+const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 const faqCategories = [
   {
@@ -99,73 +111,91 @@ const faqCategories = [
 export default function FAQPage() {
   return (
     <>
-      <Header />
-      <main className="flex-1 pt-16">
-        {/* Hero */}
-        <section className="relative py-24 sm:py-32 overflow-hidden">
-          <div className="absolute inset-0 bg-charcoal-dark" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(249,115,22,0.12),transparent_50%)]" />
-          <div className="relative z-10 mx-auto max-w-4xl px-4 text-center">
-            <Badge variant="orange" className="mb-4">FAQ</Badge>
-            <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Frequently asked{" "}
-              <span className="text-gradient-orange">questions</span>
-            </h1>
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
+      {/* Hero */}
+      <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] pt-32 pb-20 sm:pt-40 sm:pb-24">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
+        />
+        <Band innerClassName="relative max-w-3xl">
+          <BlurRise trigger="load">
+            <Eyebrow>FAQ</Eyebrow>
+            <Serif
+              as="h1"
+              className="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] text-[var(--fx-white)]"
+            >
+              Frequently asked{' '}
+              <span className="text-[var(--fx-yellow)]">questions.</span>
+            </Serif>
+            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
               Everything you need to know about working with Fortitudo Agency.
-              Can&apos;t find what you&apos;re looking for? Reach out to us directly.
+              Can&apos;t find what you&apos;re looking for? Reach out directly.
             </p>
-          </div>
-        </section>
+          </BlurRise>
+        </Band>
+      </section>
 
-        {/* FAQ Sections */}
-        <section className="py-20 sm:py-28">
-          <div className="mx-auto max-w-3xl px-4">
-            <div className="space-y-12">
-              {faqCategories.map((category) => (
-                <div key={category.category}>
-                  <h2 className="text-xl font-bold mb-4">{category.category}</h2>
-                  <Accordion.Root type="single" collapsible className="space-y-2">
-                    {category.questions.map((item, i) => (
-                      <Accordion.Item
-                        key={i}
-                        value={`${category.category}-${i}`}
-                        className="rounded-xl border border-border overflow-hidden"
-                      >
-                        <Accordion.Trigger className="flex w-full items-center justify-between p-4 text-left text-sm font-medium hover:bg-muted/50 transition-colors cursor-pointer group [&[data-state=open]>svg]:rotate-180">
-                          {item.q}
-                          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
-                        </Accordion.Trigger>
-                        <Accordion.Content className="overflow-hidden data-[state=open]:animate-slideDown data-[state=closed]:animate-slideUp">
-                          <div className="px-4 pb-4 text-sm text-muted-foreground leading-relaxed">
-                            {item.a}
-                          </div>
-                        </Accordion.Content>
-                      </Accordion.Item>
-                    ))}
-                  </Accordion.Root>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+      {/* Questions, by category */}
+      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] py-20 sm:py-28">
+        <Band innerClassName="max-w-3xl">
+          <div className="space-y-16">
+            {faqCategories.map((category) => (
+              <BlurRise key={category.category}>
+                <p
+                  style={MONO}
+                  className="text-[11px] tracking-[0.18em] text-[var(--fx-faint)] uppercase"
+                >
+                  {category.category}
+                </p>
 
-        {/* CTA */}
-        <section className="py-16 sm:py-20 bg-charcoal-dark/30">
-          <div className="mx-auto max-w-3xl px-4 text-center">
-            <h2 className="text-2xl font-bold">Still have questions?</h2>
-            <p className="mt-3 text-muted-foreground">
-              We&apos;re here to help. Reach out and we&apos;ll get back to you within 24 hours.
+                <Accordion.Root
+                  type="single"
+                  collapsible
+                  className="mt-5 border-t border-[var(--fx-hairline)]"
+                >
+                  {category.questions.map((item, i) => (
+                    <Accordion.Item
+                      key={item.q}
+                      value={`${category.category}-${i}`}
+                      className="border-b border-[var(--fx-hairline)]"
+                    >
+                      <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left text-[16px] font-medium text-[var(--fx-white)] transition-colors [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[var(--fx-yellow)]">
+                        {item.q}
+                        <ChevronDown className="h-4 w-4 shrink-0 text-[var(--fx-faint)] transition-transform duration-200" />
+                      </Accordion.Trigger>
+                      <Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
+                        <div className="pb-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                          {item.a}
+                        </div>
+                      </Accordion.Content>
+                    </Accordion.Item>
+                  ))}
+                </Accordion.Root>
+              </BlurRise>
+            ))}
+          </div>
+        </Band>
+      </section>
+
+      {/* Still stuck */}
+      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] py-20 sm:py-24">
+        <Band innerClassName="max-w-2xl">
+          <BlurRise>
+            <Serif className="text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08] text-[var(--fx-white)]">
+              Still have questions?
+            </Serif>
+            <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
+              We&apos;re here to help. Reach out and we&apos;ll get back to you
+              within 24 hours.
             </p>
-            <Button variant="glow" size="lg" className="mt-6" asChild>
-              <Link href="/contact">
-                Contact Us <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </section>
-      </main>
-      <Footer />
+            <PillPrimary href="/contact" className="mt-8" withArrow>
+              Contact us
+            </PillPrimary>
+          </BlurRise>
+        </Band>
+      </section>
+
+      <CtaSection />
     </>
   );
 }

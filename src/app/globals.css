@@ -409,7 +409,10 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-yellow: #f8cd02;
   --fx-yellow-hover: #dcb602;
   /* Ink for anything sitting on yellow. */
-  --fx-on-yellow: #141416;
+  /* Deliberately NOT --fx-charcoal-deep. Ink and a surface that happen to be
+     the same value today will not stay that way, and a page that reads
+     correctly by coincidence is one edit from reading wrong. */
+  --fx-on-yellow: #0d0d0d;
 
   /* Charcoal ground, plus the panel one step deeper for inset surfaces and
      one step lighter for raised ones. */
