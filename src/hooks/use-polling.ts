@@ -17,7 +17,9 @@ export function usePolling<T>({
 }: UsePollingOptions<T>) {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Only start in a loading state when we will actually fetch; otherwise a
+  // disabled poller would report loading=true indefinitely.
+  const [loading, setLoading] = useState(enabled);
   const onUpdateRef = useRef(onUpdate);
   onUpdateRef.current = onUpdate;
 
@@ -39,6 +41,7 @@ export function usePolling<T>({
   useEffect(() => {
     if (!enabled) return;
 
+    setLoading(true);
     fetchData();
     const timer = setInterval(fetchData, interval);
     return () => clearInterval(timer);
