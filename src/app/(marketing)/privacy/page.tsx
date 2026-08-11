@@ -51,12 +51,12 @@ export default function PrivacyPage() {
 
               <div>
                 <h2 className="text-[17px] font-semibold text-[var(--fx-white)]">6. Your Rights</h2>
-                <p>You have the right to access, correct, or delete your personal data. You may also request a copy of your data or opt out of non-essential communications. Contact us at hello@foritudo.agency for any privacy-related requests.</p>
+                <p>You have the right to access, correct, or delete your personal data. You may also request a copy of your data or opt out of non-essential communications. Contact us at hello@fortitudo.agency for any privacy-related requests.</p>
               </div>
 
               <div>
                 <h2 className="text-[17px] font-semibold text-[var(--fx-white)]">7. Contact</h2>
-                <p>For questions about this privacy policy, contact us at hello@foritudo.agency.</p>
+                <p>For questions about this privacy policy, contact us at hello@fortitudo.agency.</p>
               </div>
             </div>
           </div>

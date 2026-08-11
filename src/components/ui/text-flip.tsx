@@ -2,7 +2,7 @@
 
 import { Children, useEffect, useState } from "react"
 import type { Transition, Variants } from "motion/react"
-import { AnimatePresence, motion } from "motion/react"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 
 import { cn } from "@/lib/utils"
 
@@ -65,12 +65,17 @@ export function TextFlip({
 
   onIndexChange,
 }: TextFlipProps) {
+  const reduce = useReducedMotion()
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const items = Children.toArray(children)
 
   useEffect(() => {
-    if (!play) return
+    // A headline that rewrites itself every couple of seconds is exactly what
+    // prefers-reduced-motion asks a page to stop doing, and this component is
+    // used inside an <h2>. Under the preference the first child stands as the
+    // final copy and the interval never starts.
+    if (reduce || !play) return
 
     const timer = setInterval(() => {
       setCurrentIndex((prev) => {
@@ -81,7 +86,13 @@ export function TextFlip({
     }, interval * 1000)
 
     return () => clearInterval(timer)
-  }, [play, interval, items.length, onIndexChange])
+  }, [reduce, play, interval, items.length, onIndexChange])
+
+  // Rendered flat, with no AnimatePresence: swapping in a motion element would
+  // still run the enter/exit variants on the first paint.
+  if (reduce) {
+    return <span className={cn("inline-block", className)}>{items[0]}</span>
+  }
 
   return (
     <AnimatePresence mode="wait" initial={false}>

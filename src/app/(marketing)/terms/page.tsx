@@ -71,7 +71,7 @@ export default function TermsPage() {
 
               <div>
                 <h2 className="text-[17px] font-semibold text-[var(--fx-white)]">10. Contact</h2>
-                <p>For questions about these terms, contact us at hello@foritudo.agency.</p>
+                <p>For questions about these terms, contact us at hello@fortitudo.agency.</p>
               </div>
             </div>
           </div>

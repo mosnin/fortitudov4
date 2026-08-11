@@ -1,21 +1,28 @@
 'use client';
 
 /**
- * RealtorShowcase, the realtor-dashboard feature section (image on the LEFT).
- * Same animated/frosted pattern as <AgentCanvas>, mirrored, focused on the real
- * features an agent uses day to day: lead qualification, deal pipelines,
- * contact management, tours, and a public profile.
+ * DeliveryShowcase, the client-dashboard feature section (image on the LEFT).
+ * Same animated/frosted pattern as <AgentCanvas>, mirrored, focused on what a
+ * client watches day to day: the build tracker, fixed quotes, revisions,
+ * messages, and the launch checklist.
+ *
+ * Named "realtor-showcase" until now, with house icons and a real-estate agent
+ * dashboard underneath it — leftovers from the template this site was ported
+ * from. Fortitudo does not sell to realtors, so the vocabulary went with the
+ * fabricated content: a named contact, four named client companies with fee
+ * figures, a 4.9-star rating nobody gave, and a page-view count. The star
+ * rating is deleted outright rather than blanked; a rating with no reviewers is
+ * not a placeholder, it is a claim.
  */
 
 import {
-  Home,
+  Briefcase,
   LayoutDashboard,
   Gauge,
   Globe,
   CheckCircle2,
   Users,
   CalendarCheck,
-  Star,
   Eye,
   BadgeCheck,
 } from 'lucide-react';
@@ -50,14 +57,16 @@ const STEPS: ShowcaseStep[] = [
           className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3"
         >
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[12px] font-semibold text-black">
-            SC
+            CA
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[13px] font-medium text-white">Sarah Chen</span>
+            <span className="block text-[13px] font-medium text-white">Client A</span>
             <span className="block text-[11px] text-white/45">Founder · SaaS · MVP</span>
           </span>
+          {/* The "92" health score belonged to an invented client. The status
+              word is the part of this card that means anything. */}
           <span className="text-right">
-            <span className="block text-[22px] font-semibold leading-none text-white">92</span>
+            <span className="block text-[22px] font-semibold leading-none text-white">—</span>
             <span className="text-[10px] font-medium tracking-wide text-[#f8cd02]">ON TRACK</span>
           </span>
         </motion.div>
@@ -97,9 +106,13 @@ const STEPS: ShowcaseStep[] = [
             </div>
           ))}
         </motion.div>
-        <Row icon={Home} title="Marketing site" meta="Maison Noir · $6.4k" right={<Chip label="Scoping" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />} />
-        <Row icon={Home} title="Ecommerce build" meta="Verde Botanica · $7.2k" right={<Chip label="Quoted" tone="bg-sky-400/15 text-sky-300" />} />
-        <Row icon={Home} title="Booking funnel" meta="Atlas Ops · $5.1k" right={<Chip label="Approved" tone="bg-emerald-400/15 text-emerald-300" />} />
+        {/* Named clients with fee figures — "Maison Noir · $6.4k" and friends —
+            read as a client list and a rate card at once. Neither was real, and
+            the house icon was real-estate furniture; the stage chip is what the
+            row is actually demonstrating. */}
+        <Row icon={Briefcase} title="Marketing site" meta="Client A · scope in review" right={<Chip label="Scoping" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />} />
+        <Row icon={Briefcase} title="Ecommerce build" meta="Client B · quote sent" right={<Chip label="Quoted" tone="bg-sky-400/15 text-sky-300" />} />
+        <Row icon={Briefcase} title="Booking funnel" meta="Client C · quote approved" right={<Chip label="Approved" tone="bg-emerald-400/15 text-emerald-300" />} />
       </Frost>
     ),
   },
@@ -123,10 +136,10 @@ const STEPS: ShowcaseStep[] = [
     desc: 'Every thread in one inbox, with the project attached, so nothing gets lost in email.',
     mockup: (
       <Frost title="Messages" badge="This week">
-        <Row icon={CalendarCheck} title="Sat 2:00, Phase 3 review" meta="Sarah Chen" tone="text-[#f8cd02]" right={<Chip label="Confirmed" tone="bg-emerald-400/15 text-emerald-300" />} active />
-        <Row icon={CalendarCheck} title="Sun 11:00, scope call" meta="Verde Botanica" right={<Chip label="Confirmed" tone="bg-emerald-400/15 text-emerald-300" />} />
-        <Row icon={CalendarCheck} title="Mon 4:30, launch prep" meta="Atlas Ops" right={<Chip label="Pending" tone="bg-amber-400/15 text-amber-300" />} />
-        <Row icon={CalendarCheck} title="Wed 1:00, kickoff" meta="GrowthForge" right={<Chip label="Requested" tone="bg-white/10 text-white/60" />} />
+        <Row icon={CalendarCheck} title="Sat 2:00, Phase 3 review" meta="Client A" tone="text-[#f8cd02]" right={<Chip label="Confirmed" tone="bg-emerald-400/15 text-emerald-300" />} active />
+        <Row icon={CalendarCheck} title="Sun 11:00, scope call" meta="Client B" right={<Chip label="Confirmed" tone="bg-emerald-400/15 text-emerald-300" />} />
+        <Row icon={CalendarCheck} title="Mon 4:30, launch prep" meta="Client C" right={<Chip label="Pending" tone="bg-amber-400/15 text-amber-300" />} />
+        <Row icon={CalendarCheck} title="Wed 1:00, kickoff" meta="Client D" right={<Chip label="Requested" tone="bg-white/10 text-white/60" />} />
       </Frost>
     ),
   },
@@ -138,24 +151,24 @@ const STEPS: ShowcaseStep[] = [
       <Frost title="Launch checklist" badge="Live">
         <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[14px] font-semibold text-black">
-            MN
+            CA
           </span>
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-1.5 text-[13px] font-medium text-white">
-              Maison Noir
+              Client A
               <BadgeCheck className="h-3.5 w-3.5 text-[#f8cd02]" />
             </span>
             <span className="block text-[11px] text-white/45">Ecommerce build · launches Friday</span>
           </span>
-          <span className="flex items-center gap-1 text-[12px] text-white/80">
-            <Star className="h-3.5 w-3.5 fill-current text-amber-300" /> 4.9
-          </span>
+          {/* A "4.9" star rating sat here. Fortitudo has collected no ratings,
+              so there is nothing to average and nothing to blank out. */}
         </motion.div>
+        {/* "32 Checks / 128 Done / 87 Automated" counted work nobody did. */}
         <motion.div variants={rowV} className="grid grid-cols-3 gap-1.5">
           {[
-            { n: '32', l: 'Checks' },
-            { n: '128', l: 'Done' },
-            { n: '87', l: 'Automated' },
+            { n: '—', l: 'Checks' },
+            { n: '—', l: 'Done' },
+            { n: '—', l: 'Automated' },
           ].map((s) => (
             <div key={s.l} className="rounded-lg border border-white/[0.08] bg-white/[0.03] p-2.5 text-center">
               <span className="block text-[17px] font-semibold leading-none text-white">{s.n}</span>
@@ -163,13 +176,15 @@ const STEPS: ShowcaseStep[] = [
             </div>
           ))}
         </motion.div>
-        <Row icon={Eye} title="preview.fortitudo.agency/maison-noir" meta="1,240 views this month" right={<Chip label="Share" tone="bg-white/10 text-white/60" />} />
+        {/* The traffic figure — "1,240 views this month" — measured a preview
+            that never existed. The link is the feature; the count was decor. */}
+        <Row icon={Eye} title="preview.fortitudo.agency/client-a" meta="private preview link" right={<Chip label="Share" tone="bg-white/10 text-white/60" />} />
       </Frost>
     ),
   },
 ];
 
-export function RealtorShowcase() {
+export function DeliveryShowcase() {
   return (
     <FeatureShowcase
       eyebrow="Built for founders"
@@ -181,7 +196,7 @@ export function RealtorShowcase() {
       }
       product={{
         name: 'Client Dashboard',
-        icon: Home,
+        icon: LayoutDashboard,
         desc: 'The home base for your build. Track phases, approve revisions, message the team, and watch Helix work — all from one dashboard.',
         cta: { label: 'Explore the dashboard', href: '/sign-up' },
       }}

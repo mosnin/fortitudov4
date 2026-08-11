@@ -58,7 +58,9 @@ export function Offerings() {
                   ))}
                 </div>
                 <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-4">
-                  <span style={MONO} className="text-[11px] uppercase tracking-[0.08em] text-white/45">
+                  {/* A price is content. white/60 is 6.9:1; white/45 was
+                      4.45:1, just under the 4.5:1 body floor. */}
+                  <span style={MONO} className="text-[11px] uppercase tracking-[0.08em] text-white/60">
                     {service.startingPrice}
                   </span>
                   <span className="flex items-center gap-1 text-[12.5px] font-medium text-white/70 transition-colors group-hover:text-white">

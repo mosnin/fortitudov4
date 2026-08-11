@@ -117,7 +117,7 @@ export default function FAQPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
         />
-        <Band innerClassName="relative max-w-3xl">
+        <Band innerClassName="relative mr-auto ml-0 max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>FAQ</Eyebrow>
             <Serif

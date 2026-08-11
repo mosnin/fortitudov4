@@ -18,7 +18,9 @@ export default function NotFound() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-[#1b1b1d] px-6 text-center text-white">
       <p
         style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}
-        className="text-[11px] tracking-[0.2em] text-white/40 uppercase"
+        // "Error 404" is the only place the status code appears, so it reads
+        // at white/60 (6.9:1) rather than white/40 (3.8:1).
+        className="text-[11px] tracking-[0.2em] text-white/60 uppercase"
       >
         Error 404
       </p>

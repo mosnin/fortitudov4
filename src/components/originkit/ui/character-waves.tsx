@@ -86,6 +86,27 @@ const DRIFT: Record<string, [number, number]> = {
   bottom: [0, -1],
 };
 
+/**
+ * Canvas is not CSS. Assigning `ctx.fillStyle = "var(--fx-yellow)"` is not an
+ * error — the 2D context cannot parse it, so it silently ignores the
+ * assignment and keeps whatever colour was set before. The default is black,
+ * which on a charcoal panel means the whole field renders black-on-black and
+ * looks like the component simply never ran.
+ *
+ * So custom properties are resolved against the element that inherits them
+ * before they ever reach the context. Anything that is already a real colour
+ * passes straight through.
+ */
+function resolveColor(value: string, el: HTMLElement | null): string {
+  const match = /^\s*var\(\s*(--[\w-]+)\s*(?:,\s*([^)]*))?\)\s*$/.exec(value);
+  if (!match) return value;
+  const [, name, fallback] = match;
+  const resolved = el
+    ? getComputedStyle(el).getPropertyValue(name).trim()
+    : '';
+  return resolved || fallback?.trim() || 'transparent';
+}
+
 export default function ASCIIWaves(props: ASCIIWavesProps) {
   const {
     characters,
@@ -221,11 +242,17 @@ export default function ASCIIWaves(props: ASCIIWavesProps) {
 
     const rampMax = rampArr.length - 1;
 
+    // Resolved once per effect run, not per frame: `getComputedStyle` forces
+    // style resolution, and doing that inside a rAF loop is how you turn a
+    // background flourish into a jank source.
+    const inkColor = resolveColor(color, canvas);
+    const groundColor = resolveColor(background, canvas);
+
     const draw = (now: number) => {
       const t = ((now - startRef.current) / 1000) * speedVal;
-      ctx.fillStyle = background;
+      ctx.fillStyle = groundColor;
       ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = color;
+      ctx.fillStyle = inkColor;
 
       const p = pointerRef.current;
 

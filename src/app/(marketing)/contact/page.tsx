@@ -29,8 +29,14 @@ const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 const EMPTY = { name: '', email: '', company: '', service: '', message: '' };
 
+// The resting border is white/40 rather than --fx-hairline: the hairline is
+// 1.43:1 on charcoal, and WCAG 1.4.11 asks 3:1 of any boundary that is what
+// identifies a control. white/40 measures 3.66:1 against the field interior and
+// 3.97:1 against the card behind it. Placeholder is --fx-muted (6.5:1) because
+// in the textarea it is the only hint of what to write, and --fx-faint's 3.57:1
+// is under the 4.5:1 body floor. Yellow focus border unchanged.
 const FIELD =
-  'w-full rounded-[4px] border border-[var(--fx-hairline)] bg-white/[0.03] px-3.5 py-2.5 text-[14px] text-[var(--fx-white)] placeholder:text-[var(--fx-faint)] transition-colors focus:border-[var(--fx-yellow)] focus:outline-none';
+  'w-full rounded-[4px] border border-white/40 bg-white/[0.03] px-3.5 py-2.5 text-[14px] text-[var(--fx-white)] placeholder:text-[var(--fx-muted)] transition-colors focus:border-[var(--fx-yellow)] focus:outline-none';
 
 const LABEL =
   'mb-1.5 block text-[13px] font-medium text-[var(--fx-muted)]';
@@ -39,7 +45,7 @@ const DETAILS = [
   {
     icon: Mail,
     title: 'Email',
-    body: 'hello@foritudo.agency',
+    body: 'hello@fortitudo.agency',
   },
   {
     icon: Clock,
@@ -77,7 +83,7 @@ export default function ContactPage() {
         // only copy, and losing it is worse than the failure itself.
         setError(
           payload.error ??
-            'We could not send that. Please email us directly at hello@foritudo.agency.'
+            'We could not send that. Please email us directly at hello@fortitudo.agency.'
         );
         setStatus('idle');
         return;
@@ -85,7 +91,7 @@ export default function ContactPage() {
       setStatus('sent');
     } catch {
       setError(
-        'We could not reach the server. Please email us directly at hello@foritudo.agency.'
+        'We could not reach the server. Please email us directly at hello@fortitudo.agency.'
       );
       setStatus('idle');
     }
@@ -99,7 +105,7 @@ export default function ContactPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
         />
-        <Band innerClassName="relative max-w-3xl">
+        <Band innerClassName="relative mr-auto ml-0 max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>Contact</Eyebrow>
             <Serif
@@ -247,7 +253,10 @@ export default function ContactPage() {
                       Send message
                     </button>
 
-                    <p className="text-center text-[12px] text-[var(--fx-faint)]">
+                    {/* A promise about what happens to their address is
+                        content, not decoration, so it reads at --fx-muted's
+                        6.5:1 rather than --fx-faint's 3.57:1. */}
+                    <p className="text-center text-[12px] text-[var(--fx-muted)]">
                       No spam. We&apos;ll respond within 24 hours.
                     </p>
                   </form>

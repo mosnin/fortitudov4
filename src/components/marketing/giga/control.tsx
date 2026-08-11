@@ -14,7 +14,7 @@
  */
 
 import { motion, useReducedMotion } from 'motion/react';
-import { Serif, Eyebrow, BlurRise, Band, ACCENT } from './primitives';
+import { Serif, Eyebrow, BlurRise, Band, Mono, ACCENT } from './primitives';
 import { EASE_OUT } from '@/lib/motion';
 
 interface QueuedChange {
@@ -23,10 +23,16 @@ interface QueuedChange {
   weight: 'routine' | 'significant';
 }
 
-/** Written as the queue actually reads — plain sentences, before → after. */
+/**
+ * Written as the queue actually reads — plain sentences, before → after.
+ *
+ * The tenants are placeholders. "Northwind" and "Meridian" were invented
+ * companies, and an invented company attached to an invented fee is the same
+ * fabrication that was already cut from /portfolio, only smaller.
+ */
 const QUEUE: QueuedChange[] = [
   {
-    summary: 'Move Northwind to Client review',
+    summary: 'Move Client A to Client review',
     detail: 'Build → Client review',
     weight: 'routine',
   },
@@ -41,7 +47,7 @@ const QUEUE: QueuedChange[] = [
     weight: 'significant',
   },
   {
-    summary: 'Record $3,500 setup fee from Meridian',
+    summary: 'Record the setup fee from Client B',
     detail: 'Counts toward revenue once approved',
     weight: 'significant',
   },
@@ -88,8 +94,15 @@ export function Control() {
           </BlurRise>
 
           <BlurRise delay={0.24}>
-            <p className="mt-8 text-[13px] text-white/40">
-              No agency software on the market works this way.
+            {/* Every white/40 in this section was 3.8:1, under the 4.5:1 body
+                floor. white/60 is 6.9:1 on charcoal.
+
+                This line read "No agency software on the market works this
+                way." Nobody surveyed the market, and a claim about every
+                competitor is one no reader can check. What is checkable is how
+                our own queue behaves, so that is what it says now. */}
+            <p className="mt-8 text-[13px] text-white/60">
+              The queue is the only way in. There is no path around it.
             </p>
           </BlurRise>
         </div>
@@ -102,11 +115,11 @@ export function Control() {
                 style={{
                   fontFamily: 'var(--font-mono-display), ui-monospace, monospace',
                 }}
-                className="text-[10px] tracking-[0.14em] text-white/40 uppercase"
+                className="text-[10px] tracking-[0.14em] text-white/60 uppercase"
               >
                 Waiting for you
               </span>
-              <span className="text-[11px] tabular-nums text-white/40">
+              <span className="text-[11px] tabular-nums text-white/60">
                 4 changes · 2 significant
               </span>
             </div>
@@ -129,7 +142,7 @@ export function Control() {
                     <p className="text-[13.5px] leading-snug text-white/85">
                       {change.summary}
                     </p>
-                    <p className="mt-1 text-[11.5px] text-white/40">
+                    <p className="mt-1 text-[11.5px] text-white/60">
                       {change.detail}
                     </p>
                   </div>
@@ -149,7 +162,7 @@ export function Control() {
             </ul>
 
             <div className="flex items-center justify-between gap-3 border-t border-white/10 px-5 py-4">
-              <span className="text-[11.5px] text-white/40">
+              <span className="text-[11.5px] text-white/60">
                 Approve the routine ones together. Read the two that matter.
               </span>
               <span className="rounded-[4px] bg-[var(--fx-yellow)] px-3.5 py-1.5 text-[11.5px] font-medium text-[var(--fx-on-yellow)]">
@@ -157,6 +170,11 @@ export function Control() {
               </span>
             </div>
           </div>
+          {/* The queue is drawn, not screenshotted. Saying so is what keeps the
+              placeholder tenants above from reading as a client list. */}
+          <Mono className="mt-3 block text-[11px] text-[var(--fx-faint)]">
+            Illustrative interface — not live data
+          </Mono>
         </BlurRise>
       </div>
     </Band>

@@ -60,7 +60,7 @@ export default function PortfolioPage() {
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
         />
-        <Band innerClassName="relative max-w-3xl">
+        <Band innerClassName="relative mr-auto ml-0 max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>Portfolio</Eyebrow>
             <Serif
@@ -134,7 +134,10 @@ export default function PortfolioPage() {
                   >
                     {study.title}
                   </Serif>
-                  <p className="mt-1 text-[13px] text-[var(--fx-faint)]">
+                  {/* Muted, not faint: the client name is content, and
+                      --fx-faint measures 3.57:1 on charcoal — under the 4.5:1
+                      body-text floor. --fx-muted is 6.5:1. */}
+                  <p className="mt-1 text-[13px] text-[var(--fx-muted)]">
                     {study.client}
                   </p>
                   <p className="mt-4 flex-1 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">

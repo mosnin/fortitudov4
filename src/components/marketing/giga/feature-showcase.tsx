@@ -3,8 +3,8 @@
 /**
  * FeatureShowcase, the reusable animated feature section (reference-matched).
  *
- * One config-driven component used for multiple sections (e.g. "Real Estate OS"
- * and the realtor-dashboard tour). Layout:
+ * One config-driven component used for multiple sections (e.g. the Product OS
+ * and the client-dashboard tour). Layout:
  *   - eyebrow + big serif headline (left) and three plain-icon mini-features
  *     (right);
  *   - below, a big rounded card split into a text column (gradient product name
@@ -13,7 +13,8 @@
  *
  * The card swaps per step (rows stagger in), auto-advances on a progress bar,
  * pauses on hover, and is reduced-motion aware. `imageSide` mirrors the card so
- * sections can alternate image-right / image-left down the page.
+ * sections can alternate image-right / image-left down the page. A mono caption
+ * under the card marks the panels as illustrations rather than live data.
  *
  * Also exports the frosted mockup kit (Frost / Row / Dot / rowV) so each
  * section can declare its own detailed panels.
@@ -23,11 +24,19 @@ import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
-import { BlurRise, Eyebrow, PillGhost, Serif, Band } from './primitives';
+import { BlurRise, Eyebrow, Mono, PillGhost, Serif, Band } from './primitives';
 import { AnimatedGradientText } from '@/components/ui/animated-gradient-text';
 
 /** Per-step dwell time before auto-advancing (ms). */
 const DURATION = 6500;
+
+/**
+ * Every panel in these sections is a drawing of the interface, not a screenshot
+ * of a running account. Saying so under the card is the difference between an
+ * illustration and a claim, so the caption ships by default and each section
+ * opts into different wording rather than out of the caption.
+ */
+const DEFAULT_NOTICE = 'Illustrative interface — not live data';
 
 export interface ShowcaseStep {
   key: string;
@@ -58,6 +67,8 @@ export interface FeatureShowcaseProps {
   image: string;
   /** Which side the image/mockup sits on (alternates per section). */
   imageSide?: 'left' | 'right';
+  /** Caption under the card marking the mockups as drawings, not live data. */
+  notice?: string;
   className?: string;
 }
 
@@ -69,6 +80,7 @@ export function FeatureShowcase({
   steps,
   image,
   imageSide = 'right',
+  notice = DEFAULT_NOTICE,
   className,
 }: FeatureShowcaseProps) {
   const reduce = useReducedMotion();
@@ -248,6 +260,7 @@ export function FeatureShowcase({
             </div>
           </div>
         </div>
+        <Mono className="mt-3 block text-[11px] text-[var(--fx-faint)]">{notice}</Mono>
       </BlurRise>
     </Band>
   );

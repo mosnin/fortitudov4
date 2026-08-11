@@ -132,28 +132,73 @@ Gadgets, Activity — plus a read-only `/helix` on the client portal.
 
 # Part 2 — The logged-out surface
 
-Dark, cinematic, editorial — the source repo's `(marketing)` shell, ported with
-its assets. Near-black `#0a0a0a` canvas, full-bleed photography, thin
-high-contrast serif headlines, monospace eyebrows, generous air, hairline
-dividers.
+Racing yellow on charcoal. Structural rather than cinematic: the page is built
+out of hairlines and squared edges, and the one saturated colour in the system
+is spent on the thing you are meant to press.
+
+**The whole palette lives in one block**, on `[data-marketing-shell]` in
+`globals.css`. That selector is the boundary — the product never sees these
+tokens, and this surface never sees the product's. Nothing here reads the
+light/dark toggle; the logged-out site is charcoal in both.
+
+| Token | Value | What it is |
+| --- | --- | --- |
+| `--fx-yellow` | `#f8cd02` | The accent. A **surface**, and the primary action. |
+| `--fx-yellow-hover` | `#dcb602` | Its pressed state. |
+| `--fx-on-yellow` | `#0d0d0d` | Ink for anything sitting *on* yellow. |
+| `--fx-charcoal` | `#1b1b1d` | The ground. |
+| `--fx-charcoal-deep` | `#141416` | Inset surfaces, alternating bands. |
+| `--fx-charcoal-raised` | `#232326` | Raised surfaces. |
+| `--fx-white` / `--fx-muted` / `--fx-faint` | `#fff` / `.58` / `.38` | Text on charcoal. |
+| `--fx-hairline` | white `.12` | Structure. |
+
+**The two rules that define the scheme.** Yellow is a surface and text on it is
+always black. Charcoal is the ground and body text on it is always white.
+Yellow as *text* is allowed only for accents a few words long — one clause of a
+headline, a hover state, an eyebrow dot. It clears contrast easily (11.2:1), but
+at paragraph length it stops reading as emphasis and starts competing with the
+call to action, which is the only job it has.
+
+**Two yellow buttons on one screen is a bug, not a style choice.** If two things
+both look primary, neither is.
 
 - **Kit**: `src/components/marketing/giga/` — `primitives.tsx` is the vocabulary
-  (`Serif`, `Eyebrow`, `BlurRise`, `Band`, pill CTAs).
-- **Type**: display serif via `--font-title` (Times), eyebrows in `--font-mono`,
-  body in the system sans. No webfonts.
-- **Colour**: white text on near-black; `text-white/70`–`/60` for body,
-  `text-white/40` for captions; hairlines `border-white/10`. The warm accent
-  `#ff7a45` is used sparingly — eyebrow dots, tiny glyphs, one moment a screen.
-- **CTAs**: `rounded-full` **white** pills with near-black text. Never a filled
-  orange button.
+  (`Serif`, `Eyebrow`, `BlurRise`, `Band`, `PillPrimary`, `PillGhost`). The
+  homepage hero is `src/components/originkit/` (OriginKit `hero-21`, recoloured).
+- **Type**: one voice — a tight geometric sans (Geist, self-hosted) for display
+  at semibold, monospace for eyebrows. **There is no serif on this surface.**
+  `<Serif>` keeps its name only because ~14 files import it; it renders the sans.
+- **Shape**: squared. `rounded-[4px]` for controls, `rounded-[6px]` for panels,
+  and structure drawn with rules rather than rounded cards. Circles survive only
+  as dots and avatars.
+- **Contrast floor**: `--fx-muted` (6.5:1) is the lowest value allowed for text
+  that carries meaning. `--fx-faint` (3.6:1) fails WCAG body text and is for
+  decorative micro-labels only. Raw `text-white/45` and below fail — don't.
 - **Motion**: the `(marketing)/template.tsx` blur-in on route change; sections
   enter with `BlurRise` on `EASE_OUT`; nothing bounces; everything respects
   `prefers-reduced-motion`.
-- **Section rhythm**: eyebrow → serif headline (two lines max) → one muted
-  paragraph (~65ch) → one CTA → the visual. Sections are tall (`py-24`–`py-40`),
-  separated by hairlines or photography — never background-colour stripes.
+- **Section rhythm**: eyebrow → display headline (two lines max) → one muted
+  paragraph (~65ch) → one CTA → the visual. Sections are tall (`py-20`–`py-32`),
+  separated by hairlines or by alternating charcoal depths.
 - **Footer**: pinned beneath the page, uncovered on the last stretch of scroll
   (`FooterReveal`).
+
+## Nothing on this surface is invented
+
+The site was ported from a real-estate CRM template, and the template's filler
+was written to look like proof: named clients, quantified outcomes, star
+ratings, logo walls, staff rosters. All of it has been removed, and none of it
+comes back.
+
+- **No client proof we cannot source.** A case study names a real client and a
+  number they agreed to, or it does not ship. `/portfolio` renders an empty
+  state rather than a filled grid.
+- **No invented metrics.** Not in headline stats, not in pricing, not in copy.
+- **Mock interfaces caption themselves.** Any section containing a drawing of
+  the product carries a visible mono label saying so, and the mock is
+  `aria-hidden` so a screen reader does not read invented numbers as fact.
+- **Placeholders stay placeholders.** If an image or a logo is missing, the slot
+  says it is missing.
 
 ## Auth + onboarding
 

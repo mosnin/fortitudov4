@@ -193,10 +193,13 @@ export function SiteHeader() {
               className="flex items-center gap-0.5 rounded-[4px] border px-1.5"
             >
               <Link href="/" aria-label="Fortitudo home" className="flex items-center px-3 py-2.5" onClick={closeAll}>
+                {/* Empty alt: the link carries its own aria-label and the
+                    wordmark beside it is visible text, so naming the mark
+                    would announce "Fortitudo" a third time. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
-                  alt="Fortitudo"
+                  src="/brand/fortitudo-mark.png"
+                  alt=""
                   width={320}
                   height={320}
                   className="h-5 w-auto"
@@ -277,7 +280,9 @@ export function SiteHeader() {
                               </span>
                               <span className="min-w-0">
                                 <span className="block text-[13px] font-medium text-white">{it.label}</span>
-                                <span className="mt-0.5 block text-[11px] leading-snug text-white/45">
+                                {/* white/60 is 6.9:1; white/45 was 4.45:1,
+                                    just under the 4.5:1 body floor. */}
+                                <span className="mt-0.5 block text-[11px] leading-snug text-white/60">
                                   {it.desc}
                                 </span>
                               </span>
@@ -344,10 +349,12 @@ export function SiteHeader() {
             >
               <div className="flex h-16 items-center justify-between px-5 pt-3">
                 <Link href="/" className="flex items-center" onClick={closeAll}>
+                  {/* Empty alt: the visible wordmark beside it already names
+                      the link. */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
-                    alt="Fortitudo"
+                    src="/brand/fortitudo-mark.png"
+                    alt=""
                     width={320}
                     height={320}
                     className="h-5 w-auto"
@@ -375,7 +382,9 @@ export function SiteHeader() {
                     <motion.p
                       variants={itemVariants}
                       style={{ fontFamily: 'var(--font-mono-display)' }}
-                      className="px-1 text-[10px] font-medium uppercase tracking-[0.22em] text-white/35"
+                      // white/60 is 6.9:1; white/35 was 3.22:1. The heading
+                      // names the group of links under it, so it is content.
+                      className="px-1 text-[10px] font-medium uppercase tracking-[0.22em] text-white/60"
                     >
                       {MENUS[key].label}
                     </motion.p>

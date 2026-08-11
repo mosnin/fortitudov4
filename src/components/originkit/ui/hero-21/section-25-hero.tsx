@@ -33,7 +33,7 @@ const OFFERINGS = services.map((service) => service.name);
  * that separates the header from the headline.
  */
 export const Section25Hero = () => (
-  <main className="relative min-h-dvh w-full overflow-hidden bg-[var(--fx-charcoal)]">
+  <section className="relative min-h-dvh w-full overflow-hidden bg-[var(--fx-charcoal)]">
     <div className="relative mx-auto flex min-h-dvh w-full max-w-[1920px] flex-col px-5 pt-[72px] ipad:px-8 ipad:pt-[84px] desktop-sm:px-[50px] desktop-sm:pt-[88px]">
       <div className="relative desktop-sm:border-b desktop-sm:border-[var(--fx-hairline)]">
         <div
@@ -78,7 +78,7 @@ export const Section25Hero = () => (
               </Reveal>
 
               <Reveal>
-                <p className="w-[326px] font-sans text-[16px] leading-[1.5] font-medium tracking-[-0.32px] text-[var(--fx-muted)] ipad:w-[507px] ipad:text-[18px] ipad:tracking-[-0.36px]">
+                <p className="w-full max-w-[326px] font-sans text-[16px] leading-[1.5] font-medium tracking-[-0.32px] text-[var(--fx-muted)] ipad:max-w-[507px] ipad:text-[18px] ipad:tracking-[-0.36px]">
                   Websites, software, AI and marketing — built by people who
                   ship. Our agent works your account around the clock, and
                   nothing reaches you until someone here has approved it.
@@ -88,7 +88,7 @@ export const Section25Hero = () => (
               <Reveal className="mt-5 flex items-center gap-[18px] ipad:mt-[38px]">
                 <a
                   href="/onboarding"
-                  className="flex w-[137px] cursor-pointer items-center justify-center rounded-[4px] bg-[var(--fx-yellow)] px-6 py-4 font-sans text-[18px] leading-normal font-medium tracking-[-0.36px] whitespace-nowrap text-[var(--fx-on-yellow)] transition-colors duration-300 ease-out [@media(hover:hover)]:hover:bg-[var(--fx-yellow-hover)]"
+                  className="flex min-w-[137px] cursor-pointer items-center justify-center rounded-[4px] bg-[var(--fx-yellow)] px-6 py-4 font-sans text-[18px] leading-normal font-medium tracking-[-0.36px] whitespace-nowrap text-[var(--fx-on-yellow)] transition-colors duration-300 ease-out [@media(hover:hover)]:hover:bg-[var(--fx-yellow-hover)]"
                 >
                   Start Building
                 </a>
@@ -97,7 +97,7 @@ export const Section25Hero = () => (
                   href="/portfolio"
                   className="group flex cursor-pointer items-center justify-center gap-px rounded-[10px] py-[13px]"
                 >
-                  <span className="font-sans text-[15px] leading-[1.5] font-medium tracking-[-0.3px] whitespace-nowrap text-[var(--fx-faint)]">
+                  <span className="font-sans text-[15px] leading-[1.5] font-medium tracking-[-0.3px] whitespace-nowrap text-[var(--fx-muted)] transition-colors duration-200 group-hover:text-[var(--fx-white)]">
                     See our work
                   </span>
                   <span className="relative block size-[22px] overflow-hidden transition-transform duration-300 ease-out group-hover:translate-x-[3px]">
@@ -150,8 +150,8 @@ export const Section25Hero = () => (
             <ASCIIWaves
               characters=" .:-+*=%@#"
               elementSize={12}
-              color="var(--fx-yellow)"
-              background="var(--fx-charcoal)"
+              color="rgba(248, 205, 2, 0.30)"
+              background="var(--fx-charcoal-deep)"
               direction="left"
               speed={16}
               waveTension={5}
@@ -164,13 +164,21 @@ export const Section25Hero = () => (
             />
           </div>
 
-          <div className="pointer-events-none relative flex items-center justify-center px-[17px] py-[33px] ipad:py-[42px] desktop-sm:h-full desktop-sm:min-h-[579px] desktop-sm:py-0">
+          <div className="pointer-events-none relative flex flex-col items-center justify-center gap-4 px-[17px] py-[33px] ipad:py-[42px] desktop-sm:h-full desktop-sm:min-h-[579px] desktop-sm:py-0">
             <Reveal className="pointer-events-auto">
               <DashboardCard />
+            </Reveal>
+            {/* Says what it is. The card is a drawing of the queue, not a
+                window onto one, and a product shot that does not admit that
+                is how a mock quietly becomes a claim. */}
+            <Reveal>
+              <p className="rounded-[3px] bg-[var(--fx-charcoal-deep)]/90 px-2.5 py-1.5 font-mono text-[10.5px] leading-none tracking-[0.16em] text-[var(--fx-muted)] uppercase">
+                Illustrative interface — not live data
+              </p>
             </Reveal>
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </section>
 );

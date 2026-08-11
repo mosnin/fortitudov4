@@ -5,8 +5,8 @@
  *   1. Hero21 — the OriginKit hero-21 section, recoloured to racing yellow on
  *      charcoal. Split layout: headline and offerings left, an ASCII wave field
  *      with a floating dashboard card right. It replaces the previous
- *      photography-led hero; the old `Hero` component is still in the kit and
- *      still used by sub-pages via `SubHero`.
+ *      photography-led hero, whose `Hero`/`SubHero` components have since been
+ *      removed from the kit.
  *   2. Stats, the big-numbers band right under the hero.
  *   3. AgentCanvas, THE feature section: one animated component whose stepped
  *      list auto-advances with progress bars and swaps the card per step.
@@ -27,8 +27,8 @@ import { HelixPrimitives } from '@/components/marketing/giga/helix-primitives';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
 import { Advantage } from '@/components/marketing/giga/advantage';
 import { Control } from '@/components/marketing/giga/control';
-import { RealtorShowcase } from '@/components/marketing/giga/realtor-showcase';
-import { BrokerageShowcase } from '@/components/marketing/giga/brokerage-showcase';
+import { DeliveryShowcase } from '@/components/marketing/giga/delivery-showcase';
+import { OversightShowcase } from '@/components/marketing/giga/oversight-showcase';
 import { Complexity } from '@/components/marketing/giga/complexity';
 import { Faq } from '@/components/marketing/giga/faq';
 import { CtaSection } from '@/components/marketing/giga/cta';
@@ -54,8 +54,11 @@ export default async function MarketingHomePage() {
         <AgentCanvas />
         <Control />
         <Advantage />
-        <RealtorShowcase />
-        <BrokerageShowcase />
+        {/* Named realtor-/brokerage-showcase until the real-estate template
+            vocabulary was swept out; they are the client and agency dashboard
+            tours. */}
+        <DeliveryShowcase />
+        <OversightShowcase />
         <Complexity />
         <Faq />
       </div>

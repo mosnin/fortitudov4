@@ -10,10 +10,19 @@
 
 import { BlurRise, Mono, Band } from './primitives';
 
+/**
+ * Three numbers, and every one of them has to be answerable when a client asks
+ * where it came from. "94% of boilerplate handled by Helix" and "< 5 min
+ * average first response" were measurements nobody took — the first needs a
+ * baseline that was never defined, the second needs a support log that does not
+ * exist. They are replaced by facts the product itself settles: the offering
+ * list is five long (`src/lib/services.ts`), Helix runs continuously, and
+ * nothing it changes reaches a client without a human approving it.
+ */
 const STATS = [
-  { value: '94%', label: 'Of boilerplate handled by Helix' },
-  { value: '< 5 min', label: 'Average first response' },
+  { value: '5', label: 'Things we build' },
   { value: '24/7', label: 'Working your build' },
+  { value: '0', label: 'Changes shipped unapproved' },
 ];
 
 export function Stats() {
@@ -31,7 +40,9 @@ export function Stats() {
           <div className="grid grid-cols-3 divide-x divide-white/[0.1]">
             {STATS.map((s) => (
               <div key={s.label} className="px-5 first:pl-0 sm:px-10">
-                <Mono className="text-[10px] text-white/40">{s.label}</Mono>
+                {/* white/60 (6.9:1), not white/40 (3.8:1): the label is what
+                    the number means, so it is body text, not an eyebrow. */}
+                <Mono className="text-[10px] text-white/60">{s.label}</Mono>
                 <span
                   className="mt-3 block text-[2.75rem] font-light leading-none tracking-tight tabular-nums text-white sm:text-[3.5rem] lg:text-[4.25rem]"
                   style={{ fontFamily: 'var(--font-sans)' }}

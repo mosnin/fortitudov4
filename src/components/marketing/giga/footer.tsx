@@ -62,10 +62,13 @@ export function SiteFooter() {
                 the corresponding audit or attestation can be linked publicly. */}
             <div>
               <span className="flex items-center">
+                {/* Empty alt: the wordmark next to it already says
+                    "Fortitudo", and naming the mark too makes a screen reader
+                    announce the brand twice. */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
-                  alt="Fortitudo"
+                  src="/brand/fortitudo-mark.png"
+                  alt=""
                   width={320}
                   height={320}
                   className="h-5 w-auto"
@@ -74,7 +77,9 @@ export function SiteFooter() {
                   Fortitudo
                 </span>
               </span>
-              <span style={MONO} className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-neutral-400 dark:text-white/40">
+              {/* white/60 is 6.9:1 on charcoal; white/40 was 3.8:1, under the
+                  4.5:1 floor these small labels are held to. */}
+              <span style={MONO} className="mt-6 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-neutral-500 dark:text-white/60">
                 <span aria-hidden className="inline-block size-1.5 rounded-full bg-emerald-500" />
                 Security controls
               </span>
@@ -94,7 +99,9 @@ export function SiteFooter() {
             <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
               {Object.entries(columns).map(([heading, items]) => (
                 <div key={heading}>
-                  <span style={MONO} className="text-[11px] uppercase tracking-[0.2em] text-neutral-400 dark:text-white/40">
+                  {/* Column headings name the group of links under them, so
+                      they read at white/60 (6.9:1), not white/40 (3.8:1). */}
+                  <span style={MONO} className="text-[11px] uppercase tracking-[0.2em] text-neutral-500 dark:text-white/60">
                     {heading}
                   </span>
                   <ul className="mt-4 space-y-2.5">
@@ -114,29 +121,14 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* Meta row */}
-          <div className="mt-14 flex flex-col items-center gap-3 border-t border-black/[0.06] pt-6 dark:border-white/[0.08] sm:flex-row sm:justify-between">
-            <p className="text-xs text-neutral-400 dark:text-white/40">
+          {/* Meta row. The "X" and "LinkedIn" links are gone: both pointed at
+              /contact in a new tab, so the label named a destination the link
+              did not go to. They come back when the accounts exist. */}
+          <div className="mt-14 border-t border-black/[0.06] pt-6 dark:border-white/[0.08]">
+            {/* white/60 is 6.9:1; white/40 was 3.8:1. */}
+            <p className="text-xs text-neutral-500 dark:text-white/60">
               &copy; {new Date().getFullYear()} Fortitudo Agency. All rights reserved.
             </p>
-            <div className="flex items-center gap-5">
-              <a
-                href="/contact"
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs font-medium text-neutral-400 transition-colors hover:text-neutral-700 dark:text-white/40 dark:hover:text-white"
-              >
-                X
-              </a>
-              <a
-                href="/contact"
-                target="_blank"
-                rel="noreferrer"
-                className="text-xs font-medium text-neutral-400 transition-colors hover:text-neutral-700 dark:text-white/40 dark:hover:text-white"
-              >
-                LinkedIn
-              </a>
-            </div>
           </div>
         </div>
       </div>

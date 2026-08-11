@@ -61,7 +61,7 @@ function CheckoutContent() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Image
-            src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGFyH-zcjRU7dd9BCXlkr1NYW1kpfyk6MNqM2rtCfSzimgb7leI0M3q-2DmYwthY3Bkpae0RBGILsjuX8cRT1_MKqU0pR1UWGWNoMWesQQfcvBGkfWLky2n5bv8Pt_okFaZcFeHFLXb5jZzwjMpLS5TJohoHx-R8j-WyXCcm1TK5YQpWLHvYoUFP-BOpGL/s320/Age%20(4).png"
+            src="/brand/fortitudo-mark.png"
             alt="Fortitudo"
             width={48}
             height={48}

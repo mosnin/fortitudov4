@@ -22,32 +22,46 @@ type Metric = {
   trend?: boolean;
 };
 
+/**
+ * The kit shipped this card as a clinical-supervision dashboard: "Active
+ * supervisees", "Weekly supervision hours", "Weekly Earnings $1200". It is the
+ * largest single element on the homepage, so it was showing a product we do
+ * not sell, with money we did not make, above the fold.
+ *
+ * It now shows the shape of the approval queue, which is the actual thing this
+ * page is selling — and the highlighted row is the one that carries the idea:
+ * work waits for a person. The numbers are deliberately small and generic, and
+ * the section captions itself as an illustration rather than implying a live
+ * account.
+ */
 const METRICS: Metric[] = [
   {
-    id: "supervisees",
+    id: "projects",
     icon: asset("icon-bell.svg"),
-    label: "Active supervisees ",
-    value: "05",
+    label: "Projects in build",
+    value: "04",
   },
   {
-    id: "sessions",
+    id: "reviews",
     icon: asset("icon-calendar.svg"),
-    label: "Upcoming sessions",
-    value: "2 Today",
+    label: "Client reviews open",
+    value: "2 today",
   },
   {
-    id: "earnings",
+    id: "approvals",
     icon: asset("icon-notes-a.svg"),
-    label: "Weekly Earnings",
-    value: "$1200",
+    label: "Waiting on your approval",
+    value: "03",
     highlight: true,
   },
   {
-    id: "hours",
+    // Not a metric — a property of the system. The queue cannot execute an
+    // action nobody approved, so this row reads zero by construction rather
+    // than by luck, which is the only number on the card worth showing.
+    id: "unreviewed",
     icon: asset("icon-clock.svg"),
-    label: "Weekly supervision hours.",
-    value: "20% vs last month",
-    trend: true,
+    label: "Landed without review",
+    value: "0",
   },
 ];
 
@@ -112,14 +126,20 @@ const RowContent = ({ metric }: { metric: Metric }) => (
   </div>
 );
 
-/** Floating supervision dashboard — Figma 2271:4897. Static, as designed. */
+/** The floating approval-queue card. Static, as designed. */
 export const DashboardCard = ({ className = "" }: { className?: string }) => (
   <div
+    // Hidden from assistive tech. It is a drawing of an interface, and a
+    // screen reader announcing "Waiting on your approval 03" reads as a
+    // statement of fact about the visitor's account rather than as artwork.
+    // The visible caption beside it carries the same disclosure for everyone
+    // else.
+    aria-hidden
     // Heights track the rendered content (198.1 natural, x1.2294 / x1.5497),
     // not Figma's frame box — the frame is ~10% taller than the rows actually
     // occupy, and since the inner block is origin-top-left the slack all fell
     // below the card, reading as off-centre.
-    className={`h-[198.1px] w-[325.863px] ipad:h-[243.55px] ipad:w-[400.615px] desktop-sm:h-[307px] desktop-sm:w-[505px] ${className}`}
+    className={`h-[198.1px] w-[325.863px] max-w-full origin-top-left max-[359px]:scale-[0.85] ipad:h-[243.55px] ipad:w-[400.615px] desktop-sm:h-[307px] desktop-sm:w-[505px] ${className}`}
   >
     <div className="w-[325.863px] origin-top-left bg-[var(--fx-charcoal-deep)] p-[1.291px] ipad:scale-[1.2294] desktop-sm:scale-[1.5497]">
       <div className="w-full border-[0.645px] border-[var(--fx-charcoal-raised)] bg-[var(--fx-charcoal)] p-[10.324px]">

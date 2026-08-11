@@ -9,12 +9,12 @@ export const metadata: Metadata = {
   title: "Fortitudo Agency | A Digital Agency Built for Founders",
   description:
     "Web applications, ecommerce stores, funnels, and AI automation — built by a senior team and accelerated by our AI build agent. Fixed quotes, real-time tracking.",
-  metadataBase: new URL("https://foritudo.agency"),
+  metadataBase: new URL("https://fortitudo.agency"),
   openGraph: {
     title: "Fortitudo Agency | A Digital Agency Built for Founders",
     description:
       "Web applications, ecommerce stores, funnels, and AI automation — built by a senior team, accelerated by AI.",
-    url: "https://foritudo.agency",
+    url: "https://fortitudo.agency",
     siteName: "Fortitudo Agency",
     type: "website",
   },
