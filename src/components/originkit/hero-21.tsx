@@ -1,11 +1,12 @@
 /**
  * The homepage hero.
  *
- * The kit shipped a companion `hero-21.css` holding the palette and four
- * Google Font imports. Both are gone: the palette lives on
- * `[data-marketing-shell]` in globals.css so the whole logged-out site draws
- * from one set of tokens, and the faces resolve to the self-hosted Geist the
- * app already loads. Nothing else in the section changed shape.
+ * Little of the original OriginKit section survives beyond its `Reveal`
+ * entrance primitives — the palette moved to `[data-marketing-shell]` in
+ * globals.css, the fonts resolve to the self-hosted Geist the app already
+ * loads, and the composition was rebuilt as a centred column. The kit's ASCII
+ * canvas, its dashboard card, and its twenty image assets are deleted rather
+ * than left unreferenced.
  */
 
 import { Section25Hero } from "@/components/originkit/ui/hero-21/section-25-hero";

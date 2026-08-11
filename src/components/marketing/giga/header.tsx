@@ -63,10 +63,10 @@ const MENUS: Record<MenuKey, MenuConfig> = {
   product: {
     label: 'Product',
     featured: {
-      eyebrow: 'MEET HELIX',
-      title: 'One teammate for the whole build.',
-      body: 'It scaffolds the code, drafts in the house style, runs the tests, and keeps the build current.',
-      cta: 'Meet Helix',
+      eyebrow: 'WHAT WE BUILD',
+      title: 'Five services, one senior team.',
+      body: 'Websites, software, AI solutions, consultation, and digital marketing — each on a fixed quote, tracked live.',
+      cta: 'See our services',
       href: '/services',
     },
     items: [
@@ -82,7 +82,7 @@ const MENUS: Record<MenuKey, MenuConfig> = {
     featured: {
       eyebrow: 'OUR STORY',
       title: 'Product building, caught up to the world.',
-      body: 'Why we pair senior builders with Helix on every single project.',
+      body: 'Why we put senior builders, fixed quotes, and a live tracker on every single project.',
       cta: 'Read our story',
       href: '/about',
     },

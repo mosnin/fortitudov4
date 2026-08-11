@@ -27,8 +27,8 @@ export function Offerings() {
           </Serif>
           <p className="mx-auto mt-5 max-w-xl text-[14.5px] leading-relaxed text-white/55">
             Websites, software, AI, consultation, and digital marketing — every
-            engagement on a fixed quote, tracked live, with Helix accelerating
-            the build under senior review.
+            engagement on a fixed quote, tracked live, built and reviewed by
+            senior people.
           </p>
         </BlurRise>
 

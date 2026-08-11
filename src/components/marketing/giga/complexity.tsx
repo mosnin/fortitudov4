@@ -23,7 +23,7 @@ const COLUMNS = [
   {
     icon: ShieldCheck,
     title: 'Audit-ready by design',
-    desc: 'Every action Helix takes is logged with the reason behind it, so the whole build stays honest and reviewable.',
+    desc: 'Every assignment, revision, and approval is logged with the reason behind it, so the whole build stays honest and reviewable.',
   },
 ];
 
@@ -38,9 +38,9 @@ export function Complexity() {
             <br className="hidden sm:block" /> complexity of a real agency.
           </Serif>
           <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60">
-            One agent for the whole studio. Work routed, performance visible, bottlenecks surfaced,
-            every action reviewable. It scales from a solo build to hundreds of projects without an
-            enterprise maze.
+            One senior team, one way of working. Work routed, progress visible, bottlenecks
+            surfaced, every change reviewable. It holds up on a single site and on a multi-year
+            software engagement.
           </p>
           <div className="mt-8 flex justify-center">
             <PillGhost href="/about">See how the studio runs</PillGhost>

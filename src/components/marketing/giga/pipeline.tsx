@@ -27,7 +27,7 @@ const STAGE_NOTES: Record<(typeof CRM_STAGES)[number], string> = {
   onboarding: 'Your brief, your access, your checklist — generated and unassigned until a human picks it up.',
   discovery: 'What we found, what it changes, and the number that follows from it.',
   design: 'Screens to react to, not a deck to sit through.',
-  build: 'The task list, live. Helix works it; nothing lands unreviewed.',
+  build: 'The task list, live. Nothing lands without a senior builder reviewing it.',
   client_review: 'Your turn. Comments go on the work, not into an inbox.',
   launched: 'Shipped, handed over, and documented well enough to leave.',
   retained: 'The part most agencies stop doing. We keep the build current.',

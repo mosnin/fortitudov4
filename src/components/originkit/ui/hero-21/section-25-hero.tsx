@@ -1,184 +1,162 @@
-// Delivered by Originkit · stack: nextjs
 "use client";
 
-/* Every image in this file is a decorative sub-24px SVG glyph or a tiled noise
- * texture. next/image would add a layout wrapper and an optimizer round-trip
- * to assets that are already smaller than the request to fetch them, so these
- * stay plain <img>. */
-/* eslint-disable @next/next/no-img-element */
+/**
+ * The homepage hero.
+ *
+ * Rebuilt as a single centred column on a full-bleed ground. What went:
+ *
+ *  - The ASCII wave field and the floating dashboard card. Together they were
+ *    a product screenshot, and this is an agency — the thing being sold is the
+ *    build, not a piece of software you log into.
+ *  - Every mention of the internal agent. It still runs the agency behind the
+ *    login; it is not what a prospect is buying, and naming it here made the
+ *    page read as a SaaS landing page.
+ *
+ * The glow is drawn, not photographed. The reference this follows used a
+ * planet-limb photograph; we have no such asset and will not invent one, so
+ * the arc is CSS — offset radial gradients plus a hairline rim, in the one
+ * accent the system has. It costs nothing to load and it moves with the
+ * palette.
+ */
 
-import ASCIIWaves from "@/components/originkit/ui/character-waves";
-import { DashboardCard } from "@/components/originkit/ui/hero-21/dashboard-card";
 import { Reveal, RevealGroup } from "@/components/originkit/ui/hero-21/reveal";
 import { services } from "@/lib/services";
 
-/** Public asset under /sections/hero-21/assets */
-function asset(file: string) {
-  return `/originkit/hero-21/${file}`;
-}
-
-/**
- * The section this replaces was a strip of seven invented client logos. We do
- * not have client logos to show, and inventing them on a real agency's site is
- * a lie — so the slot carries the five things we actually sell instead.
- */
+/** The five things we sell, read from the module the product prices from. */
 const OFFERINGS = services.map((service) => service.name);
 
-/**
- * The kit shipped its own nav inside the hero. It is gone: the site already
- * has one header (`SiteHeader`), which carries the real menus and the mobile
- * takeover, and two navs stacked on the homepage is the kind of thing you only
- * notice once and then cannot stop noticing. What survives from the kit's
- * chrome is the noise strip, which was never navigation — it is the texture
- * that separates the header from the headline.
- */
 export const Section25Hero = () => (
-  <section className="relative min-h-dvh w-full overflow-hidden bg-[var(--fx-charcoal)]">
-    <div className="relative mx-auto flex min-h-dvh w-full max-w-[1920px] flex-col px-5 pt-[72px] ipad:px-8 ipad:pt-[84px] desktop-sm:px-[50px] desktop-sm:pt-[88px]">
-      <div className="relative desktop-sm:border-b desktop-sm:border-[var(--fx-hairline)]">
-        <div
-          aria-hidden
-          className="h-7 w-full opacity-25 mix-blend-plus-lighter ipad:h-[37px]"
-          style={{
-            backgroundImage: `url(${asset("nav-noise.png")})`,
-            backgroundSize: "239.6px 240px",
-          }}
-        />
-      </div>
-
-      {/* Rails — the two vertical hairlines framing the content */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-5 top-[110px] bottom-0 border-x border-[var(--fx-hairline)] ipad:inset-x-8 ipad:top-[128px] desktop-sm:inset-x-[50px] desktop-sm:top-[132px]"
-      />
-
-      {/* Two-column split from desktop-sm: copy left, wave field right */}
-      <div className="desktop-sm:grid desktop-sm:grid-cols-[729fr_612fr]">
-        <div className="desktop-sm:border-r desktop-sm:border-[var(--fx-hairline)]">
-          {/* Hero copy */}
-          <section className="relative flex flex-col gap-8 px-3 pt-6 ipad:gap-[50px] ipad:px-[30px] ipad:pt-[42px] desktop-sm:pt-[82.5px]">
-            <RevealGroup className="flex flex-col gap-3" delay={0.15}>
-              <Reveal className="flex items-center gap-2">
-                <img
-                  src={asset("badge-dot.svg")}
-                  alt=""
-                  width={14}
-                  height={14}
-                  className="size-[14px]" />
-                <p className="font-mono text-[13px] leading-[1.5] font-medium tracking-[-0.26px] text-[var(--fx-white)] ipad:text-[15px] ipad:tracking-[-0.3px]">
-                  A DIGITAL AGENCY, NOT A QUEUE
-                </p>
-              </Reveal>
-
-              <Reveal>
-                <h1 className="font-sans text-[34px] leading-[1.1] font-semibold tracking-[-0.68px] text-[var(--fx-white)] ipad:text-[54px] ipad:tracking-[-1.08px]">
-                  We build it. <br />
-                  <span className="text-[var(--fx-yellow)]">Helix keeps it moving.</span>
-                </h1>
-              </Reveal>
-
-              <Reveal>
-                <p className="w-full max-w-[326px] font-sans text-[16px] leading-[1.5] font-medium tracking-[-0.32px] text-[var(--fx-muted)] ipad:max-w-[507px] ipad:text-[18px] ipad:tracking-[-0.36px]">
-                  Websites, software, AI and marketing — built by people who
-                  ship. Our agent works your account around the clock, and
-                  nothing reaches you until someone here has approved it.
-                </p>
-              </Reveal>
-
-              <Reveal className="mt-5 flex items-center gap-[18px] ipad:mt-[38px]">
-                <a
-                  href="/onboarding"
-                  className="flex min-w-[137px] cursor-pointer items-center justify-center rounded-[4px] bg-[var(--fx-yellow)] px-6 py-4 font-sans text-[18px] leading-normal font-medium tracking-[-0.36px] whitespace-nowrap text-[var(--fx-on-yellow)] transition-colors duration-300 ease-out [@media(hover:hover)]:hover:bg-[var(--fx-yellow-hover)]"
-                >
-                  Start Building
-                </a>
-
-                <a
-                  href="/portfolio"
-                  className="group flex cursor-pointer items-center justify-center gap-px rounded-[10px] py-[13px]"
-                >
-                  <span className="font-sans text-[15px] leading-[1.5] font-medium tracking-[-0.3px] whitespace-nowrap text-[var(--fx-muted)] transition-colors duration-200 group-hover:text-[var(--fx-white)]">
-                    See our work
-                  </span>
-                  <span className="relative block size-[22px] overflow-hidden transition-transform duration-300 ease-out group-hover:translate-x-[3px]">
-                    <span className="absolute inset-[28.66%_35.7%_23.78%_35.72%] block">
-                      <img
-                        src={asset("arrow.svg")}
-                        alt=""
-                        className="absolute inset-0 size-full max-w-none object-contain"
-                      />
-                    </span>
-                  </span>
-                </a>
-              </Reveal>
-            </RevealGroup>
-          </section>
-
-          {/* What we build — the five offerings, in place of the kit's logo wall */}
-          <section className="relative mt-6 border-t desktop-sm:border-y border-[var(--fx-hairline)] p-5 ipad:mt-[50px] ipad:px-[30px] ipad:py-[50px] desktop-sm:mt-[51.5px]">
-            <Reveal>
-              <p className="font-mono text-[14px] leading-[1.5] font-medium tracking-[0.14px] text-[var(--fx-muted)] uppercase">
-                What We Build
-              </p>
-            </Reveal>
-
-            <RevealGroup
-              delay={0.05}
-              stagger={0.07}
-              className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-3 ipad:max-w-[600px] desktop-sm:max-w-[570px]"
-            >
-              {OFFERINGS.map((offering) => (
-                <Reveal key={offering}>
-                  <a
-                    href="/services"
-                    className="block rounded-[4px] border border-[var(--fx-hairline)] px-3 py-2 font-sans text-[13px] leading-none font-medium whitespace-nowrap text-[var(--fx-white)] transition-colors duration-200 ease-out ipad:text-[15px] [@media(hover:hover)]:hover:border-[var(--fx-yellow)] [@media(hover:hover)]:hover:text-[var(--fx-yellow)]"
-                  >
-                    {offering}
-                  </a>
-                </Reveal>
-              ))}
-            </RevealGroup>
-          </section>
-        </div>
-
-        {/* ASCII wave field — height follows the dashboard card plus its padding */}
-        <div className="relative desktop-sm:min-h-full">
-          <div
-            aria-hidden
-            className="absolute inset-0 border desktop-sm:border-r desktop-sm:border-l-0 desktop-sm:border-t-0 desktop-sm:border-b border-[var(--fx-hairline)]"
-          >
-            <ASCIIWaves
-              characters=" .:-+*=%@#"
-              elementSize={12}
-              color="rgba(248, 205, 2, 0.30)"
-              background="var(--fx-charcoal-deep)"
-              direction="left"
-              speed={16}
-              waveTension={5}
-              noiseScale={12}
-              intensity={10}
-              fontWeight="500"
-              hasCursorInteraction
-              interactionIntensity={15}
-              interactionRadius={160}
-            />
-          </div>
-
-          <div className="pointer-events-none relative flex flex-col items-center justify-center gap-4 px-[17px] py-[33px] ipad:py-[42px] desktop-sm:h-full desktop-sm:min-h-[579px] desktop-sm:py-0">
-            <Reveal className="pointer-events-auto">
-              <DashboardCard />
-            </Reveal>
-            {/* Says what it is. The card is a drawing of the queue, not a
-                window onto one, and a product shot that does not admit that
-                is how a mock quietly becomes a claim. */}
-            <Reveal>
-              <p className="rounded-[3px] bg-[var(--fx-charcoal-deep)]/90 px-2.5 py-1.5 font-mono text-[10.5px] leading-none tracking-[0.16em] text-[var(--fx-muted)] uppercase">
-                Illustrative interface — not live data
-              </p>
-            </Reveal>
-          </div>
-        </div>
-      </div>
+  <section className="relative isolate flex min-h-dvh w-full flex-col items-center overflow-hidden bg-[var(--fx-charcoal-deep)] px-5 pt-32 pb-16 sm:px-8 sm:pt-40 sm:pb-20">
+    {/* ── The drawn glow ────────────────────────────────────────────────────
+        A wide arc sweeping up from the lower right. A broad warm bloom, a
+        tighter core, and a thin bright rim where the two meet — the rim is
+        what stops it reading as a plain vignette. */}
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+      {/* The body of the limb: a broad bloom, then a hot core pushed further
+          off-canvas so only its bright edge reaches the frame. */}
+      <div className="absolute inset-0 bg-[radial-gradient(125%_95%_at_112%_112%,rgba(248,205,2,0.30),transparent_62%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(85%_65%_at_106%_106%,rgba(248,205,2,0.62),transparent_52%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(55%_42%_at_103%_103%,rgba(255,232,120,0.85),transparent_46%)]" />
+      {/* A cool lift at the top so the upper half is not flat black. */}
+      <div className="absolute inset-0 bg-[radial-gradient(150%_120%_at_50%_-30%,rgba(255,255,255,0.05),transparent_55%)]" />
+      {/* The rim, in two passes: a wide blurred halo and a hairline core on
+          top of it. One ring alone reads as a drawn stroke; the pair reads as
+          something glowing behind the frame. */}
+      <div className="absolute -right-[48%] -bottom-[58%] h-[150vh] w-[150vh] rounded-full border-[6px] border-[rgba(248,205,2,0.55)] blur-[26px]" />
+      <div className="absolute -right-[48%] -bottom-[58%] h-[150vh] w-[150vh] rounded-full border border-[rgba(255,240,170,0.95)] shadow-[0_0_60px_8px_rgba(248,205,2,0.45)]" />
+      {/* Fine dot grid — the same texture the footer panel uses. */}
+      <div className="absolute inset-0 bg-[radial-gradient(#ffffff0d_1px,transparent_1px)] opacity-[0.18] [background-size:22px_22px]" />
     </div>
+
+    <RevealGroup
+      className="flex w-full max-w-3xl flex-col items-center text-center"
+      delay={0.1}
+    >
+      <Reveal>
+        <a
+          href="/pricing"
+          className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/[0.06] py-1.5 pr-5 pl-1.5 backdrop-blur-md transition-colors duration-200 hover:border-white/30"
+        >
+          <span className="rounded-full bg-[var(--fx-yellow)] px-3 py-1 text-[12px] font-semibold text-[var(--fx-on-yellow)]">
+            Fixed quotes
+          </span>
+          <span className="text-[13.5px] font-medium text-[var(--fx-white)] sm:text-[14px]">
+            The price you approve is the price you pay
+          </span>
+        </a>
+      </Reveal>
+
+      <Reveal>
+        <h1 className="mt-8 text-[clamp(2.5rem,7.5vw,5.25rem)] leading-[0.98] font-semibold tracking-[-0.035em] text-[var(--fx-white)]">
+          Built by people
+          <span className="block">who ship.</span>
+        </h1>
+      </Reveal>
+
+      <Reveal>
+        <p className="mt-7 max-w-xl text-[16px] leading-relaxed text-[var(--fx-muted)] sm:text-[18px]">
+          Websites, software, AI and digital marketing for founders who need it
+          done properly the first time. A senior team, a fixed quote, and a
+          dashboard that shows you exactly where your build stands.
+        </p>
+      </Reveal>
+
+      <Reveal className="mt-10 flex flex-wrap items-center justify-center gap-x-7 gap-y-4">
+        <a
+          href="/onboarding"
+          className="group inline-flex items-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-7 py-4 text-[16px] font-medium tracking-[-0.01em] text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)]"
+        >
+          Start a project
+          <svg
+            aria-hidden
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="transition-transform duration-200 group-hover:translate-x-0.5"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </a>
+
+        <a
+          href="/portfolio"
+          className="group inline-flex items-center gap-2 text-[16px] font-medium text-[var(--fx-white)] transition-colors duration-200 hover:text-[var(--fx-yellow)]"
+        >
+          See our work
+          <svg
+            aria-hidden
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="transition-transform duration-200 group-hover:translate-x-0.5"
+          >
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </a>
+      </Reveal>
+    </RevealGroup>
+
+    {/* ── What we build ──────────────────────────────────────────────────────
+        The slot where the reference put a row of partner logos. We have none,
+        and a wall of invented ones is the exact thing this site has been
+        cleared of — so it carries the five offerings, which are true and do
+        the same job of saying what you are looking at. */}
+    <RevealGroup
+      className="mt-auto flex w-full max-w-4xl flex-col items-center pt-20"
+      delay={0.25}
+      stagger={0.06}
+    >
+      <Reveal>
+        <p className="font-mono text-[11px] tracking-[0.2em] text-[var(--fx-muted)] uppercase">
+          What we build
+        </p>
+      </Reveal>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-3">
+        {OFFERINGS.map((offering) => (
+          <Reveal key={offering}>
+            <a
+              href="/services"
+              className="block rounded-[4px] border border-[var(--fx-hairline)] bg-white/[0.03] px-4 py-2.5 text-[13px] font-medium whitespace-nowrap text-[var(--fx-white)] backdrop-blur-sm transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)] sm:text-[15px]"
+            >
+              {offering}
+            </a>
+          </Reveal>
+        ))}
+      </div>
+    </RevealGroup>
   </section>
 );

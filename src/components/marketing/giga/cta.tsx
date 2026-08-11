@@ -42,23 +42,23 @@ export function CtaSection() {
             Get a demo
           </span>
           <h2 className="mt-5 text-[clamp(2rem,4vw,3.5rem)] leading-[1.04] tracking-[-0.02em] text-[var(--fx-white)]">
-            Ready to see Helix
-            {/* The second line flips through what "action" actually means.
+            Ready to build
+            {/* The second line flips through what we actually build.
                 Left-aligned headline, punctuation inside each item — no
                 trailing-character jitter as widths change. */}
             <TextFlip as={motion.span} interval={2.8} className="block">
-              <>in action?</>
-              <>scaffold the code?</>
-              <>run the tests?</>
-              <>work your whole build?</>
+              <>something real?</>
+              <>your website?</>
+              <>your software?</>
+              <>your next launch?</>
             </TextFlip>
           </h2>
         </motion.div>
 
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }} className="lg:pt-3">
           <p className="max-w-sm text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-            Helix works your whole build: scaffolding code, running tests, drafting the busywork
-            away — so your project ships weeks faster.
+            Senior builders, a fixed quote, and a tracker you can watch from kickoff to
+            launch — and you own everything the day it ships.
           </p>
           <Link
             href="/contact"

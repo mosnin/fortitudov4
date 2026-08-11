@@ -42,7 +42,7 @@ const legacyPills: Pill[] = [
 const fortitudoPills: Pill[] = [
   { icon: GaugeCircle, label: 'Fixed quote', duration: 2.1, delay: -0.4 },
   { icon: Users, label: 'Senior architecture', duration: 1.8, delay: -1.1 },
-  { icon: Bot, label: 'Helix accelerates', duration: 2.3, delay: -0.7 },
+  { icon: Bot, label: 'AI-assisted build', duration: 2.3, delay: -0.7 },
   { icon: CheckCircle2, label: 'Live tracker', duration: 1.9, delay: -1.5 },
   { icon: UserCheck, label: 'Human review', duration: 2.2, delay: -0.2 },
   { icon: Rocket, label: 'Launch', duration: 1.7, delay: -0.9 },
@@ -107,8 +107,8 @@ export function Advantage() {
             Our unique advantage.
           </Serif>
           <p className="mx-auto mt-5 max-w-xl text-[14.5px] leading-relaxed text-white/55">
-            Humans lead every build. Helix does the heavy lifting. You get
-            agency craft without agency overhead.
+            Senior builders lead every project, on a fixed quote you can hold us
+            to. You get agency craft without agency overhead.
           </p>
         </BlurRise>
 
@@ -142,9 +142,9 @@ export function Advantage() {
                 Fortitudo
               </h3>
               <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-white/50">
-                One senior team in one dashboard. Helix runs the scaffolding,
-                tests, and revision churn under senior review — so your build
-                ships weeks faster, and you watch it happen live.
+                One senior team in one dashboard. We use AI tooling where it
+                earns its place — scaffolding, tests, revision churn — always
+                under senior review, and you watch the build happen live.
               </p>
             </div>
           </BlurRise>

@@ -3,8 +3,8 @@
  * system (the "About" target in the Company nav menu; layout ported unchanged
  * from the giga marketing kit's company page).
  *
- * One idea: the world moved to AI; agency work didn't, so we built Fortitudo —
- * senior builders plus Helix, the AI delivery agent — to close the gap.
+ * One idea: the world moved on; agency work didn't, so we built Fortitudo —
+ * senior builders on fixed quotes, working in the open — to close the gap.
  * Hero -> the gap -> beliefs -> the adaptive closing CTA. Cinematic sections
  * live in a forced-dark wrapper; the CTA stays light/dark-adaptive like the
  * rest of the redesign.
@@ -35,7 +35,7 @@ const BELIEFS = [
   },
   {
     title: 'Nothing ships without a senior’s name on it.',
-    body: 'Helix scaffolds, drafts, and runs the tests, but by default every change is proposed, and a senior builder approves it before it lands. That is where the speed comes from, and where the trust lives.',
+    body: 'We use AI tooling where it earns its place — scaffolding, boilerplate, the mechanical hours. It never decides anything. A senior builder reviews and shapes every change before it lands. That is where the speed comes from, and where the trust lives.',
   },
   {
     title: 'You watch the build live.',
@@ -79,7 +79,7 @@ export default function AboutPage() {
                 <PillPrimary href="/contact" withArrow>
                   Talk to us
                 </PillPrimary>
-                <PillGhost href="/services">Meet Helix</PillGhost>
+                <PillGhost href="/services">See what we build</PillGhost>
               </div>
             </BlurRise>
           </Band>
@@ -108,7 +108,7 @@ export default function AboutPage() {
                   agency work it still does not. The process is stuck a generation behind
                   what is now possible. That distance, between what could happen and what
                   clients actually get, is the whole reason Fortitudo exists: senior
-                  builders, with Helix working every build under their review.
+                  builders, modern tooling, and a build you can watch happen.
                 </p>
               </div>
             </BlurRise>

@@ -19,11 +19,11 @@ const FAQS = [
   },
   {
     q: 'How fast can I actually get started?',
-    a: 'Same day. Pick a service, run through the Helix onboarding (about five minutes), review your quote, and submit payment. Your project dashboard and build tracker go live immediately, and the team kicks off discovery within one business day.',
+    a: 'Same day. Pick a service, run through onboarding (about five minutes), review your quote, and submit payment. Your project dashboard and build tracker go live immediately, and the team kicks off discovery within one business day.',
   },
   {
-    q: 'What does Helix actually do?',
-    a: 'Helix works alongside our senior team, not instead of it. It handles scaffolding, boilerplate, test suites, and revision churn — the mechanical hours that inflate agency timelines. Every change it proposes is reviewed and shaped by a senior builder before it lands. You get human judgment on design and architecture, with weeks shaved off delivery.',
+    q: 'Do you use AI on the build?',
+    a: 'Where it earns its place, yes — scaffolding, boilerplate, test suites, and revision churn, the mechanical hours that inflate agency timelines. It works alongside our senior team, never instead of it: every change is reviewed and shaped by a senior builder before it lands. You get human judgment on design and architecture, with weeks shaved off delivery.',
   },
   {
     q: 'How do I track my project?',

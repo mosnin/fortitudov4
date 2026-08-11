@@ -242,8 +242,8 @@ export function PricingContent({ lang }: { lang: Lang }) {
             Get a fixed quote for your build.
           </Serif>
           <p className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-white/55">
-            Tell us what you are building and get a scoped quote — then watch Helix and our
-            senior builders take it from kickoff to launch.
+            Tell us what you are building and get a scoped quote — then watch our senior
+            builders take it from kickoff to launch.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <PillPrimary href="/sign-up" withArrow>

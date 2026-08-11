@@ -12,17 +12,17 @@ import { BlurRise, Mono, Band } from './primitives';
 
 /**
  * Three numbers, and every one of them has to be answerable when a client asks
- * where it came from. "94% of boilerplate handled by Helix" and "< 5 min
- * average first response" were measurements nobody took — the first needs a
- * baseline that was never defined, the second needs a support log that does not
- * exist. They are replaced by facts the product itself settles: the offering
- * list is five long (`src/lib/services.ts`), Helix runs continuously, and
- * nothing it changes reaches a client without a human approving it.
+ * where it came from. Measurements nobody took ("94% of boilerplate handled",
+ * "< 5 min average first response") have no baseline and no log behind them, so
+ * they are not here. What is left are facts the codebase itself settles: the
+ * offering list is five long (`src/lib/services.ts`), the delivery pipeline the
+ * client's portal reads from is seven stages (`CRM_STAGES` in `src/lib/crm.ts`),
+ * and handover at launch is total — the promise the beliefs and the FAQ make.
  */
 const STATS = [
   { value: '5', label: 'Things we build' },
-  { value: '24/7', label: 'Working your build' },
-  { value: '0', label: 'Changes shipped unapproved' },
+  { value: '7', label: 'Stages you can track' },
+  { value: '100%', label: 'Yours at launch' },
 ];
 
 export function Stats() {
@@ -31,8 +31,8 @@ export function Stats() {
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-20">
         <BlurRise>
           <p className="max-w-lg text-2xl leading-snug text-white/85 sm:text-[2rem] sm:leading-[1.25]">
-            The busywork runs itself, so senior hours go to craft. Helix is
-            live on your project from day one.
+            Senior hours go to craft, not to status calls. You can see where
+            your project stands from day one.
           </p>
         </BlurRise>
 
