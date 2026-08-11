@@ -1,8 +1,5 @@
-import Image from "next/image";
 import { cn } from "@/lib/utils";
-
-const LOGO_SRC =
-  "/brand/fortitudo-mark.png";
+import { BrandMark } from "@/components/brand-mark";
 
 interface LogoProps {
   size?: number;
@@ -14,13 +11,9 @@ interface LogoProps {
 export function Logo({ size = 32, className, withWordmark = true }: LogoProps) {
   return (
     <span className={cn("inline-flex shrink-0 items-center gap-2", className)}>
-      <Image
-        src={LOGO_SRC}
-        alt="Fortitudo"
-        height={size}
-        width={size}
-        className="shrink-0 rounded-md"
-      />
+      {/* Masked, so the mark is yellow on charcoal and ink on paper without
+          the call site having to know which surface it is on. */}
+      <BrandMark className="shrink-0" style={{ height: size, width: size }} />
       {withWordmark && (
         <span
           className="font-title text-foreground"

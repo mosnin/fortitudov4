@@ -26,6 +26,7 @@
  */
 
 import Link from 'next/link';
+import { BrandMark } from '@/components/brand-mark';
 
 const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
@@ -229,14 +230,7 @@ export function SiteFooter() {
               <span className="flex items-center">
                 {/* Empty alt: the wordmark beside it already says "Fortitudo",
                     and naming the mark too makes a screen reader say it twice. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/brand/fortitudo-mark.png"
-                  alt=""
-                  width={320}
-                  height={320}
-                  className="h-5 w-auto"
-                />
+                <BrandMark className="h-5 text-[var(--fx-yellow)]" />
                 <span className="ml-2 text-sm font-medium tracking-tight text-[var(--fx-white)]">
                   Fortitudo
                 </span>

@@ -16,6 +16,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { BrandMark } from '@/components/brand-mark';
 import {
   motion,
   AnimatePresence,
@@ -196,14 +197,7 @@ export function SiteHeader() {
                 {/* Empty alt: the link carries its own aria-label and the
                     wordmark beside it is visible text, so naming the mark
                     would announce "Fortitudo" a third time. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/brand/fortitudo-mark.png"
-                  alt=""
-                  width={320}
-                  height={320}
-                  className="h-5 w-auto"
-                />
+                <BrandMark className="h-5 text-[var(--fx-yellow)]" />
                 <span className="ml-2 text-sm font-medium tracking-tight text-white">Fortitudo</span>
               </Link>
               <nav className="hidden items-center gap-0.5 lg:flex">
@@ -351,14 +345,7 @@ export function SiteHeader() {
                 <Link href="/" className="flex items-center" onClick={closeAll}>
                   {/* Empty alt: the visible wordmark beside it already names
                       the link. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/brand/fortitudo-mark.png"
-                    alt=""
-                    width={320}
-                    height={320}
-                    className="h-5 w-auto"
-                  />
+                  <BrandMark className="h-5 text-[var(--fx-yellow)]" />
                   <span className="ml-2 text-sm font-medium tracking-tight text-white">Fortitudo</span>
                 </Link>
                 <button

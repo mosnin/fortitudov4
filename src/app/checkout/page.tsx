@@ -2,10 +2,10 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Shield, CreditCard, ArrowRight } from "lucide-react";
+import { BrandMark } from "@/components/brand-mark";
 
 export default function CheckoutPage() {
   return (
@@ -60,12 +60,12 @@ function CheckoutContent() {
     <div className="min-h-screen bg-charcoal-dark flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <Image
-            src="/brand/fortitudo-mark.png"
-            alt="Fortitudo"
-            width={48}
-            height={48}
-            className="rounded-lg mx-auto mb-4"
+          {/* Masked: this card is on the product's light surface, where the
+              logged-out site's racing yellow would sit at 1.5:1. */}
+          <BrandMark
+            label="Fortitudo"
+            className="mx-auto mb-4 block"
+            style={{ height: 48, width: 48 }}
           />
           <CardTitle className="text-2xl">Complete Your Payment</CardTitle>
           <CardDescription>
