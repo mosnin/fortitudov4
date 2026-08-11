@@ -38,6 +38,7 @@
     "postgres": "^3.4.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "server-only": "^0.0.1",
     "svix": "^1.89.0",
     "tailwind-merge": "^3.5.0",
     "uploadthing": "^7.7.4",
@@ -60,6 +61,6 @@
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
-    "node": ">=20.9.0"
+    "node": "22.x"
   }
 }
