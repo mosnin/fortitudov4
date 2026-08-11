@@ -23,6 +23,7 @@ import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
 import { Advantage } from '@/components/marketing/giga/advantage';
+import { Testimonials } from '@/components/marketing/giga/testimonials';
 import { Complexity } from '@/components/marketing/giga/complexity';
 import { Faq } from '@/components/marketing/giga/faq';
 import { CtaSection } from '@/components/marketing/giga/cta';
@@ -42,6 +43,8 @@ export default async function MarketingHomePage() {
         <Offerings />
         <Pipeline />
         <Advantage />
+        {/* Proof follows the claim. Ships empty — the slots say what goes in them. */}
+        <Testimonials />
         <Complexity />
         <Faq />
       </div>
