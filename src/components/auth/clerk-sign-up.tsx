@@ -1,7 +1,6 @@
 'use client';
 
 import { SignUp } from '@clerk/nextjs';
-import { useTheme } from 'next-themes';
 import { clerkAuthAppearance } from './clerk-appearance';
 
 // Clerk's SignUp is a discriminated union on `routing`/`path`; see
@@ -9,7 +8,9 @@ import { clerkAuthAppearance } from './clerk-appearance';
 type SignUpProps = React.ComponentProps<typeof SignUp>;
 
 export function ThemedSignUp(props: Omit<SignUpProps, 'appearance'>) {
-  const { resolvedTheme } = useTheme();
+  // Pinned dark, not read from the theme: the auth chrome is charcoal in
+  // both themes, so following the user's light preference here would put
+  // near-black Clerk labels on a near-black panel.
   const Component = SignUp as React.ComponentType<SignUpProps>;
-  return <Component {...(props as SignUpProps)} appearance={clerkAuthAppearance(resolvedTheme === 'dark')} />;
+  return <Component {...(props as SignUpProps)} appearance={clerkAuthAppearance(true)} />;
 }

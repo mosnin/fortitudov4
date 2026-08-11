@@ -138,7 +138,7 @@ const STEPS: ShowcaseStep[] = [
           <span className="text-[11px] text-white/40">Drafted from your last 40 updates</span>
           <span className="flex gap-2">
             <span className="rounded-[4px] border border-white/15 px-3 py-1 text-[11px] text-white/70">Edit</span>
-            <span className="flex items-center gap-1 rounded-[4px] bg-white px-3 py-1 text-[11px] font-medium text-black">
+            <span className="flex items-center gap-1 rounded-[4px] bg-[var(--fx-yellow)] px-3 py-1 text-[11px] font-medium text-[var(--fx-on-yellow)]">
               <Send className="h-3 w-3" /> Send
             </span>
           </span>

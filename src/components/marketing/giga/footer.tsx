@@ -49,7 +49,7 @@ export function SiteFooter() {
           breathingRange={6}
           animationSpeed={0.02}
           gradientOrigin="50% 92%"
-          gradientColors={['#ffd84d', '#ff8a3d', '#ff5fa2', 'rgba(255,95,162,0)']}
+          gradientColors={['#f8cd02', '#dcb602', '#dcb602', 'rgba(248,205,2,0)']}
           gradientStops={[0, 38, 72, 100]}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white dark:to-[#1b1b1d]" />

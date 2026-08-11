@@ -178,7 +178,7 @@ export function FeatureShowcase({
                       <span aria-hidden className="absolute inset-x-0 top-0 h-px overflow-hidden bg-white/[0.1]">
                         {isActive && (
                           <span
-                            className="block h-full bg-white"
+                            className="block h-full bg-[var(--fx-yellow)]"
                             style={{
                               width: `${(reduce ? 1 : progress) * 100}%`,
                               transition: reduce ? 'width 0.3s ease' : 'none',
@@ -277,7 +277,7 @@ export function Frost({
     <div className="overflow-hidden rounded-[6px] border border-white/12 bg-[#0b0b0d]/55 shadow-2xl shadow-black/60 backdrop-blur-2xl">
       <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3">
         <span className="flex items-center gap-2">
-          <span className="h-4 w-4 rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2]" />
+          <span className="h-4 w-4 rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602]" />
           <span className="text-[13px] font-medium text-white">{title}</span>
         </span>
         {badge ? (

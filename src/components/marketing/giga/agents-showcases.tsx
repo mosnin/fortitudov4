@@ -40,7 +40,7 @@ const Chip = ({ label, tone }: { label: string; tone: string }) => (
 );
 
 const Avatar = ({ initials }: { initials: string }) => (
-  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[12px] font-semibold text-black">
+  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[12px] font-semibold text-black">
     {initials}
   </span>
 );
@@ -121,7 +121,7 @@ const STEPS_INBOX: ShowcaseStep[] = [
           or Sunday at 2:00. Which works better for you?
         </motion.div>
         <motion.div variants={rowV} className="flex items-center gap-2 px-1 pt-1">
-          <span className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] px-3 py-2 text-[12px] font-semibold text-black">
+          <span className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#dcb602] px-3 py-2 text-[12px] font-semibold text-black">
             <Check className="h-3.5 w-3.5" />
             Approve
           </span>

@@ -138,7 +138,7 @@ export function Control() {
                       className="mt-0.5 shrink-0 rounded-[4px] border px-2 py-0.5 text-[10px] tracking-wide"
                       style={{
                         borderColor: `${ACCENT}55`,
-                        color: '#ffb18f',
+                        color: '#f8cd02',
                       }}
                     >
                       Significant
@@ -152,7 +152,7 @@ export function Control() {
               <span className="text-[11.5px] text-white/40">
                 Approve the routine ones together. Read the two that matter.
               </span>
-              <span className="rounded-[4px] bg-white px-3.5 py-1.5 text-[11.5px] font-medium text-[#1b1b1d]">
+              <span className="rounded-[4px] bg-[var(--fx-yellow)] px-3.5 py-1.5 text-[11.5px] font-medium text-[var(--fx-on-yellow)]">
                 Approve
               </span>
             </div>

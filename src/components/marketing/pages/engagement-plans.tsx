@@ -186,7 +186,7 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
         className={
           'mt-7 flex h-11 w-full items-center justify-center rounded-full text-[14px] font-medium transition-all duration-200 active:scale-[0.98] ' +
           (p.featured
-            ? 'bg-white text-black hover:bg-white/90'
+            ? 'bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)] hover:bg-[var(--fx-yellow-hover)]'
             : 'border border-white/20 text-white hover:bg-white/[0.05]')
         }
       >
@@ -204,7 +204,7 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
         onClick={() => setCycle('monthly')}
         className={
           'rounded-[4px] px-4 py-1.5 text-[13px] transition-colors ' +
-          (cycle === 'monthly' ? 'bg-white font-medium text-black' : 'text-white/60 hover:text-white')
+          (cycle === 'monthly' ? 'bg-[var(--fx-yellow)] font-medium text-[var(--fx-on-yellow)]' : 'text-white/60 hover:text-white')
         }
       >
         One-time build
@@ -214,14 +214,14 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
         onClick={() => setCycle('annual')}
         className={
           'flex items-center gap-1.5 rounded-[4px] px-4 py-1.5 text-[13px] transition-colors ' +
-          (cycle === 'annual' ? 'bg-white font-medium text-black' : 'text-white/60 hover:text-white')
+          (cycle === 'annual' ? 'bg-[var(--fx-yellow)] font-medium text-[var(--fx-on-yellow)]' : 'text-white/60 hover:text-white')
         }
       >
         Ongoing retainer
         <span
           className={
             'rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium ' +
-            (cycle === 'annual' ? 'bg-[#f8cd02]/20 text-[#c2410c]' : 'bg-[#f8cd02]/15 text-[#f8cd02]')
+            (cycle === 'annual' ? 'bg-[#f8cd02]/20 text-[#f8cd02]' : 'bg-[#f8cd02]/15 text-[#f8cd02]')
           }
         >
           Same fixed quote

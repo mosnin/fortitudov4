@@ -235,7 +235,7 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06, delay
 const cardV = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT } } };
 
 const Avatar = ({ initials }: { initials: string }) => (
-  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[10px] font-semibold text-black">
+  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[10px] font-semibold text-black">
     {initials}
   </span>
 );
@@ -251,7 +251,7 @@ function AppMockup({ reduce, variant }: { reduce: boolean; variant: DashVariant 
       {/* Top bar */}
       <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-2.5">
         <span className="flex items-center gap-2.5">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#ff964f] text-[11px] font-bold text-white">F</span>
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f8cd02] text-[11px] font-bold text-[#0d0d0d]">F</span>
           <span style={MONO} className="text-[12px] text-white/45">
             Maya Chen <span className="px-1 text-white/25">/</span> <span className="text-white/90">{meta.page}</span>
           </span>
@@ -271,7 +271,7 @@ function AppMockup({ reduce, variant }: { reduce: boolean; variant: DashVariant 
         {/* Sidebar */}
         <div className="border-r border-white/[0.06] bg-[#0e0e10] p-3">
           <div className="flex items-center gap-2 rounded-lg px-2 py-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#ff964f] text-[11px] font-bold text-white">F</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#f8cd02] text-[11px] font-bold text-[#0d0d0d]">F</span>
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[12.5px] font-medium text-white">Maya Chen</span>
               <span className="block text-[10px] text-white/35">My workspace</span>
@@ -291,10 +291,10 @@ function AppMockup({ reduce, variant }: { reduce: boolean; variant: DashVariant 
                     (active ? 'bg-white/[0.06] font-medium text-white' : 'text-white/45')
                   }
                 >
-                  {active ? <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r bg-[#ff964f]" /> : null}
+                  {active ? <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r bg-[#f8cd02]" /> : null}
                   <Icon className={'h-[15px] w-[15px] ' + (active ? 'text-white' : 'text-white/40')} />
                   <span className="flex-1">{n.label}</span>
-                  {n.badge ? <span className="rounded-md bg-[#ff964f]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#f8cd02]">{n.badge}</span> : null}
+                  {n.badge ? <span className="rounded-md bg-[#f8cd02]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#f8cd02]">{n.badge}</span> : null}
                 </div>
               );
             })}
@@ -325,7 +325,7 @@ function PanelHead({ title, cta = 'Tell Helix' }: { title: string; cta?: string 
   return (
     <div className="flex items-center justify-between">
       <h4 style={SERIF} className="text-[24px] leading-none text-white">{title}</h4>
-      <span className="flex items-center gap-1.5 rounded-[4px] bg-white px-3.5 py-1.5 text-[11.5px] font-medium text-black">{cta}</span>
+      <span className="flex items-center gap-1.5 rounded-[4px] bg-[var(--fx-yellow)] px-3.5 py-1.5 text-[11.5px] font-medium text-[var(--fx-on-yellow)]">{cta}</span>
     </div>
   );
 }
@@ -445,7 +445,7 @@ function FloorPanel() {
             <Avatar initials={a.in} />
             <span className="w-28 flex-shrink-0 truncate text-[12.5px] font-medium text-white">{a.n}</span>
             <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
-              <span className="block h-full rounded-full bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]" style={{ width: a.w }} />
+              <span className="block h-full rounded-full bg-gradient-to-r from-[#f8cd02] to-[#dcb602]" style={{ width: a.w }} />
             </span>
             <span style={SERIF} className="w-14 text-right text-[13px] tabular-nums text-white/80">{a.vol}</span>
             <span className="w-7 text-right text-[11px] font-medium text-white/45">{a.rank}</span>
@@ -465,7 +465,7 @@ function ChippiPanel() {
   return (
     <>
       <div className="flex items-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#ff964f] text-[11px] font-bold text-white">F</span>
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f8cd02] text-[11px] font-bold text-[#0d0d0d]">F</span>
         <h4 style={SERIF} className="text-[22px] leading-none text-white">Good morning, Maya.</h4>
       </div>
       <motion.p variants={cardV} className="mt-2 text-[12px] text-white/45">3 new requests, 4 follow-ups due, 2 drafts ready.</motion.p>
@@ -483,7 +483,7 @@ function ChippiPanel() {
                 <span className="block text-[12.5px] font-medium text-white">{c.t}</span>
                 <span className="block text-[11px] text-white/45">{c.m}</span>
               </span>
-              <span className="rounded-md bg-white px-2.5 py-1 text-[10px] font-semibold text-black">Open</span>
+              <span className="rounded-md bg-[var(--fx-yellow)] px-2.5 py-1 text-[10px] font-semibold text-[var(--fx-on-yellow)]">Open</span>
             </motion.div>
           );
         })}
@@ -491,7 +491,7 @@ function ChippiPanel() {
 
       <motion.div variants={cardV} className="mt-4 flex items-center gap-2 rounded-[4px] border border-white/[0.08] bg-white/[0.02] px-4 py-2.5">
         <span className="flex-1 text-[12px] text-white/40">Ask Helix to draft, stage, or summarize...</span>
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#ff964f] text-white"><SendHorizontal className="h-3.5 w-3.5" /></span>
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#f8cd02] text-[#0d0d0d]"><SendHorizontal className="h-3.5 w-3.5" /></span>
       </motion.div>
     </>
   );

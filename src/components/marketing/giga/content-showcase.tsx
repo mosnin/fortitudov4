@@ -46,7 +46,7 @@ const STEPS: ShowcaseStep[] = [
         </motion.div>
         <motion.div variants={rowV} className="flex items-center justify-between px-1 pt-1">
           <span className="text-[11px] text-white/40">Matched to your past launches</span>
-          <span className="flex items-center gap-1 rounded-[4px] bg-white px-3 py-1 text-[11px] font-medium text-black">Use draft</span>
+          <span className="flex items-center gap-1 rounded-[4px] bg-[var(--fx-yellow)] px-3 py-1 text-[11px] font-medium text-[var(--fx-on-yellow)]">Use draft</span>
         </motion.div>
       </Frost>
     ),

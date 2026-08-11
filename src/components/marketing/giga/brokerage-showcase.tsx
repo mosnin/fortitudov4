@@ -46,7 +46,7 @@ const STEPS: ShowcaseStep[] = [
     mockup: (
       <Frost title="Project routing" badge="Auto">
         <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[12px] font-semibold text-black">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[12px] font-semibold text-black">
             SC
           </span>
           <span className="min-w-0 flex-1">
@@ -143,7 +143,7 @@ const STEPS: ShowcaseStep[] = [
             <span className="font-medium text-white">18 / 20</span>
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-            <div className="h-full w-[90%] rounded-full bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]" />
+            <div className="h-full w-[90%] rounded-full bg-gradient-to-r from-[#f8cd02] to-[#dcb602]" />
           </div>
         </motion.div>
         <Row icon={CreditCard} title="Fixed quote · per build" meta="50% up front · balance at launch" tone="text-[#f8cd02]" />

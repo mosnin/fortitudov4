@@ -93,7 +93,7 @@ const READS_STEPS: ShowcaseStep[] = [
           <span className="text-[14px] leading-none">↓</span>
         </motion.div>
         <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-[#f8cd02]/25 bg-[#f8cd02]/[0.06] p-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-black">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-black">
             <Inbox className="h-4 w-4" />
           </span>
           <span className="min-w-0 flex-1">
@@ -112,7 +112,7 @@ const READS_STEPS: ShowcaseStep[] = [
     mockup: (
       <Frost title="Contact">
         <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[12px] font-semibold text-black">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[12px] font-semibold text-black">
             SC
           </span>
           <span className="min-w-0 flex-1">
@@ -227,7 +227,7 @@ const RankRow = ({ pos, name, score, width }: { pos: number; name: string; score
     </span>
     <span className="w-20 flex-shrink-0 truncate text-[12.5px] font-medium text-white">{name}</span>
     <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-      <span className="block h-full rounded-full bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]" style={{ width }} />
+      <span className="block h-full rounded-full bg-gradient-to-r from-[#f8cd02] to-[#dcb602]" style={{ width }} />
     </span>
     <span className="w-7 flex-shrink-0 text-right text-[12px] font-semibold text-white/80">{score}</span>
   </motion.div>
@@ -352,7 +352,7 @@ const ActionBtn = ({ icon: Icon, label, focused }: { icon: React.ElementType; la
     className={
       'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[12px] font-medium ' +
       (focused
-        ? 'bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] text-black shadow-lg shadow-[#f8cd02]/20'
+        ? 'bg-gradient-to-r from-[#f8cd02] to-[#dcb602] text-black shadow-lg shadow-[#f8cd02]/20'
         : 'border border-white/[0.1] bg-white/[0.04] text-white/65')
     }
   >
@@ -404,7 +404,7 @@ const ACTS_STEPS: ShowcaseStep[] = [
     mockup: (
       <Frost title="In motion">
         <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-black">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-black">
             <CalendarDays className="h-4 w-4" />
           </span>
           <span className="min-w-0 flex-1">

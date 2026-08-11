@@ -52,7 +52,7 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
   const pillStyles =
     tone === 'alert'
       ? 'border-[#ff405d] bg-[#ff405d]/[0.08] text-[#ff7a8d]'
-      : 'border-[#f8cd02] bg-[#f8cd02]/[0.08] text-[#ffb18f]';
+      : 'border-[#f8cd02] bg-[#f8cd02]/[0.08] text-[#f8cd02]';
   const connector = tone === 'alert' ? 'bg-[#ff405d]/60' : 'bg-[#f8cd02]/60';
   const ring = tone === 'alert' ? 'rgba(255,64,93,0.25)' : 'rgba(248,205,2,0.25)';
 

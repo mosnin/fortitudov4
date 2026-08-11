@@ -49,7 +49,7 @@ const STEPS: ShowcaseStep[] = [
           variants={rowV}
           className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[12px] font-semibold text-black">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[12px] font-semibold text-black">
             SC
           </span>
           <span className="min-w-0 flex-1">
@@ -137,7 +137,7 @@ const STEPS: ShowcaseStep[] = [
     mockup: (
       <Frost title="Launch checklist" badge="Live">
         <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[14px] font-semibold text-black">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-[14px] font-semibold text-black">
             MN
           </span>
           <span className="min-w-0 flex-1">

@@ -83,7 +83,7 @@ export function PricingTeaser({
                 className={
                   'mt-7 flex h-11 w-full items-center justify-center rounded-full text-[14px] font-medium transition-all duration-200 active:scale-[0.98] ' +
                   (p.featured
-                    ? 'bg-white text-black hover:bg-white/90'
+                    ? 'bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)] hover:bg-[var(--fx-yellow-hover)]'
                     : 'border border-white/20 text-white hover:bg-white/[0.05]')
                 }
               >

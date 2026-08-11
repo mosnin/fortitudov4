@@ -48,7 +48,7 @@ const Avatar = ({ initials, accent }: { initials: string; accent?: boolean }) =>
     className={
       'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ' +
       (accent
-        ? 'bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-black'
+        ? 'bg-gradient-to-br from-[#f8cd02] to-[#dcb602] text-black'
         : 'border border-white/10 bg-white/[0.05] text-white/70')
     }
   >
@@ -62,7 +62,7 @@ const Bar = ({ pct, muted }: { pct: number; muted?: boolean }) => (
     <span
       className={
         'block h-full rounded-full ' +
-        (muted ? 'bg-white/25' : 'bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]')
+        (muted ? 'bg-white/25' : 'bg-gradient-to-r from-[#f8cd02] to-[#dcb602]')
       }
       style={{ width: pct + '%' }}
     />
@@ -336,7 +336,7 @@ export function BrokerageFloorShowcase() {
 /* ── 3) Oversight & audit ──────────────────────────────────────────────────── */
 
 const SentBtn = () => (
-  <span className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] px-2 py-1 text-[10px] font-semibold text-black">
+  <span className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#dcb602] px-2 py-1 text-[10px] font-semibold text-black">
     <Check className="h-3 w-3" /> Sent
   </span>
 );
@@ -396,7 +396,7 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
             set up a walkthrough this weekend?
           </p>
           <div className="mt-3 flex justify-end">
-            <span className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] px-3 py-1.5 text-[11px] font-semibold text-black">
+            <span className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#dcb602] px-3 py-1.5 text-[11px] font-semibold text-black">
               <Send className="h-3 w-3" /> Sent 2:14 PM
             </span>
           </div>
@@ -448,7 +448,7 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
                 aria-hidden
                 className={
                   'absolute -left-[17px] top-1 h-2 w-2 rounded-full ring-2 ring-[#0b0b0d] ' +
-                  (e.accent ? 'bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2]' : 'bg-white/30')
+                  (e.accent ? 'bg-gradient-to-br from-[#f8cd02] to-[#dcb602]' : 'bg-white/30')
                 }
               />
               <span className="block text-[12px] font-medium text-white">{e.action}</span>

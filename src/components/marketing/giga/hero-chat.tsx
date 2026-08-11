@@ -52,7 +52,7 @@ export function HeroChat() {
             type="button"
             aria-label="Ask Helix"
             onClick={start}
-            className="ml-auto flex h-9 w-9 items-center justify-center rounded-full bg-white text-black transition-transform duration-150 hover:scale-105 active:scale-95"
+            className="ml-auto flex h-9 w-9 items-center justify-center rounded-full bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)] transition-transform duration-150 hover:scale-105 active:scale-95"
           >
             <ArrowUp className="h-4 w-4" />
           </button>
