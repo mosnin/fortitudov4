@@ -6,21 +6,40 @@ const isPgUrl = (v: string | undefined): v is string =>
   !!v && /^postgres(?:ql)?:\/\//.test(v);
 
 /**
- * Resolve the Postgres connection string from the environment. The Vercel
- * Supabase integration sets this automatically (commonly POSTGRES_URL), so we
- * accept the standard names and, failing that, use any Postgres URL present in
- * the environment — the exact variable name is managed by Vercel, not us.
+ * The connection variables we accept, in the order we want them.
+ *
+ * This used to fall back to scanning `Object.values(process.env)` and taking
+ * the first `postgres://` it found. That is unordered, and Vercel's Postgres
+ * integrations set several of these at once — so on a deployment where
+ * DATABASE_URL happened to be unset, the app would bind to whichever URL the
+ * environment enumerated first. In practice that is often the NON_POOLING
+ * direct connection, which is the one thing a serverless deployment must not
+ * use: every lambda opens its own session and the connection limit is gone
+ * long before the traffic is.
+ *
+ * An explicit, ordered list picks the pooled connection deliberately, and a
+ * name we do not recognise now fails loudly instead of being silently
+ * promoted to the app's database.
  */
-export function resolveConnectionString(): string {
-  const preferred = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
-  if (isPgUrl(preferred)) return preferred;
+const CONNECTION_VARS = [
+  "DATABASE_URL",
+  "POSTGRES_URL",
+  "POSTGRES_PRISMA_URL",
+  // Direct/session connections, last: correct for migrations, wrong for
+  // serverless request handling, but better than no database at all.
+  "POSTGRES_URL_NON_POOLING",
+  "DATABASE_URL_UNPOOLED",
+] as const;
 
-  for (const value of Object.values(process.env)) {
+export function resolveConnectionString(): string {
+  for (const name of CONNECTION_VARS) {
+    const value = process.env[name];
     if (isPgUrl(value)) return value;
   }
 
   throw new Error(
-    "No Postgres connection string found in the environment. Connect Supabase in Vercel and redeploy."
+    `No Postgres connection string found. Checked ${CONNECTION_VARS.join(", ")}. ` +
+      "Set DATABASE_URL in the Vercel project's environment variables and redeploy."
   );
 }
 
@@ -28,11 +47,19 @@ let _db: ReturnType<typeof createDb> | null = null;
 
 function createDb() {
   // Supabase's transaction pooler (port 6543) doesn't support prepared
-  // statements, so disable them.
+  // statements. Disabling them is also safe on a direct connection — it costs
+  // a little planning time and nothing else — so this is set unconditionally
+  // rather than sniffed from the port.
   const client = postgres(resolveConnectionString(), { prepare: false });
   return drizzle(client, { schema });
 }
 
+/**
+ * Lazy: the client is constructed on first property access, not at import.
+ * That is what lets a build with no database in the environment succeed —
+ * every route that touches the database is dynamic, so nothing here runs
+ * during static generation.
+ */
 export const db = new Proxy({} as ReturnType<typeof createDb>, {
   get(_target, prop) {
     if (!_db) {
