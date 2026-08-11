@@ -36,11 +36,11 @@ import {
 /* ── shared small helpers ──────────────────────────────────────────────── */
 
 const Chip = ({ label, tone }: { label: string; tone: string }) => (
-  <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
+  <span className={'rounded-[4px] px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
 );
 
 const Avatar = ({ initials }: { initials: string }) => (
-  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2] text-[12px] font-semibold text-black">
+  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[12px] font-semibold text-black">
     {initials}
   </span>
 );
@@ -56,7 +56,7 @@ const STEPS_INBOX: ShowcaseStep[] = [
       <Frost title="Inbox" badge="3 new">
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3"
+          className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3"
         >
           <Avatar initials="DM" />
           <span className="min-w-0 flex-1">
@@ -65,7 +65,7 @@ const STEPS_INBOX: ShowcaseStep[] = [
               Can we get the checkout fix in before Friday&apos;s launch?
             </span>
           </span>
-          <Chip label="Urgent · scored" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />
+          <Chip label="Urgent · scored" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />
         </motion.div>
         <Row
           icon={Inbox}
@@ -89,12 +89,12 @@ const STEPS_INBOX: ShowcaseStep[] = [
     mockup: (
       <Frost title="Thread" badge="Daniel Mercer">
         <motion.div variants={rowV} className="flex justify-start">
-          <span className="max-w-[80%] rounded-2xl rounded-tl-sm bg-white/[0.06] px-3.5 py-2.5 text-[12.5px] leading-snug text-white/80">
+          <span className="max-w-[80%] rounded-[6px] rounded-tl-sm bg-white/[0.06] px-3.5 py-2.5 text-[12.5px] leading-snug text-white/80">
             Hi, just walked the preview. We&apos;d like the checkout simplified and at least 3 payment options.
           </span>
         </motion.div>
         <motion.div variants={rowV} className="flex justify-start">
-          <span className="max-w-[80%] rounded-2xl rounded-tl-sm bg-white/[0.06] px-3.5 py-2.5 text-[12.5px] leading-snug text-white/80">
+          <span className="max-w-[80%] rounded-[6px] rounded-tl-sm bg-white/[0.06] px-3.5 py-2.5 text-[12.5px] leading-snug text-white/80">
             Could we still ship this weekend if QA is clear?
           </span>
         </motion.div>
@@ -114,14 +114,14 @@ const STEPS_INBOX: ShowcaseStep[] = [
       <Frost title="Draft" badge="House style">
         <motion.div
           variants={rowV}
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-3.5 text-[12.5px] leading-relaxed text-white/80"
+          className="rounded-[6px] border border-white/10 bg-white/[0.03] p-3.5 text-[12.5px] leading-relaxed text-white/80"
         >
           Hi Daniel, great to hear from you. The checkout simplification fits this sprint, and all
           three payment options are already supported. I can stage it for review Saturday at 11:00
           or Sunday at 2:00. Which works better for you?
         </motion.div>
         <motion.div variants={rowV} className="flex items-center gap-2 px-1 pt-1">
-          <span className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2] px-3 py-2 text-[12px] font-semibold text-black">
+          <span className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] px-3 py-2 text-[12px] font-semibold text-black">
             <Check className="h-3.5 w-3.5" />
             Approve
           </span>
@@ -156,7 +156,7 @@ const STEPS_INBOX: ShowcaseStep[] = [
         />
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3"
+          className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.03] p-3"
         >
           <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-sky-300">
             <CheckCircle2 className="h-3.5 w-3.5" />
@@ -225,7 +225,7 @@ const DealCard = ({
 );
 
 const Column = ({ label, children }: { label: string; children: React.ReactNode }) => (
-  <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-2">
+  <div className="rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-2">
     <span className="mb-2 block text-[9px] font-medium uppercase tracking-wider text-white/40">{label}</span>
     <div className="space-y-1.5">{children}</div>
   </div>
@@ -240,7 +240,7 @@ const STEPS_PIPELINE: ShowcaseStep[] = [
       <Frost title="Pipeline" badge="Live">
         <motion.div variants={rowV} className="grid grid-cols-3 gap-2">
           <Column label="New">
-            <DealCard name="Maison Noir" price="$6.5k" dot="bg-[#ff9a6e]" />
+            <DealCard name="Maison Noir" price="$6.5k" dot="bg-[#f8cd02]" />
             <DealCard name="HelpStream" price="$4.2k" dot="bg-white/40" />
           </Column>
           <Column label="In build">
@@ -267,9 +267,9 @@ const STEPS_PIPELINE: ShowcaseStep[] = [
             <DealCard
               name="Maison Noir"
               price="$6.5k"
-              dot="bg-[#ff9a6e]"
-              className="border-[#ff7a45]/40 bg-[#ff7a45]/10 ring-1 ring-[#ff7a45]/40"
-              chip={<Chip label="→ In build" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />}
+              dot="bg-[#f8cd02]"
+              className="border-[#f8cd02]/40 bg-[#f8cd02]/10 ring-1 ring-[#f8cd02]/40"
+              chip={<Chip label="→ In build" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />}
             />
             <DealCard name="Atlas Ops" price="$8.8k" dot="bg-sky-400" />
           </Column>
@@ -281,7 +281,7 @@ const STEPS_PIPELINE: ShowcaseStep[] = [
           icon={ArrowRight}
           title="Maison Noir moved to In build"
           meta="kickoff booked Sat 11:00"
-          tone="text-[#ff9a6e]"
+          tone="text-[#f8cd02]"
         />
       </Frost>
     ),
@@ -294,14 +294,14 @@ const STEPS_PIPELINE: ShowcaseStep[] = [
       <Frost title="Follow-up" badge="Queued">
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3"
+          className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3"
         >
           <Avatar initials="MN" />
           <span className="min-w-0 flex-1">
             <span className="block text-[13px] font-medium text-white">Maison Noir</span>
             <span className="block text-[11px] text-white/45">checkout revision · post-review check-in</span>
           </span>
-          <span className="flex items-center gap-1.5 rounded-full bg-sky-400/15 px-2.5 py-1 text-[11px] font-medium text-sky-300">
+          <span className="flex items-center gap-1.5 rounded-[4px] bg-sky-400/15 px-2.5 py-1 text-[11px] font-medium text-sky-300">
             <Bell className="h-3 w-3" />
             Call Tue 10:00
           </span>
@@ -330,7 +330,7 @@ const STEPS_PIPELINE: ShowcaseStep[] = [
       <Frost title="Needs a nudge" badge="2 flagged">
         <motion.div
           variants={rowV}
-          className="rounded-xl border border-amber-400/20 bg-amber-400/[0.06] p-3"
+          className="rounded-[6px] border border-amber-400/20 bg-amber-400/[0.06] p-3"
         >
           <div className="flex items-center gap-2">
             <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-amber-400" />

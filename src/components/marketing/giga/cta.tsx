@@ -27,7 +27,7 @@ export function CtaSection() {
           closing ask so the page ends warm instead of flat. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 [background:radial-gradient(90%_70%_at_50%_110%,rgba(255,122,69,0.12),transparent_65%)] dark:[background:radial-gradient(90%_70%_at_50%_110%,rgba(255,122,69,0.10),transparent_65%)]"
+        className="absolute inset-0 -z-10 [background:radial-gradient(90%_70%_at_50%_110%,rgba(248,205,2,0.12),transparent_65%)] dark:[background:radial-gradient(90%_70%_at_50%_110%,rgba(248,205,2,0.10),transparent_65%)]"
       />
       <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT }}>
@@ -35,7 +35,7 @@ export function CtaSection() {
             style={MONO}
             className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-neutral-500 dark:text-white/55"
           >
-            <span className="inline-block size-1.5 rounded-full bg-[#ff7a45]" />
+            <span className="inline-block size-1.5 rounded-full bg-[#f8cd02]" />
             Get a demo
           </span>
           <h2 className="mt-5 text-[clamp(2rem,4vw,3.5rem)] leading-[1.04] tracking-[-0.02em] text-neutral-900 dark:text-white">
@@ -59,7 +59,7 @@ export function CtaSection() {
           </p>
           <Link
             href="/contact"
-            className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-neutral-900 px-6 text-[14px] font-medium text-white transition-all duration-200 hover:bg-neutral-800 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-white/90"
+            className="mt-6 inline-flex h-11 items-center gap-2 rounded-[4px] bg-neutral-900 px-6 text-[14px] font-medium text-white transition-all duration-200 hover:bg-neutral-800 active:scale-[0.98] dark:bg-white dark:text-black dark:hover:bg-white/90"
           >
             Talk to us
             <ArrowRight className="h-4 w-4" />

@@ -77,7 +77,7 @@ function Row({ q, a }: { q: string; a: string }) {
 
 export function Faq() {
   return (
-    <section className="relative border-t border-white/[0.06] bg-[#0a0a0a] py-24 text-white sm:py-32">
+    <section className="relative border-t border-white/[0.06] bg-[#1b1b1d] py-24 text-white sm:py-32">
       <Band>
         <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_1.6fr]">
           <BlurRise>

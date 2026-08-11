@@ -1,14 +1,16 @@
 /**
- * `/` (home), the dark, cinematic marketing homepage ("Giga" redesign).
+ * `/` (home), the logged-out homepage.
  *
  * Sections, in order:
- *   1. Hero, full-bleed real-estate photo, centered serif headline, white pill
- *      CTA, a bottom-left video/testimonial card, and a marquee logo cloud.
+ *   1. Hero21 — the OriginKit hero-21 section, recoloured to racing yellow on
+ *      charcoal. Split layout: headline and offerings left, an ASCII wave field
+ *      with a floating dashboard card right. It replaces the previous
+ *      photography-led hero; the old `Hero` component is still in the kit and
+ *      still used by sub-pages via `SubHero`.
  *   2. Stats, the big-numbers band right under the hero.
- *   3. AgentCanvas, THE feature section: one animated component (scenic photo
- *      background with a product-UI card composited over it) whose stepped list
- *      auto-advances with progress bars and swaps the card per step.
- *   4. Complexity, the brokerage-floor closer.
+ *   3. AgentCanvas, THE feature section: one animated component whose stepped
+ *      list auto-advances with progress bars and swaps the card per step.
+ *   4. Complexity, the closer.
  *
  * Every child here is a self-contained client component that takes NO props, so
  * nothing crosses the server→client boundary (this page is a Server Component;
@@ -17,7 +19,7 @@
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { Hero } from '@/components/marketing/giga/hero';
+import Hero21 from '@/components/originkit/hero-21';
 import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { AgentCanvas } from '@/components/marketing/giga/agent-canvas';
@@ -37,9 +39,9 @@ export default async function MarketingHomePage() {
 
   return (
     <>
-      {/* Cinematic sections stay dark in both themes (reference-style). */}
-      <div className="dark bg-[#0a0a0a] text-white">
-        <Hero />
+      {/* The whole logged-out site is charcoal; the shell already forces it. */}
+      <div className="bg-[var(--fx-charcoal)] text-white">
+        <Hero21 />
         <Stats />
         <Offerings />
         <AgentCanvas />

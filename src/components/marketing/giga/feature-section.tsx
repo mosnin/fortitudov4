@@ -101,7 +101,7 @@ export function FeatureSection({
 
         {/* Large rounded dark card: text column + big image panel (alternating). */}
         <BlurRise delay={0.12}>
-          <div className="mt-14 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.02]">
+          <div className="mt-14 overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02]">
             <div
               className={cn(
                 'grid lg:grid-cols-2',
@@ -111,14 +111,14 @@ export function FeatureSection({
               {/* Text column */}
               <div className="flex flex-col justify-center p-8 sm:p-12">
                 <span
-                  className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#ff7a45]/30 bg-[#ff7a45]/10"
-                  style={{ color: '#ff9a6e' }}
+                  className="flex h-11 w-11 items-center justify-center rounded-[6px] border border-[#f8cd02]/30 bg-[#f8cd02]/10"
+                  style={{ color: '#f8cd02' }}
                 >
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3
                   className="mt-6 text-[20px] font-semibold sm:text-[22px]"
-                  style={{ color: '#ff9a6e' }}
+                  style={{ color: '#f8cd02' }}
                 >
                   {card.title}
                 </h3>
@@ -154,8 +154,8 @@ export function FeatureSection({
                     className="absolute inset-0"
                     style={{
                       background: imageLeft
-                        ? `linear-gradient(90deg, transparent 60%, rgba(10,10,10,0.55) 100%)`
-                        : `linear-gradient(270deg, transparent 60%, rgba(10,10,10,0.55) 100%)`,
+                        ? `linear-gradient(90deg, transparent 60%, rgba(27,27,29,0.55) 100%)`
+                        : `linear-gradient(270deg, transparent 60%, rgba(27,27,29,0.55) 100%)`,
                     }}
                   />
                 </div>

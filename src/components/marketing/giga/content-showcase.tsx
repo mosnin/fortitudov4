@@ -27,7 +27,7 @@ const TOP_FEATURES = [
 ];
 
 const Chip = ({ label, tone }: { label: string; tone: string }) => (
-  <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
+  <span className={'rounded-[4px] px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
 );
 
 const STEPS: ShowcaseStep[] = [
@@ -37,8 +37,8 @@ const STEPS: ShowcaseStep[] = [
     desc: 'Drop in the project and the details; Helix writes the launch announcement in your brand voice, ready to post.',
     mockup: (
       <Frost title="Launch draft" badge="On brand">
-        <Row icon={Type} title="Maison Noir" meta="ecommerce · launches Friday" tone="text-[#ff9a6e]" />
-        <motion.div variants={rowV} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+        <Row icon={Type} title="Maison Noir" meta="ecommerce · launches Friday" tone="text-[#f8cd02]" />
+        <motion.div variants={rowV} className="rounded-[6px] border border-white/10 bg-white/[0.03] p-3">
           <p className="text-[12px] leading-relaxed text-white/75">
             Maison Noir is live: a fast, minimal storefront with one-tap checkout and a lookbook
             made for slow browsing. Built in six weeks, launched on time.
@@ -46,7 +46,7 @@ const STEPS: ShowcaseStep[] = [
         </motion.div>
         <motion.div variants={rowV} className="flex items-center justify-between px-1 pt-1">
           <span className="text-[11px] text-white/40">Matched to your past launches</span>
-          <span className="flex items-center gap-1 rounded-full bg-white px-3 py-1 text-[11px] font-medium text-black">Use draft</span>
+          <span className="flex items-center gap-1 rounded-[4px] bg-white px-3 py-1 text-[11px] font-medium text-black">Use draft</span>
         </motion.div>
       </Frost>
     ),
@@ -57,7 +57,7 @@ const STEPS: ShowcaseStep[] = [
     desc: 'Turn one launch into a set of branded posts and stories, sized for every platform.',
     mockup: (
       <Frost title="Social post" badge="Ready">
-        <motion.div variants={rowV} className="overflow-hidden rounded-xl border border-white/10">
+        <motion.div variants={rowV} className="overflow-hidden rounded-[6px] border border-white/10">
           <div className="relative h-28 w-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/marketing/research.jpg" alt="" className="h-full w-full object-cover" />
@@ -68,7 +68,7 @@ const STEPS: ShowcaseStep[] = [
         <motion.div variants={rowV} className="flex items-center gap-2 px-1 pt-1 text-[11px] text-white/50">
           <Hash className="h-3.5 w-3.5" /> #justlaunched #ecommerce #newsite
         </motion.div>
-        <Row icon={ImageIcon} title="3 sizes generated" meta="post · story · email header" tone="text-[#ff9a6e]" />
+        <Row icon={ImageIcon} title="3 sizes generated" meta="post · story · email header" tone="text-[#f8cd02]" />
       </Frost>
     ),
   },
@@ -92,13 +92,13 @@ const STEPS: ShowcaseStep[] = [
       <Frost title="Brand kit" badge="Applied">
         <Row icon={Palette} title="Brand colors" meta="3 saved" right={
           <span className="flex gap-1">
-            <span className="h-4 w-4 rounded-full bg-[#ff7a45]" />
+            <span className="h-4 w-4 rounded-full bg-[#f8cd02]" />
             <span className="h-4 w-4 rounded-full bg-[#1f2937]" />
-            <span className="h-4 w-4 rounded-full bg-[#c77dff]" />
+            <span className="h-4 w-4 rounded-full bg-[#dcb602]" />
           </span>
         } />
         <Row icon={Type} title="Headline + body fonts" meta="Times · Inter" />
-        <Row icon={PenTool} title="Logo + watermark" meta="auto-applied to media" tone="text-[#ff9a6e]" active />
+        <Row icon={PenTool} title="Logo + watermark" meta="auto-applied to media" tone="text-[#f8cd02]" active />
       </Frost>
     ),
   },

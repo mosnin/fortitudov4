@@ -35,7 +35,7 @@ const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 export function SiteFooter() {
   return (
-    <footer className="relative bg-white dark:bg-[#0a0a0a]">
+    <footer className="relative bg-white dark:bg-[#1b1b1d]">
       {/* Warm gradient band (Chippi orange / pink / yellow), anchored toward the
           footer and revealing as it scrolls into view. A wide, flat ellipse so
           it reads as a soft wash rather than a tight radial. Fades UP into the
@@ -52,7 +52,7 @@ export function SiteFooter() {
           gradientColors={['#ffd84d', '#ff8a3d', '#ff5fa2', 'rgba(255,95,162,0)']}
           gradientStops={[0, 38, 72, 100]}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white dark:to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-white dark:to-[#1b1b1d]" />
       </div>
 
       <div className="relative">

@@ -52,9 +52,9 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
   const pillStyles =
     tone === 'alert'
       ? 'border-[#ff405d] bg-[#ff405d]/[0.08] text-[#ff7a8d]'
-      : 'border-[#ff7a45] bg-[#ff7a45]/[0.08] text-[#ffb18f]';
-  const connector = tone === 'alert' ? 'bg-[#ff405d]/60' : 'bg-[#ff7a45]/60';
-  const ring = tone === 'alert' ? 'rgba(255,64,93,0.25)' : 'rgba(255,122,69,0.25)';
+      : 'border-[#f8cd02] bg-[#f8cd02]/[0.08] text-[#ffb18f]';
+  const connector = tone === 'alert' ? 'bg-[#ff405d]/60' : 'bg-[#f8cd02]/60';
+  const ring = tone === 'alert' ? 'rgba(255,64,93,0.25)' : 'rgba(248,205,2,0.25)';
 
   const row = (hidden: boolean) => (
     <div aria-hidden={hidden} className="flex shrink-0 items-center gap-2">
@@ -63,7 +63,7 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
         return (
           <div key={pill.label} className="flex shrink-0 items-center gap-2">
             <div
-              className={`flex shrink-0 items-center gap-2.5 rounded-2xl border p-3.5 motion-safe:animate-[pill-ring-pulse_2s_ease-in-out_infinite] ${pillStyles}`}
+              className={`flex shrink-0 items-center gap-2.5 rounded-[6px] border p-3.5 motion-safe:animate-[pill-ring-pulse_2s_ease-in-out_infinite] ${pillStyles}`}
               style={
                 {
                   '--pill-ring': ring,
@@ -99,7 +99,7 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
 
 export function Advantage() {
   return (
-    <section className="relative border-t border-white/[0.06] bg-[#0a0a0a] py-24 text-white sm:py-32">
+    <section className="relative border-t border-white/[0.06] bg-[#1b1b1d] py-24 text-white sm:py-32">
       <Band>
         <BlurRise className="mx-auto max-w-3xl text-center">
           <Eyebrow className="justify-center">Why Fortitudo</Eyebrow>
@@ -114,7 +114,7 @@ export function Advantage() {
 
         <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-2">
           <BlurRise>
-            <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.02]">
+            <div className="overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02]">
               <div className="relative aspect-[724/300] overflow-hidden">
                 <PillConveyor pills={legacyPills} tone="alert" />
               </div>
@@ -132,7 +132,7 @@ export function Advantage() {
           </BlurRise>
 
           <BlurRise delay={0.08}>
-            <div className="overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.02]">
+            <div className="overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02]">
               <div className="relative aspect-[724/300] overflow-hidden">
                 <PillConveyor pills={fortitudoPills} tone="brand" />
               </div>

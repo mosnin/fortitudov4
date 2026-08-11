@@ -148,7 +148,7 @@ export function SiteHeader() {
   // Each nav cluster is TRANSPARENT at the top and gains a blurred translucent
   // background only once scrolled, animated, so it fades in/out.
   const clusterAnimate = {
-    backgroundColor: scrolled ? 'rgba(12,12,12,0.72)' : 'rgba(12,12,12,0)',
+    backgroundColor: scrolled ? 'rgba(20,20,22,0.72)' : 'rgba(20,20,22,0)',
     borderColor: scrolled ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0)',
     boxShadow: scrolled ? '0 10px 30px -12px rgba(0,0,0,0.55)' : '0 0px 0px 0px rgba(0,0,0,0)',
   };
@@ -165,7 +165,7 @@ export function SiteHeader() {
       onClick={() => setOpenMenu((m) => (m === menu ? null : menu))}
       onMouseEnter={() => setOpenMenu(menu)}
       className={cn(
-        'inline-flex cursor-pointer items-center gap-1 rounded-full px-3.5 py-2 text-sm transition-colors',
+        'inline-flex cursor-pointer items-center gap-1 rounded-[4px] px-3.5 py-2 text-sm transition-colors',
         openMenu === menu ? 'text-white' : 'text-white/70 hover:text-white',
       )}
     >
@@ -190,7 +190,7 @@ export function SiteHeader() {
               animate={clusterAnimate}
               transition={clusterTransition}
               style={clusterStyle}
-              className="flex items-center gap-0.5 rounded-full border px-1.5"
+              className="flex items-center gap-0.5 rounded-[4px] border px-1.5"
             >
               <Link href="/" aria-label="Fortitudo home" className="flex items-center px-3 py-2.5" onClick={closeAll}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -209,7 +209,7 @@ export function SiteHeader() {
                 <Link
                   href="/pricing"
                   onClick={closeAll}
-                  className="rounded-full px-3.5 py-2 text-sm text-white/70 transition-colors hover:text-white"
+                  className="rounded-[4px] px-3.5 py-2 text-sm text-white/70 transition-colors hover:text-white"
                 >
                   Pricing
                 </Link>
@@ -228,22 +228,22 @@ export function SiteHeader() {
                   className="absolute left-0 top-full hidden w-[720px] max-w-[calc(100vw-2.5rem)] pt-2.5 lg:block"
                   onMouseLeave={() => setOpenMenu(null)}
                 >
-                  <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#0d0d0d]/65 shadow-2xl shadow-black/60 backdrop-blur-2xl">
+                  <div className="overflow-hidden rounded-[6px] border border-white/10 bg-[#141416]/65 shadow-2xl shadow-black/60 backdrop-blur-2xl">
                     <div className="grid grid-cols-[280px_1fr]">
                       {/* Featured story */}
                       <Link
                         href={active.featured.href}
                         onClick={closeAll}
-                        className="group/feat relative flex flex-col justify-between overflow-hidden border-r border-white/10 bg-gradient-to-br from-[#ff7a45]/12 via-[#0d0d0d]/40 to-[#0d0d0d]/40 p-6"
+                        className="group/feat relative flex flex-col justify-between overflow-hidden border-r border-white/10 bg-gradient-to-br from-[#f8cd02]/12 via-[#141416]/40 to-[#141416]/40 p-6"
                       >
                         <div
                           aria-hidden
-                          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(255,122,69,0.22),transparent_70%)]"
+                          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-[4px] bg-[radial-gradient(circle,rgba(248,205,2,0.22),transparent_70%)]"
                         />
                         <div>
                           <p
                             style={{ fontFamily: 'var(--font-mono-display)' }}
-                            className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#ff9a6e]"
+                            className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#f8cd02]"
                           >
                             {active.featured.eyebrow}
                           </p>
@@ -270,9 +270,9 @@ export function SiteHeader() {
                               key={it.label}
                               href={it.href}
                               onClick={closeAll}
-                              className="group flex items-start gap-3 rounded-2xl px-3 py-2.5 transition-colors hover:bg-white/[0.05]"
+                              className="group flex items-start gap-3 rounded-[4px] px-3 py-2.5 transition-colors hover:bg-white/[0.05]"
                             >
-                              <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-white/60 transition-colors group-hover:border-[#ff7a45]/40 group-hover:text-[#ff9a6e]">
+                              <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[4px] border border-white/10 bg-white/[0.03] text-white/60 transition-colors group-hover:border-[#f8cd02]/40 group-hover:text-[#f8cd02]">
                                 <Icon className="h-[15px] w-[15px]" />
                               </span>
                               <span className="min-w-0">
@@ -298,17 +298,17 @@ export function SiteHeader() {
             animate={clusterAnimate}
             transition={clusterTransition}
             style={clusterStyle}
-            className="flex items-center gap-1 rounded-full border p-1.5"
+            className="flex items-center gap-1 rounded-[4px] border p-1.5"
           >
             <Link
               href={SIGNIN}
-              className="hidden rounded-full px-3.5 py-1.5 text-sm text-white/70 transition-colors hover:text-white lg:inline-flex"
+              className="hidden rounded-[4px] px-3.5 py-1.5 text-sm text-white/70 transition-colors hover:text-white lg:inline-flex"
             >
               Sign in
             </Link>
             <Link
               href={DEMO}
-              className="hidden h-9 items-center rounded-full bg-white px-4 text-sm font-medium text-black transition-all duration-200 hover:bg-white/90 active:scale-[0.98] lg:inline-flex"
+              className="hidden h-9 items-center rounded-[4px] bg-[var(--fx-yellow)] px-4 text-sm font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98] lg:inline-flex"
             >
               See a demo
             </Link>
@@ -316,7 +316,7 @@ export function SiteHeader() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-full text-white transition-colors hover:bg-white/[0.08] lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-[4px] text-white transition-colors hover:bg-white/[0.08] lg:hidden"
             >
               <Menu size={20} />
             </button>
@@ -334,7 +334,7 @@ export function SiteHeader() {
             exit={{ opacity: 0 }}
             transition={{ duration: reduce ? 0 : 0.25, ease: EASE_OUT }}
           >
-            <div className="absolute inset-0 bg-[#0a0a0a]/95 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-[#1b1b1d]/95 backdrop-blur-xl" />
             <motion.div
               className="relative flex h-full flex-col"
               initial={{ y: 16, opacity: 0 }}
@@ -358,7 +358,7 @@ export function SiteHeader() {
                   type="button"
                   aria-label="Close menu"
                   onClick={() => setMobileOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:bg-white/[0.08]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[4px] border border-white/15 text-white transition-colors hover:bg-white/[0.08]"
                 >
                   <X size={20} />
                 </button>
@@ -387,9 +387,9 @@ export function SiteHeader() {
                             <Link
                               href={it.href}
                               onClick={closeAll}
-                              className="flex items-center gap-3 rounded-2xl px-1 py-2.5 text-white"
+                              className="flex items-center gap-3 rounded-[4px] px-1 py-2.5 text-white"
                             >
-                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-white/70">
+                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[4px] border border-white/10 bg-white/[0.03] text-white/70">
                                 <Icon className="h-4 w-4" />
                               </span>
                               <span className="text-[19px]">{it.label}</span>
@@ -416,7 +416,7 @@ export function SiteHeader() {
                 <Link
                   href={DEMO}
                   onClick={closeAll}
-                  className="flex h-12 w-full items-center justify-center gap-1.5 rounded-full bg-white text-sm font-medium text-black"
+                  className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[var(--fx-yellow)] text-sm font-medium text-[var(--fx-on-yellow)]"
                 >
                   See a demo
                   <ArrowRight className="h-4 w-4" />
@@ -424,7 +424,7 @@ export function SiteHeader() {
                 <Link
                   href={SIGNIN}
                   onClick={closeAll}
-                  className="flex h-12 w-full items-center justify-center rounded-full border border-white/15 text-sm font-medium text-white"
+                  className="flex h-12 w-full items-center justify-center rounded-[4px] border border-white/15 text-sm font-medium text-white"
                 >
                   Sign in
                 </Link>

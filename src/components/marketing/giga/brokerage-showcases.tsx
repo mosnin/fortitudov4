@@ -39,7 +39,7 @@ import {
 /* ── Shared local helpers ──────────────────────────────────────────────────── */
 
 const Chip = ({ label, tone }: { label: string; tone: string }) => (
-  <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
+  <span className={'rounded-[4px] px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
 );
 
 /** Avatar with initials, sized like brokerage-showcase's lead card avatar. */
@@ -48,7 +48,7 @@ const Avatar = ({ initials, accent }: { initials: string; accent?: boolean }) =>
     className={
       'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ' +
       (accent
-        ? 'bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2] text-black'
+        ? 'bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-black'
         : 'border border-white/10 bg-white/[0.05] text-white/70')
     }
   >
@@ -62,7 +62,7 @@ const Bar = ({ pct, muted }: { pct: number; muted?: boolean }) => (
     <span
       className={
         'block h-full rounded-full ' +
-        (muted ? 'bg-white/25' : 'bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2]')
+        (muted ? 'bg-white/25' : 'bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]')
       }
       style={{ width: pct + '%' }}
     />
@@ -80,7 +80,7 @@ const ROUTING_STEPS: ShowcaseStep[] = [
       <Frost title="Routing" badge="Auto">
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3"
+          className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3"
         >
           <Avatar initials="SC" accent />
           <span className="min-w-0 flex-1">
@@ -109,7 +109,7 @@ const ROUTING_STEPS: ShowcaseStep[] = [
           <motion.div
             key={a.initials}
             variants={rowV}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+            className="flex items-center gap-3 rounded-[6px] px-3 py-2.5"
           >
             <Avatar initials={a.initials} />
             <span className="min-w-0 flex-1">
@@ -132,14 +132,14 @@ const ROUTING_STEPS: ShowcaseStep[] = [
       <Frost title="Assigned">
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-[#ff7a45]/40 bg-[#ff7a45]/[0.08] p-3 ring-1 ring-[#ff7a45]/30"
+          className="flex items-center gap-3 rounded-[6px] border border-[#f8cd02]/40 bg-[#f8cd02]/[0.08] p-3 ring-1 ring-[#f8cd02]/30"
         >
           <Avatar initials="AR" accent />
           <span className="min-w-0 flex-1">
             <span className="block text-[13px] font-medium text-white">Alex Rivera</span>
             <span className="block text-[11px] text-white/55">Chosen builder</span>
           </span>
-          <Chip label="Assigned" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />
+          <Chip label="Assigned" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />
         </motion.div>
         <motion.div variants={rowV} className="flex flex-wrap gap-1.5 px-1 pt-1.5">
           <Chip label="Ecommerce specialty" tone="bg-emerald-400/15 text-emerald-300" />
@@ -156,7 +156,7 @@ const ROUTING_STEPS: ShowcaseStep[] = [
       <Frost title="Audit">
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3"
+          className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.03] p-3"
         >
           <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-emerald-400/20 bg-emerald-400/10 text-emerald-300">
             <Check className="h-3.5 w-3.5" />
@@ -214,7 +214,7 @@ const FLOOR_STEPS: ShowcaseStep[] = [
             { n: '142', l: 'Builds' },
             { n: '28', l: 'Due today' },
           ].map((s) => (
-            <div key={s.l} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-center">
+            <div key={s.l} className="rounded-[6px] border border-white/[0.08] bg-white/[0.03] p-3 text-center">
               <span className="block text-[20px] font-semibold leading-none text-white">{s.n}</span>
               <span className="mt-1.5 block text-[10px] text-white/45">{s.l}</span>
             </div>
@@ -237,7 +237,7 @@ const FLOOR_STEPS: ShowcaseStep[] = [
           <motion.div
             key={a.initials}
             variants={rowV}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+            className="flex items-center gap-3 rounded-[6px] px-3 py-2.5"
           >
             <Avatar initials={a.initials} />
             <span className="min-w-0 flex-1">
@@ -261,7 +261,7 @@ const FLOOR_STEPS: ShowcaseStep[] = [
       <Frost title="Attention">
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-amber-400/20 bg-amber-400/[0.08] px-3 py-2.5"
+          className="flex items-center gap-3 rounded-[6px] border border-amber-400/20 bg-amber-400/[0.08] px-3 py-2.5"
         >
           <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-amber-400/20 bg-amber-400/10 text-amber-300">
             <ClipboardCheck className="h-3.5 w-3.5" />
@@ -271,7 +271,7 @@ const FLOOR_STEPS: ShowcaseStep[] = [
         </motion.div>
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5"
+          className="flex items-center gap-3 rounded-[6px] border border-white/[0.08] bg-white/[0.03] px-3 py-2.5"
         >
           <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-white/55">
             <Activity className="h-3.5 w-3.5" />
@@ -294,7 +294,7 @@ const FLOOR_STEPS: ShowcaseStep[] = [
             { n: '18', l: 'Launched' },
             { n: '94%', l: 'Reply rate' },
           ].map((s) => (
-            <div key={s.l} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-center">
+            <div key={s.l} className="rounded-[6px] border border-white/[0.08] bg-white/[0.03] p-3 text-center">
               <span className="block text-[18px] font-semibold leading-none text-white">{s.n}</span>
               <span className="mt-1.5 block text-[10px] text-white/45">{s.l}</span>
             </div>
@@ -336,7 +336,7 @@ export function BrokerageFloorShowcase() {
 /* ── 3) Oversight & audit ──────────────────────────────────────────────────── */
 
 const SentBtn = () => (
-  <span className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2] px-2 py-1 text-[10px] font-semibold text-black">
+  <span className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] px-2 py-1 text-[10px] font-semibold text-black">
     <Check className="h-3 w-3" /> Sent
   </span>
 );
@@ -355,7 +355,7 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
           <motion.div
             key={q.action}
             variants={rowV}
-            className="rounded-xl border border-white/10 bg-white/[0.03] p-3"
+            className="rounded-[6px] border border-white/10 bg-white/[0.03] p-3"
           >
             <div className="flex items-center gap-3">
               <Avatar initials={q.initials} />
@@ -382,7 +382,7 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
       <Frost title="On the record">
         <motion.div
           variants={rowV}
-          className="rounded-xl border border-white/10 bg-white/[0.03] p-3"
+          className="rounded-[6px] border border-white/10 bg-white/[0.03] p-3"
         >
           <div className="flex items-center gap-3">
             <Avatar initials="AR" />
@@ -396,7 +396,7 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
             set up a walkthrough this weekend?
           </p>
           <div className="mt-3 flex justify-end">
-            <span className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2] px-3 py-1.5 text-[11px] font-semibold text-black">
+            <span className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] px-3 py-1.5 text-[11px] font-semibold text-black">
               <Send className="h-3 w-3" /> Sent 2:14 PM
             </span>
           </div>
@@ -411,15 +411,15 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
     mockup: (
       <Frost title="Access">
         <motion.div variants={rowV} className="flex flex-wrap gap-1.5 px-1 py-1">
-          <Chip label="Owner" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />
+          <Chip label="Owner" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />
           <Chip label="Admin" tone="bg-white/[0.08] text-white/70" />
           <Chip label="Builder" tone="bg-white/[0.04] text-white/50" />
         </motion.div>
         <motion.div
           variants={rowV}
-          className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5"
+          className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.03] px-3 py-2.5"
         >
-          <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-[#ff9a6e]">
+          <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-[#f8cd02]">
             <UserCog className="h-3.5 w-3.5" />
           </span>
           <span className="min-w-0 flex-1 text-[12px] text-white/75">
@@ -448,7 +448,7 @@ const APPROVALS_STEPS: ShowcaseStep[] = [
                 aria-hidden
                 className={
                   'absolute -left-[17px] top-1 h-2 w-2 rounded-full ring-2 ring-[#0b0b0d] ' +
-                  (e.accent ? 'bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2]' : 'bg-white/30')
+                  (e.accent ? 'bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2]' : 'bg-white/30')
                 }
               />
               <span className="block text-[12px] font-medium text-white">{e.action}</span>

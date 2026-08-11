@@ -41,12 +41,12 @@ import {
 /* ── shared little pieces ──────────────────────────────────────────────────── */
 
 const Chip = ({ label, tone }: { label: string; tone: string }) => (
-  <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
+  <span className={'rounded-[4px] px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
 );
 
 /** Status line with a colored dot, for "what Chippi is doing now" lists. */
 const StatusLine = ({ tone, label, meta }: { tone: string; label: string; meta?: string }) => (
-  <motion.div variants={rowV} className="flex items-center gap-2.5 rounded-xl bg-white/[0.03] px-3 py-2">
+  <motion.div variants={rowV} className="flex items-center gap-2.5 rounded-[6px] bg-white/[0.03] px-3 py-2">
     <span className={'h-1.5 w-1.5 flex-shrink-0 rounded-full ' + tone} />
     <span className="min-w-0 flex-1">
       <span className="block truncate text-[12px] font-medium text-white">{label}</span>
@@ -74,7 +74,7 @@ function Tile({ app, right }: { app: AppTile; right: React.ReactNode }) {
   return (
     <motion.div
       variants={rowV}
-      className="flex flex-col gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] p-3"
+      className="flex flex-col gap-2.5 rounded-[6px] border border-white/[0.08] bg-white/[0.03] p-3"
     >
       <span className="flex items-center gap-2">
         <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white/55">
@@ -131,7 +131,7 @@ const SETUP_STEPS: ShowcaseStep[] = [
       <Frost title="Authorize">
         <motion.div
           variants={rowV}
-          className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5"
+          className="rounded-[6px] border border-white/10 bg-white/[0.04] p-3.5"
         >
           <span className="flex items-center gap-2.5">
             <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.05] text-white/60">
@@ -151,7 +151,7 @@ const SETUP_STEPS: ShowcaseStep[] = [
           </div>
           <span className="mt-3.5 flex items-center justify-end gap-2">
             <span className="rounded-md px-2.5 py-1.5 text-[11px] font-medium text-white/50">Cancel</span>
-            <span className="rounded-md bg-gradient-to-r from-[#ff7a45] to-[#ff9a6e] px-3.5 py-1.5 text-[11px] font-semibold text-black">
+            <span className="rounded-md bg-gradient-to-r from-[#f8cd02] to-[#f8cd02] px-3.5 py-1.5 text-[11px] font-semibold text-black">
               Allow
             </span>
           </span>
@@ -244,7 +244,7 @@ function RecipeCard({
     <motion.div
       variants={rowV}
       className={
-        'rounded-xl border p-3 ' +
+        'rounded-[6px] border p-3 ' +
         (faint
           ? 'border-white/[0.06] bg-white/[0.02] opacity-50'
           : 'border-white/10 bg-white/[0.04]')
@@ -254,7 +254,7 @@ function RecipeCard({
         <span
           className={
             'rounded px-1.5 py-0.5 text-[9.5px] font-semibold tracking-wide ' +
-            (isWhen ? 'bg-[#ff7a45]/15 text-[#ff9a6e]' : 'bg-sky-400/15 text-sky-300')
+            (isWhen ? 'bg-[#f8cd02]/15 text-[#f8cd02]' : 'bg-sky-400/15 text-sky-300')
           }
         >
           {kind}
@@ -297,7 +297,7 @@ const AUTOMATION_STEPS: ShowcaseStep[] = [
           kind="WHEN"
           badge={<AppBadge icon={Database} name="HubSpot" />}
           title="New project lead created"
-          right={<Chip label="Trigger" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />}
+          right={<Chip label="Trigger" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />}
         />
       </Frost>
     ),

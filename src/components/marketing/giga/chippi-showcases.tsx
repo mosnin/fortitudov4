@@ -43,12 +43,12 @@ import {
 /* ── Shared little atoms (kept tiny + tone-driven, matching house style) ──── */
 
 const Chip = ({ label, tone }: { label: string; tone: string }) => (
-  <span className={'rounded-full px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
+  <span className={'rounded-[4px] px-2 py-0.5 text-[10px] font-medium ' + tone}>{label}</span>
 );
 
 /** A small emerald status line, used for "coverage" / "done" confirmations. */
 const StatusLine = ({ icon: Icon, label }: { icon: React.ElementType; label: string }) => (
-  <motion.div variants={rowV} className="flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5">
+  <motion.div variants={rowV} className="flex items-center gap-2.5 rounded-[6px] border border-white/[0.08] bg-white/[0.03] px-3 py-2.5">
     <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-emerald-400/15 text-emerald-300">
       <Icon className="h-3.5 w-3.5" />
     </span>
@@ -68,7 +68,7 @@ const READS_TOP = [
 
 /** One labeled source tile (Email / WhatsApp / Zillow) with a live dot. */
 const SourceTile = ({ icon: Icon, label, tone }: { icon: React.ElementType; label: string; tone: string }) => (
-  <div className="relative flex flex-col items-center gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-2 py-3">
+  <div className="relative flex flex-col items-center gap-1.5 rounded-[6px] border border-white/[0.08] bg-white/[0.03] px-2 py-3">
     <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]" />
     <span className={'flex h-7 w-7 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] ' + tone}>
       <Icon className="h-3.5 w-3.5" />
@@ -86,14 +86,14 @@ const READS_STEPS: ShowcaseStep[] = [
       <Frost title="Sources" badge="Live">
         <motion.div variants={rowV} className="grid grid-cols-3 gap-2 px-1">
           <SourceTile icon={Mail} label="Email" tone="text-sky-300/80" />
-          <SourceTile icon={MessageSquare} label="Slack" tone="text-[#ff9a6e]" />
+          <SourceTile icon={MessageSquare} label="Slack" tone="text-[#f8cd02]" />
           <SourceTile icon={Home} label="Portal" tone="text-emerald-300/80" />
         </motion.div>
         <motion.div variants={rowV} className="flex justify-center py-0.5 text-white/25">
           <span className="text-[14px] leading-none">↓</span>
         </motion.div>
-        <motion.div variants={rowV} className="flex items-center gap-3 rounded-xl border border-[#ff7a45]/25 bg-[#ff7a45]/[0.06] p-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2] text-black">
+        <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-[#f8cd02]/25 bg-[#f8cd02]/[0.06] p-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-black">
             <Inbox className="h-4 w-4" />
           </span>
           <span className="min-w-0 flex-1">
@@ -111,8 +111,8 @@ const READS_STEPS: ShowcaseStep[] = [
     desc: 'Before Helix reads a new message, the entire project is already loaded, every email, review, and call, so nothing is read in a vacuum.',
     mockup: (
       <Frost title="Contact">
-        <motion.div variants={rowV} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2] text-[12px] font-semibold text-black">
+        <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[12px] font-semibold text-black">
             SC
           </span>
           <span className="min-w-0 flex-1">
@@ -125,7 +125,7 @@ const READS_STEPS: ShowcaseStep[] = [
           <div className="relative flex items-start justify-between">
             {[
               { icon: Mail, label: 'Email', tone: 'text-sky-300/80' },
-              { icon: CalendarDays, label: 'Review', tone: 'text-[#ff9a6e]' },
+              { icon: CalendarDays, label: 'Review', tone: 'text-[#f8cd02]' },
               { icon: Phone, label: 'Call', tone: 'text-emerald-300/80' },
               { icon: Mail, label: 'Reply', tone: 'text-sky-300/80' },
             ].map((t, i) => {
@@ -152,7 +152,7 @@ const READS_STEPS: ShowcaseStep[] = [
       <Frost title="Extracted" badge="From reply">
         <motion.div variants={rowV} className="flex flex-wrap gap-1.5 px-1 py-1">
           {[
-            { label: 'budget $6.5k', tone: 'bg-[#ff7a45]/15 text-[#ff9a6e]' },
+            { label: 'budget $6.5k', tone: 'bg-[#f8cd02]/15 text-[#f8cd02]' },
             { label: '3 payment options', tone: 'bg-white/[0.06] text-white/70' },
             { label: 'ecommerce', tone: 'bg-sky-400/15 text-sky-300' },
             { label: 'weekend launch', tone: 'bg-white/[0.06] text-white/70' },
@@ -162,7 +162,7 @@ const READS_STEPS: ShowcaseStep[] = [
             <Chip key={c.label} label={c.label} tone={c.tone} />
           ))}
         </motion.div>
-        <motion.div variants={rowV} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] leading-relaxed text-white/65">
+        <motion.div variants={rowV} className="rounded-[6px] border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] leading-relaxed text-white/65">
           {'"Loved the preview, can we see two more concepts this weekend?"'}
         </motion.div>
       </Frost>
@@ -221,13 +221,13 @@ const DECIDES_TOP = [
 
 /** A ranked row: position, name, score bar, score number. */
 const RankRow = ({ pos, name, score, width }: { pos: number; name: string; score: number; width: string }) => (
-  <motion.div variants={rowV} className="flex items-center gap-3 rounded-xl px-2 py-2">
+  <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] px-2 py-2">
     <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-md bg-white/[0.06] text-[11px] font-semibold text-white/70">
       {pos}
     </span>
     <span className="w-20 flex-shrink-0 truncate text-[12.5px] font-medium text-white">{name}</span>
     <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
-      <span className="block h-full rounded-full bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2]" style={{ width }} />
+      <span className="block h-full rounded-full bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]" style={{ width }} />
     </span>
     <span className="w-7 flex-shrink-0 text-right text-[12px] font-semibold text-white/80">{score}</span>
   </motion.div>
@@ -240,12 +240,12 @@ const DECIDES_STEPS: ShowcaseStep[] = [
     desc: 'Every request is scored against your live build the second it lands, urgent, normal, or low, with the signal that earned the score.',
     mockup: (
       <Frost title="Request score">
-        <motion.div variants={rowV} className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.04] p-4">
+        <motion.div variants={rowV} className="flex items-center gap-4 rounded-[6px] border border-white/10 bg-white/[0.04] p-4">
           <span className="relative flex h-16 w-16 flex-shrink-0 items-center justify-center">
             <span
               aria-hidden
               className="absolute inset-0 rounded-full"
-              style={{ background: 'conic-gradient(#ff7a45 0% 92%, rgba(255,255,255,0.08) 92% 100%)' }}
+              style={{ background: 'conic-gradient(#f8cd02 0% 92%, rgba(255,255,255,0.08) 92% 100%)' }}
             />
             <span className="absolute inset-[3px] rounded-full bg-[#0b0b0d]" />
             <span className="relative text-[20px] font-semibold text-white">92</span>
@@ -253,7 +253,7 @@ const DECIDES_STEPS: ShowcaseStep[] = [
           <span className="min-w-0 flex-1">
             <span className="flex items-center gap-2">
               <span className="text-[13px] font-medium text-white">Sarah Chen</span>
-              <Chip label="Urgent" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />
+              <Chip label="Urgent" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />
             </span>
             <span className="mt-1 block text-[11.5px] leading-snug text-white/55">
               Quote approved and asked to launch this weekend.
@@ -282,9 +282,9 @@ const DECIDES_STEPS: ShowcaseStep[] = [
     desc: 'No black box. Every score comes with the few facts behind it, so you trust the order before you dial.',
     mockup: (
       <Frost title="Why this score">
-        <motion.div variants={rowV} className="flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5">
+        <motion.div variants={rowV} className="flex items-center justify-between rounded-[6px] border border-white/10 bg-white/[0.04] px-3 py-2.5">
           <span className="text-[12.5px] font-medium text-white">Sarah Chen</span>
-          <Chip label="92 · Urgent" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />
+          <Chip label="92 · Urgent" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />
         </motion.div>
         <motion.div variants={rowV} className="flex flex-wrap gap-1.5 px-1 pt-1">
           {[
@@ -304,7 +304,7 @@ const DECIDES_STEPS: ShowcaseStep[] = [
     desc: 'Start at the top and work down. Helix hands you a short do-now list, the builds where attention right now moves the needle.',
     mockup: (
       <Frost title="Today" badge="Do now">
-        <Row icon={Phone} title="Sarah Chen" meta="92 · quote approved, wants launch" tone="text-[#ff9a6e]" active right={<Chip label="Urgent" tone="bg-[#ff7a45]/15 text-[#ff9a6e]" />} />
+        <Row icon={Phone} title="Sarah Chen" meta="92 · quote approved, wants launch" tone="text-[#f8cd02]" active right={<Chip label="Urgent" tone="bg-[#f8cd02]/15 text-[#f8cd02]" />} />
         <Row icon={Phone} title="Marcus Lee" meta="78 · comparing two concepts" right={<Chip label="Normal" tone="bg-amber-400/15 text-amber-300" />} />
         <Row icon={Phone} title="Dana Brooks" meta="64 · early, exploring scope" right={<Chip label="Normal" tone="bg-white/10 text-white/60" />} />
       </Frost>
@@ -352,7 +352,7 @@ const ActionBtn = ({ icon: Icon, label, focused }: { icon: React.ElementType; la
     className={
       'flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-[12px] font-medium ' +
       (focused
-        ? 'bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2] text-black shadow-lg shadow-[#ff7a45]/20'
+        ? 'bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2] text-black shadow-lg shadow-[#f8cd02]/20'
         : 'border border-white/[0.1] bg-white/[0.04] text-white/65')
     }
   >
@@ -365,7 +365,7 @@ const ActionBtn = ({ icon: Icon, label, focused }: { icon: React.ElementType; la
 const LogLine = ({ time, label }: { time: string; label: string }) => (
   <motion.div variants={rowV} className="flex items-start gap-3 px-1 py-1.5">
     <span className="mt-1 flex flex-col items-center">
-      <span className="h-1.5 w-1.5 rounded-full bg-[#ff9a6e]" />
+      <span className="h-1.5 w-1.5 rounded-full bg-[#f8cd02]" />
     </span>
     <span className="min-w-0 flex-1">
       <span className="block text-[12px] text-white/75">{label}</span>
@@ -381,8 +381,8 @@ const ACTS_STEPS: ShowcaseStep[] = [
     desc: 'Helix drafts the reply and stages the revision in the house style, ready for review, so the work is done before you even open it.',
     mockup: (
       <Frost title="Proposed">
-        <motion.div variants={rowV} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-[#ff9a6e]">
+        <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-[#f8cd02]">
             <PenLine className="h-4 w-4" />
           </span>
           <span className="min-w-0 flex-1">
@@ -391,7 +391,7 @@ const ACTS_STEPS: ShowcaseStep[] = [
           </span>
           <Chip label="Draft" tone="bg-white/10 text-white/60" />
         </motion.div>
-        <motion.div variants={rowV} className="rounded-xl border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] leading-relaxed text-white/65">
+        <motion.div variants={rowV} className="rounded-[6px] border border-white/[0.08] bg-white/[0.03] p-3 text-[12px] leading-relaxed text-white/65">
           {'"Happy to walk you through two concepts this Saturday, does 2:00 work?"'}
         </motion.div>
       </Frost>
@@ -403,8 +403,8 @@ const ACTS_STEPS: ShowcaseStep[] = [
     desc: 'The reply goes out, the review lands on the calendar, the build moves, while you are with a client.',
     mockup: (
       <Frost title="In motion">
-        <motion.div variants={rowV} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2] text-black">
+        <motion.div variants={rowV} className="flex items-center gap-3 rounded-[6px] border border-white/10 bg-white/[0.04] p-3">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-black">
             <CalendarDays className="h-4 w-4" />
           </span>
           <span className="min-w-0 flex-1">

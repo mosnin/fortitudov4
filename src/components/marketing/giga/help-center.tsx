@@ -139,7 +139,7 @@ export function HelpCenter() {
         {/* Warm brand bloom, same language as the closing CTA. */}
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 [background:radial-gradient(90%_60%_at_50%_-10%,rgba(255,122,69,0.12),transparent_60%)]"
+          className="absolute inset-0 -z-10 [background:radial-gradient(90%_60%_at_50%_-10%,rgba(248,205,2,0.12),transparent_60%)]"
         />
         <div className="mx-auto w-full max-w-4xl text-center">
           <BlurRise trigger="load" delay={0.05}>
@@ -198,8 +198,8 @@ export function HelpCenter() {
               const Icon = g.icon;
               return (
                 <BlurRise key={g.title} delay={(i % 3) * 0.06}>
-                  <div className="group h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-white/20 hover:bg-white/[0.04]">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                  <div className="group h-full rounded-[6px] border border-white/10 bg-white/[0.02] p-6 transition-colors hover:border-white/20 hover:bg-white/[0.04]">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.03]">
                       <Icon className="h-[19px] w-[19px]" stroke="url(#chippi-grad)" strokeWidth={1.75} />
                     </span>
                     <h3 className="mt-5 text-[17px] font-medium text-white">{g.title}</h3>
@@ -209,7 +209,7 @@ export function HelpCenter() {
                         <li key={s} className="flex items-start gap-2.5 text-[13px] leading-snug text-white/70">
                           <span
                             aria-hidden
-                            className="mt-[7px] inline-block size-1.5 flex-shrink-0 rounded-full bg-[#ff7a45]"
+                            className="mt-[7px] inline-block size-1.5 flex-shrink-0 rounded-full bg-[#f8cd02]"
                           />
                           {s}
                         </li>
@@ -228,7 +228,7 @@ export function HelpCenter() {
         <div className="mx-auto w-full max-w-6xl">
           <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT }}>
             <span style={MONO} className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-white/55">
-              <span className="inline-block size-1.5 rounded-full bg-[#ff7a45]" />
+              <span className="inline-block size-1.5 rounded-full bg-[#f8cd02]" />
               How it works
             </span>
             <Serif as="h2" className="mt-5 max-w-2xl text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.08] text-white">
@@ -255,7 +255,7 @@ export function HelpCenter() {
       <section className="px-5 pb-24 sm:px-8 lg:px-10">
         <div className="mx-auto w-full max-w-6xl">
           <BlurRise>
-            <div className="flex flex-col items-start justify-between gap-6 rounded-3xl border border-white/10 bg-white/[0.02] p-8 sm:p-10 lg:flex-row lg:items-center">
+            <div className="flex flex-col items-start justify-between gap-6 rounded-[6px] border border-white/10 bg-white/[0.02] p-8 sm:p-10 lg:flex-row lg:items-center">
               <div>
                 <Serif as="h2" className="text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.1] text-white">
                   Still need a hand?
@@ -271,7 +271,7 @@ export function HelpCenter() {
                 </PillPrimary>
                 <Link
                   href="/contact"
-                  className="group inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 px-6 text-[14px] font-medium text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/[0.04]"
+                  className="group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] border border-white/20 px-6 text-[14px] font-medium text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/[0.04]"
                 >
                   Contact support
                   <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />

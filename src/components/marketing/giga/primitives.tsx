@@ -1,19 +1,22 @@
 'use client';
 
 /**
- * Giga marketing primitives, the shared kit for the dark, cinematic redesign.
+ * Giga marketing primitives, the shared kit for the logged-out site.
  *
- * Visual language (matches the reference; copy stays Chippi/real-estate):
- *  - Near-black sections, generous air, thin hairline dividers.
- *  - Large, THIN, high-contrast SERIF display headlines (Fraunces at high
- *    optical size, via --font-serif-display set on the marketing layout). A
- *    scoped rule in globals.css already makes the serif the default for every
- *    heading in the shell; the <Serif> helper just pins the size/weight knobs.
- *  - Eyebrow labels: UPPERCASE MONOSPACE (--font-mono-display, JetBrains Mono)
- *    with a small colored dot. No emoji, the dot is a styled <span>.
- *  - Rounded-full white "pill" CTAs.
+ * Visual language (the hero-21 system, recoloured to racing yellow):
+ *  - Charcoal ground, generous air, thin hairline dividers, SQUARED corners.
+ *    Nothing on the logged-out site is a lozenge; the radius is 4px and the
+ *    structure is drawn with rules rather than rounded cards.
+ *  - Display headlines are a large, tightly-tracked geometric SANS at semibold
+ *    (see the `[data-marketing-shell]` block in globals.css, which sets the
+ *    face for every heading in the tree). `<Serif>` keeps its name because ~14
+ *    files import it; what it renders is the display sans.
+ *  - Eyebrow labels: UPPERCASE MONOSPACE with a small yellow dot.
+ *  - CTAs: a racing-yellow block with BLACK text. Yellow is the primary
+ *    action and nothing else; a second yellow button on the same screen is a
+ *    bug, not a style choice.
  *
- * Motion is the installed framer-motion; everything respects
+ * Motion is the installed `motion` package; everything respects
  * prefers-reduced-motion (BlurRise falls back to a plain block).
  */
 
@@ -23,17 +26,19 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
 
-/** Shared accent (warm Chippi orange) used sparingly across the redesign. */
-export const ACCENT = '#ff7a45';
+/** Racing yellow. The one accent, spent on what you want pressed. */
+export const ACCENT = '#f8cd02';
 
 /* ── Serif display headline ─────────────────────────────────────────────── */
 
 /**
- * The elegant thin serif headline face. The scoped CSS in globals.css already
- * resolves --font-serif-display + high optical size for every heading in the
- * shell; this component just guarantees the light weight + tracking knobs and
- * keeps the inline font as belt-and-suspenders so a headline is never left on
- * the global sans.
+ * The display headline face. The scoped CSS in globals.css resolves
+ * --font-serif-display for every heading in the shell; this component pins the
+ * weight and tracking, and keeps the inline font as belt-and-suspenders so a
+ * headline rendered on a <span> or <p> is never left on the body face.
+ *
+ * The name is a leftover from the serif era. It is kept so the ~14 files that
+ * import it do not all have to change to say the same thing.
  */
 export function Serif({
   children,
@@ -47,10 +52,9 @@ export function Serif({
   return (
     <Tag
       style={{
-        fontFamily: 'var(--font-serif-display), Georgia, serif',
-        fontVariationSettings: '"opsz" 144',
+        fontFamily: 'var(--font-serif-display), ui-sans-serif, system-ui, sans-serif',
       }}
-      className={cn('font-light tracking-[-0.02em]', className)}
+      className={cn('font-semibold tracking-[-0.03em]', className)}
     >
       {children}
     </Tag>
@@ -87,7 +91,7 @@ export function Eyebrow({
   );
 }
 
-/** A glassy rounded eyebrow PILL (the hero / sub-page hero treatment). */
+/** A squared, hairline-bordered eyebrow chip (the hero / sub-page treatment). */
 export function EyebrowPill({
   children,
   className,
@@ -98,7 +102,7 @@ export function EyebrowPill({
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 backdrop-blur-md',
+        'inline-flex items-center rounded-[4px] border border-white/15 bg-white/[0.04] px-4 py-1.5 backdrop-blur-md',
         className,
       )}
     >
@@ -135,13 +139,20 @@ type PillProps = {
   withArrow?: boolean;
 };
 
-/** Solid white pill, the primary CTA ("See a demo"). */
+/**
+ * The primary CTA: a racing-yellow block, black text, 4px corners.
+ *
+ * `bg-[var(--fx-yellow)]` rather than the literal so the palette stays one
+ * place to change. The token is defined on `[data-marketing-shell]`, which
+ * wraps every logged-out route; outside that tree it would resolve to nothing,
+ * and this component is not for the product.
+ */
 export function PillPrimary({ href, children, className, withArrow }: PillProps) {
   return (
     <Link
       href={href}
       className={cn(
-        'group inline-flex h-11 items-center justify-center gap-2 rounded-full bg-white px-6 text-[14px] font-medium text-black transition-all duration-200 hover:bg-white/90 active:scale-[0.98]',
+        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98]',
         className,
       )}
     >
@@ -153,13 +164,13 @@ export function PillPrimary({ href, children, className, withArrow }: PillProps)
   );
 }
 
-/** Ghost pill, hairline border, transparent fill ("Explore X" / "Talk to us"). */
+/** The secondary CTA: hairline border, transparent fill, white text. */
 export function PillGhost({ href, children, className, withArrow }: PillProps) {
   return (
     <Link
       href={href}
       className={cn(
-        'group inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 px-6 text-[14px] font-medium text-white transition-colors duration-200 hover:border-white/40 hover:bg-white/[0.04]',
+        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] border border-white/20 px-6 text-[14px] font-medium text-white transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]',
         className,
       )}
     >

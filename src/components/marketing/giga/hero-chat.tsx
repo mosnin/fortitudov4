@@ -27,7 +27,7 @@ export function HeroChat() {
   return (
     <div className="mx-auto w-full max-w-[600px]">
       {/* Input — frosted glass on the photo, matching the hero's other cards. */}
-      <div className="rounded-2xl border border-white/12 bg-white/[0.06] p-3.5 text-left shadow-2xl shadow-black/30 backdrop-blur-xl">
+      <div className="rounded-[6px] border border-white/12 bg-white/[0.06] p-3.5 text-left shadow-2xl shadow-black/30 backdrop-blur-xl">
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -42,7 +42,7 @@ export function HeroChat() {
           className="w-full resize-none border-none bg-transparent px-1.5 pt-1 text-[15px] leading-relaxed text-white outline-none placeholder:text-white/45"
         />
         <div className="mt-2 flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.04] px-2.5 py-1.5 text-[12px] text-white/70">
+          <span className="inline-flex items-center gap-1.5 rounded-[4px] border border-white/12 bg-white/[0.04] px-2.5 py-1.5 text-[12px] text-white/70">
             {/* The real Chippi mark. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/favicon.png" alt="Helix" width={16} height={16} className="h-4 w-4 rounded" />
@@ -66,7 +66,7 @@ export function HeroChat() {
             key={ex}
             type="button"
             onClick={() => setValue(ex)}
-            className="rounded-full border border-white/12 bg-white/[0.05] px-4 py-2 text-[13px] text-white/80 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-white/[0.1] hover:text-white"
+            className="rounded-[4px] border border-white/12 bg-white/[0.05] px-4 py-2 text-[13px] text-white/80 backdrop-blur-sm transition-colors hover:border-white/25 hover:bg-white/[0.1] hover:text-white"
           >
             {ex}
           </button>

@@ -105,15 +105,15 @@ export function SubHero({
   const r = (d = 0) => (reduce ? { initial: false as const } : reveal(d));
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#0a0a0a] text-white">
+    <section className="relative isolate overflow-hidden bg-[#1b1b1d] text-white">
       {/* Page-geared photo, shown like the home hero: full-bleed at full opacity
           under dark scrims (top for the heading, bottom into the next section)
           plus a soft vignette so the copy always reads. */}
       <div aria-hidden className="absolute inset-0 -z-10">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image} alt="" className="h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/80 via-[#0a0a0a]/35 to-[#0a0a0a]" />
-        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_30%,transparent_30%,rgba(10,10,10,0.55)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1d]/80 via-[#1b1b1d]/35 to-[#1b1b1d]" />
+        <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_30%,transparent_30%,rgba(27,27,29,0.55)_100%)]" />
       </div>
 
       {/* Heading block */}
@@ -123,8 +123,8 @@ export function SubHero({
             <LabelIcon className="h-6 w-6" stroke="url(#chippi-grad)" strokeWidth={1.75} />
             <AnimatedGradientText
               speed={2}
-              colorFrom="#ff7a45"
-              colorTo="#c77dff"
+              colorFrom="#f8cd02"
+              colorTo="#dcb602"
               className="text-[26px] font-semibold tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
@@ -181,7 +181,7 @@ export function SubHero({
             )}
           </div>
         </motion.div>
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#1b1b1d] to-transparent" />
       </div>
     </section>
   );
@@ -235,7 +235,7 @@ const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.06, delay
 const cardV = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE_OUT } } };
 
 const Avatar = ({ initials }: { initials: string }) => (
-  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2] text-[10px] font-semibold text-black">
+  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2] text-[10px] font-semibold text-black">
     {initials}
   </span>
 );
@@ -294,7 +294,7 @@ function AppMockup({ reduce, variant }: { reduce: boolean; variant: DashVariant 
                   {active ? <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r bg-[#ff964f]" /> : null}
                   <Icon className={'h-[15px] w-[15px] ' + (active ? 'text-white' : 'text-white/40')} />
                   <span className="flex-1">{n.label}</span>
-                  {n.badge ? <span className="rounded-md bg-[#ff964f]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#ff9a6e]">{n.badge}</span> : null}
+                  {n.badge ? <span className="rounded-md bg-[#ff964f]/15 px-1.5 py-0.5 text-[9px] font-semibold text-[#f8cd02]">{n.badge}</span> : null}
                 </div>
               );
             })}
@@ -325,7 +325,7 @@ function PanelHead({ title, cta = 'Tell Helix' }: { title: string; cta?: string 
   return (
     <div className="flex items-center justify-between">
       <h4 style={SERIF} className="text-[24px] leading-none text-white">{title}</h4>
-      <span className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-[11.5px] font-medium text-black">{cta}</span>
+      <span className="flex items-center gap-1.5 rounded-[4px] bg-white px-3.5 py-1.5 text-[11.5px] font-medium text-black">{cta}</span>
     </div>
   );
 }
@@ -347,7 +347,7 @@ function DealsPanel() {
       <PanelHead title="Builds" />
       <motion.div variants={cardV} className="mt-4 grid grid-cols-4 gap-2.5">
         {[{ n: '12', l: 'Active' }, { n: '3', l: 'Launching' }, { n: '2', l: 'At risk' }, { n: '$4.2M', l: 'Value' }].map((s) => (
-          <div key={s.l} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3">
+          <div key={s.l} className="rounded-[6px] border border-white/[0.07] bg-white/[0.02] p-3">
             <span style={SERIF} className="block text-[18px] leading-none tabular-nums text-white">{s.n}</span>
             <span className="mt-1.5 block text-[10.5px] text-white/40">{s.l}</span>
           </div>
@@ -355,7 +355,7 @@ function DealsPanel() {
       </motion.div>
       <div className="mt-4 grid grid-cols-4 gap-2.5">
         {COLUMNS.map((col) => (
-          <motion.div variants={cardV} key={col.name} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-2">
+          <motion.div variants={cardV} key={col.name} className="rounded-[6px] border border-white/[0.06] bg-white/[0.015] p-2">
             <div className="mb-2 flex items-center justify-between px-1">
               <span style={MONO} className="text-[9px] font-medium uppercase tracking-[0.12em] text-white/35">{col.name}</span>
               <span className="text-[9px] text-white/25">{col.count}</span>
@@ -397,16 +397,16 @@ function InboxPanel() {
         <span className="rounded-md bg-white/[0.05] px-2 py-1 text-white/70">All clients</span>
         <span className="rounded-md px-2 py-1">New</span>
         <span className="rounded-md px-2 py-1">Founders</span>
-        <span className="ml-auto flex items-center gap-1.5 text-[#ff9a6e]"><CornerUpLeft className="h-3 w-3" />4 drafts ready</span>
+        <span className="ml-auto flex items-center gap-1.5 text-[#f8cd02]"><CornerUpLeft className="h-3 w-3" />4 drafts ready</span>
       </motion.div>
-      <div className="mt-3 overflow-hidden rounded-xl border border-white/[0.07]">
+      <div className="mt-3 overflow-hidden rounded-[6px] border border-white/[0.07]">
         {LEADS.map((l, i) => (
           <motion.div variants={cardV} key={l.n} className={'flex items-center gap-3 px-3 py-2.5 ' + (i % 2 ? 'bg-white/[0.015]' : '')}>
             <Avatar initials={l.in} />
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-2">
                 <span className="text-[12.5px] font-medium text-white">{l.n}</span>
-                <span className={'rounded-full px-1.5 py-0.5 text-[9px] font-semibold ' + TIERS[l.t]}>{l.t}</span>
+                <span className={'rounded-[4px] px-1.5 py-0.5 text-[9px] font-semibold ' + TIERS[l.t]}>{l.t}</span>
               </span>
               <span className="mt-0.5 block truncate text-[11px] text-white/45">{l.m}</span>
             </span>
@@ -430,7 +430,7 @@ function FloorPanel() {
       <PanelHead title="Studio" cta="Route a project" />
       <motion.div variants={cardV} className="mt-4 grid grid-cols-4 gap-2.5">
         {[{ n: '35', l: 'Builders' }, { n: '142', l: 'Builds' }, { n: '18', l: 'Launched MTD' }, { n: '$4.2M', l: 'Volume' }].map((s) => (
-          <div key={s.l} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-3">
+          <div key={s.l} className="rounded-[6px] border border-white/[0.07] bg-white/[0.02] p-3">
             <span style={SERIF} className="block text-[18px] leading-none tabular-nums text-white">{s.n}</span>
             <span className="mt-1.5 block text-[10.5px] text-white/40">{s.l}</span>
           </div>
@@ -441,11 +441,11 @@ function FloorPanel() {
       </motion.div>
       <div className="mt-2 space-y-2">
         {AGENTS.map((a) => (
-          <motion.div variants={cardV} key={a.n} className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5">
+          <motion.div variants={cardV} key={a.n} className="flex items-center gap-3 rounded-[6px] border border-white/[0.06] bg-white/[0.02] p-2.5">
             <Avatar initials={a.in} />
             <span className="w-28 flex-shrink-0 truncate text-[12.5px] font-medium text-white">{a.n}</span>
             <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
-              <span className="block h-full rounded-full bg-gradient-to-r from-[#ff7a45] to-[#ff5fa2]" style={{ width: a.w }} />
+              <span className="block h-full rounded-full bg-gradient-to-r from-[#f8cd02] to-[#ff5fa2]" style={{ width: a.w }} />
             </span>
             <span style={SERIF} className="w-14 text-right text-[13px] tabular-nums text-white/80">{a.vol}</span>
             <span className="w-7 text-right text-[11px] font-medium text-white/45">{a.rank}</span>
@@ -458,7 +458,7 @@ function FloorPanel() {
 
 function ChippiPanel() {
   const ONDECK = [
-    { icon: CornerUpLeft, t: 'Reply to Sarah Chen', m: 'drafted in the house style', tone: 'text-[#ff9a6e]' },
+    { icon: CornerUpLeft, t: 'Reply to Sarah Chen', m: 'drafted in the house style', tone: 'text-[#f8cd02]' },
     { icon: Phone, t: 'Call Daniel Mercer', m: 'urgent, asked to launch', tone: 'text-[#60a5fa]' },
     { icon: FileText, t: 'Review landing draft', m: 'Maison Noir, ready', tone: 'text-[#4ade80]' },
   ];
@@ -475,7 +475,7 @@ function ChippiPanel() {
         {ONDECK.map((c) => {
           const Icon = c.icon;
           return (
-            <motion.div variants={cardV} key={c.t} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3">
+            <motion.div variants={cardV} key={c.t} className="flex items-center gap-3 rounded-[6px] border border-white/[0.07] bg-white/[0.02] p-3">
               <span className={'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] ' + c.tone}>
                 <Icon className="h-3.5 w-3.5" />
               </span>
@@ -489,7 +489,7 @@ function ChippiPanel() {
         })}
       </div>
 
-      <motion.div variants={cardV} className="mt-4 flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-4 py-2.5">
+      <motion.div variants={cardV} className="mt-4 flex items-center gap-2 rounded-[4px] border border-white/[0.08] bg-white/[0.02] px-4 py-2.5">
         <span className="flex-1 text-[12px] text-white/40">Ask Helix to draft, stage, or summarize...</span>
         <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#ff964f] text-white"><SendHorizontal className="h-3.5 w-3.5" /></span>
       </motion.div>
@@ -514,7 +514,7 @@ function IntegrationsPanel() {
         {APPS.map((a) => {
           const Icon = a.icon;
           return (
-            <motion.div variants={cardV} key={a.n} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3">
+            <motion.div variants={cardV} key={a.n} className="flex items-center gap-3 rounded-[6px] border border-white/[0.07] bg-white/[0.02] p-3">
               <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/70">
                 <Icon className="h-4 w-4" />
               </span>
@@ -522,7 +522,7 @@ function IntegrationsPanel() {
                 <span className="block truncate text-[12.5px] font-medium text-white">{a.n}</span>
                 <span className="block truncate text-[10.5px] text-white/45">{a.d}</span>
               </span>
-              <span className="flex items-center gap-1 rounded-full bg-[#4ade80]/12 px-2 py-0.5 text-[9px] font-semibold text-[#4ade80]">
+              <span className="flex items-center gap-1 rounded-[4px] bg-[#4ade80]/12 px-2 py-0.5 text-[9px] font-semibold text-[#4ade80]">
                 <Check className="h-2.5 w-2.5" />On
               </span>
             </motion.div>

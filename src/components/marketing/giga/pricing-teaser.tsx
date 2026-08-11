@@ -44,9 +44,9 @@ export function PricingTeaser({
             <div
               key={p.name}
               className={
-                'rounded-3xl border p-8 ' +
+                'rounded-[6px] border p-8 ' +
                 (p.featured
-                  ? 'border-[#ff7a45]/30 bg-gradient-to-b from-[#ff7a45]/[0.08] to-white/[0.02]'
+                  ? 'border-[#f8cd02]/30 bg-gradient-to-b from-[#f8cd02]/[0.08] to-white/[0.02]'
                   : 'border-white/[0.08] bg-white/[0.02]')
               }
             >
@@ -55,7 +55,7 @@ export function PricingTeaser({
                   {p.name}
                 </h3>
                 {p.featured ? (
-                  <span className="rounded-full bg-[#ff7a45]/15 px-2.5 py-0.5 text-[10px] font-medium text-[#ff9a6e]">
+                  <span className="rounded-[4px] bg-[#f8cd02]/15 px-2.5 py-0.5 text-[10px] font-medium text-[#f8cd02]">
                     Most popular
                   </span>
                 ) : null}
@@ -73,7 +73,7 @@ export function PricingTeaser({
               <ul className="mt-6 space-y-2.5">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-[13px] text-white/70">
-                    <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#ff9a6e]" />
+                    <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#f8cd02]" />
                     {f}
                   </li>
                 ))}

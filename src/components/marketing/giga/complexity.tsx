@@ -55,7 +55,7 @@ export function Complexity() {
             return (
               <div
                 key={c.title}
-                className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 backdrop-blur-sm transition-colors hover:border-white/[0.14]"
+                className="rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-8 backdrop-blur-sm transition-colors hover:border-white/[0.14]"
               >
                 <Icon className="h-7 w-7" stroke="url(#chippi-grad)" strokeWidth={1.6} />
                 <h3

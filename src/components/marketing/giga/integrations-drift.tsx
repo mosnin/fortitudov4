@@ -37,7 +37,7 @@ export function IntegrationsDrift() {
           style={MONO}
           className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-white/55"
         >
-          <span className="inline-block size-1.5 rounded-full bg-[#ff7a45]" />
+          <span className="inline-block size-1.5 rounded-full bg-[#f8cd02]" />
           The catalog
         </span>
         <h2 className="mt-5 max-w-2xl text-[clamp(1.75rem,3.2vw,2.75rem)] leading-[1.08] tracking-[-0.02em] text-white">
@@ -54,9 +54,9 @@ export function IntegrationsDrift() {
           {TILES.map((t) => (
             <div
               key={t.toolkit}
-              className="mr-4 w-[240px] shrink-0 rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-sm"
+              className="mr-4 w-[240px] shrink-0 rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-6 backdrop-blur-sm"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white p-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[6px] border border-white/10 bg-white p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={t.iconUrl} alt="" className="h-full w-full object-contain" />
               </div>

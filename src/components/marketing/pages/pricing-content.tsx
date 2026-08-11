@@ -46,14 +46,14 @@ const ENGAGEMENT_FACTS = [
 
 export function PricingContent({ lang }: { lang: Lang }) {
   return (
-    <div lang={LANG_TAG[lang]} className="dark bg-[#0a0a0a] text-white">
+    <div lang={LANG_TAG[lang]} className="dark bg-[#1b1b1d] text-white">
       {/* Hero */}
       <section className="relative isolate overflow-hidden">
         <div aria-hidden className="absolute inset-0 -z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/marketing/hero-bg.jpg" alt="" className="h-full w-full object-cover object-center" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/82 via-[#0a0a0a]/48 to-[#0a0a0a]" />
-          <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_38%,transparent_35%,rgba(10,10,10,0.6)_100%)]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1d]/82 via-[#1b1b1d]/48 to-[#1b1b1d]" />
+          <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_38%,transparent_35%,rgba(27,27,29,0.6)_100%)]" />
         </div>
         <Band className="pt-40 pb-16 text-center sm:pt-48 sm:pb-20">
           <BlurRise trigger="load">
@@ -95,7 +95,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
             </p>
           </div>
           <div className="mx-auto mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
-            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6">
+            <div className="rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-6">
               <p style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
                 Consultation
               </p>
@@ -112,7 +112,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 + a written action plan you keep
               </p>
             </div>
-            <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6">
+            <div className="rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-6">
               <p style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
                 Ongoing retainer
               </p>
@@ -132,7 +132,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
           </div>
           <p className="mt-6 text-center text-[13px] text-white/45">
             Running something bigger?{' '}
-            <Link href="/contact" className="font-medium text-[#ff9a6e] hover:underline">
+            <Link href="/contact" className="font-medium text-[#f8cd02] hover:underline">
               Talk to us
             </Link>
             .
@@ -154,7 +154,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
               kickoff and never moves without your sign-off.
             </p>
           </div>
-          <ul className="mt-8 divide-y divide-white/[0.06] overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.02]">
+          <ul className="mt-8 divide-y divide-white/[0.06] overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02]">
             {services.map((s) => (
               <li key={s.id} className="flex items-center justify-between px-5 py-3.5">
                 <span className="text-[13.5px] text-white/80">{s.name}</span>
@@ -170,7 +170,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
             {ENGAGEMENT_FACTS.map((fact) => (
-              <div key={fact.id} className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-5">
+              <div key={fact.id} className="rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-5">
                 <p className="text-[13.5px] font-medium text-white">{fact.label}</p>
                 <p className="mt-2 text-2xl font-semibold tabular-nums tracking-tight text-white">
                   {fact.figure}

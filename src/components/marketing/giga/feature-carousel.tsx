@@ -232,9 +232,9 @@ export function FeatureCarousel() {
                     <span className="flex items-start gap-3.5">
                       <span
                         className={cn(
-                          'mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl border transition-colors',
+                          'mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[6px] border transition-colors',
                           isActive
-                            ? 'border-[#ff7a45]/40 bg-[#ff7a45]/10 text-[#ff9a6e]'
+                            ? 'border-[#f8cd02]/40 bg-[#f8cd02]/10 text-[#f8cd02]'
                             : 'border-white/10 bg-white/[0.03] text-white/45 group-hover:text-white/70',
                         )}
                       >
@@ -267,7 +267,7 @@ export function FeatureCarousel() {
 
           {/* Large image panel, cross-fades per tab */}
           <BlurRise delay={0.1}>
-            <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02]">
+            <div className="relative mt-6 aspect-[16/10] w-full overflow-hidden rounded-[6px] border border-white/10 bg-white/[0.02]">
               <AnimatePresence mode="popLayout">
                 <motion.div
                   key={active}

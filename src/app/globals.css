@@ -158,6 +158,18 @@
   --font-title: Georgia, "Times New Roman", ui-serif, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
+  /* The hero-21 kit's two extra breakpoints. Without these the hero silently
+     renders its phone layout on every screen — the `ipad:` / `desktop-sm:`
+     classes would never be generated at all.
+
+     (The kit's font aliases — Monda / Switzer / Inter Tight / DM Mono — are
+     deliberately NOT redefined here. They would mean four render-blocking
+     Google Fonts requests on first paint, and every one of them is a
+     geometric grotesque in the same family as Geist, which this app already
+     self-hosts. The kit's markup uses `font-sans` / `font-mono` instead.) */
+  --breakpoint-ipad: 48rem;
+  --breakpoint-desktop-sm: 64rem;
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -375,9 +387,41 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
    LOGGED-OUT SITE (ported wholesale from the UI-framework reference).
    Fonts pinned to the reference's exact stacks, scoped to the shell.
    ═══════════════════════════════════════════════════════════════════ */
+/* ── The logged-out site's palette: racing yellow on charcoal ───────────────
+ *
+ * Scoped to `[data-marketing-shell]` so it cannot reach the product, which
+ * stays on the paper-flat neutral system above. Two rules define the scheme:
+ *
+ *   - Racing yellow is a SURFACE, and text sitting on it is always black.
+ *   - Charcoal is the GROUND, and body text on it is always white.
+ *
+ * Yellow as text on charcoal is reserved for accents that are a few words
+ * long — one clause of a headline, a hover state, an eyebrow dot. It clears
+ * contrast easily (about 11:1) but at paragraph length it stops reading as
+ * emphasis and starts competing with the call to action, which is the one
+ * thing yellow exists here to mark.
+ */
 [data-marketing-shell] {
-  --font-title: "Times New Roman MT", "Times New Roman", Times, serif;
-  --font-mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-title: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* One accent, used for what you want pressed. */
+  --fx-yellow: #f8cd02;
+  --fx-yellow-hover: #dcb602;
+  /* Ink for anything sitting on yellow. */
+  --fx-on-yellow: #141416;
+
+  /* Charcoal ground, plus the panel one step deeper for inset surfaces and
+     one step lighter for raised ones. */
+  --fx-charcoal: #1b1b1d;
+  --fx-charcoal-deep: #141416;
+  --fx-charcoal-raised: #232326;
+
+  /* Text on charcoal. */
+  --fx-white: #ffffff;
+  --fx-muted: rgba(255, 255, 255, 0.58);
+  --fx-faint: rgba(255, 255, 255, 0.38);
+  --fx-hairline: rgba(255, 255, 255, 0.12);
 }
 /* ──────────────────────────────────────────────────────────────────────────
  * MARKETING + AUTH AESTHETIC (fortitudo "studio ASCII" system, Chippi-tinted)
@@ -399,34 +443,24 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   letter-spacing: 0.01em;
 }
 
-/* ── Giga marketing shell — dark, cinematic redesign (ROOT-CAUSE FIX) ────────
+/* ── Giga marketing shell — display face (ROOT-CAUSE FIX) ───────────────────
  *
  * The marketing route-group layout (app/(marketing)/layout.tsx) marks its root
- * with `data-marketing-shell`. Two things are scoped here so the redesign can't
- * be undone by global rules elsewhere in this file:
+ * with `data-marketing-shell`. The `@layer base` rule above forces every
+ * <h1>–<h6> to --font-heading, so inline `fontFamily` styles on individual
+ * headlines are not enough — anything that leans on a class, or forgets the
+ * inline style, falls back to whatever the base rule says. Setting the face
+ * here, on a selector that out-specifies the bare element rule, is the only
+ * place that holds for every heading in the tree.
  *
- *  1. HEADLINE FONT. The `@layer base` rule above forces every <h1>–<h6> to
- *     --font-heading (a system SANS). That is exactly what made the previous
- *     redesign render "stuck on the grotesque": inline styles fixed some
- *     headings but anything that leaned on a class or forgot the inline style
- *     fell back to the sans. We make the elegant SERIF display face
- *     (--font-serif-display, Fraunces, injected by the layout via next/font)
- *     the DEFAULT for every heading inside the shell, with a HIGH optical size
- *     and light weight so the large headlines read thin + high-contrast (the
- *     reference look) rather than the chunky low-opsz default. This selector
- *     out-specifies the bare `h1..h6` element rule, so it always wins.
- *
- *  2. EYEBROWS stay monospace via the .eyebrow-mono helper / inline var; the
- *     `--font-mono-display` (JetBrains Mono) is also injected by the layout.
+ * The face is the same tight geometric grotesque the hero-21 kit is drawn in.
+ * The redesign is set in one voice: a large, tightly-tracked sans for display
+ * and monospace for eyebrows. There is no serif on the logged-out site — the
+ * `--font-serif-display` alias survives only because ~30 components reference
+ * it inline, and it now points at the sans like everything else.
  *
  * Scoped to the shell so the product (dashboard/app) is completely untouched. */
 [data-marketing-shell] {
-  /* Marketing headlines use the SAME fonts as the product dashboard so the
-     logged-out site and the app read as one brand: the serif --font-title
-     (Times) for headlines and --font-mono for eyebrows. The component-level
-     --font-serif-display / --font-mono-display vars are re-pointed at the
-     dashboard fonts here, so every inline reference resolves to them without
-     editing each component. */
   --font-serif-display: var(--font-title);
   --font-mono-display: var(--font-mono);
 }
@@ -437,10 +471,13 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
 [data-marketing-shell] h5,
 [data-marketing-shell] h6,
 [data-marketing-shell] .font-serif-display {
-  font-family: var(--font-title), Georgia, "Times New Roman", serif;
+  font-family: var(--font-title), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.02em;
+  /* Semibold, not the old light serif: this face carries the headline on
+     weight rather than on stroke contrast. */
+  font-weight: 600;
 }
-/* Eyebrow labels: uppercase monospace, set apart from the serif headings. */
+/* Eyebrow labels: uppercase monospace, set apart from the display headings. */
 [data-marketing-shell] .font-mono-display {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
 }

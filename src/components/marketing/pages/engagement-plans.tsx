@@ -132,9 +132,9 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
   return (
     <div
       className={
-        'flex h-full flex-col rounded-3xl border p-8 ' +
+        'flex h-full flex-col rounded-[6px] border p-8 ' +
         (p.featured
-          ? 'border-[#ff7a45]/30 bg-gradient-to-b from-[#ff7a45]/[0.08] to-white/[0.02]'
+          ? 'border-[#f8cd02]/30 bg-gradient-to-b from-[#f8cd02]/[0.08] to-white/[0.02]'
           : 'border-white/[0.08] bg-white/[0.02]')
       }
     >
@@ -143,7 +143,7 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
           {p.label}
         </h3>
         {p.featured ? (
-          <span className="rounded-full bg-[#ff7a45]/15 px-2.5 py-0.5 text-[10px] font-medium text-[#ff9a6e]">
+          <span className="rounded-[4px] bg-[#f8cd02]/15 px-2.5 py-0.5 text-[10px] font-medium text-[#f8cd02]">
             Most popular
           </span>
         ) : null}
@@ -175,7 +175,7 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
       <ul className="mt-6 space-y-2.5">
         {p.highlights.map((h) => (
           <li key={h} className="flex items-start gap-2.5 text-[13px] text-white/70">
-            <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#ff9a6e]" />
+            <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#f8cd02]" />
             {h}
           </li>
         ))}
@@ -203,7 +203,7 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
         type="button"
         onClick={() => setCycle('monthly')}
         className={
-          'rounded-full px-4 py-1.5 text-[13px] transition-colors ' +
+          'rounded-[4px] px-4 py-1.5 text-[13px] transition-colors ' +
           (cycle === 'monthly' ? 'bg-white font-medium text-black' : 'text-white/60 hover:text-white')
         }
       >
@@ -213,15 +213,15 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
         type="button"
         onClick={() => setCycle('annual')}
         className={
-          'flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[13px] transition-colors ' +
+          'flex items-center gap-1.5 rounded-[4px] px-4 py-1.5 text-[13px] transition-colors ' +
           (cycle === 'annual' ? 'bg-white font-medium text-black' : 'text-white/60 hover:text-white')
         }
       >
         Ongoing retainer
         <span
           className={
-            'rounded-full px-1.5 py-0.5 text-[10px] font-medium ' +
-            (cycle === 'annual' ? 'bg-[#ff7a45]/20 text-[#c2410c]' : 'bg-[#ff7a45]/15 text-[#ff9a6e]')
+            'rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium ' +
+            (cycle === 'annual' ? 'bg-[#f8cd02]/20 text-[#c2410c]' : 'bg-[#f8cd02]/15 text-[#f8cd02]')
           }
         >
           Same fixed quote

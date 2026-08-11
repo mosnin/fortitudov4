@@ -4,7 +4,7 @@
  * Every page under `app/(marketing)/` renders inside this shell, which is a
  * deliberately separate visual world from the product:
  *
- *  - ALWAYS DARK. A near-black (#0a0a0a) canvas with light text, regardless of
+ *  - ALWAYS DARK. A near-black (#1b1b1d) canvas with light text, regardless of
  *    the app's light/dark theme toggle. The `dark` class is forced ON this
  *    subtree so the legacy sub-pages (pricing / realtors / deals / …), which
  *    were authored with `dark:` variants, also render their dark treatment on
@@ -36,19 +36,21 @@ export default function MarketingLayout({
 }) {
   return (
     <div
-      // The shell follows the user's light/dark preference (the root <html>
-      // toggles `dark` from system / localStorage). `data-marketing-shell`
-      // scopes the dashboard-font headline/eyebrow rules in globals.css to this
-      // subtree. The cinematic homepage sections opt back into dark themselves.
+      // `dark` is forced ON, not inherited. The logged-out site is charcoal in
+      // both themes: half these sections were authored dark-only, and letting
+      // the product's light/dark toggle reach them produced white cards
+      // dropped into a black page. `data-marketing-shell` scopes both the
+      // display-face rules and the whole --fx-* palette in globals.css to this
+      // subtree, so neither can leak into the product.
       data-marketing-shell
-      className="flex min-h-screen flex-col bg-white text-neutral-900 antialiased dark:bg-[#0a0a0a] dark:text-white"
+      className="dark flex min-h-screen flex-col bg-[var(--fx-charcoal)] text-[var(--fx-white)] antialiased"
     >
       {/* Shared gradient def so icons can be stroked with the brand gradient. */}
       <svg aria-hidden width="0" height="0" className="absolute">
         <defs>
           <linearGradient id="chippi-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#ff7a45" />
-            <stop offset="100%" stopColor="#c77dff" />
+            <stop offset="0%" stopColor="#f8cd02" />
+            <stop offset="100%" stopColor="#dcb602" />
           </linearGradient>
         </defs>
       </svg>
@@ -59,7 +61,7 @@ export default function MarketingLayout({
           mid-page. */}
       <FooterReveal
         className="flex flex-1 flex-col"
-        contentClassName="flex flex-1 flex-col bg-white dark:bg-[#0a0a0a]"
+        contentClassName="flex flex-1 flex-col bg-[var(--fx-charcoal)]"
         footer={<SiteFooter />}
       >
         <main className="flex-1">{children}</main>

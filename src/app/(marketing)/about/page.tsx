@@ -50,14 +50,14 @@ const BELIEFS = [
 export default function AboutPage() {
   return (
     <>
-      <div className="dark bg-[#0a0a0a] text-white">
+      <div className="dark bg-[#1b1b1d] text-white">
         {/* Hero */}
         <section className="relative isolate overflow-hidden">
           <div aria-hidden className="absolute inset-0 -z-10">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/marketing/company-hero.jpg" alt="" className="h-full w-full object-cover object-center" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a]/82 via-[#0a0a0a]/48 to-[#0a0a0a]" />
-            <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_38%,transparent_35%,rgba(10,10,10,0.6)_100%)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1d]/82 via-[#1b1b1d]/48 to-[#1b1b1d]" />
+            <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_38%,transparent_35%,rgba(27,27,29,0.6)_100%)]" />
           </div>
           <Band className="pt-40 pb-24 text-center sm:pt-48 sm:pb-28">
             <BlurRise trigger="load">

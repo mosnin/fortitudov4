@@ -18,7 +18,7 @@ const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 export function Offerings() {
   return (
-    <section className="relative border-t border-white/[0.06] bg-[#0a0a0a] py-24 text-white sm:py-32">
+    <section className="relative border-t border-white/[0.06] bg-[#1b1b1d] py-24 text-white sm:py-32">
       <Band>
         <BlurRise className="mx-auto max-w-3xl text-center">
           <Eyebrow className="justify-center">What we build</Eyebrow>
@@ -37,7 +37,7 @@ export function Offerings() {
             <BlurRise key={service.id} delay={0.06 * (i % 3)}>
               <Link
                 href={`/services#${service.id.replace(/_/g, '-')}`}
-                className="group flex h-full flex-col rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.04]"
+                className="group flex h-full flex-col rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-6 transition-colors duration-200 hover:border-white/[0.16] hover:bg-white/[0.04]"
               >
                 <service.icon className="h-5 w-5" stroke="url(#chippi-grad)" strokeWidth={1.75} />
                 <Serif as="h3" className="mt-4 text-[26px] leading-none text-white">
@@ -74,7 +74,7 @@ export function Offerings() {
           <BlurRise delay={0.12}>
             <Link
               href="/contact"
-              className="group flex h-full flex-col justify-between rounded-3xl border border-dashed border-white/[0.12] bg-transparent p-6 transition-colors duration-200 hover:border-white/[0.24]"
+              className="group flex h-full flex-col justify-between rounded-[6px] border border-dashed border-white/[0.12] bg-transparent p-6 transition-colors duration-200 hover:border-white/[0.24]"
             >
               <div>
                 <Serif as="h3" className="text-[26px] leading-none text-white">

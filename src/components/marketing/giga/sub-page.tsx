@@ -37,7 +37,7 @@ export function SubPageHero({
         {/* TODO: replace placeholder image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={image} alt="" className="h-full w-full object-cover object-center" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/55 to-[#0a0a0a]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/55 to-[#1b1b1d]" />
       </div>
 
       <div className="mx-auto max-w-4xl px-5 pb-24 pt-40 text-center sm:px-8 sm:pb-28 sm:pt-48">
@@ -92,12 +92,12 @@ export function SubPageFeatures({
       </BlurRise>
 
       <BlurRise delay={0.1}>
-        <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.06] sm:grid-cols-3">
+        <div className="mt-16 grid grid-cols-1 gap-px overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.06] sm:grid-cols-3">
           {features.map((f) => {
             const Icon = FEATURE_ICONS[f.icon];
             return (
-              <div key={f.title} className="bg-[#0a0a0a] p-8">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-[#ff9a6e]">
+              <div key={f.title} className="bg-[#1b1b1d] p-8">
+                <span className="flex h-11 w-11 items-center justify-center rounded-[6px] border border-white/10 bg-white/[0.03] text-[#f8cd02]">
                   <Icon className="h-5 w-5" />
                 </span>
                 <h3 className="mt-6 text-[17px] font-medium text-white">{f.title}</h3>

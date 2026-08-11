@@ -135,7 +135,7 @@ export function FeatureShowcase({
 
       {/* The big animated card */}
       <BlurRise delay={0.12}>
-        <div className="mt-12 overflow-hidden rounded-3xl border border-white/[0.08] bg-white/[0.02] p-2.5 sm:p-3">
+        <div className="mt-12 overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-2.5 sm:p-3">
           <div
             className={cn(
               'grid gap-2.5 sm:gap-3',
@@ -150,8 +150,8 @@ export function FeatureShowcase({
                 <ProductIcon className="h-6 w-6" stroke="url(#chippi-grad)" strokeWidth={1.75} />
                 <AnimatedGradientText
                   speed={2}
-                  colorFrom="#ff7a45"
-                  colorTo="#c77dff"
+                  colorFrom="#f8cd02"
+                  colorTo="#dcb602"
                   className="text-[22px] font-semibold tracking-tight"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
@@ -216,7 +216,7 @@ export function FeatureShowcase({
             {/* IMAGE column: scenic bg + composited frosted panel per step */}
             <div
               className={cn(
-                'relative min-h-[480px] overflow-hidden rounded-2xl lg:min-h-[700px]',
+                'relative min-h-[480px] overflow-hidden rounded-[6px] lg:min-h-[700px]',
                 imageLeft && 'lg:order-1',
               )}
             >
@@ -274,14 +274,14 @@ export function Frost({
 }) {
   const reduce = useReducedMotion();
   return (
-    <div className="overflow-hidden rounded-2xl border border-white/12 bg-[#0b0b0d]/55 shadow-2xl shadow-black/60 backdrop-blur-2xl">
+    <div className="overflow-hidden rounded-[6px] border border-white/12 bg-[#0b0b0d]/55 shadow-2xl shadow-black/60 backdrop-blur-2xl">
       <div className="flex items-center justify-between border-b border-white/[0.08] px-4 py-3">
         <span className="flex items-center gap-2">
-          <span className="h-4 w-4 rounded-full bg-gradient-to-br from-[#ff7a45] to-[#ff5fa2]" />
+          <span className="h-4 w-4 rounded-full bg-gradient-to-br from-[#f8cd02] to-[#ff5fa2]" />
           <span className="text-[13px] font-medium text-white">{title}</span>
         </span>
         {badge ? (
-          <span className="rounded-full bg-white/[0.08] px-2 py-0.5 text-[10px] font-medium text-white/60">{badge}</span>
+          <span className="rounded-[4px] bg-white/[0.08] px-2 py-0.5 text-[10px] font-medium text-white/60">{badge}</span>
         ) : (
           <span className="flex gap-1">
             <span className="h-1.5 w-1.5 rounded-full bg-white/20" />
@@ -320,7 +320,7 @@ export function Row({
   return (
     <motion.div
       variants={rowV}
-      className={cn('flex items-center gap-3 rounded-xl px-3 py-2.5', active ? 'bg-white/[0.06]' : '')}
+      className={cn('flex items-center gap-3 rounded-[6px] px-3 py-2.5', active ? 'bg-white/[0.06]' : '')}
     >
       <span
         className={cn(
