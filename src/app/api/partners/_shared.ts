@@ -105,6 +105,20 @@ export async function partnerRecordFor(
 }
 
 /**
+ * May this partner still WRITE, or are they read-only?
+ *
+ * `partners.status` was resolved but never consulted, so a `paused` or
+ * `archived` partner could still open new work and amend existing work — an
+ * archived relationship quietly behaving like a live one. Reading stays open
+ * either way: someone we have stopped working with can still see the history
+ * of what we did together, and taking that away would be a different and worse
+ * decision than ending the relationship.
+ */
+export function partnerMayWrite(record: { status: string }): boolean {
+  return record.status === "active";
+}
+
+/**
  * Which never-partner-writable columns a body is trying to set.
  *
  * `PARTNER_PROTECTED_REQUEST_FIELDS` is the list, kept in lib/partners.ts so

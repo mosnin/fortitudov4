@@ -38,6 +38,7 @@ import {
   invalidFields,
   notFound,
   partnerRecordFor,
+  partnerMayWrite,
   protectedFieldsIn,
   readJsonObject,
   resolveCaller,
@@ -92,6 +93,16 @@ async function updateAsPartner(
   // tell one partner that another partner's request id is real.
   if (!existing || existing.partnerId !== record.id) {
     return notFound("Request not found");
+  }
+
+  /* AFTER the 404, deliberately. Checked first, a frozen partner would get
+     "not active" for every id they tried, which is harmless — but leaving the
+     cross-tenant 404 on top keeps one answer for "not yours" no matter what
+     state the asker is in. */
+  if (!partnerMayWrite(record)) {
+    return forbidden(
+      "This partner account is not active, so it cannot open or change requests. Talk to us and we will reopen it."
+    );
   }
 
   const reached = protectedFieldsIn(body, ["status"]);

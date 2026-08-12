@@ -31,6 +31,7 @@ import {
   invalidFields,
   notFound,
   partnerRecordFor,
+  partnerMayWrite,
   protectedFieldsIn,
   readJsonObject,
   resolveCaller,
@@ -62,6 +63,11 @@ async function createAsPartner(user: DbUser, body: Record<string, unknown>) {
   }
   if (!record) {
     return forbidden("This account is not linked to a partner record.");
+  }
+  if (!partnerMayWrite(record)) {
+    return forbidden(
+      "This partner account is not active, so it cannot open or change requests. Talk to us and we will reopen it."
+    );
   }
 
   // `partnerId` is exempt because it is overwritten below rather than refused;

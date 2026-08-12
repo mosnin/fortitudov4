@@ -42,9 +42,10 @@ const en = {
   offering: {
     startWith: 'Start with {service}',
     includedHeading: 'Included either way',
-    /** The chip above each offering's name, where its starting price used to
-     *  be. It links to the contact form — we quote a build before it starts,
-     *  so the price is something we send you, not something on a card. */
+    /** The ghost button beside "Start with …", and the answer to the price
+     *  each band used to open with. It links to the contact form: we quote a
+     *  build before it starts, so the price is something we send you rather
+     *  than something printed on the page. */
     priceCta: 'Contact us',
   },
 

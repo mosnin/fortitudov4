@@ -267,6 +267,33 @@ describe("callers with no business here", () => {
     expect(response.status).toBe(403);
     expect(fake.writes).toHaveLength(0);
   });
+
+  it.each(["paused", "archived"])(
+    "refuses a %s partner opening new work",
+    async (status) => {
+      // partners.status was resolved and then never consulted, so an archived
+      // relationship behaved exactly like a live one. Reading stays open —
+      // someone we have stopped working with can still see what we did
+      // together — but they cannot start something new.
+      signedInAs("partner");
+      fake.rows.set(partners, [{ id: MY_PARTNER, status }]);
+
+      const response = await post(VALID_CREATE);
+
+      expect(response.status).toBe(403);
+      expect(fake.writes).toHaveLength(0);
+    }
+  );
+
+  it("still lets an active partner through", async () => {
+    // The other half of the same rule: the gate must be the status, not the
+    // existence of a status check.
+    signedInAs("partner");
+    fake.rows.set(partners, [{ id: MY_PARTNER, status: "active" }]);
+
+    expect((await post(VALID_CREATE)).status).toBe(201);
+    expect(fake.writes).toHaveLength(1);
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────

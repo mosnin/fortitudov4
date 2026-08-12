@@ -21,7 +21,6 @@
  * way `/pricing` already splits.
  */
 
-import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { services } from '@/lib/services';
@@ -96,23 +95,14 @@ export default function ServicesPage() {
                 className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center"
               >
                 <div className={isEven ? '' : 'lg:order-2'}>
-                  {/* This chip used to carry the offering's starting price, and
-                      nothing else. (There used to be an icon in a bordered,
-                      filled square beside it too — the badge pattern AGENTS.md
-                      rules out by name.) The site does not advertise a price
-                      any more: we quote every build before it starts, so the
-                      slot a buyer looks at first is the link that gets them
-                      the quote. The offering is named in the h2 below. */}
-                  <div className="mb-5 flex items-center gap-3">
-                    <Link
-                      href="/contact"
-                      style={MONO_STYLE}
-                      className={`rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 transition-colors hover:border-[var(--fx-faint)] hover:text-[var(--fx-white)] ${EYEBROW_TEXT}`}
-                    >
-                      {t.offering.priceCta}
-                    </Link>
-                  </div>
-
+                  {/* The band opens on its heading now. A chip above it used
+                      to carry the offering's starting price — and before that,
+                      an icon in a tinted square, the badge pattern AGENTS.md
+                      rules out by name. The site advertises no price, and the
+                      ask that replaced it is a control, so it belongs in the
+                      row of controls below rather than in the eyebrow slot:
+                      the section rhythm is eyebrow → headline → one paragraph
+                      → the CTA, and a button up here breaks it. */}
                   <Serif as="h2" className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                     {service.name}
                   </Serif>
@@ -131,13 +121,17 @@ export default function ServicesPage() {
                     ))}
                   </ul>
 
-                  <PillPrimary
-                    href={`/onboarding?service=${service.id}`}
-                    className="mt-9"
-                    withArrow
-                  >
-                    {fill(t.offering.startWith, { service: service.name })}
-                  </PillPrimary>
+                  {/* One yellow action per screen: the ghost beside it is
+                      where the price went. */}
+                  <div className="mt-9 flex flex-wrap items-center gap-3">
+                    <PillPrimary
+                      href={`/onboarding?service=${service.id}`}
+                      withArrow
+                    >
+                      {fill(t.offering.startWith, { service: service.name })}
+                    </PillPrimary>
+                    <PillGhost href="/contact">{t.offering.priceCta}</PillGhost>
+                  </div>
                 </div>
 
                 {/* What's included — the same list for every offering, which is
