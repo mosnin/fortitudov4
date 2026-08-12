@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { X } from "lucide-react";
-import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
+import { CLIENT_OFFERINGS, INDUSTRIES, OFFERING_LABELS } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
@@ -229,7 +229,7 @@ export function NewClientModal({
                     />
                   )}
                 </Field>
-                <Field label="Package">
+                <Field label="Offering">
                   <Select
                     value={form.package}
                     onChange={(e) =>
@@ -237,9 +237,9 @@ export function NewClientModal({
                     }
                   >
                     <option value="">Select offering</option>
-                    {CLIENT_PACKAGES.map((p) => (
+                    {CLIENT_OFFERINGS.map((p) => (
                       <option key={p} value={p}>
-                        {PACKAGE_LABELS[p]}
+                        {OFFERING_LABELS[p]}
                       </option>
                     ))}
                   </Select>

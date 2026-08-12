@@ -10,7 +10,7 @@ import { and, desc, eq, ilike, inArray, or } from 'drizzle-orm';
 import { z } from 'zod';
 import { db } from '@/db';
 import { agencyClients } from '@/db/schema';
-import { CRM_STAGES, PACKAGE_LABELS, STAGE_LABELS } from '@/lib/crm';
+import { CRM_STAGES, OFFERING_LABELS, STAGE_LABELS } from '@/lib/crm';
 import { formatCents, joinWords, truncate } from '@/lib/helix/format';
 import {
   defineGatekeeper,
@@ -306,7 +306,7 @@ export const clientsGatekeeper = defineGatekeeper({
       kind: 'client',
       id: row.id,
       label: row.companyName,
-      detail: `${PACKAGE_LABELS[row.package]} · ${STAGE_LABELS[row.stage]}`,
+      detail: `${OFFERING_LABELS[row.package]} · ${STAGE_LABELS[row.stage]}`,
     } satisfies ResourceRef;
   },
   async search(query, ctx) {
@@ -337,7 +337,7 @@ export const clientsGatekeeper = defineGatekeeper({
       kind: 'client' as const,
       id: row.id,
       label: row.companyName,
-      detail: `${PACKAGE_LABELS[row.package]} · ${STAGE_LABELS[row.stage]}`,
+      detail: `${OFFERING_LABELS[row.package]} · ${STAGE_LABELS[row.stage]}`,
     }));
   },
 });

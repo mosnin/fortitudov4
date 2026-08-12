@@ -21,7 +21,7 @@ import {
   StatMeta,
 } from "@/components/crm";
 import { AnimatedNumber, Reveal } from "@/components/motion";
-import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
+import { OFFERING_LABELS, type ClientOffering } from "@/lib/crm";
 import {
   PAGE_RHYTHM,
   READING_COL,
@@ -51,7 +51,7 @@ interface Metrics {
     newClients: number[];
   };
   topCustomers: { name: string; total: number }[];
-  /** Offering enum key + head count; labels resolve through PACKAGE_LABELS. */
+  /** Offering enum key + head count; labels resolve through OFFERING_LABELS. */
   packagesDistribution: { key: string; count: number }[];
   windowed: boolean;
 }
@@ -135,11 +135,11 @@ export default function AdminFinancialsPage() {
         ]
       : [];
 
-  // Offering mix — labels come from PACKAGE_LABELS so the legend always reads
+  // Offering mix — labels come from OFFERING_LABELS so the legend always reads
   // as the five offerings (plus Custom), never a tier name.
   const packages =
     metrics?.packagesDistribution.map((p) => ({
-      label: PACKAGE_LABELS[p.key as ClientPackage] ?? p.key,
+      label: OFFERING_LABELS[p.key as ClientOffering] ?? p.key,
       count: p.count,
     })) ?? [];
 

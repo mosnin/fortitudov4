@@ -41,8 +41,19 @@ export const PRIORITY_LABELS: Record<TaskPriority, string> = {
 /**
  * The offering a client bought — mirrors lib/services.ts. "custom" reveals a
  * free-text label input for bespoke engagements.
+ *
+ * These were `CLIENT_PACKAGES` / `PACKAGE_LABELS` / `ClientPackage` until the
+ * screens started contradicting themselves: three admin modals labelled the
+ * field "Package" above a dropdown whose own placeholder said "Select
+ * offering". AGENTS.md's word is OFFERINGS, and "package" is the
+ * GoHighLevel-era vocabulary this codebase has been removing everywhere else.
+ *
+ * The DATABASE column is still `package`, and the enum is still
+ * `client_package`. Renaming those needs a migration against a live table for
+ * no behavioural gain, so the column keeps its name and the code stops
+ * repeating it. If a migration is ever run for another reason, rename it then.
  */
-export const CLIENT_PACKAGES = [
+export const CLIENT_OFFERINGS = [
   "websites",
   "software_solutions",
   "ai_solutions",
@@ -51,9 +62,9 @@ export const CLIENT_PACKAGES = [
   "custom",
 ] as const;
 
-export type ClientPackage = (typeof CLIENT_PACKAGES)[number];
+export type ClientOffering = (typeof CLIENT_OFFERINGS)[number];
 
-export const PACKAGE_LABELS: Record<ClientPackage, string> = {
+export const OFFERING_LABELS: Record<ClientOffering, string> = {
   websites: "Websites",
   software_solutions: "Software Solutions",
   ai_solutions: "AI Solutions",

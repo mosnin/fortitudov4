@@ -23,10 +23,10 @@ import {
 } from "@/components/crm";
 import { PAYMENT_METHODS } from "@/lib/payment-methods";
 import {
-  CLIENT_PACKAGES,
+  CLIENT_OFFERINGS,
   INDUSTRIES,
-  PACKAGE_LABELS,
-  type ClientPackage,
+  OFFERING_LABELS,
+  type ClientOffering,
 } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
@@ -43,7 +43,7 @@ interface ClientRow {
   contactName: string;
   companyName: string;
   businessType: string | null;
-  package: ClientPackage;
+  package: ClientOffering;
   packageLabel: string | null;
   setupFee: number;
   monthlyFee: number;
@@ -82,10 +82,10 @@ const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 
 /** Every offering reads the same: a neutral word pill, never a colour code. */
-const packageName = (c: { package: ClientPackage; packageLabel: string | null }) =>
+const packageName = (c: { package: ClientOffering; packageLabel: string | null }) =>
   c.package === "custom" && c.packageLabel
     ? c.packageLabel
-    : PACKAGE_LABELS[c.package] ?? "—";
+    : OFFERING_LABELS[c.package] ?? "—";
 
 const emptyForm = {
   contactName: "",
@@ -451,7 +451,7 @@ export function ClientRoster({
         ) : clients.length === 0 ? (
           <EmptyState
             title="No clients yet"
-            description="Add your first client with their package and retainer — Financials builds MRR and package metrics from this roster."
+            description="Add your first client with their offering and retainer — Financials builds MRR and the offering mix from this roster."
           />
         ) : (
           <RecordList>
@@ -753,16 +753,16 @@ export function ClientRoster({
                     />
                   )}
                 </Field>
-                <Field label="Package">
+                <Field label="Offering">
                   <Select
                     value={form.package}
                     onChange={(e) =>
                       setForm({ ...form, package: e.target.value })
                     }
                   >
-                    {CLIENT_PACKAGES.map((p) => (
+                    {CLIENT_OFFERINGS.map((p) => (
                       <option key={p} value={p}>
-                        {PACKAGE_LABELS[p]}
+                        {OFFERING_LABELS[p]}
                       </option>
                     ))}
                   </Select>

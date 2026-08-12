@@ -12,7 +12,7 @@ import {
   RowPill,
   RowSelect,
 } from "@/components/crm";
-import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
+import { CLIENT_OFFERINGS, INDUSTRIES, OFFERING_LABELS } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
@@ -384,7 +384,7 @@ export function ClientDetailModal({
                       />
                     )}
                   </Field>
-                  <Field label="Package">
+                  <Field label="Offering">
                     <Select
                       value={form.package}
                       onChange={(e) =>
@@ -392,9 +392,9 @@ export function ClientDetailModal({
                       }
                     >
                       <option value="">Select offering</option>
-                      {CLIENT_PACKAGES.map((p) => (
+                      {CLIENT_OFFERINGS.map((p) => (
                         <option key={p} value={p}>
-                          {PACKAGE_LABELS[p]}
+                          {OFFERING_LABELS[p]}
                         </option>
                       ))}
                     </Select>

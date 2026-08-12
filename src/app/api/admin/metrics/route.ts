@@ -184,7 +184,7 @@ export async function GET(req: Request) {
     let finalNewClientsSeries = zeros();
     let finalNewClientsThisPeriod = 0;
     // Grouped by the `package` enum key; the UI resolves labels through
-    // PACKAGE_LABELS so the legend always reads as the five offerings.
+    // OFFERING_LABELS so the legend always reads as the five offerings.
     let finalPackages: { key: string; count: number }[] = [];
     if (rosterRows.length > 0) {
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 86_400_000);

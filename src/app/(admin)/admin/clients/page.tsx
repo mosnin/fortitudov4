@@ -20,8 +20,8 @@ import { useAskHelix } from "@/components/admin/ask-helix";
 import {
   CRM_STAGES,
   STAGE_LABELS,
-  PACKAGE_LABELS,
-  type ClientPackage,
+  OFFERING_LABELS,
+  type ClientOffering,
   type CrmStage,
 } from "@/lib/crm";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,7 @@ interface Client {
   companyName: string;
   businessType: string | null;
   industry: string | null;
-  package: ClientPackage;
+  package: ClientOffering;
   packageLabel: string | null;
   status: string;
   stage: CrmStage;
@@ -60,7 +60,7 @@ const STATUS_LABELS: Record<string, string> = {
 const packageLabel = (c: Client) =>
   c.package === "custom" && c.packageLabel
     ? c.packageLabel
-    : PACKAGE_LABELS[c.package] ?? "—";
+    : OFFERING_LABELS[c.package] ?? "—";
 
 const dateStarted = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", {

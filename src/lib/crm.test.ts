@@ -16,10 +16,10 @@
 
 import { describe, expect, it } from "vitest";
 import {
-  CLIENT_PACKAGES,
+  CLIENT_OFFERINGS,
   CRM_STAGES,
   DEFAULT_TASKS,
-  PACKAGE_LABELS,
+  OFFERING_LABELS,
   PRIORITY_LABELS,
   STAGE_LABELS,
   stageFromTasks,
@@ -70,7 +70,7 @@ describe("pipeline definition", () => {
 
 describe("client packages", () => {
   it("is the five offerings plus custom, and nothing else", () => {
-    expect([...CLIENT_PACKAGES]).toEqual([
+    expect([...CLIENT_OFFERINGS]).toEqual([
       "websites",
       "software_solutions",
       "ai_solutions",
@@ -81,19 +81,19 @@ describe("client packages", () => {
   });
 
   it("matches the client_package database enum", () => {
-    expect([...clientPackageEnum.enumValues]).toEqual([...CLIENT_PACKAGES]);
+    expect([...clientPackageEnum.enumValues]).toEqual([...CLIENT_OFFERINGS]);
   });
 
   it("labels each package the same way lib/services.ts does", () => {
     for (const service of services) {
-      expect(PACKAGE_LABELS[service.id]).toBe(SERVICE_LABELS[service.id]);
+      expect(OFFERING_LABELS[service.id]).toBe(SERVICE_LABELS[service.id]);
     }
-    expect(PACKAGE_LABELS.custom).toBe("Custom");
+    expect(OFFERING_LABELS.custom).toBe("Custom");
   });
 
   it("carries none of the swept-out GHL tiers", () => {
     // AGENTS.md: no Bronze/Gold/Diamond tiers — clients carry an offering.
-    for (const pkg of CLIENT_PACKAGES) {
+    for (const pkg of CLIENT_OFFERINGS) {
       expect(pkg).not.toMatch(/bronze|silver|gold|diamond|platinum|tier/i);
     }
   });

@@ -3,7 +3,7 @@ import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "@/db";
 import { agencyClients, projects } from "@/db/schema";
 import { requireStaff } from "@/lib/auth-utils";
-import { PACKAGE_LABELS, STAGE_LABELS } from "@/lib/crm";
+import { OFFERING_LABELS, STAGE_LABELS } from "@/lib/crm";
 import { SERVICE_LABELS } from "@/lib/services";
 
 /**
@@ -63,7 +63,7 @@ export async function GET(request: Request) {
           kind: "client" as const,
           id: client.id,
           label: client.companyName,
-          detail: `${PACKAGE_LABELS[client.package]} · ${STAGE_LABELS[client.stage]}`,
+          detail: `${OFFERING_LABELS[client.package]} · ${STAGE_LABELS[client.stage]}`,
         })),
         ...projectRows.map((project) => ({
           kind: "project" as const,

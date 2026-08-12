@@ -17,7 +17,7 @@ import {
 } from "@/components/crm";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
+import { OFFERING_LABELS, type ClientOffering } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
@@ -157,7 +157,7 @@ export default function ClientPortalPreviewPage({
   const offering =
     client.package === "custom" && client.packageLabel
       ? client.packageLabel
-      : PACKAGE_LABELS[client.package as ClientPackage] ?? "—";
+      : OFFERING_LABELS[client.package as ClientOffering] ?? "—";
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
