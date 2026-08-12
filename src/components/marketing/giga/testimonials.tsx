@@ -31,7 +31,7 @@ import type { Lang } from '@/lib/i18n/markets';
 import { HOME, type HomeDict } from '@/lib/i18n/dictionaries/home';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { Band, BlurRise, Serif } from './primitives';
-import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
+import { BODY, BODY_S, DISPLAY_M, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y } from './tokens';
 
 /** This section's slice of the home dictionary, handed down to the cards. */
 type Copy = HomeDict['testimonials'];
@@ -131,14 +131,14 @@ function TestimonialCard({
       <div className="mt-4">
         <Stars rating={testimonial.rating} copy={copy} />
       </div>
-      <p className="mt-5 flex-1 text-[15px] leading-relaxed">
+      <p className={`mt-5 flex-1 ${LEAD}`}>
         {testimonial.quote}
       </p>
       <div className="mt-7 flex items-center justify-between gap-4">
         <div>
-          <div className="text-sm font-medium">{testimonial.name}</div>
+          <div className={`${BODY} font-medium`}>{testimonial.name}</div>
           <div
-            className={`mt-1 text-xs ${
+            className={`mt-1 ${BODY_S} ${
               highlight ? 'text-[var(--fx-on-yellow)]/70' : 'text-[var(--fx-muted)]'
             }`}
           >
@@ -183,7 +183,7 @@ function PlaceholderCard({ slot, index, copy }: { slot: string; index: number; c
         <div className="mt-4 text-[var(--fx-faint)]">
           <Stars copy={copy} />
         </div>
-        <p className="mt-5 flex-1 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+        <p className={`mt-5 flex-1 ${BODY} text-[var(--fx-muted)]`}>
           {slot}
         </p>
         <div className="mt-7 flex items-center gap-3">
@@ -192,7 +192,7 @@ function PlaceholderCard({ slot, index, copy }: { slot: string; index: number; c
             className="h-9 w-9 shrink-0 rounded-full border border-dashed border-[var(--fx-hairline)]"
           />
           {/* Says what belongs in the slot, so it is read, not decoration. */}
-          <span className="text-xs text-[var(--fx-muted)]">
+          <span className={`${BODY_S} text-[var(--fx-muted)]`}>
             {copy.slotAttribution}
           </span>
         </div>
@@ -242,7 +242,7 @@ export function Testimonials({ lang = 'en' }: { lang?: Lang }) {
           </BlurRise>
 
           <BlurRise delay={0.08} className="lg:col-span-5">
-            <p className="max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)] sm:text-[16px]">
+            <p className={`max-w-md ${LEAD} text-[var(--fx-muted)]`}>
               {hasQuotes ? t.leadWithQuotes : t.leadEmpty}
             </p>
             <Link
@@ -292,7 +292,7 @@ export function Testimonials({ lang = 'en' }: { lang?: Lang }) {
                       >
                         {metric.value}
                       </Serif>
-                      <div className="mt-2 text-xs text-[var(--fx-muted)]">
+                      <div className={`mt-2 ${BODY_S} text-[var(--fx-muted)]`}>
                         {metric.label}
                       </div>
                     </div>

@@ -46,7 +46,7 @@ import { useReducedMotion } from 'motion/react';
 import ParticleSphere from '@/components/originkit/ui/hero-33/particle-sphere';
 import type { Lang } from '@/lib/i18n/markets';
 import { Band, BlurRise, Eyebrow, PillGhost, Serif } from './primitives';
-import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
+import { BODY, DISPLAY_M, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
 
 /* ── Copy ────────────────────────────────────────────────────────────────── */
 
@@ -331,7 +331,7 @@ export function GlobalReach({ lang = 'en' }: { lang?: Lang }) {
           </BlurRise>
 
           <BlurRise delay={0.12}>
-            <p className="mt-5 max-w-[65ch] text-[15px] leading-relaxed text-[var(--fx-muted)] sm:text-[16px]">
+            <p className={`mt-5 max-w-[65ch] ${LEAD} text-[var(--fx-muted)]`}>
               {t.lead}
             </p>
             {/* Ghost, not yellow. The globe is this band's accent, and the page
@@ -364,7 +364,7 @@ export function GlobalReach({ lang = 'en' }: { lang?: Lang }) {
                   <Serif as="h3" className={`mt-4 ${TITLE_S} text-[var(--fx-white)]`}>
                     {fact.title}
                   </Serif>
-                  <p className="mt-2 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                  <p className={`mt-2 ${BODY} text-[var(--fx-muted)]`}>
                     {fact.body}
                   </p>
                 </div>

@@ -22,7 +22,7 @@ import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { KineticText } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
-import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
+import { BODY_S, DISPLAY_M, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
 
 const DWELL_MS = 2600;
 
@@ -59,7 +59,10 @@ export function Pipeline({ lang = 'en' }: { lang?: Lang }) {
               <KineticText lines={t.headingLines} />
             </Serif>
             <BlurRise delay={0.28}>
-              <p className="mt-5 text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
+              {/* 14.5px — exactly between two tokens, so the ROLE decides
+                  rather than the arithmetic: this is the one paragraph under a
+                  section headline, which is what LEAD is for. */}
+              <p className={`mt-5 ${LEAD} text-[var(--fx-muted)]`}>
                 {t.lead}
               </p>
             </BlurRise>
@@ -98,7 +101,11 @@ export function Pipeline({ lang = 'en' }: { lang?: Lang }) {
 
                       <span className="min-w-0 flex-1">
                         <span
-                          className={`block text-[17px] font-medium tracking-[-0.01em] transition-colors duration-300 ${
+                          /* No `tracking-[-0.01em]`: that was tuned against
+                             Geist, and the surface runs Inter Tight with the
+                             display face's own -0.03em. A third value here was
+                             a hand-tune with nothing left to correct. */
+                          className={`block ${TITLE_S} font-medium transition-colors duration-300 ${
                             isActive
                               ? 'text-[var(--fx-white)]'
                               : 'text-[var(--fx-muted)]'
@@ -116,7 +123,7 @@ export function Pipeline({ lang = 'en' }: { lang?: Lang }) {
                           }`}
                         >
                           <span className="overflow-hidden">
-                            <span className="block pt-2 text-[13px] leading-relaxed text-[var(--fx-muted)]">
+                            <span className={`block pt-2 ${BODY_S} text-[var(--fx-muted)]`}>
                               {stageNotes[stage]}
                             </span>
                           </span>

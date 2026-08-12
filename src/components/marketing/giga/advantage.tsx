@@ -33,7 +33,7 @@ import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { KineticText, Marquee } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
-import { ALERT_CHIP, ALERT_RULE, DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
+import { ALERT_CHIP, ALERT_RULE, BODY, DISPLAY_M, LEAD, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
 
 interface Pill {
   icon: LucideIcon;
@@ -100,7 +100,10 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
               <Icon className="size-5 shrink-0" />
               <span
                 style={MONO_STYLE}
-                className="text-[16px] leading-none tracking-[-0.02em] whitespace-nowrap sm:text-[18px]"
+                /* No `tracking-[-0.02em]`: it was tuned against Geist, and
+                   these labels are set in the mono face on a site that now
+                   runs Inter Tight at -0.03em for display. */
+                className="text-[16px] leading-none whitespace-nowrap sm:text-[18px]"
               >
                 {pill.label}
               </span>
@@ -131,7 +134,9 @@ export function Advantage({ lang = 'en' }: { lang?: Lang }) {
             <KineticText lines={t.headingLines} />
           </Serif>
           <BlurRise delay={0.28}>
-            <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
+            {/* 14.5px sat exactly between two tokens, so the role decides:
+                the one paragraph under a section headline is LEAD. */}
+            <p className={`mt-5 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>
               {t.lead}
             </p>
           </BlurRise>
@@ -148,7 +153,7 @@ export function Advantage({ lang = 'en' }: { lang?: Lang }) {
               <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                 {t.legacyTitle}
               </Serif>
-              <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-2 max-w-[540px] ${BODY} text-[var(--fx-muted)]`}>
                 {t.legacyDesc}
               </p>
             </div>
@@ -164,7 +169,7 @@ export function Advantage({ lang = 'en' }: { lang?: Lang }) {
               <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                 {t.fortitudoTitle}
               </Serif>
-              <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-2 max-w-[540px] ${BODY} text-[var(--fx-muted)]`}>
                 {t.fortitudoDesc}
               </p>
             </div>

@@ -22,7 +22,7 @@
 import { ChevronDown } from 'lucide-react';
 import * as Accordion from '@radix-ui/react-accordion';
 import { Band, BlurRise, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
-import { DISPLAY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
+import { BODY, DISPLAY_S, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
@@ -85,12 +85,12 @@ export default function FAQPage({ lang = 'en' }: { lang?: Lang }) {
                         value={`${category.category}-${i}`}
                         className="border-b border-[var(--fx-hairline)]"
                       >
-                        <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left text-[16px] font-medium text-[var(--fx-white)] transition-colors [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[var(--fx-yellow)]">
+                        <Accordion.Trigger className={`group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left ${TITLE_S} font-medium text-[var(--fx-white)] transition-colors [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[var(--fx-yellow)]`}>
                           {item.q}
                           <ChevronDown className="h-4 w-4 shrink-0 text-[var(--fx-muted)] transition-transform duration-200" />
                         </Accordion.Trigger>
                         <Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-                          <div className="pb-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                          <div className={`pb-5 ${BODY} text-[var(--fx-muted)]`}>
                             {item.a}
                           </div>
                         </Accordion.Content>
@@ -115,7 +115,7 @@ export default function FAQPage({ lang = 'en' }: { lang?: Lang }) {
               <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                 {t.still.title}
               </Serif>
-              <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-4 ${LEAD} text-[var(--fx-muted)]`}>
                 {t.still.body}
               </p>
               <PillPrimary href="/contact" className="mt-8" withArrow>

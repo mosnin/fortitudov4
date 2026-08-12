@@ -23,7 +23,7 @@ import { useState } from 'react';
 import { CheckCircle, Loader2, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { services } from '@/lib/services';
 import { Band, BlurRise, PillGhost, Serif } from '@/components/marketing/giga/primitives';
-import { ALERT_TEXT, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
+import { ALERT_TEXT, BODY, BODY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CONTACT } from '@/lib/i18n/dictionaries/contact';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
@@ -139,7 +139,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
                     <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
                       {t.sent.title}
                     </Serif>
-                    <p className="mt-2 text-[14px] text-[var(--fx-muted)]">
+                    <p className={`mt-2 ${BODY} text-[var(--fx-muted)]`}>
                       {t.sent.body}
                     </p>
                     <PillGhost
@@ -242,7 +242,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
                     {error && (
                       <p
                         role="alert"
-                        className={`rounded-[4px] border border-[var(--fx-alert)]/40 bg-[var(--fx-alert)]/[0.08] px-3.5 py-2.5 text-[13px] ${ALERT_TEXT}`}
+                        className={`rounded-[4px] border border-[var(--fx-alert)]/40 bg-[var(--fx-alert)]/[0.08] px-3.5 py-2.5 ${BODY_S} ${ALERT_TEXT}`}
                       >
                         {error}
                       </p>
@@ -264,7 +264,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
                     {/* A promise about what happens to their address is
                         content, not decoration, so it reads at --fx-muted's
                         6.5:1 rather than --fx-faint's 3.57:1. */}
-                    <p className="text-[12px] text-[var(--fx-muted)]">
+                    <p className={`${BODY_S} text-[var(--fx-muted)]`}>
                       {t.form.privacyNote}
                     </p>
                   </form>
@@ -288,7 +288,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
                       <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                         {detail.title}
                       </p>
-                      <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--fx-white)]">
+                      <p className={`mt-1.5 ${BODY} text-[var(--fx-white)]`}>
                         {detail.body}
                       </p>
                     </div>
@@ -300,7 +300,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
                 <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
                   {t.start.title}
                 </Serif>
-                <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
+                <p className={`mt-2 ${BODY} text-[var(--fx-muted)]`}>
                   {t.start.body}
                 </p>
                 <PillGhost href="/sign-up" className="mt-5 w-full">

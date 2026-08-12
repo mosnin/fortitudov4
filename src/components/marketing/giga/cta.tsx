@@ -9,15 +9,13 @@
  * only ever have shown up as a bug.
  */
 
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
 import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { TextFlip } from '@/components/ui/text-flip';
-import { Eyebrow, Serif } from './primitives';
-import { DISPLAY_S, SECTION_Y } from './tokens';
+import { Eyebrow, PillPrimary, Serif } from './primitives';
+import { DISPLAY_S, LEAD, SECTION_Y } from './tokens';
 
 const reveal = {
   initial: { opacity: 0, y: 22 },
@@ -29,7 +27,13 @@ export function CtaSection({ lang = 'en' }: { lang?: Lang }) {
   const t = HOME[lang].cta;
   return (
     <section
-      className={`relative overflow-hidden bg-[var(--fx-charcoal)] px-5 sm:px-8 ${SECTION_Y}`}
+      /* `Band`'s gutter, written out rather than composed: the brand bloom
+         below is absolutely positioned against this section, and `Band` puts
+         every child inside its centred inner element, which would crop the
+         bloom to the content column. The three steps must stay equal to
+         `Band`'s — at `sm:px-8` alone this section sat 8px proud of every other
+         one from 1024px up. */
+      className={`relative overflow-hidden bg-[var(--fx-charcoal)] px-5 sm:px-8 lg:px-10 ${SECTION_Y}`}
     >
       {/* Brand bloom (adapted from pixel-perfect gradient-glow-fade: behind
           content, brand hues, both themes) — a soft radial lift under the
@@ -56,16 +60,18 @@ export function CtaSection({ lang = 'en' }: { lang?: Lang }) {
         </motion.div>
 
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }} className="lg:pt-3">
-          <p className="max-w-sm text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
+          <p className={`max-w-sm ${LEAD} text-[var(--fx-muted)]`}>
             {t.lead}
           </p>
-          <Link
-            href="/contact"
-            className="mt-6 inline-flex h-11 items-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98]"
-          >
+          {/* The kit's pill, not a local copy of it. This section hand-rolled
+              the same yellow block with `transition-all` on it — which is the
+              thing `PillPrimary`'s docstring warns about: the press is a spring
+              on `whileTap`, and a CSS `transition-all` smears every frame of it
+              through a 200ms curve. It also missed the magnetic pull every
+              other primary CTA on the surface has. */}
+          <PillPrimary href="/contact" withArrow className="mt-6">
             {t.button}
-            <ArrowRight className="h-4 w-4" />
-          </Link>
+          </PillPrimary>
         </motion.div>
       </div>
     </section>

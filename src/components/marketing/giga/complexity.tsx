@@ -5,14 +5,15 @@
  * cards (no animated mockup).
  */
 
-import { ShieldCheck, GitBranch, BarChart3 } from 'lucide-react';
 import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { Band, BlurRise, Eyebrow, PillGhost, Serif } from './primitives';
-import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
+import { BODY, DISPLAY_M, LEAD, SECTION_Y, TITLE_S } from './tokens';
 
-/** One icon per column, in the order the dictionary lists them. */
-const COLUMN_ICONS = [GitBranch, BarChart3, ShieldCheck];
+/* The three columns used to open on a lucide glyph stroked with the brand
+   gradient. That is the "decorative chip above a heading" pattern AGENTS.md
+   rules out by name, and it took the last consumer of the `chippi-grad` SVG
+   gradient with it when it went. */
 
 export function Complexity({ lang = 'en' }: { lang?: Lang }) {
   const t = HOME[lang].complexity;
@@ -25,7 +26,7 @@ export function Complexity({ lang = 'en' }: { lang?: Lang }) {
             {t.headingLine1}
             <br className="hidden sm:block" /> {t.headingLine2}
           </Serif>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--fx-muted)]">
+          <p className={`mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>
             {t.lead}
           </p>
           <div className="mt-8">
@@ -36,21 +37,17 @@ export function Complexity({ lang = 'en' }: { lang?: Lang }) {
 
       <BlurRise delay={0.1}>
         <div className="mt-16 grid gap-4 sm:grid-cols-3">
-          {t.columns.map((c, i) => {
-            const Icon = COLUMN_ICONS[i];
-            return (
-              <div data-fx-surface="dark"
-                key={c.title}
-                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8 backdrop-blur-sm transition-colors hover:border-[var(--fx-faint)]"
-              >
-                <Icon className="h-7 w-7" stroke="url(#chippi-grad)" strokeWidth={1.6} />
-                <Serif as="h3" className={`mt-6 ${TITLE_S} text-[var(--fx-white)]`}>
-                  {c.title}
-                </Serif>
-                <p className="mt-2.5 text-sm leading-relaxed text-[var(--fx-muted)]">{c.desc}</p>
-              </div>
-            );
-          })}
+          {t.columns.map((c) => (
+            <div data-fx-surface="dark"
+              key={c.title}
+              className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8 backdrop-blur-sm transition-colors hover:border-[var(--fx-faint)]"
+            >
+              <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
+                {c.title}
+              </Serif>
+              <p className={`mt-2.5 ${BODY} text-[var(--fx-muted)]`}>{c.desc}</p>
+            </div>
+          ))}
         </div>
       </BlurRise>
     </Band>

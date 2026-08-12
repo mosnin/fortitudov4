@@ -47,17 +47,12 @@ export default function MarketingLayout({
       data-marketing-shell
       className="dark flex min-h-screen flex-col bg-[var(--fx-charcoal)] text-[var(--fx-white)] antialiased"
     >
-      {/* Shared gradient def so icons can be stroked with the brand gradient.
-          The stops read the palette rather than repeating its hex: the vars are
-          defined on this element, so they resolve for the whole subtree. */}
-      <svg aria-hidden width="0" height="0" className="absolute">
-        <defs>
-          <linearGradient id="chippi-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="var(--fx-yellow)" />
-            <stop offset="100%" stopColor="var(--fx-yellow-hover)" />
-          </linearGradient>
-        </defs>
-      </svg>
+      {/* The `chippi-grad` linearGradient def used to live here, so icons could
+          be stroked with the brand gradient. Its only two consumers were the
+          decorative glyphs above the card headings in `offerings.tsx` and
+          `complexity.tsx` — the pattern AGENTS.md rules out by name — and both
+          are gone, so the def went with them rather than sitting in every page
+          of the site with nothing referencing it. */}
       {/* Pointer devices only, never on touch, off under reduced motion. */}
       <Cursor />
       <SiteHeader />

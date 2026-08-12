@@ -55,8 +55,12 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
               key={service.id}
               className="group relative flex h-full flex-col rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6 transition-colors duration-200 hover:border-[var(--fx-faint)]"
             >
-              <service.icon className="h-5 w-5" stroke="url(#chippi-grad)" strokeWidth={1.75} />
-              <Serif as="h3" className={`mt-4 ${TITLE_L} text-[var(--fx-white)]`}>
+              {/* No glyph above the heading. It was the "decorative chip above
+                  a heading" half of the rule AGENTS.md states, and it was also
+                  an incoherence: the same five offerings render on /services
+                  with no icon, so the homepage was drawing a category mark the
+                  detail page does not have. */}
+              <Serif as="h3" className={`${TITLE_L} text-[var(--fx-white)]`}>
                 {/* The card is one target, drawn with a stretched link rather
                     than an anchor around the whole cell: the "Contact us"
                     control below is itself a link, and an anchor inside an
@@ -92,7 +96,7 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
                 >
                   {t.cardPriceCta}
                 </Link>
-                <span className="flex items-center gap-1 text-[12.5px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
+                <span className="flex items-center gap-1 text-[13px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
                   {t.cardCta}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
@@ -114,7 +118,7 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
                 {t.somethingElseDesc}
               </p>
             </div>
-            <span className="mt-5 flex items-center gap-1 text-[12.5px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
+            <span className="mt-5 flex items-center gap-1 text-[13px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
               {t.somethingElseCta}
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </span>

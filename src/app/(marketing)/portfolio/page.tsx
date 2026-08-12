@@ -25,7 +25,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Band, BlurRise, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
-import { DISPLAY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
+import { BODY, BODY_S, DISPLAY_S, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { PORTFOLIO } from '@/lib/i18n/dictionaries/portfolio';
@@ -104,7 +104,7 @@ export default function PortfolioPage({ lang = 'en' }: { lang?: Lang }) {
                 <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
                   {t.empty.title}
                 </Serif>
-                <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
+                <p className={`mt-4 ${LEAD} text-[var(--fx-muted)]`}>
                   {t.empty.body}
                 </p>
                 <PillPrimary href="/contact" className="mt-8" withArrow>
@@ -139,15 +139,15 @@ export default function PortfolioPage({ lang = 'en' }: { lang?: Lang }) {
                   {/* Muted, not faint: the client name is content, and
                       --fx-faint measures 3.57:1 on charcoal — under the 4.5:1
                       body-text floor. --fx-muted is 6.5:1. */}
-                  <p className="mt-1 text-[13px] text-[var(--fx-muted)]">
+                  <p className={`mt-1 ${BODY_S} text-[var(--fx-muted)]`}>
                     {study.client}
                   </p>
-                  <p className="mt-4 flex-1 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
+                  <p className={`mt-4 flex-1 ${BODY} text-[var(--fx-muted)]`}>
                     {study.description}
                   </p>
 
                   <div className="mt-6 border-t border-[var(--fx-hairline)] pt-4">
-                    <p className="text-[14px] font-medium text-[var(--fx-yellow)]">
+                    <p className={`${BODY} font-medium text-[var(--fx-yellow)]`}>
                       {study.result}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-1.5">

@@ -55,7 +55,7 @@ import { useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { createDotMatrix } from '@/components/originkit/ui/hero-26/dot-matrix';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from './primitives';
-import { DISPLAY_L, HERO_Y } from './tokens';
+import { DISPLAY_L, HERO_Y, LEAD } from './tokens';
 
 /**
  * The palette, for the case where the tokens do not resolve. These MUST stay
@@ -204,9 +204,7 @@ export function PageHero({
             ))}
           </Serif>
           {lead ? (
-            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              {lead}
-            </p>
+            <p className={cn('mt-6 max-w-xl text-[var(--fx-muted)]', LEAD)}>{lead}</p>
           ) : null}
           {hasActions ? (
             <div className="mt-9 flex flex-wrap gap-3">

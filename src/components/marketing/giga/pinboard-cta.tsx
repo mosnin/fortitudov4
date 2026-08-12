@@ -84,7 +84,7 @@ import { useReducedMotion } from 'motion/react';
 import type { Lang } from '@/lib/i18n/markets';
 import { StickerNote } from '@/components/originkit/ui/cta-01/sticker-note';
 import { BlurRise, Eyebrow, PillPrimary, Serif } from './primitives';
-import { DISPLAY_XS, EYEBROW_TEXT, MONO_STYLE, SECTION_Y_TIGHT } from './tokens';
+import { DISPLAY_XS, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y_TIGHT } from './tokens';
 
 /**
  * This section's words.
@@ -190,7 +190,11 @@ export function PinboardCta({ lang = 'en' }: { lang?: Lang }) {
 
   return (
     <section
-      className={`relative isolate overflow-hidden bg-[var(--fx-charcoal)] px-5 sm:px-8 ${SECTION_Y_TIGHT}`}
+      /* `Band`'s three gutter steps, written out: the ruled lattice bleeds past
+         the content column on both axes, so this cannot be a `Band`. They must
+         stay equal to it — without the `lg` step the board sat 8px proud of
+         every other section from 1024px up. */
+      className={`relative isolate overflow-hidden bg-[var(--fx-charcoal)] px-5 sm:px-8 lg:px-10 ${SECTION_Y_TIGHT}`}
     >
       <BoardRules />
 
@@ -217,7 +221,7 @@ export function PinboardCta({ lang = 'en' }: { lang?: Lang }) {
               {COPY.heading}
             </Serif>
 
-            <p className="mt-4 max-w-[46ch] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
+            <p className={`mt-4 max-w-[46ch] ${LEAD} text-[var(--fx-muted)]`}>
               {COPY.lead}
             </p>
 

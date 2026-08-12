@@ -42,7 +42,7 @@ import {
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
 import { Serif } from '@/components/marketing/giga/primitives';
-import { EYEBROW_TEXT, MONO_STYLE, TITLE_L } from '@/components/marketing/giga/tokens';
+import { BODY_S, EYEBROW_TEXT, MONO_STYLE, TITLE_L } from '@/components/marketing/giga/tokens';
 import type { Lang } from '@/lib/i18n/markets';
 import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
 
@@ -257,7 +257,7 @@ export function SiteHeader({ lang = 'en' }: { lang?: Lang }) {
                           <Serif as="p" className={cn('mt-3', TITLE_L, 'text-[var(--fx-white)]')}>
                             {activeCopy.featured.title}
                           </Serif>
-                          <p className="mt-2.5 text-xs leading-relaxed text-[var(--fx-muted)]">
+                          <p className={cn('mt-2.5', BODY_S, 'text-[var(--fx-muted)]')}>
                             {activeCopy.featured.body}
                           </p>
                         </div>
@@ -279,9 +279,11 @@ export function SiteHeader({ lang = 'en' }: { lang?: Lang }) {
                               onClick={closeAll}
                               className="group flex items-start gap-3 rounded-[4px] px-3 py-2.5 transition-colors hover:bg-[var(--fx-white)]/[0.06]"
                             >
-                              <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-white)]/[0.06] text-[var(--fx-muted)] transition-colors group-hover:border-[var(--fx-yellow)] group-hover:text-[var(--fx-yellow)]">
-                                <Icon className="h-[15px] w-[15px]" />
-                              </span>
+                              {/* A bare glyph, not a glyph in a tinted box: the
+                                  badge pattern is ruled out by name in
+                                  AGENTS.md. The icon is fine — it is a nav
+                                  item — the box was the violation. */}
+                              <Icon className="mt-0.5 h-[15px] w-[15px] flex-shrink-0 text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-yellow)]" />
                               <span className="min-w-0">
                                 <span className="block text-[13px] font-medium text-[var(--fx-white)]">
                                   {copy.label}
@@ -399,9 +401,9 @@ export function SiteHeader({ lang = 'en' }: { lang?: Lang }) {
                               onClick={closeAll}
                               className="flex items-center gap-3 rounded-[4px] px-1 py-2.5 text-[var(--fx-white)]"
                             >
-                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-white)]/[0.06] text-[var(--fx-muted)]">
-                                <Icon className="h-4 w-4" />
-                              </span>
+                              {/* Same rule as the desktop menu above: the glyph
+                                  stands on its own, without the tinted box. */}
+                              <Icon className="h-4 w-4 flex-shrink-0 text-[var(--fx-muted)]" />
                               <span className="text-[19px]">{t.items[it.key].label}</span>
                             </Link>
                           </motion.div>

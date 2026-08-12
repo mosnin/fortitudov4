@@ -28,7 +28,7 @@
 import Link from 'next/link';
 import { BrandMark } from '@/components/brand-mark';
 import { Serif } from './primitives';
-import { DISPLAY_XL, EYEBROW_TEXT, MONO_STYLE } from './tokens';
+import { BODY_S, DISPLAY_XL, EYEBROW_TEXT, MONO_STYLE } from './tokens';
 import type { Lang } from '@/lib/i18n/markets';
 import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
 
@@ -68,8 +68,13 @@ export function SiteFooter({ lang = 'en' }: { lang?: Lang }) {
   const copyright = t.copyright.replace('{year}', String(new Date().getFullYear()));
 
   return (
-    <footer className="bg-[var(--fx-charcoal)] px-4 pb-16 sm:px-6">
-      <div className="mx-auto mt-8 w-full max-w-7xl sm:mt-10">
+    /* `Band`'s geometry, written out: this is a `<footer>`, and `Band` renders
+       a `<section>`. The gutters and the max-width must stay equal to it. They
+       were `px-4 sm:px-6` over `max-w-7xl`, which is a different gutter AND a
+       different column, so the card's edge lined up with nothing on the page —
+       at 1440 it sat 80px in while every section above it sat at 40. */
+    <footer className="bg-[var(--fx-charcoal)] px-5 pb-16 sm:px-8 lg:px-10">
+      <div className="mx-auto mt-8 w-full max-w-[1728px] sm:mt-10">
         <div className="relative overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] p-6 text-[var(--fx-white)] shadow-[0_8px_30px_rgba(0,0,0,0.18)] sm:p-8">
           {/* Texture: two soft corner lifts and a fine dot grid. Kept white
               rather than yellow — the accent is for what you press, and a
@@ -246,7 +251,7 @@ export function SiteFooter({ lang = 'en' }: { lang?: Lang }) {
                   Fortitudo
                 </span>
               </span>
-              <p className="text-xs text-[var(--fx-muted)]">{copyright}</p>
+              <p className={`${BODY_S} text-[var(--fx-muted)]`}>{copyright}</p>
             </div>
           </div>
         </div>

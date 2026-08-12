@@ -16,7 +16,7 @@ import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { Counter } from './motion-kit';
 import { Band, BlurRise, Mono, Serif } from './primitives';
-import { SECTION_Y } from './tokens';
+import { DISPLAY_XS, SECTION_Y } from './tokens';
 
 /**
  * Three numbers, and every one of them has to be answerable when a client asks
@@ -43,9 +43,16 @@ export function Stats({ lang = 'en' }: { lang?: Lang }) {
     <Band className={SECTION_Y}>
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-20">
         <BlurRise>
-          <p className="max-w-lg text-2xl leading-snug text-[var(--fx-white)] sm:text-[2rem] sm:leading-[1.25]">
+          {/* A DISPLAY step, not a body one. This line measured 32px — the
+              largest paragraph on the site, at no step of any ladder, hand-set
+              with its own responsive bump and its own leading. It is not body
+              copy and no body token fits it: it is the band's headline, sitting
+              where a section would put its `h2`, so it takes the display
+              ladder's smallest step and the display face's weight and tracking
+              (one family on this surface, so only the weight moves). */}
+          <Serif as="p" className={`max-w-lg ${DISPLAY_XS} text-[var(--fx-white)]`}>
             {t.statement}
-          </p>
+          </Serif>
         </BlurRise>
 
         {/* The numbers ARE this band's motion: they roll up once, on entry.

@@ -50,7 +50,11 @@ export const Section25Hero = ({ lang = "en" }: { lang?: Lang }) => {
 
   return (
     <section
-      className={`relative isolate flex min-h-dvh w-full flex-col items-center overflow-hidden bg-[var(--fx-charcoal-deep)] px-5 sm:px-8 ${HERO_Y}`}
+      /* `Band`'s three gutter steps, written out: the drawn glow is positioned
+         against this section and would be cropped to the content column if the
+         section were a `Band`. They must stay equal to it — without the `lg`
+         step the hero sat 8px proud of every section below it. */
+      className={`relative isolate flex min-h-dvh w-full flex-col items-center overflow-hidden bg-[var(--fx-charcoal-deep)] px-5 sm:px-8 lg:px-10 ${HERO_Y}`}
     >
       {/* ── The drawn glow ────────────────────────────────────────────────────
           A wide arc sweeping up from the lower right. A broad warm bloom, a
@@ -93,7 +97,7 @@ export const Section25Hero = ({ lang = "en" }: { lang?: Lang }) => {
             <span className="rounded-full bg-[var(--fx-yellow)] px-3 py-1 text-[12px] font-semibold text-[var(--fx-on-yellow)]">
               {t.badgeTag}
             </span>
-            <span className="text-[13.5px] font-medium text-[var(--fx-white)] sm:text-[14px]">
+            <span className="text-[14px] font-medium text-[var(--fx-white)]">
               {t.badgeText}
             </span>
           </a>

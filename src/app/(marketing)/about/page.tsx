@@ -16,7 +16,7 @@ import { CtaSection } from '@/components/marketing/giga/cta';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { Band, BlurRise, Eyebrow, Serif } from '@/components/marketing/giga/primitives';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
-import { DISPLAY_S, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
+import { BODY, DISPLAY_S, LEAD, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
 import { ABOUT } from '@/lib/i18n/dictionaries/about';
 import type { Lang } from '@/lib/i18n/markets';
 
@@ -40,7 +40,12 @@ export default function AboutPage({ lang = 'en' }: { lang?: Lang }) {
 
   return (
     <>
-      <div className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
+      {/* No `dark` class. `(marketing)/layout.tsx` already forces it on the
+          whole shell, so a second one here bought nothing — and it was a live
+          route by which the product's `dark:` tokens could reach this surface,
+          which is the one thing the `[data-marketing-shell]` boundary exists to
+          stop. */}
+      <div className="bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
         {/* Hero — the same dot-matrix field every other sub-page now opens on.
             It used to be a full-bleed stock skyline under two scrims, left
             from the photography-led design; next to /services and /contact it
@@ -73,7 +78,7 @@ export default function AboutPage({ lang = 'en' }: { lang?: Lang }) {
               </Serif>
             </BlurRise>
             <BlurRise delay={0.1}>
-              <div className="space-y-6 text-[15px] leading-relaxed text-[var(--fx-muted)] lg:pt-2">
+              <div className={`space-y-6 ${LEAD} text-[var(--fx-muted)] lg:pt-2`}>
                 <p>{t.problem.para1}</p>
                 <p>{t.problem.para2}</p>
               </div>
@@ -119,7 +124,7 @@ export default function AboutPage({ lang = 'en' }: { lang?: Lang }) {
                   <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                     {b.title}
                   </Serif>
-                  <p className="mt-3 text-[14px] leading-relaxed text-[var(--fx-muted)]">{b.body}</p>
+                  <p className={`mt-3 ${BODY} text-[var(--fx-muted)]`}>{b.body}</p>
                 </div>
               </BlurRise>
             ))}
