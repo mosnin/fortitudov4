@@ -140,12 +140,28 @@ export function PageHero({
       // Dimmest first: structure, then dust, then the white mid-tones, and the
       // accent only on the rare bright cells. Yellow is capped below full so
       // the field never competes with the one yellow button beneath it.
+      //
+      // The steps carry their own opacities rather than reusing --fx-hairline
+      // and --fx-faint. Those two are TEXT tokens, already alpha'd for copy
+      // sitting on the old, lighter charcoal; against the ground as it is now
+      // the first two steps of the ramp landed under 4% effective and the
+      // field was invisible on a rendered page. Only the two solid tokens are
+      // read, so the field still follows the tone inversion — in the yellow
+      // scope --fx-white and --fx-yellow both resolve to charcoal and the dots
+      // come out dark on yellow, which is correct.
       ramp: [
-        { css: token('--fx-hairline', FALLBACK_HAIRLINE) },
-        { css: token('--fx-faint', FALLBACK_FAINT) },
-        { css: token('--fx-white', FALLBACK_WHITE), opacity: 0.32 },
-        { css: token('--fx-yellow', FALLBACK_YELLOW), opacity: 0.8 },
+        { css: token('--fx-white', FALLBACK_WHITE), opacity: 0.14 },
+        { css: token('--fx-white', FALLBACK_WHITE), opacity: 0.3 },
+        { css: token('--fx-white', FALLBACK_WHITE), opacity: 0.55 },
+        { css: token('--fx-yellow', FALLBACK_YELLOW), opacity: 0.95 },
       ],
+      // The default 1.7 keeps the top two stops rare — on four of the six
+      // seeds they never fired at all and the field drew only its dimmest
+      // stop, measuring 26 against a ground of 15. That is a canvas doing
+      // work nobody can see. Lower gamma spreads the noise across the ramp,
+      // so the bright clusters actually appear on every seed rather than on
+      // whichever one happens to peak.
+      gamma: 1.15,
       seed,
       still: reduce === true,
     });
