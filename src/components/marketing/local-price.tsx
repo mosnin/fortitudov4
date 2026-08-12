@@ -6,8 +6,8 @@
  * The pages themselves are statically generated once per LANGUAGE; currency
  * varies per VISITOR (a Spanish page shows CLP in Chile, COP in Colombia), so
  * price amounts render through these small client components instead of being
- * baked into the HTML. The middleware resolves the visitor's country to a
- * currency and stores it in the `chippi_currency` cookie; these components
+ * baked into the HTML. The proxy (src/proxy.ts) resolves the visitor's country
+ * to a currency and stores it in the CURRENCY_COOKIE; these components
  * read that cookie after hydration and re-render the amount. Server render
  * and first paint show the USD base price — the honest fallback — and swap
  * to the local currency immediately on hydration.
@@ -87,10 +87,14 @@ export function PriceText({
 }
 
 /**
- * Honest-UI disclosure: when the display currency isn't USD, say that billing
- * is in USD (checkout charges USD until Stripe currency_options ship — at
- * which point this note is removed rather than softened). Renders nothing
- * for USD visitors.
+ * Honest-UI disclosure: when the display currency isn't USD, say so.
+ *
+ * The localized figure is a pinned rate rounded to a clean number, and Creem
+ * charges the card in USD — so the amount shown here is a reading aid and the
+ * visitor's bank sets what they actually pay. Showing a converted price
+ * without saying that is the part that would be dishonest, which is why this
+ * component exists at all. Renders nothing for USD visitors, who have no
+ * conversion to be warned about.
  */
 export function CurrencyNote({ lang, className }: { lang: Lang; className?: string }) {
   const currency = useDisplayCurrency();
@@ -101,8 +105,12 @@ export function CurrencyNote({ lang, className }: { lang: Lang; className?: stri
 }
 
 /**
- * Minimal language switcher. Links carry `?hl=` so the middleware re-pins the
- * `chippi_lang` cookie — the explicit choice then wins over geo everywhere.
+ * Minimal language switcher. Links carry `?hl=` so the proxy re-pins the
+ * LANG_COOKIE — the explicit choice then wins over geo everywhere.
+ *
+ * Not rendered anywhere yet, deliberately: its links point at `/es/…` and
+ * `/ru/…`, and those route trees do not exist. Mount it in the same commit
+ * that ships them (see plans/i18n.md), not before.
  */
 export function LangSwitcher({ current, basePath }: { current: Lang; basePath: string }) {
   return (

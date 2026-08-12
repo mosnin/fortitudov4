@@ -97,8 +97,11 @@ Simple copy is not permission to overclaim — it makes overclaiming more
 obvious, because there is nowhere for a weasel word to hide. If you cannot
 point at where a number came from, do not write the number.
 
-**Every language says the same thing.** Pricing is the one translated surface
-(`src/lib/i18n/dictionaries/pricing.ts`, en/es/ru). A translation must carry
-the same plain meaning, not the same words — an idiom that lands in English
-and confuses in Spanish is a failed translation, even if it is accurate.
-Translate the outcome, not the sentence.
+**Every language says the same thing.** No page is translated yet — the site
+is English-only, and the only translated strings anywhere are the currency
+note in `src/lib/i18n/dictionaries/pricing.ts` (en/es/ru). `plans/i18n.md` is
+the plan for fixing that. When it happens: a translation must carry the same
+plain meaning, not the same words — an idiom that lands in English and
+confuses in Spanish is a failed translation, even if it is accurate.
+Translate the outcome, not the sentence. Every language has to pass the
+ten-year-old test **in that language**, not in English first.

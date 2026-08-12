@@ -5,9 +5,20 @@
  * other currency is that same USD price converted at a PINNED rate and
  * rounded to a clean, whole, human-looking number ($97 → AED 355, not
  * AED 356.23). No live FX at runtime: the rates below are a deliberate
- * snapshot so displayed prices are stable, reviewable in git, and can be
- * mirrored 1:1 into Stripe `currency_options` when local-currency CHECKOUT
- * ships (until then, checkout charges USD and localized pages say so).
+ * snapshot so displayed prices are stable and reviewable in git.
+ *
+ * These numbers are a READING AID, never a quote. Checkout is Creem
+ * (src/app/checkout/page.tsx) and it charges in USD; the visitor's own bank
+ * does the conversion at whatever rate it likes. Two things follow, and both
+ * matter: the rounding below is free to be generous with accuracy because no
+ * one is billed against it, and any copy near a localized price has to say
+ * plainly that the card is charged in dollars. `PRICING_DICTS.billedInUsdNote`
+ * is that sentence.
+ *
+ * (An earlier version of this note claimed these rates would be "mirrored 1:1
+ * into Stripe `currency_options`". There is no Stripe in this codebase and
+ * never was — the line was inherited from the template this project started
+ * from, along with the pricing copy it justified.)
  *
  * TODO(founder): verify/adjust the pinned rates below before launch, and
  * re-pin them on a deliberate schedule (quarterly, or when a rate drifts

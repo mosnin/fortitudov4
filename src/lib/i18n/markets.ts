@@ -8,7 +8,7 @@
  *
  * Resolution order everywhere in the product:
  *   1. Explicit user choice (profile fields for logged-in users, the
- *      `chippi_lang` / `chippi_currency` cookies for logged-out visitors).
+ *      `fx_lang` / `fx_currency` cookies for logged-out visitors).
  *   2. Geo (Vercel's `x-vercel-ip-country` header, read in middleware).
  *   3. Default: English / USD — the American English site is the canonical
  *      base version of the product.
@@ -42,9 +42,13 @@ export const LANG_LABELS: Record<Lang, string> = {
 };
 
 /** Currencies we display. Every entry MUST have a rate in lib/i18n/currency.ts
- *  (a test enforces this). RUB is intentionally absent: Stripe does not
- *  support RUB, so Russian-language visitors see USD (or the currency of the
- *  country they're actually in — a Russian speaker in Dubai sees AED). */
+ *  (a test enforces this).
+ *
+ *  RUB is intentionally absent. Language and currency are separate dimensions
+ *  precisely so this case works: a Russian speaker reads ru copy and sees USD,
+ *  or the currency of wherever they actually are — in Dubai, AED. Adding RUB
+ *  would put a rouble figure next to a checkout that cannot take roubles,
+ *  which is a worse experience than showing dollars honestly. */
 export type Currency =
   | 'USD'
   | 'EUR'
@@ -115,11 +119,15 @@ export function resolveMarket(country: string | null | undefined): Market {
   return { lang, currency };
 }
 
-/** Cookie names shared by middleware (writer) and client components (readers).
- *  `chippi_lang` records a language preference (geo-derived or explicit via
- *  `?hl=`); `chippi_currency` records the display currency. */
-export const LANG_COOKIE = 'chippi_lang';
-export const CURRENCY_COOKIE = 'chippi_currency';
+/** Cookie names shared by the proxy (writer) and client components (readers).
+ *  `fx_lang` records a language preference (geo-derived or explicit via
+ *  `?hl=`); `fx_currency` records the display currency.
+ *
+ *  Read through these constants, never as string literals — the names changed
+ *  once already (they carried the source template's product name), and the
+ *  only reason that rename was safe is that nothing hardcoded them. */
+export const LANG_COOKIE = 'fx_lang';
+export const CURRENCY_COOKIE = 'fx_currency';
 
 /**
  * Marketing paths that exist in every language tree (`/pricing` ↔
@@ -146,7 +154,7 @@ export function localizedPath(basePath: string, lang: Lang): string {
  * The pure language-routing decision the middleware executes — extracted so
  * behavior is unit-testable without Clerk/Next plumbing.
  *
- * Inputs: the request path, the visitor's country, the `chippi_lang` cookie,
+ * Inputs: the request path, the visitor's country, the `fx_lang` cookie,
  * and an explicit `?hl=` override. Output: the lang to persist in the cookie
  * and, when the visitor should be reading this page in another language, the
  * path to 302 to.
