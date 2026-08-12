@@ -1,7 +1,9 @@
 import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import { db } from "@/db";
 import { agencyClients, users, weeklyReports } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { isPartner } from "@/lib/permissions";
 import { AppShell, type ShellNavItem } from "@/components/shell/app-shell";
 
 const navItems: ShellNavItem[] = [
@@ -77,6 +79,23 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const user = await currentUser();
+
+  /* Partners get their own surface, not this one.
+     This layout has never had a role guard — every page under it enforces its
+     own access, so a signed-in stranger saw the client chrome and empty pages
+     rather than data. That was survivable while the only two logins were staff
+     and clients. A partner is neither: they would get the client portal's nav,
+     its "New Project" call to action and its Projects/Messages/Payments
+     sections, none of which mean anything for someone whose relationship with
+     us is a queue of jobs. */
+  if (user) {
+    const [row] = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.clerkId, user.id))
+      .limit(1);
+    if (row && isPartner(row.role)) redirect("/partner");
+  }
 
   // Weekly reports exist for digital-marketing engagements only — the nav
   // entry appears only for clients who actually have them.

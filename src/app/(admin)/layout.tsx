@@ -6,8 +6,10 @@ import { eq } from "drizzle-orm";
 import { AppShell, type ShellNavItem } from "@/components/shell/app-shell";
 import {
   isStaff,
+  isPartner,
   canManageAgency,
   canManageLeads,
+  canManagePartners,
   canViewAllProjects,
   ROLE_LABELS,
 } from "@/lib/permissions";
@@ -27,7 +29,11 @@ export default async function AdminLayout({
   });
 
   if (!user || !isStaff(user.role)) {
-    redirect("/dashboard");
+    /* Send them to their OWN surface, not the client portal. This used to be a
+       bare redirect to /dashboard, which was right while there were only two
+       kinds of person here — a partner typing /admin would have landed in the
+       client portal, a place they have no rows in and no business being. */
+    redirect(user && isPartner(user.role) ? "/partner" : "/dashboard");
   }
 
   // Role-gated nav, expressed as serializable config for the client shell.
@@ -61,6 +67,18 @@ export default async function AdminLayout({
             label: "Leads",
             href: "/admin/leads",
             icon: "Inbox",
+            section: "Operations",
+          },
+        ]
+      : []),
+    // Admin + PM only. A VA who types the URL is redirected by the partners
+    // layout as well — the nav hides it, the guard enforces it.
+    ...(canManagePartners(user.role)
+      ? [
+          {
+            label: "Partners",
+            href: "/admin/partners",
+            icon: "Handshake",
             section: "Operations",
           },
         ]

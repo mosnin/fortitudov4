@@ -4,20 +4,21 @@
  * NAME IS INHERITED, AND WRONG. This file arrived from the source template as
  * a whole pricing PAGE dictionary — plans, seats, credits, trials, an FAQ —
  * for a product Fortitudo does not sell. None of that survives. What is left
- * is the currency/price-display disclosure, so the honest name is
- * `currency-notes.ts` and the honest export is `CURRENCY_NOTES`. Both keep the
- * old names for now only because the sole importer,
- * `src/components/marketing/local-price.tsx`, is owned elsewhere; rename the
- * file, the type, and the export together the next time that file is touched.
+ * is the currency disclosure and `fill()`, so the honest name is
+ * `currency-notes.ts`. Renaming it is a bigger move than it looks: `fill()`
+ * has importers all over the marketing tree.
  *
- * WHAT IS ACTUALLY RENDERED. One string, `billedInUsdNote`, drawn by
- * `<CurrencyNote>` under the prices on `/pricing`. It shows only when the
- * visitor's display currency is not USD (read from the CURRENCY_COOKIE the
- * request proxy sets from geo — see `../markets.ts`), so a US visitor never
- * sees it. Pricing-page prose lives in the page components, not here; this
- * dictionary exists because this one line has to change with the LANGUAGE
- * while the price beside it changes with the CURRENCY, and those are two
- * different axes that the same visitor resolves independently.
+ * `billedInUsdNote` IS NOT RENDERED ANYWHERE. It was drawn by `<CurrencyNote>`
+ * under the prices on `/pricing` when the visitor's display currency was not
+ * USD. The public site advertises no price now — you tell us what you need and
+ * we send you a fixed one — so the prices, the `LocalPrice` components and
+ * that note's only mount all went. The string stays because the disclosure is
+ * still true of what a card is charged in, and because deleting three
+ * translations is easy and writing them again is not. Wire it up, or delete
+ * it; do not leave it half-alive if `/pricing` ever quotes money again.
+ *
+ * The live export is `fill()` at the foot of this file, which every marketing
+ * page uses for its `{token}` counts.
  *
  * WHY es/ru EXIST WITH NO TRANSLATED PAGES. English is the only shipped
  * language: there is no `/es` or `/ru` route tree, so cross-language redirects
@@ -76,14 +77,16 @@ const ru: PricingDict = {
 export const PRICING_DICTS: Record<Lang, PricingDict> = { en, es, ru };
 
 /**
- * Tiny token interpolation: fill('from {price}', { price: '$1,500' }). Tokens
- * with no provided value are left as-is — an unfilled `{price}` is visible in
+ * Tiny token interpolation: fill('{days} days of help', { days: 30 }). Tokens
+ * with no provided value are left as-is — an unfilled `{days}` is visible in
  * review, where a silently dropped one is not.
  *
- * Used here for `billedInUsdNote` and by `<PriceText>` in local-price.tsx,
- * which fills price tokens in page prose with the visitor's localized amount.
- * (A `pluralWord()` helper lived here too; it existed to decline the word
- * "credits" in Russian, and went out with the credits.)
+ * Every marketing page uses it for the counts that must not be typed into
+ * prose: the post-launch support window, the pipeline stage count, the contact
+ * address in the form's failure notices. It used to fill price tokens too, via
+ * `<PriceText>`; there are no prices on the site any more. (A `pluralWord()`
+ * helper lived here too; it existed to decline the word "credits" in Russian,
+ * and went out with the credits.)
  */
 export function fill(template: string, values: Record<string, string | number>): string {
   return template.replace(/\{(\w+)\}/g, (m, k) => (k in values ? String(values[k]) : m));
