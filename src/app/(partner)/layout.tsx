@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { PartnerShell, type PartnerNavItem } from "@/components/partner/partner-shell";
+import { AppShell, type ShellNavItem } from "@/components/shell/app-shell";
 import { requirePartnerAccess } from "./access";
 
 /**
@@ -12,8 +12,20 @@ import { requirePartnerAccess } from "./access";
  * no finance and no CRM — see plans/partners.md — so there is nothing else to
  * put in it, and inventing entries to fill the sidebar would be inventing
  * access.
+ *
+ * It is the product's own `AppShell`, with three pieces of chrome decided
+ * rather than inherited:
+ *   - the ⌘K palette stays, because it now offers this nav and nothing else;
+ *   - global search goes, because it searches projects, messages and files
+ *     scoped to `projects.userId` — a partner owns none, so it can only ever
+ *     answer "no results";
+ *   - the bell goes, because nothing in the product writes a notification to a
+ *     partner, and a control that is permanently empty teaches people to stop
+ *     looking at it.
+ * The staff commands — Helix's actions and the agency CRM search — are off by
+ * default and only `(admin)` asks for them.
  */
-const navItems: PartnerNavItem[] = [
+const navItems: ShellNavItem[] = [
   { label: "Requests", href: "/partner", icon: "ClipboardList" },
   { label: "New request", href: "/partner/requests/new", icon: "FilePlus2" },
 ];
@@ -27,12 +39,15 @@ export default async function PartnerLayout({
   const user = await currentUser();
 
   return (
-    <PartnerShell
+    <AppShell
       navItems={navItems}
       cta={{ label: "New request", href: "/partner/requests/new" }}
       accountEmail={user?.emailAddresses[0]?.emailAddress}
+      /* The logo goes to their own surface, not the marketing home. */
+      homeHref="/partner"
+      chrome={{ search: false, notifications: false }}
     >
       {children}
-    </PartnerShell>
+    </AppShell>
   );
 }

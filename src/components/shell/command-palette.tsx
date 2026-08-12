@@ -3,16 +3,16 @@
 /**
  * The command palette.
  *
- * One keystroke to anywhere. It exists because Helix added surfaces faster
- * than the sidebar can hold them, and because the fastest path to "ask Helix
- * about Acme" should not be three clicks through a nav tree.
+ * One keystroke to anywhere — but only to the surfaces this person already
+ * has. It offers what the shell's own nav offers, plus, for staff, the Helix
+ * actions and the CRM search. The gate itself is `buildPaletteCommands` in
+ * `commands.ts`, kept pure so it can be tested without a browser or a database;
+ * this file is the keyboard, the fetch and the list.
  *
- * Two kinds of result, and the order is deliberate: what you can *do* comes
- * before what you can *open*, because someone who reached for ⌘K usually has
- * an intention rather than a destination.
- *
- * Search hits the same resource endpoint the introduction picker uses, so the
- * palette widens exactly as the gatekeeper registry does.
+ * Search hits the palette's own endpoint (`/api/helix/search`, staff-gated),
+ * so it is requested only when the staff commands are on. A client portal that
+ * asked for them would get a 403 and an empty list, which is the right answer
+ * arrived at the wrong way.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -20,27 +20,28 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { META, SECTION_LABEL } from "@/lib/typography";
 import { cn } from "@/lib/utils";
+import {
+  buildPaletteCommands,
+  type PaletteCommand,
+  type PaletteDestination,
+  type PaletteSearchHit,
+} from "./commands";
 
-interface Command {
-  id: string;
-  label: string;
-  detail?: string;
-  group: string;
-  run: () => void;
+export interface CommandPaletteProps {
+  /** This surface's nav, already role-gated by its layout. */
+  destinations: readonly PaletteDestination[];
+  /** Staff only: Helix's "Do" actions and the agency CRM search. */
+  staffCommands?: boolean;
 }
 
-interface SearchHit {
-  kind: string;
-  id: string;
-  label: string;
-  detail?: string;
-}
-
-export function CommandPalette() {
+export function CommandPalette({
+  destinations,
+  staffCommands = false,
+}: CommandPaletteProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [hits, setHits] = useState<SearchHit[]>([]);
+  const [hits, setHits] = useState<PaletteSearchHit[]>([]);
   const [active, setActive] = useState(0);
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -69,7 +70,7 @@ export function CommandPalette() {
   // resource endpoint: the palette is for navigating, not for granting access,
   // so it must not be filtered by any thread's introductions.
   useEffect(() => {
-    if (!open || query.trim().length < 2) {
+    if (!open || !staffCommands || query.trim().length < 2) {
       setHits([]);
       return;
     }
@@ -81,7 +82,7 @@ export function CommandPalette() {
           { signal: controller.signal }
         );
         if (!response.ok) return;
-        const data = (await response.json()) as { results: SearchHit[] };
+        const data = (await response.json()) as { results: PaletteSearchHit[] };
         setHits(data.results);
       } catch {
         // An aborted keystroke is not an error worth surfacing.
@@ -91,71 +92,27 @@ export function CommandPalette() {
       controller.abort();
       clearTimeout(timer);
     };
-  }, [open, query]);
+  }, [open, staffCommands, query]);
 
-  const go = useCallback(
-    (href: string) => {
+  const commands = useMemo(
+    () => buildPaletteCommands({ destinations, staffCommands, hits, query }),
+    [destinations, staffCommands, hits, query]
+  );
+
+  const run = useCallback(
+    async (command: PaletteCommand) => {
       setOpen(false);
-      router.push(href);
+      if (command.action.kind === "navigate") {
+        router.push(command.action.href);
+        return;
+      }
+      const response = await fetch("/api/helix/threads", { method: "POST" });
+      if (!response.ok) return;
+      const body = await response.json();
+      router.push(`/admin/helix/${body.thread.id}`);
     },
     [router]
   );
-
-  const commands = useMemo<Command[]>(() => {
-    const actions: Command[] = [
-      {
-        id: "new-thread",
-        label: "Ask Helix something",
-        detail: "Open a new thread",
-        group: "Do",
-        run: async () => {
-          setOpen(false);
-          const response = await fetch("/api/helix/threads", { method: "POST" });
-          if (!response.ok) return;
-          const body = await response.json();
-          router.push(`/admin/helix/${body.thread.id}`);
-        },
-      },
-      {
-        id: "approvals",
-        label: "Review what Helix queued",
-        detail: "Approvals",
-        group: "Do",
-        run: () => go("/admin/helix/approvals"),
-      },
-    ];
-
-    const places: Command[] = [
-      { id: "p-threads", label: "Threads", group: "Open", run: () => go("/admin/helix") },
-      { id: "p-gadgets", label: "Gadgets", group: "Open", run: () => go("/admin/helix/gadgets") },
-      { id: "p-activity", label: "Activity", group: "Open", run: () => go("/admin/helix/activity") },
-      { id: "p-clients", label: "Clients", group: "Open", run: () => go("/admin/clients") },
-      { id: "p-tasks", label: "Tasks", group: "Open", run: () => go("/admin/tasks") },
-      { id: "p-projects", label: "Projects", group: "Open", run: () => go("/admin/projects") },
-      { id: "p-messages", label: "Messages", group: "Open", run: () => go("/admin/messages") },
-    ];
-
-    const needle = query.trim().toLowerCase();
-    const matches = (command: Command) =>
-      needle.length === 0 ||
-      command.label.toLowerCase().includes(needle) ||
-      (command.detail ?? "").toLowerCase().includes(needle);
-
-    const found: Command[] = hits.map((hit) => ({
-      id: `${hit.kind}:${hit.id}`,
-      label: hit.label,
-      detail: hit.detail,
-      group: hit.kind === "client" ? "Clients" : "Projects",
-      run: () =>
-        go(
-          hit.kind === "client"
-            ? `/admin/clients?client=${hit.id}`
-            : `/admin/projects/${hit.id}`
-        ),
-    }));
-
-    return [...actions.filter(matches), ...found, ...places.filter(matches)];
-  }, [query, hits, go, router]);
 
   useEffect(() => {
     setActive(0);
@@ -169,7 +126,7 @@ export function CommandPalette() {
 
   if (!open) return null;
 
-  const groups = commands.reduce<Record<string, Command[]>>((acc, command) => {
+  const groups = commands.reduce<Record<string, PaletteCommand[]>>((acc, command) => {
     (acc[command.group] ??= []).push(command);
     return acc;
   }, {});
@@ -204,7 +161,8 @@ export function CommandPalette() {
                 setActive((i) => Math.max(i - 1, 0));
               } else if (event.key === "Enter") {
                 event.preventDefault();
-                commands[active]?.run();
+                const command = commands[active];
+                if (command) void run(command);
               }
             }}
             placeholder="Search clients, projects, or jump to a page…"
@@ -231,7 +189,7 @@ export function CommandPalette() {
                         type="button"
                         data-index={index}
                         onMouseEnter={() => setActive(index)}
-                        onClick={() => command.run()}
+                        onClick={() => void run(command)}
                         className={cn(
                           "flex w-full items-baseline justify-between gap-3 rounded-md px-2 py-2 text-left transition-colors",
                           index === active ? "bg-muted/60" : "hover:bg-muted/30"

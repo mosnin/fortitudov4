@@ -12,6 +12,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CommandPalette } from "./command-palette";
+import { activeHref, type ShellNavItem } from "./nav";
 import { springSnappy } from "@/lib/motion";
 import { PRIMARY_PILL } from "@/lib/typography";
 import {
@@ -23,18 +24,40 @@ import {
 } from "lucide-react";
 import * as Icons from "lucide-react";
 
-export interface ShellNavItem {
-  label: string;
-  href: string;
-  /** lucide icon name, e.g. "LayoutDashboard" — kept serializable so server
-   * layouts can pass nav config into this client shell. */
-  icon: string;
-  /** Match nested routes too (default true; "/admin" uses exact). */
-  exact?: boolean;
-  /** Mono micro-label group header; consecutive items sharing a section are
-   * rendered under one header ("OPERATIONS", "FINANCE", …). */
-  section?: string;
+/* The nav config and the active-row rule live in `nav.ts` — pure, so they can
+   be tested without React. Re-exported here so layouts keep one import. */
+export type { ShellNavItem };
+
+/**
+ * Which pieces of chrome this surface gets.
+ *
+ * Every one defaults to what the product portals already had, so a layout that
+ * says nothing keeps today's shell. A surface that should not have a piece —
+ * the partner portal, which is a third party inside our product — turns it off
+ * here rather than growing a second copy of this file, which is what happened
+ * the last time there was no switch.
+ */
+export interface ShellChrome {
+  /** ⌘K over this surface's own destinations. */
+  palette?: boolean;
+  /** Topbar search across projects, messages and files. */
+  search?: boolean;
+  /** Topbar notification bell. */
+  notifications?: boolean;
+  /**
+   * The palette's staff-only content: Helix's "Do" actions and the agency CRM
+   * search. Off by default — it is the agency's own internals, and a surface
+   * that forgets to mention it must get the safe answer.
+   */
+  staffCommands?: boolean;
 }
+
+const DEFAULT_CHROME: Required<ShellChrome> = {
+  palette: true,
+  search: true,
+  notifications: true,
+  staffCommands: false,
+};
 
 interface AppShellProps {
   navItems: ShellNavItem[];
@@ -44,28 +67,37 @@ interface AppShellProps {
   cta?: { label: string; href: string };
   /** Account line pinned at the sidebar bottom. */
   accountEmail?: string;
+  /** Where the sidebar logo goes. Defaults to the marketing home. */
+  homeHref?: string;
+  /** Opt individual pieces of chrome out; see `ShellChrome`. */
+  chrome?: ShellChrome;
   children: React.ReactNode;
 }
 
-function NavIcon({ name, className }: { name: string; className?: string }) {
+function NavIcon({
+  name,
+  className,
+  active,
+}: {
+  name: string;
+  className?: string;
+  active?: boolean;
+}) {
   const Icon = (Icons as unknown as Record<string, LucideIcon>)[name] ?? Icons.Circle;
-  return <Icon className={className} />;
+  return <Icon className={className} strokeWidth={active ? 2.25 : 1.75} />;
 }
 
 function NavLink({
   item,
+  isActive,
   collapsed,
   onNavigate,
 }: {
   item: ShellNavItem;
+  isActive: boolean;
   collapsed: boolean;
   onNavigate?: () => void;
 }) {
-  const pathname = usePathname();
-  const isActive = item.exact
-    ? pathname === item.href
-    : pathname === item.href || pathname.startsWith(item.href + "/");
-
   return (
     <Link
       href={item.href}
@@ -88,7 +120,7 @@ function NavLink({
           className="absolute inset-0 rounded-md bg-foreground/[0.045]"
         />
       )}
-      {/* Orange tick — the system's bracket-label accent, marking the live route. */}
+      {/* 2px foreground bar on the live route's left edge — never a tint. */}
       {isActive && !collapsed && (
         <motion.span
           layoutId="nav-tick"
@@ -98,6 +130,7 @@ function NavLink({
       )}
       <NavIcon
         name={item.icon}
+        active={isActive}
         className={cn(
           "relative h-[15px] w-[15px] shrink-0 transition-colors",
           isActive ? "text-foreground" : "text-foreground/55 group-hover/link:text-foreground"
@@ -125,13 +158,17 @@ function groupNav(navItems: ShellNavItem[]) {
 
 function SidebarBody({
   navItems,
+  active,
   collapsed,
   accountEmail,
+  homeHref,
   onNavigate,
 }: {
   navItems: ShellNavItem[];
+  active: string | null;
   collapsed: boolean;
   accountEmail?: string;
+  homeHref: string;
   onNavigate?: () => void;
 }) {
   const groups = groupNav(navItems);
@@ -140,7 +177,7 @@ function SidebarBody({
     <>
       {/* Logo band — plain hairline close. */}
       <Link
-        href="/"
+        href={homeHref}
         className={cn(
           "relative flex h-16 shrink-0 items-center border-b border-border/70",
           collapsed ? "justify-center px-2" : "px-5"
@@ -166,6 +203,7 @@ function SidebarBody({
                 <NavLink
                   key={item.href}
                   item={item}
+                  isActive={active === item.href}
                   collapsed={collapsed}
                   onNavigate={onNavigate}
                 />
@@ -204,15 +242,26 @@ export function AppShell({
   navItems,
   cta,
   accountEmail,
+  homeHref = "/",
+  chrome,
   children,
 }: AppShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const active = activeHref(navItems, pathname);
+  const { palette, search, notifications, staffCommands } = {
+    ...DEFAULT_CHROME,
+    ...chrome,
+  };
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* ⌘K from anywhere in the product. Mounted once, at the shell. */}
-      <CommandPalette />
+      {/* ⌘K from anywhere in the product. Mounted once, at the shell, over the
+          same nav this surface is already showing. */}
+      {palette && (
+        <CommandPalette destinations={navItems} staffCommands={staffCommands} />
+      )}
       {/* Desktop sidebar — floating white card with a soft shadow */}
       <motion.aside
         animate={{ width: collapsed ? 76 : 244 }}
@@ -221,8 +270,10 @@ export function AppShell({
       >
         <SidebarBody
           navItems={navItems}
+          active={active}
           collapsed={collapsed}
           accountEmail={accountEmail}
+          homeHref={homeHref}
         />
         <button
           onClick={() => setCollapsed((c) => !c)}
@@ -297,6 +348,7 @@ export function AppShell({
                   <SheetNavLink
                     key={item.href}
                     item={item}
+                    isActive={active === item.href}
                     onNavigate={() => setMobileOpen(false)}
                   />
                 ))}
@@ -332,8 +384,8 @@ export function AppShell({
             </div>
 
             <div className="flex items-center gap-1">
-              <GlobalSearch />
-              <NotificationBell />
+              {search && <GlobalSearch />}
+              {notifications && <NotificationBell />}
               <ThemeToggle />
               <span className="ml-0.5 flex items-center">
                 <UserButton />
@@ -361,7 +413,11 @@ export function AppShell({
         >
           <div className="flex items-stretch justify-around">
             {navItems.slice(0, 5).map((item) => (
-              <BottomTab key={item.href} item={item} />
+              <BottomTab
+                key={item.href}
+                item={item}
+                isActive={active === item.href}
+              />
             ))}
           </div>
         </nav>
@@ -370,19 +426,16 @@ export function AppShell({
   );
 }
 
-/** Bottom-sheet tile — icon + label card, orange when active. */
+/** Bottom-sheet tile — icon + label card. */
 function SheetNavLink({
   item,
+  isActive,
   onNavigate,
 }: {
   item: ShellNavItem;
+  isActive: boolean;
   onNavigate: () => void;
 }) {
-  const pathname = usePathname();
-  const isActive = item.exact
-    ? pathname === item.href
-    : pathname === item.href || pathname.startsWith(item.href + "/");
-
   return (
     <Link
       href={item.href}
@@ -394,18 +447,19 @@ function SheetNavLink({
           : "border-border text-foreground hover:bg-muted/70"
       )}
     >
-      <NavIcon name={item.icon} className="h-4 w-4 shrink-0" />
+      <NavIcon name={item.icon} active={isActive} className="h-4 w-4 shrink-0" />
       <span className="truncate">{item.label}</span>
     </Link>
   );
 }
 
-function BottomTab({ item }: { item: ShellNavItem }) {
-  const pathname = usePathname();
-  const isActive = item.exact
-    ? pathname === item.href
-    : pathname === item.href || pathname.startsWith(item.href + "/");
-
+function BottomTab({
+  item,
+  isActive,
+}: {
+  item: ShellNavItem;
+  isActive: boolean;
+}) {
   return (
     <Link
       href={item.href}
@@ -414,7 +468,7 @@ function BottomTab({ item }: { item: ShellNavItem }) {
         isActive ? "text-foreground" : "text-muted-foreground"
       )}
     >
-      <NavIcon name={item.icon} className="h-5 w-5" />
+      <NavIcon name={item.icon} active={isActive} className="h-5 w-5" />
       <span className="truncate px-1">{item.label}</span>
     </Link>
   );

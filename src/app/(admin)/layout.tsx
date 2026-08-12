@@ -151,6 +151,10 @@ export default async function AdminLayout({
       navItems={navItems}
       roleLabel={ROLE_LABELS[user.role as keyof typeof ROLE_LABELS] ?? "Staff"}
       accountEmail={user.email}
+      /* The palette's agency half — Helix's actions and the CRM search — is
+         staff-only and asked for here. Everything else it offers is this
+         nav, which is already role-gated above. */
+      chrome={{ staffCommands: true }}
     >
       {children}
     </AppShell>
