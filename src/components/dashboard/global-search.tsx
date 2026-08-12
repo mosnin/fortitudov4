@@ -118,16 +118,21 @@ export function GlobalSearch() {
     };
   }, [query, fetchResults]);
 
-  // Keyboard shortcut: Cmd/Ctrl + K
+  /**
+   * Escape closes. ⌘K does NOT open this.
+   *
+   * It used to. So does CommandPalette — one on `document`, this one on
+   * `window`, both calling preventDefault and toggling — so a single ⌘K opened
+   * BOTH the palette and this modal, stacked, on every admin and client page.
+   *
+   * The palette owns the shortcut because it is the superset: it jumps to any
+   * page the visitor may reach and, for staff, searches the CRM through the
+   * same box. This one is still one click away in the topbar, which is how it
+   * was always reachable for anyone who did not know the shortcut existed.
+   */
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setOpen((prev) => !prev);
-      }
-      if (e.key === "Escape") {
-        setOpen(false);
-      }
+      if (e.key === "Escape") setOpen(false);
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);

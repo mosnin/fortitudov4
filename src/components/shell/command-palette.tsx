@@ -165,7 +165,15 @@ export function CommandPalette({
                 if (command) void run(command);
               }
             }}
-            placeholder="Search clients, projects, or jump to a page…"
+            /* Two strings, because one of them was a lie. "Search clients,
+               projects…" was shown to clients, who can search neither — the
+               palette only offers them their own pages. It is true for staff,
+               and staffCommands is exactly the flag that says so. */
+            placeholder={
+              staffCommands
+                ? "Search clients, projects, or jump to a page…"
+                : "Jump to a page…"
+            }
             className="h-12 w-full bg-transparent pr-4 pl-10 text-sm text-foreground outline-none placeholder:text-muted-foreground"
           />
         </div>
