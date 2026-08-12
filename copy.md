@@ -105,3 +105,41 @@ plain meaning, not the same words — an idiom that lands in English and
 confuses in Spanish is a failed translation, even if it is accurate.
 Translate the outcome, not the sentence. Every language has to pass the
 ten-year-old test **in that language**, not in English first.
+
+---
+
+# Section copy: the pinboard
+
+`src/components/marketing/giga/pinboard-cta.tsx` — a closing ask drawn as a
+pinboard: four sticky notes you can peel and drag, pinned around a plate.
+Written down here because the strings live in the component for now; they
+belong in the home dictionary and the file says so.
+
+**The plate**
+
+| Slot | Words |
+| --- | --- |
+| Eyebrow | The board |
+| Heading | Write it down. We build it. |
+| Lead | Every project starts as a note like these. Tell us what you want, and we come back with what it costs and how long it takes. |
+| Button | Tell us what you need → `/contact` |
+| Hint | Drag the notes. |
+
+**The four notes** — the questions we would ask you anyway:
+
+1. What are you trying to fix?
+2. Who is it for?
+3. When does it go live?
+4. What can you spend?
+
+**Why the notes ask rather than tell.** The section this was ported from put a
+made-up quote on every note and "2,500+ early adopters" over the top of them. A
+note on a board is the shape testimonials come in, so anything written on one
+reads as proof — and we have none to show. A question is the one kind of text
+that can sit there honestly: it is our copy, it is true, and it is the actual
+first move of working with us. Four short questions also do the job the drop
+wanted the quotes to do — they tell you what we need from you before you press
+the button, so the form is not a surprise.
+
+**Why "what can you spend" and not "what's your budget".** Shorter words, and
+it is the question we mean. Budget is a word people hide behind.
