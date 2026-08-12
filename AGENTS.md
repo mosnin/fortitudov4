@@ -36,17 +36,29 @@ Rules that must hold:
 - The agent driver is pluggable: Anthropic-backed with `ANTHROPIC_API_KEY`, otherwise a rule-based planner that says so. Both go through `callOp`.
 
 ## Roles & access
-`users.role`: `client | va | project_manager | admin` (see `src/lib/permissions.ts`). Staff land on `/admin` via `/post-login`; clients on `/dashboard`. VAs only see projects they hold a task on (`getAccessibleProjectIds`). Finance pages require `admin`.
+`users.role`: `client | va | project_manager | admin | partner` (see `src/lib/permissions.ts`). Staff land on `/admin` via `/post-login`; clients on `/dashboard`; partners on `/partner`. VAs only see projects they hold a task on (`getAccessibleProjectIds`). Finance pages require `admin`.
+
+**`partner` is NOT staff.** `isStaff()` must keep returning false for it — a partner who passes it lands in `/admin`. All three authenticated surfaces bounce the wrong role to the right one, and each is a separate door: `(admin)`, `(dashboard)` and `(partner)` each guard themselves. `(partner)` checks in its layout *and* in every page, because a layout does not re-run on a client navigation between its own pages.
+
+## Partners
+A third party who brings work in — an affiliate, or another agency contracting us for a build-out. `plans/partners.md` is the spec; `src/lib/partners.ts` is the vocabulary. Two tables: `partners` (the organisation) and `partnerRequests` (one job).
+
+- A request carries **two money columns**. `budgetCents` is what the partner says they have; `quotedCents` is what we say it costs. They must never be collapsed into one — a partner who can edit our figure can edit what we invoice, which is the same authority mistake the Helix rules forbid for clients.
+- A partner may write only `title`, `scope`, `serviceType`, `budgetCents`, `targetDate`, and only while the request is `draft` or `submitted`. The one status change they may make is their own `draft → submitted`.
+- Reads are always scoped by `partners.userId`, never by anything the client sent. Another partner's request answers **404**, identical to one that does not exist.
+- A `paused` or `archived` partner is read-only: they keep their history, they cannot open new work.
+- **VAs are excluded entirely.** A VA is scoped to tasks they hold; a partner request is a commercial document carrying another company's budget.
+- **There is no commission, payout, split or ledger, and none is coming** without a deliberate decision. AGENTS.md's swept-out list below bans exactly that machinery; `kind: 'affiliate'` is a label describing who someone is, not a mechanism that moves money.
 
 ## Offerings
 Fortitudo sells exactly five things (`src/lib/services.ts`, mirrored by `src/lib/pricing.ts` and the `service_type` enum): **Websites, Software Solutions, AI Solutions, Consultation, Digital Marketing**. Anything outside that list does not belong in the product.
 
 ## Database
-**A schema change needs `npx drizzle-kit push` against the target database before it deploys** — the `helix_*` tables and the `helix_approval_needed` notification type are recent additions.
+**A schema change needs `npx drizzle-kit push` against the target database before it deploys** — the `partners` and `partner_requests` tables, the `partner_kind` / `partner_status` / `partner_request_status` enums, the `partner` role, the `helix_*` tables and the `helix_approval_needed` notification type are all recent additions.
 
 Schema (`src/db/schema.ts`) covers CRM (`agencyClients`, `clientTasks`), ops (`tasks`, `leads`, `weeklyReports`), and revenue (`clientPayments`, `invoices`). Money is always integer cents. Run `npx drizzle-kit push` after pulling schema changes.
 
-The dashboard was originally ported from a GoHighLevel marketing-agency template; that machinery has been swept out and **must not come back**: no expenses table, no partner ledger or 50/50 payment splits, no departments, no ad-campaign tracking, no SaaS-plan reselling, no GHL columns/integration, no Bronze/Gold/Diamond tiers (clients carry one of the five offerings), and **no built-in staff** — checklists seed unassigned and every roster reads from the DB. The CRM pipeline is the delivery pipeline (`src/lib/crm.ts`): Onboarding → Discovery → Design → Build → Client review → Launched → Ongoing. `weeklyReports` (leads/CPL/spend/closes/revenue) exist for **digital-marketing engagements only** and stay hidden for every other client.
+The dashboard was originally ported from a GoHighLevel marketing-agency template; that machinery has been swept out and **must not come back**: no expenses table, no partner LEDGER or 50/50 payment splits (the `partner` account type above is a different thing — an account, not a revenue split), no departments, no ad-campaign tracking, no SaaS-plan reselling, no GHL columns/integration, no Bronze/Gold/Diamond tiers (clients carry one of the five offerings), and **no built-in staff** — checklists seed unassigned and every roster reads from the DB. The CRM pipeline is the delivery pipeline (`src/lib/crm.ts`): Onboarding → Discovery → Design → Build → Client review → Launched → Ongoing. `weeklyReports` (leads/CPL/spend/closes/revenue) exist for **digital-marketing engagements only** and stay hidden for every other client.
 
 ## Icons — keep it tasteful
 Do NOT use the "icon inside a tinted rounded box/circle" badge pattern (e.g. a `bg-orange/10` rounded square wrapping a single lucide icon). It looks generic and "vibe-coded." Use icons sparingly and only as functional affordances inside buttons, nav/dock items, and compact list rows — never as decorative chips above headings or beside stats.
