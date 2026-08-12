@@ -1,11 +1,19 @@
 import type { ServiceType } from "@/lib/services";
 
 /**
- * Single source of truth for what each service costs at checkout.
+ * Single source of truth for what each service costs.
  *
- * Amounts are derived from the `startingPrice` strings in `services.ts` and are
- * always expressed in CENTS. Services whose starting price ends in "/mo" are
- * recurring retainers (`billing: "monthly"`); the rest are one-time projects.
+ * Amounts are always expressed in CENTS.
+ *
+ * They used to be derived from the prices the public site advertised. Those are
+ * gone — the site publishes no figure and quotes every build instead — so this
+ * table is now the only statement of what something costs, and it is INTERNAL:
+ * it is what /payments and the admin project screens invoice real clients
+ * from. Nothing here is public.
+ *
+ * `billing: "monthly"` marks the recurring retainers; the rest are one-time
+ * projects. That used to be inferred from a "/mo" suffix on the advertised
+ * string, which no longer exists, so it is a property of the offering now.
  *
  * `lineItems` always sum to `amountCents` so an invoice built from them stays
  * internally consistent.

@@ -144,7 +144,9 @@ describe('the Currency union and the pinned rate table cannot drift apart', () =
   });
 
   it('accepts every currency through isCurrency — the cookie validator', () => {
-    // The proxy writes CURRENCY_COOKIE and local-price.tsx re-validates it with
+    // Kept as a library invariant. Nothing mounts these today — the public
+    // site publishes no price — but a currency that exists in the union and
+    // not in the rate table is a latent crash, so the agreement is asserted with
     // isCurrency. A currency in the union but missing from that check would be
     // written and then silently discarded on every read.
     for (const currency of ALL_CURRENCIES) {

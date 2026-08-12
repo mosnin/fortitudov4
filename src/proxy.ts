@@ -3,11 +3,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import type { NextFetchEvent } from "next/server";
 import {
-  CURRENCY_COOKIE,
   LANG_COOKIE,
   decideLangRouting,
-  isCurrency,
-  resolveMarket,
   splitLocalizedPath,
 } from "@/lib/i18n/markets";
 
@@ -107,14 +104,12 @@ export function isMarketingPath(basePath: string): boolean {
 }
 
 /**
- * Preference cookies, one year.
+ * The language preference cookie, one year.
  *
- * NOT httpOnly, deliberately: local-price.tsx parses `document.cookie` after
- * hydration to swap the statically rendered USD price for the visitor's
- * currency, so a cookie the client cannot read is a cookie that does nothing.
- * Neither value carries authority — the worst a forged one buys you is prices
- * in the wrong currency, and both are re-validated (`isLang` / `isCurrency`)
- * everywhere they are read.
+ * NOT httpOnly, deliberately: a language switcher has to be able to read the
+ * current choice client-side. The value carries no authority — the worst a
+ * forged one buys you is the wrong language — and it is re-validated with
+ * `isLang` everywhere it is read.
  */
 const PREFERENCE_MAX_AGE = 60 * 60 * 24 * 365;
 
@@ -144,7 +139,7 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
   if (!isMarketingPath(splitLocalizedPath(pathname).basePath)) return response;
 
   // Vercel geo-locates at the edge; locally the header is simply absent, which
-  // resolveMarket already reads as the en/USD base market.
+  // decideLangRouting already reads as the English base market.
   const country = request.headers.get("x-vercel-ip-country");
 
   const decision = decideLangRouting({
@@ -154,14 +149,16 @@ export async function proxy(request: NextRequest, event: NextFetchEvent) {
     hlParam: request.nextUrl.searchParams.get("hl"),
   });
 
-  // Correct the currency cookie whenever it is missing or unrecognised — a
-  // stale value left by an earlier release (or a hand-edited one) would
-  // otherwise pin a visitor to a currency forever, since local-price.tsx
-  // trusts any value that survives isCurrency.
-  const currencyCookie = request.cookies.get(CURRENCY_COOKIE)?.value;
-  if (!isCurrency(currencyCookie)) {
-    setPreferenceCookie(response, CURRENCY_COOKIE, resolveMarket(country).currency);
-  }
+  /* The currency cookie is no longer written. It existed for local-price.tsx,
+     which read it after hydration to swap a statically rendered USD price for
+     the visitor's own currency — and the site no longer publishes a price, so
+     that component is gone and nothing reads the cookie. Writing it anyway
+     meant a geo lookup and a Set-Cookie on every marketing request, and a
+     cookie on every visitor's machine, in service of nothing.
+
+     lib/i18n/currency.ts and the Currency half of markets.ts are kept but are
+     now unmounted; see plans/i18n.md. The LANGUAGE half below is still live
+     and is what the [lang] routes will use. */
 
   if (LANG_REDIRECTS_ENABLED && decision.redirectTo) {
     // Clone so the query string survives, `?hl=` included: carrying it to the
