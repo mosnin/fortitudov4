@@ -1,14 +1,17 @@
-'use client';
-
 /**
  * EngagementPlans — the engagement cards for /pricing, on the giga plan-card
  * layout (visual structure ported unchanged from the marketing kit's
  * PricingPlans; the wording maps to Fortitudo's project engagements).
  *
- * Client component: prices render in the visitor's display currency
- * (useDisplayCurrency), clean-rounded from the USD base price — USD by
- * default. Starting prices mirror lib/services.ts / lib/pricing.ts (the
- * checkout source of truth). The words are in
+ * NO PRICES, and no client-side currency any more. Each card used to lead with
+ * a starting amount rendered in the visitor's display currency. The public site
+ * does not advertise a price: the amount line is now the promise that replaced
+ * it — one fixed price, agreed before we start — and every card's button goes
+ * to the contact form. The real amounts still live in `src/lib/pricing.ts`,
+ * which is what the product invoices from.
+ *
+ * With the currency gone this is a plain server-rendered component; it carried
+ * `'use client'` only for `useDisplayCurrency`. The words are in
  * `src/lib/i18n/dictionaries/pricing-page.ts`.
  *
  * A billing-cycle toggle used to sit above the cards — "One-time build" vs
@@ -22,27 +25,25 @@
  * No card is featured. Two of them carried `featured: true`, so "Most popular"
  * rendered on two cards at once — a claim that contradicts itself, and one we
  * have no data behind. It also put two yellow CTAs on one screen, which is the
- * one thing the palette rule forbids. Every card now takes the ghost treatment
- * and the page's single yellow action is the closing ask.
+ * one thing the palette rule forbids. Every card takes the ghost treatment and
+ * the page's single yellow action is the closing ask.
  *
- * For the same reason the cards no longer quote a delivery time or a revision
- * count. They advertised "14 days / 21 days / 30 days typical delivery" and
- * "+2 / +3 rounds of revisions included", figures that appear nowhere in
- * services.ts, pricing.ts or crm.ts — we have not measured a delivery time and
- * we do not sell revision allowances. The band under the price now carries the
- * commitments we can source: the post-launch support every engagement
- * includes, and revisions inside the scope the client approves before kickoff
- * (`Scope & fixed quote approved`, lib/crm.ts).
+ * For the same reason the cards quote no delivery time or revision count. They
+ * advertised "14 days / 21 days / 30 days typical delivery" and "+2 / +3 rounds
+ * of revisions included", figures that appear nowhere in services.ts,
+ * pricing.ts or crm.ts — we have not measured a delivery time and we do not
+ * sell revision allowances. The band under the promise carries the commitments
+ * we can source: the post-launch support every engagement includes, and
+ * revisions inside the scope the client approves before kickoff (`Scope &
+ * fixed quote approved`, lib/crm.ts).
  */
 
 import { Check } from 'lucide-react';
 import { type Lang } from '@/lib/i18n/markets';
-import { localizePrice, formatMoney } from '@/lib/i18n/currency';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { PRICING_PAGE } from '@/lib/i18n/dictionaries/pricing-page';
-import { useDisplayCurrency } from '@/components/marketing/local-price';
 import { Band, BlurRise, Eyebrow, PillGhost, Serif } from '@/components/marketing/giga/primitives';
-import { SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
+import { BODY, BODY_S, SECTION_Y_TIGHT, TITLE_L, TITLE_S } from '@/components/marketing/giga/tokens';
 
 type CardId = 'websites' | 'digital_marketing' | 'software_solutions' | 'ai_solutions';
 
@@ -59,15 +60,10 @@ type CardId = 'websites' | 'digital_marketing' | 'software_solutions' | 'ai_solu
  */
 const SUPPORT_DAYS = 30;
 
-/** The numbers and the destinations. Starting prices mirror lib/services.ts
- *  (`startingPrice`) and lib/pricing.ts (amountCents) — keep in sync with
- *  those files, never edit here alone. The words are in the dictionary. */
-const ENGAGEMENTS: Record<CardId, { priceUsd: number; href: string }> = {
-  websites: { priceUsd: 1500, href: '/sign-up' },
-  digital_marketing: { priceUsd: 1200, href: '/contact' },
-  software_solutions: { priceUsd: 3500, href: '/sign-up' },
-  ai_solutions: { priceUsd: 3000, href: '/contact' },
-};
+/** Every card asks the same thing, so every card points at the same form. This
+ *  used to be a per-card `{ priceUsd, href }` map that mirrored lib/pricing.ts
+ *  — the amounts went with the advertised prices. */
+const CONTACT_HREF = '/contact';
 
 /** The two groups name what is in them. They were headed "For validating and
  *  launching" and "For scaling products and operations" — the source template's
@@ -78,12 +74,8 @@ const CARD_ORDER: { sites: CardId[]; platforms: CardId[] } = {
 };
 
 function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
-  const currency = useDisplayCurrency();
   const t = PRICING_PAGE[lang].plans;
-  const p = ENGAGEMENTS[id];
   const c = t.cards[id];
-
-  const localPrice = localizePrice(p.priceUsd, currency);
 
   return (
     <div className="flex h-full flex-col rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8">
@@ -91,41 +83,36 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
         {c.label}
       </Serif>
 
-      <p className="mt-4 flex items-baseline gap-2">
-        <Serif
-          as="span"
-          className="text-[2.5rem] font-light leading-none tabular-nums text-[var(--fx-white)]"
-        >
-          {formatMoney(localPrice, currency, lang)}
-        </Serif>
-        <span className="text-sm text-[var(--fx-muted)]">{t.perProject}</span>
-      </p>
-      <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">
-        {t.startingNote}
-      </p>
-      <p className="mt-2.5 text-[12.5px] text-[var(--fx-muted)]">{c.scopeLine}</p>
-      <p className="mt-4 text-[13px] leading-relaxed text-[var(--fx-muted)]">{c.blurb}</p>
+      {/* Where the amount was. The card still needs one line the eye lands on,
+          and this is the thing the price was proof of. */}
+      <Serif as="p" className={`mt-4 ${TITLE_L} text-[var(--fx-white)]`}>
+        {t.quoteLine}
+      </Serif>
+      <p className={`mt-2.5 ${BODY_S} text-[var(--fx-muted)]`}>{c.scopeLine}</p>
+      <p className={`mt-4 ${BODY} text-[var(--fx-muted)]`}>{c.blurb}</p>
 
       <div className="mt-6 border-t border-[var(--fx-hairline)] pt-5">
         <p>
           <span className="text-xl font-semibold tabular-nums text-[var(--fx-white)]">
             {fill(c.figure, { days: SUPPORT_DAYS })}
           </span>{' '}
-          <span className="text-[13px] text-[var(--fx-muted)]">{c.figureLabel}</span>
+          <span className={`${BODY_S} text-[var(--fx-muted)]`}>{c.figureLabel}</span>
         </p>
-        <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">{c.subLine}</p>
+        <p className={`mt-1.5 ${BODY_S} text-[var(--fx-muted)]`}>{c.subLine}</p>
       </div>
 
       <ul className="mt-6 space-y-2.5">
         {c.highlights.map((h) => (
-          <li key={h} className="flex items-start gap-2.5 text-[13px] text-[var(--fx-muted)]">
+          <li key={h} className={`flex items-start gap-2.5 ${BODY_S} text-[var(--fx-muted)]`}>
             <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[var(--fx-yellow)]" />
             {h}
           </li>
         ))}
       </ul>
 
-      <PillGhost href={p.href} className="mt-7 w-full">
+      {/* Pushed to the foot of the card so four cards of different lengths
+          still line their buttons up. */}
+      <PillGhost href={CONTACT_HREF} className="mt-7 w-full">
         {c.cta}
       </PillGhost>
     </div>
@@ -137,7 +124,7 @@ export function EngagementPlans({ lang = 'en' }: { lang?: Lang }) {
   return (
     <>
       {/* Sites & campaigns */}
-      <Band className="pb-8 pt-10">
+      <Band className={SECTION_Y_TIGHT}>
         <BlurRise>
           <Eyebrow>{t.sitesHeading}</Eyebrow>
         </BlurRise>

@@ -4,43 +4,21 @@
  * FAQ — carried forward from the previous landing and re-set in the Giga
  * system: hairline accordion rows on the near-black band, display-face section
  * title, plus-icon toggles. Content covers the five offerings.
+ *
+ * The cost answer used to interpolate all five starting prices out of
+ * `src/lib/pricing.ts`. The public site does not advertise a price any more —
+ * you tell us what you need and we send you a fixed one — so the answers carry
+ * no tokens and this file no longer reads the checkout table.
  */
 
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
-import type { ServiceType } from '@/lib/services';
-import { formatUsd, getPricing } from '@/lib/pricing';
 import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
-import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
-import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
-
-/**
- * The price tokens the answers interpolate, read from the table checkout
- * charges from (`src/lib/pricing.ts`) rather than typed into the sentence —
- * a figure written into prose is a figure that will disagree with the invoice,
- * three languages at a time.
- *
- * A service that somehow has no pricing row contributes no value, so `fill()`
- * leaves its `{token}` standing: visible in review, where a silently vanished
- * price is not.
- */
-const PRICE_TOKENS: Record<string, string> = (
-  [
-    ['websites', 'websites'],
-    ['software', 'software_solutions'],
-    ['ai', 'ai_solutions'],
-    ['consultation', 'consultation'],
-    ['marketing', 'digital_marketing'],
-  ] as [string, ServiceType][]
-).reduce<Record<string, string>>((tokens, [token, service]) => {
-  const pricing = getPricing(service);
-  if (pricing) tokens[token] = formatUsd(pricing.amountCents);
-  return tokens;
-}, {});
+import { BODY, BODY_S, DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
 
 function Row({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -67,7 +45,7 @@ function Row({ q, a }: { q: string; a: string }) {
             transition={{ duration: 0.3, ease: EASE_OUT }}
             className="overflow-hidden"
           >
-            <p className="pb-5 pr-8 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">{a}</p>
+            <p className={`pb-5 pr-8 ${BODY_S} text-[var(--fx-muted)]`}>{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -88,7 +66,7 @@ export function Faq({ lang = 'en' }: { lang?: Lang }) {
             <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
               {t.heading}
             </Serif>
-            <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-[var(--fx-muted)]">
+            <p className={`mt-5 max-w-xs ${BODY} text-[var(--fx-muted)]`}>
               {t.helpText}{' '}
               <a
                 href="/contact"
@@ -102,7 +80,7 @@ export function Faq({ lang = 'en' }: { lang?: Lang }) {
           <BlurRise delay={0.08}>
             <div className="border-t border-[var(--fx-hairline)]">
               {t.items.map((faq) => (
-                <Row key={faq.q} q={faq.q} a={fill(faq.a, PRICE_TOKENS)} />
+                <Row key={faq.q} q={faq.q} a={faq.a} />
               ))}
             </div>
           </BlurRise>

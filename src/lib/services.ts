@@ -20,7 +20,6 @@ export interface Service {
   description: string;
   icon: LucideIcon;
   features: string[];
-  startingPrice: string;
 }
 
 export const services: Service[] = [
@@ -37,7 +36,6 @@ export const services: Service[] = [
       "See who visits",
       "We put it online",
     ],
-    startingPrice: "Starting at $1,500",
   },
   {
     id: "software_solutions",
@@ -52,7 +50,6 @@ export const services: Service[] = [
       "Works with your other tools",
       "Launched and supported",
     ],
-    startingPrice: "Starting at $3,500",
   },
   {
     id: "ai_solutions",
@@ -67,7 +64,6 @@ export const services: Service[] = [
       "Your data moved for you",
       "Runs on the tools you already use",
     ],
-    startingPrice: "Starting at $3,000",
   },
   {
     id: "consultation",
@@ -82,7 +78,6 @@ export const services: Service[] = [
       "Which tools to pick",
       "A written plan you keep",
     ],
-    startingPrice: "Starting at $500",
   },
   {
     id: "digital_marketing",
@@ -97,7 +92,6 @@ export const services: Service[] = [
       "You see the numbers",
       "We keep improving it",
     ],
-    startingPrice: "Starting at $1,200/mo",
   },
 ];
 

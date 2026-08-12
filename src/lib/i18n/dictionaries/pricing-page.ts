@@ -1,6 +1,6 @@
 /**
  * `/pricing` page copy, all languages — the page shell, the engagement cards,
- * the two specialist engagements, the price-list band, the FAQ and the ask.
+ * the two specialist engagements, the offering list, the FAQ and the ask.
  *
  * NOT to be confused with `./pricing.ts`, which despite the name is not a
  * pricing-PAGE dictionary: it holds the one currency-disclosure line and the
@@ -21,51 +21,54 @@
  *  - Register: es is neutral Latin-American Spanish (es-419), informal "tú",
  *    no vosotros, no Castilian idiom. ru is formal «вы». A translation carries
  *    the same plain meaning, not the same words (`copy.md`).
- *  - NEVER hardcode a number or a currency in the prose. This is the money
- *    surface, so the rule does real work: every price, day count and stage
- *    count interpolates as a `{token}` through `fill()` (`./pricing.ts`) or
- *    through `<PriceText>`, which fills price tokens with the visitor's
- *    localized amount. A price frozen into a Spanish sentence is a price that
- *    silently disagrees with the English one the next time it changes.
+ *  - NEVER hardcode a number or a currency in the prose. Nothing on this page
+ *    quotes money any more — see below — and the counts that remain (the stage
+ *    count, the post-launch support window) interpolate as a `{token}` through
+ *    `fill()` (`./pricing.ts`). A figure frozen into a Spanish sentence is a
+ *    figure that silently disagrees with the English one the next time it
+ *    changes.
  *
- * WHAT IS NOT HERE. Amounts (they live in `src/lib/services.ts` /
- * `src/lib/pricing.ts` and reach the page as `{token}` fills), hrefs, and the
- * service names in the price list — that list renders `services.ts` directly,
- * because it is the same source the product and checkout price from.
+ * NO PRICES. This page used to lead with five starting figures, quote them
+ * again in an offering list, and repeat two of them in the FAQ. The public
+ * site does not advertise a price anywhere now: you tell us what you need and
+ * we send you a fixed one. The page kept its route and its promise — a price
+ * agreed before work starts, no hourly billing, no surprise invoices — and
+ * every figure was cut. Do not put one back. The real amounts still live in
+ * `src/lib/pricing.ts`, where the product invoices from.
  */
 
 import type { Lang } from '../markets';
 
 const en = {
-  /** Browser tab and social preview. Enumerates the five offerings and
-   *  nothing else. */
+  /** Browser tab and social preview. Says what the page is: how we price, not
+   *  what anything costs. It used to quote "the price you approve is the price
+   *  you pay" beside the five offerings; the promise survives, in the hero. */
   meta: {
-    title: 'Pricing · Fortitudo Agency',
+    title: 'How pricing works · Fortitudo Agency',
     description:
-      'Websites, Software Solutions, AI Solutions, Consultation and Digital Marketing. You get a fixed price before we start. The price you approve is the price you pay.',
+      'One fixed price, agreed before we start. No hourly billing and no surprise invoices. Tell us what you need and we send you a price.',
   },
 
   hero: {
     eyebrow: 'Pricing',
     title: 'Fixed prices. No surprises.',
-    body: 'You get a price before we start, and it does not move. You can watch the work go stage by stage. Everything is yours the day it goes live.',
+    body: 'Tell us what you need and we send you a fixed price. You get it before we start, and it does not move unless you ask it to. You can watch the work go stage by stage, and everything is yours the day it goes live.',
   },
 
   /** The engagement cards (components/marketing/pages/engagement-plans.tsx). */
   plans: {
     sitesHeading: 'Sites and marketing',
     appsHeading: 'Apps and automation',
-    /** Sits beside the amount, which is rendered separately. */
-    perProject: '/ project',
-    startingNote: 'starting price — your own fixed price comes before we start',
+    /** Sits where the amount used to, on every card. */
+    quoteLine: 'One fixed price, before we start.',
 
     /**
      * One entry per card. `label` repeats the offering name from
-     * `services.ts`; when these are translated the price list further down the
-     * page still renders the untranslated shared name, so either translate
+     * `services.ts`; when these are translated the offering list further down
+     * the page still renders the untranslated shared name, so either translate
      * both or neither — do not let a card and the list disagree.
      *
-     * `figure` is the one big number on the card. `{days}` = the post-launch
+     * `figure` is the one number on the card. `{days}` = the post-launch
      * support window, supplied by the page so the figure lives in one place;
      * a `figure` with no token (Digital Marketing's "Monthly") passes through
      * `fill()` untouched.
@@ -84,7 +87,7 @@ const en = {
           'Built so Google can find it',
           'See who visits',
         ],
-        cta: 'Start a website',
+        cta: 'Contact us',
       },
       digital_marketing: {
         label: 'Digital Marketing',
@@ -100,7 +103,7 @@ const en = {
           'We test what works',
           'You see the numbers',
         ],
-        cta: 'Start marketing',
+        cta: 'Contact us',
       },
       software_solutions: {
         label: 'Software Solutions',
@@ -116,7 +119,7 @@ const en = {
           'Logins and data, handled',
           'Launched and supported',
         ],
-        cta: 'Get a price for my build',
+        cta: 'Contact us',
       },
       ai_solutions: {
         label: 'AI Solutions',
@@ -132,7 +135,7 @@ const en = {
           'Your data moved for you',
           'Runs on the tools you already use',
         ],
-        cta: 'Get a price for my AI',
+        cta: 'Contact us',
       },
     },
   },
@@ -142,22 +145,18 @@ const en = {
     eyebrow: 'Two more things',
     title: 'Two more ways we can help.',
     body: 'You can hire us for advice on its own. And we can keep working on your build after it launches. Same fixed price, same page to watch it on.',
+    /** The link at the foot of both cards. */
+    cardCta: 'Contact us',
     consultation: {
       /** Same offering name as `services.ts` — see the note on `plans.cards`. */
       title: 'Consultation',
       scopeLine: 'Work out what to build, before you spend',
-      /** LEADING SPACE IS DELIBERATE: this sits directly after the amount. */
-      unit: ' / project, starting',
-      note: '+ a written plan you keep',
+      note: 'Priced per project, and you keep the written plan',
     },
     retainer: {
       title: 'Ongoing support',
       scopeLine: 'We keep working on it after launch',
-      /** Stands in for an amount — a retainer is priced to the build. */
-      figure: 'Custom',
-      /** LEADING SPACE IS DELIBERATE: this sits directly after the figure. */
-      unit: ' / month, priced to your build',
-      note: '+ what we cover, and how fast we answer, agreed up front',
+      note: 'Priced to your build. What we cover, and how fast we answer, agreed up front',
     },
     /** Rendered as: lead, space, link, full stop. */
     biggerLead: 'Running something bigger?',
@@ -167,15 +166,31 @@ const en = {
   howPricing: {
     eyebrow: 'How pricing works',
     title: 'Every project starts with a fixed price.',
-    body: 'Pick what you need. We write you a price up front, and it never moves without your say-so. You watch the work go stage by stage on your project page. Starting prices are below.',
-    /** TRAILING SPACE IS DELIBERATE: the amount is rendered right after it. */
-    fromPrefix: 'from ',
+    body: 'Tell us what you need. We write you a price up front, and it never moves without your say-so. No hourly billing, and no invoice you did not agree to. You watch the work go stage by stage on your project page.',
+    /** The three steps, in order. */
+    steps: [
+      {
+        title: 'You tell us what you need',
+        body: 'One form, a few minutes. What you want built, who it is for, and when you want it live.',
+      },
+      {
+        title: 'We send you a price',
+        body: 'One number for the whole job, and what it covers written down beside it. Nothing starts until you say yes.',
+      },
+      {
+        title: 'The price holds',
+        body: 'It only changes if you ask for something we did not agree to, and we price that separately first.',
+      },
+    ],
+    /** The row under the steps: the five offerings, each linking to the form. */
+    listHeading: 'Get a price for',
+    listCta: 'Contact us',
   },
 
   /**
-   * What every engagement commits to. Each entry is a label, one big figure,
-   * and a line under it — three separate elements, so the figure is supplied
-   * by the page rather than written into the copy. The stage count comes from
+   * What every engagement commits to. Each entry is a label, one figure, and a
+   * line under it — three separate elements, so the figure is supplied by the
+   * page rather than written into the copy. The stage count comes from
    * `projectPhaseNames` in services.ts (the same stages the dashboard tracker
    * and the FAQ name) and the support window from the always-included list on
    * /services; "Included" is a word, not a number, so it lives here.
@@ -194,11 +209,9 @@ const en = {
   /**
    * The four questions people ask before they commit.
    *
-   * `{websites}` and `{software}` are USD starting prices filled by
-   * `<PriceText>` with the visitor's display currency; `{days}` is the
-   * post-launch support window, filled by the page. The price tokens are named
-   * for the offering they resolve to — they were `validate` and `scale`, the
-   * source template's plan tiers, which we do not sell.
+   * `{days}` is the post-launch support window, filled by the page. Two of
+   * these answers used to carry a price token as well; both are gone with the
+   * figures, and the answers say how you get a price instead of what one is.
    */
   faq: {
     eyebrow: 'Questions',
@@ -208,8 +221,8 @@ const en = {
       a: 'Yes. You get a written price before anything starts. Once you approve it, that is what you pay. If you want something we did not agree to, we price that separately and you decide. No hourly billing. No surprise bills.',
     },
     from: {
-      q: 'What does "from {websites}" mean?',
-      a: 'It is the price for the simplest version. Your own price depends on how much you need — pages, features, and the tools it has to talk to — and it is fixed before we start.',
+      q: 'Why is there no price on this page?',
+      a: 'Because a number on a page is a guess at your project. Yours depends on what you need — pages, features, and the tools it has to talk to. Tell us and we send you one price for the whole job, before we start.',
     },
     afterLaunch: {
       q: 'What happens after launch?',
@@ -217,15 +230,15 @@ const en = {
     },
     payments: {
       q: 'How do payments work?',
-      a: 'You approve the price, pay to start, and watch each stage on your project page — a software build, for example, starts at {software}. Your invoice lists exactly what you approved. Changes inside what we agreed cost you nothing extra.',
+      a: 'You approve the price, pay to start, and watch each stage on your project page. Your invoice lists exactly what you approved. Changes inside what we agreed cost you nothing extra.',
     },
   },
 
   cta: {
     title: 'Get a fixed price for your build.',
     body: 'Tell us what you want. We price it, then you watch us build it.',
-    primary: 'Start your project',
-    secondary: 'Talk to us',
+    primary: 'Tell us what you need',
+    secondary: 'See what we build',
   },
 };
 

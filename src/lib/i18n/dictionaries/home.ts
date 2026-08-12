@@ -64,6 +64,10 @@ const en = {
     lead: 'Every one has a fixed price, agreed before we start. Senior people do the work. You can watch it happen.',
     /** The link at the foot of each of the five service cards. */
     cardCta: 'Explore',
+    /** The other half of that footer row, where a starting price used to sit.
+     *  It links to the contact form: we quote a build before it starts, so the
+     *  price is a conversation, not a number on a card. */
+    cardPriceCta: 'Contact us',
     /** The sixth, dashed cell. */
     somethingElseTitle: 'Something else?',
     somethingElseDesc:
@@ -183,14 +187,16 @@ const en = {
     helpText: "Can't find what you're looking for?",
     helpLink: 'Get in touch',
     /**
-     * The prices in the first answer are TOKENS, filled from the checkout
-     * table (`src/lib/pricing.ts`) through `fill()`. A figure typed into this
-     * sentence is a figure that will disagree with the invoice one day.
+     * The first answer used to list all five starting prices, filled from the
+     * checkout table (`src/lib/pricing.ts`) as `{token}`s. The site no longer
+     * advertises a price anywhere: you tell us what you need and we send you a
+     * fixed one. The promise is the same, the figures are gone, and no answer
+     * here carries a token any more.
      */
     items: [
       {
         q: 'What does it cost?',
-        a: 'Websites start at {websites}. Software Solutions at {software}. AI Solutions at {ai}. A Consultation is {consultation}. Digital Marketing is {marketing} a month. You see your own price before you pay anything, and it does not move. No hourly billing. No surprise bills.',
+        a: 'Tell us what you need and we send you a fixed price. You see it before you pay anything, and it does not move once you approve it. No hourly billing. No surprise bills.',
       },
       {
         q: 'How soon can I start?',

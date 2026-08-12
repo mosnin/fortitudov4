@@ -21,6 +21,7 @@
  * way `/pricing` already splits.
  */
 
+import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { services } from '@/lib/services';
@@ -28,7 +29,7 @@ import { DEFAULT_LANG } from '@/lib/i18n/markets';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { SERVICES_PAGE } from '@/lib/i18n/dictionaries/services-page';
 import { Band, BlurRise, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
-import { DISPLAY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
+import { BODY, DISPLAY_S, EYEBROW_TEXT, LEAD, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
@@ -95,25 +96,27 @@ export default function ServicesPage() {
                 className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center"
               >
                 <div className={isEven ? '' : 'lg:order-2'}>
-                  {/* The price, and nothing else. There used to be an icon in a
-                      bordered, filled square sitting beside it — the badge
-                      pattern AGENTS.md rules out by name, because a glyph in a
-                      tinted box above a heading decorates rather than does
-                      anything. The price is the thing a buyer is looking for
-                      here; the offering is named in the h2 directly below. */}
+                  {/* This chip used to carry the offering's starting price, and
+                      nothing else. (There used to be an icon in a bordered,
+                      filled square beside it too — the badge pattern AGENTS.md
+                      rules out by name.) The site does not advertise a price
+                      any more: we quote every build before it starts, so the
+                      slot a buyer looks at first is the link that gets them
+                      the quote. The offering is named in the h2 below. */}
                   <div className="mb-5 flex items-center gap-3">
-                    <span
+                    <Link
+                      href="/contact"
                       style={MONO_STYLE}
-                      className={`rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 ${EYEBROW_TEXT}`}
+                      className={`rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 transition-colors hover:border-[var(--fx-faint)] hover:text-[var(--fx-white)] ${EYEBROW_TEXT}`}
                     >
-                      {service.startingPrice}
-                    </span>
+                      {t.offering.priceCta}
+                    </Link>
                   </div>
 
                   <Serif as="h2" className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                     {service.name}
                   </Serif>
-                  <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--fx-muted)]">
+                  <p className={`mt-4 max-w-lg ${LEAD} text-[var(--fx-muted)]`}>
                     {service.description}
                   </p>
 
@@ -121,7 +124,7 @@ export default function ServicesPage() {
                     {service.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-3">
                         <Check className="h-4 w-4 shrink-0 text-[var(--fx-yellow)]" />
-                        <span className="text-[14px] text-[var(--fx-muted)]">
+                        <span className={`${BODY} text-[var(--fx-muted)]`}>
                           {feature}
                         </span>
                       </li>
@@ -148,7 +151,7 @@ export default function ServicesPage() {
                       {alwaysIncluded.map((item) => (
                         <div
                           key={item}
-                          className="flex items-center gap-3 border-b border-[var(--fx-hairline)] pb-4 text-[14px] text-[var(--fx-white)] last:border-0 last:pb-0"
+                          className={`flex items-center gap-3 border-b border-[var(--fx-hairline)] pb-4 ${BODY} text-[var(--fx-white)] last:border-0 last:pb-0`}
                         >
                           <Check className="h-4 w-4 shrink-0 text-[var(--fx-yellow)]" />
                           <span>{item}</span>
@@ -182,7 +185,7 @@ export default function ServicesPage() {
               <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                 {t.notSure.title}
               </Serif>
-              <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-4 ${LEAD} text-[var(--fx-muted)]`}>
                 {t.notSure.body}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">

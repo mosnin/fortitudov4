@@ -5,12 +5,19 @@
  * Solutions, Consultation, Digital Marketing — declared in `services.ts` and
  * mirrored by `pricing.ts` and the `service_type` enum. Three files, one list,
  * nothing enforcing the agreement: a sixth service added to the marketing copy
- * and not to the enum is a runtime insert failure, and a price changed in the
- * copy and not in `pricing.ts` is an invoice that does not match the quote.
+ * and not to the enum is a runtime insert failure.
  *
  * These test the documented invariant rather than the current copy: the ids,
  * the cross-file agreement, and the arithmetic. Marketing wording is free to
  * change without touching this file.
+ *
+ * `services.ts` used to carry a `startingPrice` string per offering, and this
+ * file asserted it matched `pricing.ts` to the dollar. The public site no
+ * longer advertises a price anywhere — you tell us what you need and we send
+ * you a fixed one — so the field is gone and a test below checks it stays
+ * gone. `pricing.ts` is untouched: it is what the product invoices real
+ * clients from, and nothing here is about the marketing site's figures any
+ * more because there are none.
  */
 
 import { describe, expect, it } from "vitest";
@@ -66,7 +73,6 @@ describe("the catalogue", () => {
       expect(service.name.trim().length, service.id).toBeGreaterThan(0);
       expect(service.description.trim().length, service.id).toBeGreaterThan(20);
       expect(service.features.length, service.id).toBeGreaterThan(0);
-      expect(service.startingPrice, service.id).toMatch(/\$[\d,]+/);
       expect(typeof service.icon, service.id).not.toBe("undefined");
     }
   });
@@ -92,23 +98,23 @@ describe("pricing", () => {
     }
   });
 
-  it("agrees with the starting price the site advertises", () => {
-    // pricing.ts documents its amounts as derived from these strings; if the
-    // two drift, a client is quoted one number and invoiced another.
+  it("advertises no price at all — the public site quotes none", () => {
+    // The marketing site used to carry a `startingPrice` string per offering
+    // and assert it matched pricing.ts to the dollar. Every advertised figure
+    // is gone: you tell us what you need and we send you a fixed price. The
+    // amounts below stay, because they are what the PRODUCT invoices from.
     for (const service of services) {
-      const advertised = service.startingPrice.match(/\$([\d,]+)/)?.[1];
-      expect(advertised, `${service.id} has no advertised price`).toBeDefined();
-      expect(formatUsd(getPricing(service.id)!.amountCents), service.id).toBe(
-        `$${advertised}`
-      );
+      expect(Object.keys(service), service.id).not.toContain("startingPrice");
+      expect(JSON.stringify(service), service.id).not.toMatch(/\$\s?\d/);
     }
   });
 
-  it("bills monthly exactly when the advertised price says /mo", () => {
-    for (const service of services) {
-      const recurring = service.startingPrice.trim().endsWith("/mo");
-      expect(getPricing(service.id)!.billing, service.id).toBe(
-        recurring ? "monthly" : "one_time"
+  it("bills digital marketing monthly and every build once", () => {
+    // The billing cycle used to be checked against the "/mo" suffix on the
+    // advertised price. It is a property of the offering, not of the copy.
+    for (const id of THE_FIVE) {
+      expect(getPricing(id)!.billing, id).toBe(
+        id === "digital_marketing" ? "monthly" : "one_time"
       );
     }
   });

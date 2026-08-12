@@ -1,15 +1,26 @@
 /**
  * The /pricing page body, on the dark cinematic redesign system (layout ported
- * unchanged from the giga marketing kit's pricing page; wording maps to
- * Fortitudo's fixed-quote engagement model).
+ * from the giga marketing kit's pricing page; wording maps to Fortitudo's
+ * fixed-quote engagement model).
  *
- * English is the only shipped language, but price AMOUNTS still render via the
- * LocalPrice / PriceText client components so the visitor's geo-resolved
- * display currency applies on top (USD default; server render and first paint
- * show the USD base price — the honest fallback).
+ * NO PRICES. The page kept its route, its nav entry and its promise — one
+ * fixed price, agreed before work starts, no hourly billing, no surprise
+ * invoices — and every figure is gone. It answers HOW pricing works and ends
+ * at the contact form. Three things went with the numbers:
  *
- * Server component; stays statically generated (currency hydrates client-side
- * from the cookie — no per-request rendering).
+ *  - the `LocalPrice` / `PriceText` / `CurrencyNote` client components, and
+ *    with them the last consumer of `src/components/marketing/local-price.tsx`,
+ *    which is deleted;
+ *  - `CurrencyRing`, a band of eleven orbiting currency codes whose whole copy
+ *    was "this page shows the price in your money". With no price on the page
+ *    it advertised something the site no longer does;
+ *  - the offering price list, which is now the same five offerings each
+ *    pointing at the form.
+ *
+ * The real amounts live in `src/lib/pricing.ts` and are what the product
+ * invoices clients from. Nothing here reads them.
+ *
+ * Server component; stays statically generated.
  *
  * The words are in `src/lib/i18n/dictionaries/pricing-page.ts`. `lang`
  * defaults to English because the `[lang]` route tree that will pass a real
@@ -19,27 +30,24 @@
  */
 
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { services, projectPhaseNames } from '@/lib/services';
 import { LANG_TAG, type Lang } from '@/lib/i18n/markets';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { PRICING_PAGE } from '@/lib/i18n/dictionaries/pricing-page';
 import { EngagementPlans } from '@/components/marketing/pages/engagement-plans';
-import { LocalPrice, PriceText, CurrencyNote } from '@/components/marketing/local-price';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
-import { CurrencyRing } from '@/components/marketing/giga/currency-ring';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
-import { DISPLAY_S, SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
-
-/** Starting prices for the full service list (mirrors lib/services.ts /
- *  lib/pricing.ts — the checkout source of truth; keep in sync). */
-const SERVICE_STARTING_USD: Record<string, number> = {
-  websites: 1500,
-  software_solutions: 3500,
-  ai_solutions: 3000,
-  consultation: 500,
-  digital_marketing: 1200,
-};
+import {
+  BODY,
+  BODY_S,
+  DISPLAY_S,
+  EYEBROW_TEXT,
+  LEAD,
+  SECTION_Y_TIGHT,
+  TITLE_S,
+} from '@/components/marketing/giga/tokens';
 
 /**
  * Days of help after launch, included with every engagement.
@@ -96,16 +104,15 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
   const faqs = [t.faq.fixed, t.faq.from, t.faq.afterLaunch, t.faq.payments];
 
   return (
-    <div lang={LANG_TAG[lang]} className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
+    <div lang={LANG_TAG[lang]} className="bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
       {/* Hero — the same dot-matrix field every other sub-page now opens on. It
           used to be a full-bleed stock photograph under two scrims, left from
           the photography-led design, and it made /pricing look like a different
           site to the page it links from.
 
           No `cta`: the engagement cards directly below are the ask, and each
-          one carries its own yellow pill. The vertical step is `PageHero`'s
-          own `HERO_Y` — the `Band` that used to apply it is gone with the block
-          it padded, rather than stacking two heroes' worth of air. */}
+          one carries its own button. The vertical step is `PageHero`'s own
+          `HERO_Y`. */}
       <PageHero
         eyebrow={t.hero.eyebrow}
         title={t.hero.title}
@@ -115,34 +122,17 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
 
       {/* Engagement cards */}
       <EngagementPlans lang={lang} />
-      <Band className="pb-2">
-        {/* A billing-currency disclosure is content, not chrome: --fx-muted's
-            6.5:1, not the 3.1:1 it was set in. */}
-        <CurrencyNote lang={lang} className="text-[12px] text-[var(--fx-muted)]" />
-      </Band>
-
-      {/* The ring of display currencies. It belongs here and nowhere else: its
-          copy says "This page does it", which is only literally true next to
-          the prices above it — and the claim is checkable by reloading them.
-
-          Above the tone shift on purpose. The section's one accent is a single
-          yellow card on charcoal, and it carries no `data-fx-surface="dark"`;
-          inside the flip its raised cards would invert to black plates with
-          black ink. */}
-      <CurrencyRing lang={lang} />
 
       {/* The tone shift. Everything below runs in the inverted scope — racing
           yellow ground, black ink — see `[data-fx-tone="light"]` in
           globals.css.
 
-          The split is after the engagement cards and the currency note that
-          belongs to them. Above it the page answers "what does this cost";
-          below it, everything is qualification — the two specialist
-          engagements, how a quote is arrived at, the four questions people ask
-          before they commit, and the ask. A visitor who is still reading past
-          the prices has already accepted the number, and the colour marks that
-          they crossed. Splitting between the cards and their currency note
-          would separate a price from its own disclosure.
+          The split is after the engagement cards. Above it the page says what
+          you can buy; below it, everything is how buying works — the two
+          specialist engagements, how a quote is arrived at, what every project
+          includes, the four questions people ask, and the ask itself. A
+          visitor still reading past the cards has decided they want something,
+          and the colour marks that they crossed.
 
           `text-[var(--fx-white)]` is restated here because the charcoal
           wrapper above computed it to white; inside the flip the same token
@@ -156,58 +146,37 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
                 {t.specialists.title}
               </Serif>
-              <p className="mt-5 max-w-xl text-[14px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-5 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>
                 {t.specialists.body}
               </p>
             </div>
             {/* Both cards paint `--fx-charcoal-raised`, which inverts to
-                black; the surface mark flips their ink back. */}
+                black; the surface mark flips their ink back. Each used to
+                carry an amount under its heading — a localized consultation
+                price and the word "Custom". Both are the contact link now. */}
             <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
-              <div
-                data-fx-surface="dark"
-                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
-              >
-                <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                  {t.specialists.consultation.title}
-                </Serif>
-                <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                  {t.specialists.consultation.scopeLine}
-                </p>
-                <p className="mt-4">
-                  <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
-                    <LocalPrice usd={SERVICE_STARTING_USD.consultation} lang={lang} />
+              {[t.specialists.consultation, t.specialists.retainer].map((card) => (
+                <div
+                  key={card.title}
+                  data-fx-surface="dark"
+                  className="flex flex-col rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
+                >
+                  <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
+                    {card.title}
                   </Serif>
-                  <span className="text-[13px] text-[var(--fx-muted)]">{t.specialists.consultation.unit}</span>
-                </p>
-                <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                  {t.specialists.consultation.note}
-                </p>
-              </div>
-              <div
-                data-fx-surface="dark"
-                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
-              >
-                <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                  {t.specialists.retainer.title}
-                </Serif>
-                <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                  {t.specialists.retainer.scopeLine}
-                </p>
-                <p className="mt-4">
-                  <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
-                    {t.specialists.retainer.figure}
-                  </Serif>
-                  <span className="text-[13px] text-[var(--fx-muted)]">{t.specialists.retainer.unit}</span>
-                </p>
-                {/* A custom retainer cannot promise fixed inclusions; scope is
-                    what it agrees. It used to advertise priority support and a
-                    dedicated point of contact, neither of which we define. */}
-                <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                  {t.specialists.retainer.note}
-                </p>
-              </div>
+                  <p className={`mt-1.5 ${BODY_S} text-[var(--fx-muted)]`}>{card.scopeLine}</p>
+                  <p className={`mt-4 flex-1 ${BODY_S} text-[var(--fx-muted)]`}>{card.note}</p>
+                  <Link
+                    href="/contact"
+                    className={`mt-5 inline-flex items-center gap-1.5 ${BODY} font-medium text-[var(--fx-white)] underline-offset-4 transition-colors hover:text-[var(--fx-yellow)] hover:underline`}
+                  >
+                    {t.specialists.cardCta}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              ))}
             </div>
-            <p className="mt-6 text-[13px] text-[var(--fx-muted)]">
+            <p className={`mt-6 ${BODY} text-[var(--fx-muted)]`}>
               {t.specialists.biggerLead}{' '}
               <Link href="/contact" className="font-medium text-[var(--fx-yellow)] hover:underline">
                 {t.specialists.biggerLink}
@@ -217,7 +186,7 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
           </BlurRise>
         </Band>
 
-        {/* Every service, one fixed quote + the engagement by the numbers */}
+        {/* How a price is arrived at, then the five offerings */}
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-3xl">
             <div>
@@ -225,23 +194,52 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
                 {t.howPricing.title}
               </Serif>
-              <p className="mt-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-5 ${LEAD} text-[var(--fx-muted)]`}>
                 {t.howPricing.body}
               </p>
             </div>
-            {/* The price list is a raised panel, so it is a black plate on the
-                yellow and its rows need the light ink back. */}
+
+            {/* The three steps. This band used to be a price list — five rows,
+                five "from $x" figures. It is the process now, because that is
+                what the page has left to explain and it is the part a buyer
+                actually wants to know. */}
+            <ol className="mt-8 grid gap-4 sm:grid-cols-3">
+              {t.howPricing.steps.map((step, i) => (
+                <li
+                  key={step.title}
+                  data-fx-surface="dark"
+                  className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-5"
+                >
+                  <p className={EYEBROW_TEXT}>{String(i + 1).padStart(2, '0')}</p>
+                  <p className={`mt-3 ${BODY} font-medium text-[var(--fx-white)]`}>{step.title}</p>
+                  <p className={`mt-1.5 ${BODY_S} text-[var(--fx-muted)]`}>{step.body}</p>
+                </li>
+              ))}
+            </ol>
+
+            {/* The five offerings, each a way into the same form. `services.ts`
+                is the same list the product and the admin side read. */}
+            <p className="mt-10">
+              <Eyebrow>{t.howPricing.listHeading}</Eyebrow>
+            </p>
             <ul
               data-fx-surface="dark"
-              className="mt-8 divide-y divide-[var(--fx-hairline)] overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]"
+              className="mt-5 divide-y divide-[var(--fx-hairline)] overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]"
             >
               {services.map((s) => (
-                <li key={s.id} className="flex items-center justify-between px-5 py-3.5">
-                  <span className="text-[13.5px] text-[var(--fx-white)]">{s.name}</span>
-                  <span className="text-[13px] tabular-nums text-[var(--fx-muted)]">
-                    {t.howPricing.fromPrefix}
-                    <LocalPrice usd={SERVICE_STARTING_USD[s.id] ?? 0} lang={lang} />
-                  </span>
+                <li key={s.id}>
+                  <Link
+                    href="/contact"
+                    className="group flex items-center justify-between px-5 py-3.5 transition-colors hover:bg-[var(--fx-charcoal-deep)]"
+                  >
+                    <span className={`${BODY} text-[var(--fx-white)]`}>{s.name}</span>
+                    <span
+                      className={`flex items-center gap-1.5 ${BODY_S} text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]`}
+                    >
+                      {t.howPricing.listCta}
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -256,21 +254,22 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
                   data-fx-surface="dark"
                   className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-5"
                 >
-                  <p className="text-[13.5px] font-medium text-[var(--fx-white)]">{fact.label}</p>
+                  <p className={`${BODY} font-medium text-[var(--fx-white)]`}>{fact.label}</p>
                   <Serif
                     as="p"
                     className="mt-2 text-2xl font-light tabular-nums text-[var(--fx-white)]"
                   >
                     {fact.figure}
                   </Serif>
-                  <p className="mt-1 text-[12px] text-[var(--fx-muted)]">{fact.line}</p>
+                  <p className={`mt-1 ${BODY_S} text-[var(--fx-muted)]`}>{fact.line}</p>
                 </div>
               ))}
             </div>
           </BlurRise>
         </Band>
 
-        {/* FAQ */}
+        {/* FAQ. `{days}` is the only token left in these answers — the two
+            price tokens went with the figures. */}
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-3xl">
             <Eyebrow>{t.faq.eyebrow}</Eyebrow>
@@ -278,35 +277,15 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
               {t.faq.title}
             </Serif>
           </BlurRise>
-          {/* Price tokens are named for the offering they resolve to. They were
-              `validate` and `scale` — the source template's plan tiers, which we
-              do not sell and which leaked into the copy as "a Scale web
-              application".
-
-              `{days}` is filled here, before <PriceText/> fills the price
-              tokens: fill() leaves a token it has no value for alone, so the
-              two passes compose and an unfilled one stays visible in review. */}
           <ul className="mt-12 max-w-3xl divide-y divide-[var(--fx-hairline)]">
             {faqs.map((item, i) => (
               <BlurRise key={item.q} delay={i * 0.04}>
                 <li className="py-7">
                   <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                    <PriceText
-                      template={fill(item.q, { days: SUPPORT_DAYS })}
-                      tokens={{ websites: SERVICE_STARTING_USD.websites }}
-                      lang={lang}
-                    />
+                    {item.q}
                   </Serif>
-                  <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                    {/* Prices in prose localize with the visitor's currency */}
-                    <PriceText
-                      template={fill(item.a, { days: SUPPORT_DAYS })}
-                      tokens={{
-                        websites: SERVICE_STARTING_USD.websites,
-                        software: SERVICE_STARTING_USD.software_solutions,
-                      }}
-                      lang={lang}
-                    />
+                  <p className={`mt-2.5 ${BODY} text-[var(--fx-muted)]`}>
+                    {fill(item.a, { days: SUPPORT_DAYS })}
                   </p>
                 </li>
               </BlurRise>
@@ -314,20 +293,21 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
           </ul>
         </Band>
 
-        {/* Closing CTA */}
+        {/* Closing CTA. The primary used to send you to /sign-up to see a
+            price; the price is the form now. */}
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-2xl">
             <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
               {t.cta.title}
             </Serif>
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)]">
+            <p className={`mt-5 max-w-md ${LEAD} text-[var(--fx-muted)]`}>
               {t.cta.body}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <PillPrimary href="/sign-up" withArrow>
+              <PillPrimary href="/contact" withArrow>
                 {t.cta.primary}
               </PillPrimary>
-              <PillGhost href="/contact">{t.cta.secondary}</PillGhost>
+              <PillGhost href="/services">{t.cta.secondary}</PillGhost>
             </div>
           </BlurRise>
         </Band>

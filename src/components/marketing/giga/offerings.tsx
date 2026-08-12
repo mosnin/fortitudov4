@@ -3,9 +3,11 @@
 /**
  * Offerings — the "what we build" section, carried forward from the previous
  * landing's journey-package cards and re-set in the Giga system: near-black
- * band, display-face card titles, mono price lines, hairline cards, and the
+ * band, display-face card titles, mono footer lines, hairline cards, and the
  * capability chips carried over from the old design, re-tinted for the dark
- * shell.
+ * shell. The mono line that used to carry a starting price now carries the
+ * ask that replaced it: we quote every build before it starts, so the card
+ * points at the form.
  *
  * Motion: ONE idea — the grid arrives on the diagonal (`StaggerGrid`), so six
  * cards read as a single move across the section rather than six separate
@@ -21,7 +23,7 @@ import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { KineticText, StaggerGrid } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
-import { DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_L } from './tokens';
+import { BODY_S, DISPLAY_M, LEAD, MONO_STYLE, SECTION_Y, TITLE_L } from './tokens';
 
 export function Offerings({ lang = 'en' }: { lang?: Lang }) {
   const t = HOME[lang].offerings;
@@ -38,7 +40,7 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
             <KineticText lines={t.headingLines} />
           </Serif>
           <BlurRise delay={0.28}>
-            <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
+            <p className={`mt-5 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>
               {t.lead}
             </p>
           </BlurRise>
@@ -49,16 +51,24 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
           columns={3}
         >
           {services.map((service) => (
-            <Link
+            <div
               key={service.id}
-              href={`/services#${service.id.replace(/_/g, '-')}`}
-              className="group flex h-full flex-col rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6 transition-colors duration-200 hover:border-[var(--fx-faint)]"
+              className="group relative flex h-full flex-col rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6 transition-colors duration-200 hover:border-[var(--fx-faint)]"
             >
               <service.icon className="h-5 w-5" stroke="url(#chippi-grad)" strokeWidth={1.75} />
               <Serif as="h3" className={`mt-4 ${TITLE_L} text-[var(--fx-white)]`}>
-                {service.name}
+                {/* The card is one target, drawn with a stretched link rather
+                    than an anchor around the whole cell: the "Contact us"
+                    control below is itself a link, and an anchor inside an
+                    anchor is invalid markup the browser silently unpicks. */}
+                <Link
+                  href={`/services#${service.id.replace(/_/g, '-')}`}
+                  className="after:absolute after:inset-0 after:content-['']"
+                >
+                  {service.name}
+                </Link>
               </Serif>
-              <p className="mt-2.5 flex-1 text-[13px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-2.5 flex-1 ${BODY_S} text-[var(--fx-muted)]`}>
                 {service.description}
               </p>
               <div className="mt-4 flex flex-wrap gap-1.5">
@@ -72,19 +82,22 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
                 ))}
               </div>
               <div className="mt-5 flex items-center justify-between border-t border-[var(--fx-hairline)] pt-4">
-                {/* A price is content, so it reads at --fx-muted's 6.5:1. */}
-                <span
+                {/* Where the starting price used to sit. We quote every build
+                    before it starts, so the card sends you to the form that
+                    gets you one. `relative` lifts it over the stretched link. */}
+                <Link
+                  href="/contact"
                   style={MONO_STYLE}
-                  className="text-[11px] uppercase tracking-[0.22em] text-[var(--fx-muted)]"
+                  className="relative text-[11px] uppercase tracking-[0.22em] text-[var(--fx-muted)] underline-offset-4 transition-colors hover:text-[var(--fx-white)] hover:underline"
                 >
-                  {service.startingPrice}
-                </span>
+                  {t.cardPriceCta}
+                </Link>
                 <span className="flex items-center gap-1 text-[12.5px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
                   {t.cardCta}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>
-            </Link>
+            </div>
           ))}
 
           {/* Sixth cell — the "something else" card, from the old grid's dark slot */}
@@ -97,7 +110,7 @@ export function Offerings({ lang = 'en' }: { lang?: Lang }) {
               <Serif as="h3" className={`${TITLE_L} text-[var(--fx-white)]`}>
                 {t.somethingElseTitle}
               </Serif>
-              <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--fx-muted)]">
+              <p className={`mt-2.5 ${BODY_S} text-[var(--fx-muted)]`}>
                 {t.somethingElseDesc}
               </p>
             </div>

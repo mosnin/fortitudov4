@@ -35,13 +35,17 @@ const en = {
     /** Rendered as two spans: the accent half is the yellow one. */
     titleLead: 'Five things we build.',
     titleAccent: 'Pick the one you need.',
-    body: 'Each one has a starting price. You get your own fixed price before we start, and it does not move. Tell us which you need and we do the rest.',
+    body: 'Tell us which one you need and we send you a fixed price. You get it before we start, and it does not move. Then we do the rest.',
   },
 
   /** Repeated once per offering band. `{service}` = the name from services.ts. */
   offering: {
     startWith: 'Start with {service}',
     includedHeading: 'Included either way',
+    /** The chip above each offering's name, where its starting price used to
+     *  be. It links to the contact form — we quote a build before it starts,
+     *  so the price is something we send you, not something on a card. */
+    priceCta: 'Contact us',
   },
 
   /**
@@ -65,7 +69,7 @@ const en = {
     title: 'Not sure which one you need?',
     body: 'Tell us what you are trying to do and we will say which one fits — including when the honest answer is “not yet”.',
     ask: 'Ask us which one',
-    pricing: 'View pricing',
+    pricing: 'How pricing works',
   },
 };
 

@@ -63,10 +63,13 @@ type Copy = {
 /**
  * Three facts, no figures we cannot point at.
  *
- *  1. Eleven currencies is the `Currency` union in `src/lib/i18n/markets.ts`,
- *     resolved from geo in `src/proxy.ts` and rendered by
- *     `src/components/marketing/local-price.tsx`. The dollar line is
- *     `src/lib/i18n/currency.ts`: checkout charges USD, always.
+ *  1. Money used to read "prices in 11 currencies", pointing at our own
+ *     pricing page, which rendered its figures in the visitor's currency. The
+ *     site advertises no prices now, so that claim would be about a page that
+ *     no longer does it. What is left is the thing we actually build for a
+ *     client: a checkout that takes the money their customers hold. Sourced to
+ *     the `Currency` union in `src/lib/i18n/markets.ts` and the geo resolution
+ *     in `src/proxy.ts`.
  *  2. One build, many languages is the shape of `src/lib/i18n/` itself — copy
  *     is a dictionary, not a second site. It deliberately does NOT claim the
  *     pages are translated today; they are not (see copy.md).
@@ -85,9 +88,9 @@ const EN: Copy = {
   facts: [
     {
       label: 'Money',
-      title: 'Prices in 11 currencies',
+      title: 'They pay in their own money',
       body:
-        'Our own pricing page reads where you are and shows the price in your money. Cards are charged in US dollars, and it says so.',
+        'We build your checkout to read where a customer is and price in the money they hold. What their card is charged in, we say on the page.',
     },
     {
       label: 'Language',
