@@ -338,11 +338,14 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   /* One accent, used for what you want pressed. */
   --fx-yellow: #f8cd02;
   --fx-yellow-hover: #dcb602;
-  /* Ink for anything sitting on yellow. */
-  /* Deliberately NOT --fx-charcoal-deep. Ink and a surface that happen to be
-     the same value today will not stay that way, and a page that reads
-     correctly by coincidence is one edit from reading wrong. */
-  --fx-on-yellow: #0d0d0d;
+  /* Ink for anything sitting on yellow.
+     Charcoal, not black. The brand's dark is #1b1b1d and it carries a trace of
+     warmth; flat black beside it reads as a second, colder dark. It clears
+     11.2:1 on the yellow, so nothing is bought by going darker.
+     Deliberately NOT written as --fx-charcoal-deep. Ink and a surface that
+     happen to be the same value today will not stay that way, and a page that
+     reads correctly by coincidence is one edit from reading wrong. */
+  --fx-on-yellow: #1b1b1d;
 
   /* Charcoal ground, plus the panel one step deeper for inset surfaces and
      one step lighter for raised ones. */
@@ -414,23 +417,26 @@ body:has([data-marketing-shell]) {
  */
 [data-marketing-shell] [data-fx-tone="light"] {
   --fx-charcoal: #f8cd02;
-  /* Both inset surfaces are cards here, and both are black — the reason the
-     nested reset below has to exist. */
-  --fx-charcoal-deep: #0d0d0d;
-  --fx-charcoal-raised: #141416;
+  /* Both inset surfaces are cards here, and both are CHARCOAL — the reason the
+     nested reset below has to exist. Charcoal rather than black: a black card
+     on this yellow is a hole in the page, where charcoal sits on it. The two
+     steps stay one notch apart so `deep` still reads as further back than
+     `raised`. */
+  --fx-charcoal-deep: #1b1b1d;
+  --fx-charcoal-raised: #232326;
 
-  --fx-white: #0d0d0d;
-  --fx-muted: rgba(13, 13, 13, 0.68);
-  --fx-faint: rgba(13, 13, 13, 0.46);
-  --fx-hairline: rgba(13, 13, 13, 0.18);
+  --fx-white: #1b1b1d;
+  --fx-muted: rgba(27, 27, 29, 0.72);
+  --fx-faint: rgba(27, 27, 29, 0.48);
+  --fx-hairline: rgba(27, 27, 29, 0.20);
 
   /* The accent has no hue of its own here, and should not get one. On a
      yellow ground every colour that is not black is either invisible or
      alarming, so the accent differentiates by WEIGHT — full black against
      black-68% body copy — and by treatment: a filled block, an underline. A
      third hue on this ground would read as a fourth brand colour. */
-  --fx-yellow: #0d0d0d;
-  --fx-yellow-hover: #000000;
+  --fx-yellow: #1b1b1d;
+  --fx-yellow-hover: #0f0f11;
   --fx-on-yellow: #f8cd02;
 
   /* Alert has to survive on yellow, where the light pink reads as nothing. */
@@ -449,7 +455,7 @@ body:has([data-marketing-shell]) {
   --fx-hairline: rgba(255, 255, 255, 0.14);
   --fx-yellow: #f8cd02;
   --fx-yellow-hover: #dcb602;
-  --fx-on-yellow: #0d0d0d;
+  --fx-on-yellow: #1b1b1d;
   /* Alert has to come back too. The light scope darkens it to survive on
      yellow; left unreset, that dark red lands on a black card at about 2:1 —
      on a form's failure notice, which is the one message a visitor cannot be
