@@ -2,7 +2,8 @@
 
 import { Children, useEffect, useState } from "react"
 import type { Transition, Variants } from "motion/react"
-import { AnimatePresence, motion, useReducedMotion } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe"
 
 import { cn } from "@/lib/utils"
 
@@ -65,7 +66,7 @@ export function TextFlip({
 
   onIndexChange,
 }: TextFlipProps) {
-  const reduce = useReducedMotion()
+  const reduce = useReducedMotionSafe()
   const [currentIndex, setCurrentIndex] = useState(0)
 
   const items = Children.toArray(children)

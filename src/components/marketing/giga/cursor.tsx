@@ -29,15 +29,15 @@ import { useEffect, useState } from 'react';
 import {
   motion,
   useMotionValue,
-  useReducedMotion,
   useSpring,
 } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 
 /** Everything that should make the ring swell. */
 const INTERACTIVE = 'a, button, [role="button"], input, textarea, select, summary';
 
 export function Cursor() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const [enabled, setEnabled] = useState(false);
   const [active, setActive] = useState(false);
   const [visible, setVisible] = useState(false);

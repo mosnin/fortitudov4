@@ -23,7 +23,6 @@ import {
   AnimatePresence,
   useScroll,
   useMotionValueEvent,
-  useReducedMotion,
 } from 'motion/react';
 import {
   Menu,
@@ -41,6 +40,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import { Serif } from '@/components/marketing/giga/primitives';
 import { BODY_S, EYEBROW_TEXT, MONO_STYLE, TITLE_L } from '@/components/marketing/giga/tokens';
 import type { Lang } from '@/lib/i18n/markets';
@@ -99,7 +99,7 @@ const MENU_ORDER: MenuKey[] = ['product', 'company'];
 
 export function SiteHeader({ lang = 'en' }: { lang?: Lang }) {
   const t = CHROME[lang].nav;
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);

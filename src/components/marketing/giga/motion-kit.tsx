@@ -13,9 +13,18 @@
  * House rules, all enforced below rather than left to the caller:
  *
  *  - `prefers-reduced-motion` is a hard fallback, not a shorter duration.
- *    Every primitive branches on `useReducedMotion()` and renders the same
+ *    Every primitive branches on `useReducedMotionSafe()` and renders the same
  *    content, statically. A reader who asks for less motion loses the travel
  *    and nothing else.
+ *
+ *    `useReducedMotionSafe()`, never motion's own `useReducedMotion()`, for any
+ *    branch that decides what gets RENDERED. Motion's hook returns `true` on
+ *    the first client render and `false` on the server, and React does not
+ *    repair attribute mismatches during hydration — so the static branch
+ *    inherits the animated branch's server-rendered `opacity: 0` and the
+ *    content is invisible forever. Motion's hook is still right for values read
+ *    only inside effects or handlers (`useMagnetic`, `Counter`), which never
+ *    reach the SSR markup.
  *  - Nothing bounces. Entrances run on `EASE_OUT`; the one spring here
  *    (`useMagnetic`) is overdamped, so it settles without overshoot.
  *  - No layout shift. Reveals move `transform` and `opacity` only; the mask
@@ -33,13 +42,13 @@ import {
   motion,
   useInView,
   useMotionValue,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
 } from 'motion/react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 
 /* ── 1. Kinetic text ─────────────────────────────────────────────────────── */
 
@@ -82,7 +91,7 @@ export function KineticText({
   duration?: number;
   trigger?: 'load' | 'scroll';
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   if (reduce) {
     return (
@@ -164,7 +173,7 @@ export function Parallax({
   distance?: number;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   // The library reads scroll once per frame and writes the transform off the
   // main thread's layout path — this is the reason not to hand-roll it.
@@ -203,7 +212,7 @@ export function useMagnetic<T extends HTMLElement = HTMLElement>(
   /** Maximum travel in px. 6–10 reads as intent; 20 reads as a toy. */
   strength = 7,
 ) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const x = useMotionValue(0);
   const y = useMotionValue(0);
   // Overdamped (ζ ≈ 1.7): it settles, it does not spring back past centre.
@@ -326,7 +335,7 @@ export function Counter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const count = useMotionValue(0);
   const [display, setDisplay] = useState(0);
 
@@ -395,7 +404,7 @@ export function StaggerGrid({
   step?: number;
   y?: number;
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const cells = Children.toArray(children);
 
   return (

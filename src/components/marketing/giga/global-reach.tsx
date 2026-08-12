@@ -42,7 +42,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { useReducedMotion } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import ParticleSphere from '@/components/originkit/ui/hero-33/particle-sphere';
 import type { Lang } from '@/lib/i18n/markets';
 import { Band, BlurRise, Eyebrow, PillGhost, Serif } from './primitives';
@@ -200,7 +200,7 @@ const YELLOW_FALLBACK = '#f8cd02';
  *    drag — motion the visitor asked for — still turns it.
  */
 function GlobeStage() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const stageRef = useRef<HTMLDivElement>(null);
   const globeRef = useRef<HTMLDivElement>(null);
   /** Null until the section is near the viewport: the gate AND the colour. */

@@ -28,10 +28,11 @@
  */
 
 import Link from 'next/link';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import { useMagnetic } from './motion-kit';
 import { EYEBROW_TEXT, MONO_STYLE } from './tokens';
 
@@ -165,7 +166,7 @@ type PillProps = {
  * `transition-all` here would smear every spring frame through a 200ms curve.
  */
 export function PillPrimary({ href, children, className, withArrow }: PillProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const magnetic = useMagnetic<HTMLAnchorElement>();
   return (
     <MotionLink
@@ -230,7 +231,11 @@ export function BlurRise({
   trigger?: 'load' | 'scroll';
   y?: number;
 }) {
-  const reduce = useReducedMotion();
+  // Safe, not motion's own — this branch decides what is in the DOM, and
+  // motion's hook disagrees with the server on the first render. See
+  // `use-reduced-motion-safe.ts`; getting it wrong left this element at
+  // `opacity: 0` permanently.
+  const reduce = useReducedMotionSafe();
   if (reduce) return <div className={className}>{children}</div>;
 
   const initial = { opacity: 0, y, filter: 'blur(12px)' };

@@ -24,7 +24,8 @@
  */
 
 import { useRef } from 'react';
-import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react';
+import { motion, useScroll, useTransform } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 
 export function ToneShift({
   children,
@@ -34,7 +35,7 @@ export function ToneShift({
   className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   // Tracked across the seam only — from the moment the boundary enters the
   // viewport to the moment it leaves the top — so the easing is spent on the

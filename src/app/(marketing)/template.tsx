@@ -9,10 +9,11 @@
  * the light shell. Reduced-motion renders instantly.
  */
 
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 
 export default function MarketingTemplate({ children }: { children: React.ReactNode }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   return (
     <motion.div
       initial={reduce ? false : { opacity: 0, filter: 'blur(8px)' }}

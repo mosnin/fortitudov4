@@ -21,11 +21,8 @@
  */
 
 import { useEffect, useState } from 'react';
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-} from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import { BrandLogo } from '@/components/brand-logo';
 
 // Same expo ease as the splash - fast start, long gentle settle.
@@ -49,7 +46,7 @@ export function OnboardingIntro({
   line?: string;
 }) {
   const [stage, setStage] = useState<'line' | 'mark' | 'gone'>('line');
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   useEffect(() => {
     const toMark = setTimeout(() => setStage('mark'), reduce ? 700 : INTRO_TO_MARK);
@@ -144,7 +141,7 @@ export function OnboardingReady({
   const [index, setIndex] = useState(0);
   const [showFinal, setShowFinal] = useState(false);
   const [gone, setGone] = useState(false);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   useEffect(() => {
     const wordMs = reduce ? 420 : WORD_MS;

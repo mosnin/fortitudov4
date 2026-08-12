@@ -80,7 +80,7 @@
  * and there is no empty slot to label.
  */
 
-import { useReducedMotion } from 'motion/react';
+import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 import type { Lang } from '@/lib/i18n/markets';
 import { StickerNote } from '@/components/originkit/ui/cta-01/sticker-note';
 import { BlurRise, Eyebrow, PillPrimary, Serif } from './primitives';
@@ -186,7 +186,7 @@ export function PinboardCta({ lang = 'en' }: { lang?: Lang }) {
      Until `COPY` moves into the dictionary there is nothing to select. */
   void lang;
 
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   return (
     <section
