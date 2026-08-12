@@ -18,16 +18,8 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { CRM_STAGES, STAGE_LABELS } from '@/lib/crm';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  Serif,
-  MONO_STYLE,
-  DISPLAY_M,
-  EYEBROW_TEXT,
-  SECTION_Y,
-} from './primitives';
+import { Band, BlurRise, Eyebrow, Serif } from './primitives';
+import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
 
 /** What the client actually gets to see at each stage, in their own words. */
 const STAGE_NOTES: Record<(typeof CRM_STAGES)[number], string> = {

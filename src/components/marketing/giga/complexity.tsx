@@ -6,16 +6,8 @@
  */
 
 import { ShieldCheck, GitBranch, BarChart3 } from 'lucide-react';
-import {
-  BlurRise,
-  Eyebrow,
-  PillGhost,
-  Serif,
-  Band,
-  DISPLAY_M,
-  TITLE_S,
-  SECTION_Y,
-} from './primitives';
+import { Band, BlurRise, Eyebrow, PillGhost, Serif } from './primitives';
+import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
 
 const COLUMNS = [
   {

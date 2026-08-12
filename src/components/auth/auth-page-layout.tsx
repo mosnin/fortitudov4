@@ -28,7 +28,8 @@ import { BrandLogo, FORTITUDO_MARK_SRC } from '@/components/brand-logo';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { AsciiField } from '@/components/ui/ascii-field';
-import { Serif, MONO_STYLE, EYEBROW_TEXT, DISPLAY_S, DISPLAY_XS } from '@/components/marketing/giga/primitives';
+import { Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_S, DISPLAY_XS, EYEBROW_TEXT, MONO_STYLE } from '@/components/marketing/giga/tokens';
 
 /** Page-level fade + tiny y-translate (ported motion vocabulary). */
 const PAGE_VARIANTS: Variants = {

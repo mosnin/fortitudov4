@@ -22,18 +22,8 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import {
-  Serif,
-  Eyebrow,
-  BlurRise,
-  Band,
-  MONO_STYLE,
-  DISPLAY_M,
-  TITLE_S,
-  SECTION_Y,
-  ALERT_CHIP,
-  ALERT_RULE,
-} from './primitives';
+import { Band, BlurRise, Eyebrow, Serif } from './primitives';
+import { ALERT_CHIP, ALERT_RULE, DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
 
 interface Pill {
   icon: LucideIcon;

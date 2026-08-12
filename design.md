@@ -178,8 +178,19 @@ both look primary, neither is.
   enter with `BlurRise` on `EASE_OUT`; nothing bounces; everything respects
   `prefers-reduced-motion`.
 - **Section rhythm**: eyebrow → display headline (two lines max) → one muted
-  paragraph (~65ch) → one CTA → the visual. Sections are tall (`py-20`–`py-32`),
-  separated by hairlines or by alternating charcoal depths.
+  paragraph (~65ch) → one CTA → the visual. Sections are `SECTION_Y`
+  (`py-24 sm:py-32`); bands that stack inside one continuous page take
+  `SECTION_Y_TIGHT` (`py-16 sm:py-20`); heroes take `HERO_Y`. All three live in
+  `primitives.tsx` — never write the padding inline. Sections are separated by
+  hairlines or by alternating charcoal depths.
+- **Everything is left-aligned.** The page is drawn out of hairlines and squared
+  edges, and a centred headline sitting over a left-aligned rule fights the
+  structure underneath it. The homepage hero is the single deliberate
+  exception, because it is a full-viewport column with no structure beside it.
+- **Type comes from the ladder, never inline.** `DISPLAY_XL`–`DISPLAY_XS`,
+  `TITLE_L`, `TITLE_S` and `EYEBROW_TEXT` are exported from `primitives.tsx`
+  with their leading baked in. A bare `text-[clamp(…)]` on this surface is how
+  eleven near-identical heading sizes happened the first time.
 - **Footer**: pinned beneath the page, uncovered on the last stretch of scroll
   (`FooterReveal`).
 

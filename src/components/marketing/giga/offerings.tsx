@@ -11,16 +11,8 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { services } from '@/lib/services';
-import {
-  Serif,
-  Eyebrow,
-  BlurRise,
-  Band,
-  MONO_STYLE,
-  DISPLAY_M,
-  TITLE_L,
-  SECTION_Y,
-} from './primitives';
+import { Band, BlurRise, Eyebrow, Serif } from './primitives';
+import { DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_L } from './tokens';
 
 export function Offerings() {
   return (

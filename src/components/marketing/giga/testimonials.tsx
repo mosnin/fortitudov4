@@ -27,15 +27,8 @@
 
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import {
-  Band,
-  BlurRise,
-  Serif,
-  MONO_STYLE,
-  DISPLAY_M,
-  EYEBROW_TEXT,
-  SECTION_Y,
-} from './primitives';
+import { Band, BlurRise, Serif } from './primitives';
+import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
 
 export type Testimonial = {
   /** What they actually said, in their words. */

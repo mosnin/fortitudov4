@@ -41,7 +41,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
-import { Serif, MONO_STYLE, EYEBROW_TEXT, TITLE_L } from '@/components/marketing/giga/primitives';
+import { Serif } from '@/components/marketing/giga/primitives';
+import { EYEBROW_TEXT, MONO_STYLE, TITLE_L } from '@/components/marketing/giga/tokens';
 
 const SIGNIN = '/sign-in';
 const DEMO = '/contact';

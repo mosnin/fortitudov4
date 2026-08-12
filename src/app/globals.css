@@ -72,15 +72,6 @@
   --chart-3: #a16207;
   --chart-4: #b91c1c;
   --chart-5: #f97316;
-
-  /* Rainbow-button gradient stops (components/ui/rainbow-button.tsx reads them
-     as raw `hsl(var(--color-N))` triples, which is why they are angles and not
-     hex). Warm and brand-adjacent — the button is a marketing flourish. */
-  --color-1: 25 95% 62%;
-  --color-2: 35 95% 60%;
-  --color-3: 15 90% 60%;
-  --color-4: 45 95% 58%;
-  --color-5: 5 90% 62%;
 }
 
 .dark {
@@ -206,14 +197,11 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Animation utilities. `fade-up` and `rainbow` are ALSO declared as plain
-     rules below with different timings; unlayered rules beat `@layer utilities`,
-     so those literals are what renders. The theme entries stay because they are
-     the only way to generate the variant forms — `before:animate-rainbow` in
-     rainbow-button.tsx has no other source. */
+  /* `fade-up` is ALSO declared as a plain rule below with a different timing;
+     unlayered rules beat `@layer utilities`, so that literal is what renders.
+     The theme entry stays because it is the only source for variant forms. */
   --animate-fade-in: fade-in 0.5s ease-out;
   --animate-fade-up: fade-up 0.5s ease-out;
-  --animate-rainbow: rainbow var(--speed, 2s) infinite linear;
 }
 
 @keyframes fade-in {
@@ -224,11 +212,6 @@
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes rainbow {
-  0% { background-position: 0%; }
-  100% { background-position: 200%; }
 }
 
 /* Process-pill conveyor (marketing advantage section) — both referenced as
@@ -242,13 +225,6 @@
 @keyframes pill-ring-pulse {
   0%, 100% { box-shadow: 0 0 0 4px var(--pill-ring, #ff94a4); }
   50% { box-shadow: 0 0 0 1px var(--pill-ring, #ff94a4); }
-}
-
-/* Flowing gradient for the AnimatedGradientText component (marketing labels). */
-@keyframes gradient-flow {
-  to {
-    background-position: var(--bg-size) 0;
-  }
 }
 
 /* Radix accordion height transitions — the FAQ's <Accordion.Content>. */
@@ -270,11 +246,9 @@
   animation: slideUp 200ms ease-out;
 }
 
-/* `both` so the element holds its start frame until the animation runs, and
-   4s so the rainbow reads as a slow sweep rather than a strobe. Both override
-   the `@theme` entries above by sitting outside `@layer utilities`. */
+/* `both` so the element holds its start frame until the animation runs. This
+   overrides the `@theme` entry above by sitting outside `@layer utilities`. */
 .animate-fade-up { animation: fade-up 0.5s ease-out both; }
-.animate-rainbow { animation: rainbow 4s linear infinite; }
 
 /* The single reduced-motion guard for the whole app. It is deliberately blunt:
    any animation added anywhere is covered without being listed here. */
@@ -395,6 +369,15 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-muted: rgba(255, 255, 255, 0.58);
   --fx-faint: rgba(255, 255, 255, 0.38);
   --fx-hairline: rgba(255, 255, 255, 0.12);
+
+  /* The one hue on this surface that is not yellow, and it is semantic rather
+     than brand: the "without us" side of a comparison, and a form that failed
+     to send. It is deliberately NOT in the accent family — a failure state
+     rendered in the brand colour is a failure state nobody reads as one.
+     --fx-alert is the edge and the fill; --fx-alert-text is the lighter step
+     that clears 4.5:1 on charcoal, which the edge colour does not. */
+  --fx-alert: #ff405d;
+  --fx-alert-text: #ff7a8d;
 }
 
 /* The display face for every heading in the shell. Set here, on a selector

@@ -8,7 +8,8 @@
  * them. No eyebrow, no centered headline, exactly the reference layout.
  */
 
-import { BlurRise, Mono, Band, Serif, SECTION_Y } from './primitives';
+import { Band, BlurRise, Mono, Serif } from './primitives';
+import { SECTION_Y } from './tokens';
 
 /**
  * Three numbers, and every one of them has to be answerable when a client asks

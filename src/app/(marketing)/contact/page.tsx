@@ -17,20 +17,8 @@
 import { useState } from 'react';
 import { CheckCircle, Loader2, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { services } from '@/lib/services';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  PillGhost,
-  Serif,
-  MONO_STYLE,
-  EYEBROW_TEXT,
-  ALERT_TEXT,
-  DISPLAY_L,
-  TITLE_L,
-  HERO_Y,
-  SECTION_Y,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillGhost, Serif } from '@/components/marketing/giga/primitives';
+import { ALERT_TEXT, DISPLAY_L, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 
 const EMPTY = { name: '', email: '', company: '', service: '', message: '' };
 
@@ -238,7 +226,7 @@ export default function ContactPage() {
                     {error && (
                       <p
                         role="alert"
-                        className={`rounded-[4px] border border-[#ff405d]/40 bg-[#ff405d]/[0.08] px-3.5 py-2.5 text-[13px] ${ALERT_TEXT}`}
+                        className={`rounded-[4px] border border-[var(--fx-alert)]/40 bg-[var(--fx-alert)]/[0.08] px-3.5 py-2.5 text-[13px] ${ALERT_TEXT}`}
                       >
                         {error}
                       </p>

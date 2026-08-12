@@ -5,16 +5,8 @@
  * which is how it ended up a size the ladder does not have.
  */
 
-import {
-  Band,
-  Serif,
-  MONO_STYLE,
-  EYEBROW_TEXT,
-  DISPLAY_L,
-  TITLE_S,
-  HERO_Y,
-  SECTION_Y_TIGHT,
-} from '@/components/marketing/giga/primitives';
+import { Band, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_L, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
 
 export default function PrivacyPage() {
   return (

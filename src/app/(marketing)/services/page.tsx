@@ -16,20 +16,8 @@
 import { Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { services } from '@/lib/services';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  PillGhost,
-  PillPrimary,
-  Serif,
-  MONO_STYLE,
-  EYEBROW_TEXT,
-  DISPLAY_L,
-  DISPLAY_S,
-  HERO_Y,
-  SECTION_Y,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
 
 /** What every engagement includes, whichever of the five you buy. */

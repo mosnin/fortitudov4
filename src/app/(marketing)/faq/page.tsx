@@ -10,19 +10,8 @@
 
 import { ChevronDown } from 'lucide-react';
 import * as Accordion from '@radix-ui/react-accordion';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  PillPrimary,
-  Serif,
-  MONO_STYLE,
-  EYEBROW_TEXT,
-  DISPLAY_L,
-  DISPLAY_S,
-  HERO_Y,
-  SECTION_Y,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
 
 const faqCategories = [

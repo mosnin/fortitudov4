@@ -20,20 +20,8 @@
 
 import { ArrowUpRight } from 'lucide-react';
 import { motion } from 'motion/react';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  PillPrimary,
-  Serif,
-  MONO_STYLE,
-  EYEBROW_TEXT,
-  DISPLAY_L,
-  DISPLAY_S,
-  TITLE_L,
-  HERO_Y,
-  SECTION_Y,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
 
 type CaseStudy = {

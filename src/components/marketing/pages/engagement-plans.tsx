@@ -28,15 +28,8 @@ import { Check } from 'lucide-react';
 import { type Lang } from '@/lib/i18n/markets';
 import { localizePrice, formatMoney } from '@/lib/i18n/currency';
 import { useDisplayCurrency } from '@/components/marketing/local-price';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  PillGhost,
-  Serif,
-  TITLE_S,
-  SECTION_Y_TIGHT,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillGhost, Serif } from '@/components/marketing/giga/primitives';
+import { SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
 
 type Cycle = 'monthly' | 'annual';
 type CardId = 'websites' | 'digital_marketing' | 'software_solutions' | 'ai_solutions';

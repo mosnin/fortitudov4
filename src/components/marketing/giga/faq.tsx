@@ -10,7 +10,8 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
-import { Serif, Eyebrow, BlurRise, Band, DISPLAY_M, TITLE_S, SECTION_Y } from './primitives';
+import { Band, BlurRise, Eyebrow, Serif } from './primitives';
+import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
 
 const FAQS = [
   {

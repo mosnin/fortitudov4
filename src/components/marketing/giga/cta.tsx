@@ -14,7 +14,8 @@ import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
 import { TextFlip } from '@/components/ui/text-flip';
-import { Serif, Eyebrow, DISPLAY_M, SECTION_Y } from './primitives';
+import { Eyebrow, Serif } from './primitives';
+import { DISPLAY_M, SECTION_Y } from './tokens';
 
 const reveal = {
   initial: { opacity: 0, y: 22 },

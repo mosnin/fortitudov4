@@ -9,19 +9,8 @@
  */
 
 import { CtaSection } from '@/components/marketing/giga/cta';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  Serif,
-  PillPrimary,
-  PillGhost,
-  DISPLAY_L,
-  DISPLAY_S,
-  TITLE_S,
-  HERO_Y,
-  SECTION_Y,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
 
 export const metadata = {
   title: 'Our story · Fortitudo Agency',

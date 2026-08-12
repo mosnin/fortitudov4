@@ -17,19 +17,8 @@ import { services } from '@/lib/services';
 import { LANG_TAG, type Lang } from '@/lib/i18n/markets';
 import { EngagementPlans } from '@/components/marketing/pages/engagement-plans';
 import { LocalPrice, PriceText, CurrencyNote } from '@/components/marketing/local-price';
-import {
-  Band,
-  BlurRise,
-  Eyebrow,
-  Serif,
-  PillPrimary,
-  PillGhost,
-  TITLE_S,
-  DISPLAY_L,
-  DISPLAY_S,
-  HERO_Y,
-  SECTION_Y_TIGHT,
-} from '@/components/marketing/giga/primitives';
+import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
 
 /** Starting prices for the full service list (mirrors lib/services.ts /
  *  lib/pricing.ts — the checkout source of truth; keep in sync). */

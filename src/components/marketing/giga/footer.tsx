@@ -27,7 +27,8 @@
 
 import Link from 'next/link';
 import { BrandMark } from '@/components/brand-mark';
-import { Serif, MONO_STYLE, DISPLAY_XL, EYEBROW_TEXT } from './primitives';
+import { Serif } from './primitives';
+import { DISPLAY_XL, EYEBROW_TEXT, MONO_STYLE } from './tokens';
 
 /** Where the nav actually goes. Every href here is a route that exists. */
 const EXPLORE = [

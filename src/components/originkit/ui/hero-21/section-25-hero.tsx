@@ -21,13 +21,8 @@
 
 import { Reveal, RevealGroup } from "@/components/originkit/ui/hero-21/reveal";
 import { services } from "@/lib/services";
-import {
-  Serif,
-  MONO_STYLE,
-  DISPLAY_XL,
-  EYEBROW_TEXT,
-  HERO_Y,
-} from "@/components/marketing/giga/primitives";
+import { Serif } from "@/components/marketing/giga/primitives";
+import { DISPLAY_XL, EYEBROW_TEXT, HERO_Y, MONO_STYLE } from "@/components/marketing/giga/tokens";
 
 /** The five things we sell, read from the module the product prices from. */
 const OFFERINGS = services.map((service) => service.name);
