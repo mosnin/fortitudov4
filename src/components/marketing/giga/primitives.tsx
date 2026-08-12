@@ -63,7 +63,22 @@ export function Serif({
       style={{
         fontFamily: 'var(--font-serif-display), ui-sans-serif, system-ui, sans-serif',
       }}
-      className={cn('font-semibold tracking-[-0.03em]', className)}
+      /* `font-medium` (500), not `font-semibold` (600), and the distinction
+         matters in exactly one place. The shell rule
+         `[data-marketing-shell] h1…h6` in globals.css is unlayered, so it beats
+         any Tailwind utility here — headings were already 500 and the old
+         `font-semibold` was dead on them. On `as="span"` and `as="p"` nothing
+         overrode it, so the same 17px title rendered at 600 in a FAQ question
+         and 500 in a card head three sections below. Invisible while display
+         was also 600; the move to 500 is what exposed it.
+         It must stay an explicit 500 rather than nothing — a bare span would
+         otherwise inherit body weight and land at 400.
+
+         Tracking stays. The shell rule only reaches h1–h6, so this is the only
+         thing tracking a `<Serif as="span">`. It duplicates the shell value for
+         headings, which is harmless but is the thing to change in step if the
+         shell's tracking ever moves. */
+      className={cn('font-medium tracking-[-0.03em]', className)}
     >
       {children}
     </Tag>

@@ -45,7 +45,28 @@ export const DISPLAY_XS = 'text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08]';
 /** A card headline set in the display face. */
 export const TITLE_L = 'text-[22px] leading-tight';
 /** A sub-card or list-row heading. */
-export const TITLE_S = 'text-[17px] leading-snug font-semibold';
+export const TITLE_S = 'text-[17px] leading-snug';
+
+/* ── Body ────────────────────────────────────────────────────────────────────
+ *
+ * These exist because the heading ladder above was not enough. With nothing to
+ * reach for below TITLE_S, every author picked a paragraph size by eye, and an
+ * audit found SEVEN different ones on the homepage alone — 32, 18, 16, 14.5,
+ * 14, 13.5 and 13px — with card copy split four more ways underneath that.
+ * None of it was a decision; it was just the absence of a token.
+ *
+ * Three steps, and they are deliberately few. A body scale with five entries
+ * gets used as a five-entry scale, and the drift starts again one level down.
+ * Anything that does not fit one of these wants a different element, not a
+ * different size.
+ */
+
+/** The one paragraph under a section headline. The default. */
+export const LEAD = 'text-[15px] leading-relaxed';
+/** Copy inside a card, a list row, a table cell. */
+export const BODY = 'text-[14px] leading-relaxed';
+/** Captions, footnotes, the line under a figure. Never a whole paragraph. */
+export const BODY_S = 'text-[13px] leading-relaxed';
 
 /* ── Alignment ───────────────────────────────────────────────────────────────
  *

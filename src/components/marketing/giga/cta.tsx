@@ -17,7 +17,7 @@ import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { TextFlip } from '@/components/ui/text-flip';
 import { Eyebrow, Serif } from './primitives';
-import { DISPLAY_M, SECTION_Y } from './tokens';
+import { DISPLAY_S, SECTION_Y } from './tokens';
 
 const reveal = {
   initial: { opacity: 0, y: 22 },
@@ -44,7 +44,7 @@ export function CtaSection({ lang = 'en' }: { lang?: Lang }) {
               own hand-rolled version, which is how the dot and the tracking
               drifted apart from every other eyebrow on the site. */}
           <Eyebrow>{t.eyebrow}</Eyebrow>
-          <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
+          <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
             {t.headingLead}
             {/* The second line flips through what we actually build.
                 Left-aligned headline, punctuation inside each item — no

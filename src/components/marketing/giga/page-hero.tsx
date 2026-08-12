@@ -187,8 +187,14 @@ export function PageHero({
         <div className="absolute inset-0 sm:hidden" style={{ background: SCRIM_NARROW }} />
       </div>
 
-      <Band innerClassName="relative max-w-3xl">
-        <BlurRise trigger="load">
+      {/* The narrowing goes on a div INSIDE the Band, never through
+          `innerClassName`. Band's inner element is `mx-auto w-full
+          max-w-[1728px]`, and `cn` is twMerge — so passing `max-w-3xl` replaces
+          the max-width and KEEPS the `mx-auto`, quietly centring the column.
+          That is how every sub-page headline ended up indented 336px on a
+          1440px screen while the sections below it sat at the 40px gutter. */}
+      <Band innerClassName="relative">
+        <BlurRise trigger="load" className="max-w-3xl">
           <Eyebrow>{eyebrow}</Eyebrow>
           <Serif as="h1" className={cn('mt-5 text-[var(--fx-white)]', DISPLAY_L)}>
             {lines.map((line, i) => (
