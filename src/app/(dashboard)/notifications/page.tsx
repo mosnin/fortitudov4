@@ -9,6 +9,7 @@ import {
   RowPill,
   TabStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import {
   GHOST_PILL,
@@ -133,15 +134,11 @@ export default function NotificationsPage() {
         />
 
         {notifications.length === 0 ? (
-          <div className="border-t border-border py-10">
-            <p className="text-sm font-medium text-foreground">
-              You&rsquo;re all caught up
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Project updates, messages, and payment confirmations will show up
-              here.
-            </p>
-          </div>
+          <EmptyState
+            className="border-t border-border/60"
+            title="You’re all caught up"
+            description="Project updates, messages, and payment confirmations will show up here."
+          />
         ) : (
           <>
             <TabStrip

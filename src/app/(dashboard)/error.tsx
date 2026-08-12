@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 
-import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BODY_MUTED, H2, TITLE_FONT } from "@/lib/typography";
 
 export default function DashboardError({
   error,
@@ -22,15 +22,19 @@ export default function DashboardError({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-charcoal-dark p-4">
+    /* `bg-background`, not the `bg-charcoal-dark` back-compat alias: that name
+       is a leftover from the GoHighLevel template and resolves to a literal
+       #ffffff, so this screen stayed white with the product in dark mode. */
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md border-border bg-card">
+        {/* No hero glyph. design.md: icons are nav and functional controls
+            only — an empty/error state is text-first. */}
         <CardContent className="flex flex-col items-center gap-6 p-8">
-          <AlertTriangle className="h-8 w-8 text-muted-foreground/50" />
           <div className="space-y-2 text-center">
-            <h1 className="text-2xl tracking-tight text-foreground">
+            <h1 className={H2} style={TITLE_FONT}>
               Something went wrong
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className={BODY_MUTED}>
               An unexpected error occurred. Please try again or return to the
               dashboard.
             </p>

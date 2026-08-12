@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { TrendCard } from "@/components/ui/monthly-trend";
 import {
@@ -191,15 +192,11 @@ export default function ClientReportsPage() {
           {loading ? (
             <RecordListSkeleton rows={4} />
           ) : reports.length === 0 ? (
-            <div className="border-t border-border py-10">
-              <p className="text-sm font-medium text-foreground">
-                No reports yet
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                The Fortitudo team posts your results here every week — check
-                back after your project goes live.
-              </p>
-            </div>
+            <EmptyState
+              className="border-t border-border/60"
+              title="No reports yet"
+              description="The Fortitudo team posts your results here every week — check back after your project goes live."
+            />
           ) : (
             <RecordList className="border-t border-border/60">
               {reports.map((r, i) => (

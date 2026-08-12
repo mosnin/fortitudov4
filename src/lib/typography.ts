@@ -43,24 +43,44 @@
 
 /* ─── Display: focal numbers + page titles ─────────────────────────────── */
 
+/*
+ * EVERY HEADING IN THE APP IS 500, on both surfaces.
+ *
+ * The weight is stated here rather than inherited, and that is the whole
+ * point. Tailwind's preflight resets `h1`–`h6` to `font-weight: inherit`, so a
+ * heading with no weight class renders at body weight — 400. The logged-out
+ * side sets 500 through an unlayered shell rule in globals.css, which meant
+ * the product's titles came out a step lighter than the marketing site's and
+ * the app still changed voice at the sign-in boundary, by weight instead of by
+ * family.
+ *
+ * It only became visible when the face changed. Georgia held a 30px title
+ * against 14px body copy on stroke contrast and x-height alone; Inter Tight at
+ * 400 does not, so a page title read as slightly-larger body text.
+ *
+ * H2 and H3 came DOWN to 500 from 600 for the same reason — one weight for
+ * every heading is the rule, and the denser end of the scale does not get to
+ * opt out of it.
+ */
+
 /** Page-level h1 — the screen's headline, in the display face. */
-export const H1 = "text-3xl tracking-tight text-foreground";
+export const H1 = "text-3xl font-medium tracking-tight text-foreground";
 /** Inline style — apply with style={{ fontFamily: 'var(--font-title)' }} */
 export const TITLE_FONT = { fontFamily: "var(--font-title)" } as const;
 
 /** Focal stat number — same scale as H1 but treated as data. */
-export const STAT_NUMBER = "text-3xl tracking-tight text-foreground tabular-nums";
+export const STAT_NUMBER = "text-3xl font-medium tracking-tight text-foreground tabular-nums";
 /** Compact stat (when 4+ sit in a row). 25px = H1 x 1/1.2. */
 export const STAT_NUMBER_COMPACT =
-  "text-[25px] leading-tight tracking-tight text-foreground tabular-nums";
+  "text-[25px] font-medium leading-tight tracking-tight text-foreground tabular-nums";
 
 /* ─── Section headings ─────────────────────────────────────────────────── */
 
 /** Section h2 — sub-page heading. */
-export const H2 = "text-[21px] leading-snug tracking-tight font-semibold text-foreground";
+export const H2 = "text-[21px] leading-snug tracking-tight font-medium text-foreground";
 
 /** Card / panel heading. */
-export const H3 = "text-[17px] leading-snug font-semibold text-foreground";
+export const H3 = "text-[17px] leading-snug font-medium text-foreground";
 
 /** Quiet small-caps section label (above a group of fields or rows). */
 export const SECTION_LABEL =

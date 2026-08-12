@@ -9,6 +9,7 @@ import { Logo } from "@/components/ui/logo";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CommandPalette } from "./command-palette";
 import { springSnappy } from "@/lib/motion";
@@ -248,7 +249,7 @@ export function AppShell({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setMobileOpen(false)}
             />
             <motion.aside
@@ -264,7 +265,10 @@ export function AppShell({
                   setMobileOpen(false);
                 }
               }}
-              className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-3xl border-t border-border/60 bg-white shadow-[0_-8px_40px_-12px_rgba(15,16,16,0.25)] dark:bg-sidebar"
+              /* `bg-sidebar` in both themes — the sheet IS the sidebar. It was
+                 a literal `bg-white` with a `dark:` escape hatch, which is the
+                 one surface in the shell that could not follow a token. */
+              className="absolute inset-x-0 bottom-0 flex max-h-[85vh] flex-col rounded-t-3xl border-t border-border/60 bg-sidebar shadow-[0_-8px_40px_-12px_rgba(15,16,16,0.25)]"
               style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
             >
               {/* Grab handle */}
@@ -277,7 +281,10 @@ export function AppShell({
                 <Logo size={30} />
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-muted cursor-pointer"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "icon" }),
+                    "text-muted-foreground"
+                  )}
                   aria-label="Close navigation"
                 >
                   <X className="h-4 w-4" />
@@ -313,7 +320,10 @@ export function AppShell({
           <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6">
             <div className="flex min-w-0 items-center gap-2">
               <button
-                className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground lg:hidden"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon" }),
+                  "text-muted-foreground lg:hidden"
+                )}
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open navigation"
               >

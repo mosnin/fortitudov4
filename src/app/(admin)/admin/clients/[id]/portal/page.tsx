@@ -8,23 +8,23 @@ import {
   RecordListSkeleton,
   RecordRow,
   RowPill,
+  SectionHead,
   Stat,
   StatCell,
   StatEmpty,
   StatMeta,
   StatStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
   GHOST_PILL,
-  H3,
   PAGE_RHYTHM,
   QUIET_LINK,
   READING_COL,
-  SECTION_LABEL,
   SECTION_RHYTHM,
 } from "@/lib/typography";
 
@@ -129,15 +129,15 @@ export default function ClientPortalPreviewPage({
             title="Client Portal"
             subtitle="This preview could not be loaded."
           />
-          <div className="py-14 text-center">
-            <h2 className={H3}>Couldn&apos;t load this client</h2>
-            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-              The client may have been removed.{" "}
+          <EmptyState
+            title="Couldn’t load this client"
+            description="The client may have been removed."
+            action={
               <Link href="/admin/clients" className={QUIET_LINK}>
                 Back to Clients
               </Link>
-            </p>
-          </div>
+            }
+          />
         </div>
       </div>
     );
@@ -248,14 +248,14 @@ export default function ClientPortalPreviewPage({
 
         {/* Delivery pipeline — the same stages they watch */}
         <section className={SECTION_RHYTHM}>
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
-            <p className={SECTION_LABEL}>
-              Delivery pipeline · {pipeline.stageLabel}
-            </p>
-            <p className={cn(SECTION_LABEL, "tabular-nums")}>
-              {pipeline.done} of {pipeline.total} · {pct}% complete
-            </p>
-          </div>
+          <SectionHead
+            title={`Delivery pipeline · ${pipeline.stageLabel}`}
+            meta={
+              <span className="tabular-nums">
+                {pipeline.done} of {pipeline.total} · {pct}% complete
+              </span>
+            }
+          />
           <RecordList>
             {pipeline.stages.map((s, i) => (
               <RecordRow
@@ -277,14 +277,14 @@ export default function ClientPortalPreviewPage({
         {/* Their weekly reports — digital marketing only */}
         {showMarketing && (
           <section className={SECTION_RHYTHM}>
-            <div className="flex items-center gap-3 border-b border-border pb-3">
-              <h2 className={H3}>Weekly Reports</h2>
-              {totals.pending > 0 && (
-                <span className="ml-auto">
+            <SectionHead
+              title="Weekly Reports"
+              meta={
+                totals.pending > 0 ? (
                   <RowPill>{totals.pending} awaiting them</RowPill>
-                </span>
-              )}
-            </div>
+                ) : undefined
+              }
+            />
             {reports.length === 0 ? (
               <p className={cn(BODY_MUTED, "pt-3")}>
                 No weekly results posted yet.
@@ -328,15 +328,17 @@ export default function ClientPortalPreviewPage({
         {/* Linked project phases, when a portal project exists */}
         {project && (
           <section className={SECTION_RHYTHM}>
-            <div className="flex items-center gap-3 border-b border-border pb-3">
-              <h2 className={H3}>{project.name}</h2>
-              <Link
-                href={`/admin/projects/${project.id}`}
-                className={cn(QUIET_LINK, "ml-auto")}
-              >
-                Manage
-              </Link>
-            </div>
+            <SectionHead
+              title={project.name}
+              meta={
+                <Link
+                  href={`/admin/projects/${project.id}`}
+                  className={QUIET_LINK}
+                >
+                  Manage
+                </Link>
+              }
+            />
             {phases.length > 0 && (
               <RecordList>
                 {phases.map((ph, i) => (

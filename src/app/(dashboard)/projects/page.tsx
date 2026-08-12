@@ -12,6 +12,7 @@ import {
   ProjectList,
   type ProjectListItem,
 } from "@/components/dashboard/project-list";
+import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/db";
 import { projects, projectPhases, users } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
@@ -140,18 +141,16 @@ export default async function ProjectsPage() {
         <section className={SECTION_RHYTHM}>
           <p className={SECTION_LABEL}>All projects</p>
           {userProjects.length === 0 ? (
-            <div className="border-t border-border py-10">
-              <p className="text-sm font-medium text-foreground">
-                No projects yet
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Start your first project and we&rsquo;ll build something great
-                together.
-              </p>
-              <Link href="/onboarding" className={cn(PRIMARY_PILL, "mt-5")}>
-                New project
-              </Link>
-            </div>
+            <EmptyState
+              className="border-t border-border/60"
+              title="No projects yet"
+              description="Start your first project and we’ll build something great together."
+              action={
+                <Link href="/onboarding" className={PRIMARY_PILL}>
+                  New project
+                </Link>
+              }
+            />
           ) : (
             <ProjectList projects={listItems} />
           )}

@@ -9,7 +9,9 @@ import {
   RecordList,
   RecordListSkeleton,
   RecordRow,
+  ROW_CONTROL,
   RowAction,
+  RowSelect,
   Stat,
   StatCell,
   StatEmpty,
@@ -20,8 +22,11 @@ import {
   ToolbarActions,
   ToolbarSearch,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { AnimatedNumber } from "@/components/motion";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import {
   CRM_STAGES,
@@ -34,11 +39,11 @@ import { cn } from "@/lib/utils";
 import {
   CAPTION,
   GHOST_PILL,
-  H1,
-  H3,
-  BODY_MUTED,
+  H2,
   PAGE_RHYTHM,
   PRIMARY_PILL,
+  READING_COL,
+  SECTION_RHYTHM,
   TITLE_FONT,
 } from "@/lib/typography";
 
@@ -71,14 +76,6 @@ const STATUS_OPTIONS = [
   { value: "in_progress", label: "In Progress" },
   { value: "completed", label: "Completed" },
 ];
-
-const selectClass =
-  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
-
-/** Inline row control — quiet until reached for, sized to the row. */
-const rowControlClass =
-  "h-8 cursor-pointer rounded-md border border-transparent bg-transparent px-2 text-xs " +
-  "text-muted-foreground outline-none transition-colors hover:border-border focus:border-foreground/40";
 
 /** The roster carries thousands of checklist tasks — render one page at a
  * time. Everything above ~50 rows makes the list (three form controls per
@@ -263,6 +260,7 @@ export default function AdminTasksPage() {
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
       <CrmPageHeader
         section="Operations."
         title="Tasks"
@@ -314,7 +312,7 @@ export default function AdminTasksPage() {
         </StatCell>
       </StatStrip>
 
-      <section className="space-y-4">
+      <section className={SECTION_RHYTHM}>
         <Toolbar>
           <ToolbarSearch
             value={query}
@@ -380,16 +378,14 @@ export default function AdminTasksPage() {
         {loading ? (
           <RecordListSkeleton rows={8} />
         ) : tasks.length === 0 ? (
-          <div className="py-14 text-center">
-            <h2 className={H3}>
-              {filtersActive ? "No matching tasks" : "No tasks yet"}
-            </h2>
-            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-md")}>
-              {filtersActive
+          <EmptyState
+            title={filtersActive ? "No matching tasks" : "No tasks yet"}
+            description={
+              filtersActive
                 ? "No tasks match the current filters. This view shows active clients by default — switch Clients to All to include paused and churned ones."
-                : "Create a client from the Clients page to seed its onboarding checklist, or add a custom task."}
-            </p>
-          </div>
+                : "Create a client from the Clients page to seed its onboarding checklist, or add a custom task."
+            }
+          />
         ) : (
           <RecordList key={safePage}>
             {visible.map((t, i) => (
@@ -405,7 +401,7 @@ export default function AdminTasksPage() {
                     <input
                       type="date"
                       aria-label={`Due date for ${t.title}`}
-                      className={cn(rowControlClass, "w-[9.5rem] tabular-nums")}
+                      className={cn(ROW_CONTROL, "w-[9.5rem] tabular-nums")}
                       value={t.dueDate ? t.dueDate.slice(0, 10) : ""}
                       onChange={(e) =>
                         patchTask(t.id, {
@@ -417,11 +413,11 @@ export default function AdminTasksPage() {
                         })
                       }
                     />
-                    <select
+                    <RowSelect
                       aria-label={`Priority for ${t.title}`}
                       // Fixed width: a native select that resizes with its
                       // label reflows every control to its right on change.
-                      className={cn(rowControlClass, "w-[6.5rem] appearance-none")}
+                      className="w-[6.5rem] appearance-none"
                       value={t.priority}
                       onChange={(e) =>
                         patchTask(t.id, { priority: e.target.value })
@@ -432,12 +428,10 @@ export default function AdminTasksPage() {
                           {PRIORITY_LABELS[p]}
                         </option>
                       ))}
-                    </select>
-                    <select
+                    </RowSelect>
+                    <RowSelect
                       aria-label={`Status for ${t.title}`}
-                      className={cn(
-                        "h-8 w-[8.5rem] cursor-pointer appearance-none rounded-md border border-border/70 bg-background px-2 text-center text-xs text-muted-foreground outline-none transition-colors focus:border-foreground/40"
-                      )}
+                      className="w-[8.5rem] appearance-none"
                       value={t.status}
                       onChange={(e) =>
                         patchTask(t.id, { status: e.target.value })
@@ -448,7 +442,7 @@ export default function AdminTasksPage() {
                           {s.label}
                         </option>
                       ))}
-                    </select>
+                    </RowSelect>
                   </>
                 }
                 actions={
@@ -500,6 +494,7 @@ export default function AdminTasksPage() {
           </div>
         )}
       </section>
+      </div>
 
       {/* Open → full client details (checklist, stage, assets) */}
       <ClientDetailModal
@@ -591,13 +586,16 @@ function AddCustomTaskModal({
             className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-6">
-              <h2 className={cn(H1, "text-xl")} style={TITLE_FONT}>
+              <h2 className={H2} style={TITLE_FONT}>
                 Add Task to Client
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
+                className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon-sm" }),
+                  "text-muted-foreground"
+                )}
                 aria-label="Close"
               >
                 <X className="h-4 w-4" />
@@ -609,8 +607,7 @@ function AddCustomTaskModal({
                 <span className="mb-1.5 block text-[13px] font-medium">
                   Client
                 </span>
-                <select
-                  className={selectClass}
+                <Select
                   value={form.clientId}
                   onChange={(e) => setForm({ ...form, clientId: e.target.value })}
                 >
@@ -620,7 +617,7 @@ function AddCustomTaskModal({
                       {c.companyName}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div>
                 <span className="mb-1.5 block text-[13px] font-medium">
@@ -636,8 +633,7 @@ function AddCustomTaskModal({
                 <span className="mb-1.5 block text-[13px] font-medium">
                   Assignee
                 </span>
-                <select
-                  className={selectClass}
+                <Select
                   value={form.assigneeId}
                   onChange={(e) =>
                     setForm({ ...form, assigneeId: e.target.value })
@@ -649,7 +645,7 @@ function AddCustomTaskModal({
                       {s.name}
                     </option>
                   ))}
-                </select>
+                </Select>
                 <p className={cn(CAPTION, "mt-1.5")}>
                   Leave unassigned and a teammate can claim it.
                 </p>

@@ -24,4 +24,5 @@ export {
   RowPill,
   RecordListSkeleton,
   RowSelect,
+  ROW_CONTROL,
 } from './record-list';

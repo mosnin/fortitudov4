@@ -6,13 +6,15 @@ import {
   RecordListSkeleton,
   RecordRow,
   RowPill,
+  SectionHead,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
   CAPTION,
-  H3,
   PAGE_RHYTHM,
   PRIMARY_PILL,
   SECTION_LABEL,
@@ -49,9 +51,6 @@ const usd = (cents: number) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
-
-const selectClass =
-  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
 
 /** Most recent Sunday (UTC), as yyyy-mm-dd for the date input default. */
 function lastSunday(): string {
@@ -157,12 +156,10 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
       {/* Add Weekly Results — hairline-framed form band */}
       {canManage && (
         <div>
-          <div className="border-b border-border pb-3">
-            <h2 className={H3}>Add Weekly Results</h2>
-            <p className={cn(BODY_MUTED, "mt-0.5")}>
-              Update the tracker with the latest data from the ads manager.
-            </p>
-          </div>
+          <SectionHead title="Add Weekly Results" />
+          <p className={cn(BODY_MUTED, "mt-2")}>
+            Update the tracker with the latest data from the ads manager.
+          </p>
           <form
             onSubmit={submit}
             className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
@@ -171,8 +168,7 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
               <span className="mb-1.5 block text-[13px] font-medium">
                 Client
               </span>
-              <select
-                className={selectClass}
+              <Select
                 value={form.clientId}
                 onChange={(e) => setForm({ ...form, clientId: e.target.value })}
               >
@@ -182,7 +178,7 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
                     {c.companyName}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <span className="mb-1.5 block text-[13px] font-medium">
@@ -249,25 +245,23 @@ export function WeeklyReportsSection({ canManage }: { canManage: boolean }) {
 
       {/* Recent Entries */}
       <div>
-        <div className="flex items-center gap-3 border-b border-border pb-3">
-          <h2 className={H3}>Recent Entries</h2>
-          <p className={cn(SECTION_LABEL, "ml-auto")}>
-            History of agency data entries
-          </p>
-        </div>
+        <SectionHead
+          title="Recent Entries"
+          meta="History of agency data entries"
+        />
         {loading ? (
           <div className="pt-4">
             <RecordListSkeleton rows={5} />
           </div>
         ) : (feed?.reports.length ?? 0) === 0 ? (
-          <div className="py-14 text-center">
-            <h3 className={H3}>No entries yet</h3>
-            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-md")}>
-              {canManage
+          <EmptyState
+            title="No entries yet"
+            description={
+              canManage
                 ? "Save the first week's results above — the report lands on the client's portal for them to add closes and revenue."
-                : "Weekly report entries will appear here once recorded."}
-            </p>
-          </div>
+                : "Weekly report entries will appear here once recorded."
+            }
+          />
         ) : (
           <RecordList>
             {feed?.reports.map((r, i) => (

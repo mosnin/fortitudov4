@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import {
   CrmPageHeader,
   RecordList,
@@ -10,19 +12,20 @@ import {
   RecordRow,
   RowAction,
   RowPill,
+  RowSelect,
+  SectionHead,
   Stat,
   StatCell,
   StatEmpty,
   StatStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { AnimatedNumber } from "@/components/motion";
 import { cn } from "@/lib/utils";
 import {
-  BODY_MUTED,
   CAPTION,
   GHOST_PILL,
-  H1,
-  H3,
+  H2,
   PAGE_RHYTHM,
   PRIMARY_PILL,
   READING_COL,
@@ -45,9 +48,6 @@ interface TeamUser {
 }
 
 const roleOptions: UserRole[] = ["admin", "project_manager", "va", "client"];
-
-const selectClass =
-  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
 
 export default function AdminTeamPage() {
   const [users, setUsers] = useState<TeamUser[]>([]);
@@ -300,19 +300,14 @@ export default function AdminTeamPage() {
 
         {/* Staff members */}
         <section className={SECTION_RHYTHM}>
-          <h2 className={cn(H3, "border-b border-border pb-3")}>
-            Staff Members
-          </h2>
+          <SectionHead title="Staff Members" />
           {loading ? (
             <RecordListSkeleton rows={4} />
           ) : staff.length === 0 ? (
-            <div className="py-14 text-center">
-              <h3 className={H3}>No staff members yet</h3>
-              <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-                Add a team member to send them a portal invite and start
-                assigning work.
-              </p>
-            </div>
+            <EmptyState
+              title="No staff members yet"
+              description="Add a team member to send them a portal invite and start assigning work."
+            />
           ) : (
             <RecordList>
               {staff.map((member, i) => {
@@ -329,9 +324,8 @@ export default function AdminTeamPage() {
                     status={pending ? <RowPill>Invited</RowPill> : undefined}
                     secondary={member.email}
                     meta={
-                      <select
+                      <RowSelect
                         aria-label={`Role for ${name}`}
-                        className="h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50"
                         value={member.role}
                         disabled={updating === member.id}
                         onChange={(e) =>
@@ -343,7 +337,7 @@ export default function AdminTeamPage() {
                             {ROLE_LABELS[role]}
                           </option>
                         ))}
-                      </select>
+                      </RowSelect>
                     }
                     actions={
                       <>
@@ -397,13 +391,16 @@ export default function AdminTeamPage() {
               className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
             >
               <div className="flex items-start justify-between pb-6">
-                <h2 className={cn(H1, "text-2xl")} style={TITLE_FONT}>
+                <h2 className={H2} style={TITLE_FONT}>
                   {editing ? "Edit Team Member" : "Add Team Member"}
                 </h2>
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="cursor-pointer rounded-full p-1.5 text-muted-foreground hover:bg-muted"
+                  className={cn(
+                  buttonVariants({ variant: "ghost", size: "icon-sm" }),
+                  "text-muted-foreground"
+                )}
                   aria-label="Close"
                 >
                   <X className="h-4 w-4" />
@@ -455,8 +452,7 @@ export default function AdminTeamPage() {
                   <span className="mb-1.5 block text-[13px] font-medium">
                     Role
                   </span>
-                  <select
-                    className={selectClass}
+                  <Select
                     value={form.role}
                     onChange={(e) =>
                       setForm({ ...form, role: e.target.value as UserRole })
@@ -469,7 +465,7 @@ export default function AdminTeamPage() {
                         </option>
                       )
                     )}
-                  </select>
+                  </Select>
                   <p className={cn(CAPTION, "mt-1.5")}>
                     Roles set what they can see — access is per-role, not
                     per-team.

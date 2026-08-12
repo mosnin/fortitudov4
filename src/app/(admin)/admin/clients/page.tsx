@@ -10,8 +10,10 @@ import {
   RecordRow,
   RowAction,
   RowPill,
+  RowSelect,
   TabStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { NewClientModal } from "@/components/admin/crm-new-client-modal";
 import { ClientDetailModal } from "@/components/admin/crm-client-detail-modal";
 import { useAskHelix } from "@/components/admin/ask-helix";
@@ -24,11 +26,10 @@ import {
 } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
-  BODY_MUTED,
-  H3,
   PAGE_RHYTHM,
   PRIMARY_PILL,
   QUIET_LINK,
+  READING_COL,
   SECTION_LABEL,
 } from "@/lib/typography";
 
@@ -52,7 +53,7 @@ interface Client {
 const STATUS_LABELS: Record<string, string> = {
   active: "Active",
   paused: "Paused",
-  churned: "Canceled",
+  churned: "Churned",
 };
 
 /** The offering this client bought — a bespoke engagement shows its own name. */
@@ -68,10 +69,6 @@ const dateStarted = (iso: string) =>
     year: "numeric",
     timeZone: "UTC",
   });
-
-const rowSelectClass =
-  "h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs " +
-  "text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40";
 
 /** No realtime channel here — a calm 10s poll keeps the board in sync when
  * teammates move cards. */
@@ -142,36 +139,41 @@ export default function ClientCrmPage() {
 
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
-      <CrmPageHeader
-        section="Operations."
-        title="Clients"
-        subtitle={subtitle}
-        action={
-          <button onClick={() => setNewOpen(true)} className={PRIMARY_PILL}>
-            New Client
-          </button>
-        }
-      />
+      {/* Header and tabs sit in the reading column like every other page —
+          only the board below spans the full frame (design.md, Page frame). */}
+      <div className={cn(READING_COL, PAGE_RHYTHM)}>
+        <CrmPageHeader
+          section="Operations."
+          title="Clients"
+          subtitle={subtitle}
+          action={
+            <button onClick={() => setNewOpen(true)} className={PRIMARY_PILL}>
+              New Client
+            </button>
+          }
+        />
 
-      <TabStrip
-        ariaLabel="Client view"
-        active={view}
-        onChange={(key) => setView(key as "board" | "list")}
-        tabs={[
-          { key: "board", label: "Board", count: onBoard.length },
-          { key: "list", label: "List", count: clients.length },
-        ]}
-      />
+        <TabStrip
+          ariaLabel="Client view"
+          active={view}
+          onChange={(key) => setView(key as "board" | "list")}
+          tabs={[
+            { key: "board", label: "Board", count: onBoard.length },
+            { key: "list", label: "List", count: clients.length },
+          ]}
+        />
+      </div>
 
       {loading ? (
-        <RecordListSkeleton rows={5} />
+        <div className={READING_COL}>
+          <RecordListSkeleton rows={5} />
+        </div>
       ) : clients.length === 0 ? (
-        <div className="py-14 text-center">
-          <h2 className={H3}>No clients yet</h2>
-          <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-            Create your first client to seed their onboarding pipeline and send
-            a portal invite.
-          </p>
+        <div className={READING_COL}>
+          <EmptyState
+            title="No clients yet"
+            description="Create your first client to seed their onboarding pipeline and send a portal invite."
+          />
         </div>
       ) : view === "board" ? (
         /* ---- Board view — a wide working surface, spans the full frame ---- */
@@ -240,7 +242,7 @@ export default function ClientCrmPage() {
         </div>
       ) : (
         /* ---- List view ---- */
-        <RecordList>
+        <RecordList className={READING_COL}>
           {clients.map((c, i) => (
             <RecordRow
               key={c.id}
@@ -257,8 +259,7 @@ export default function ClientCrmPage() {
                 .join(" · ")}
               meta={
                 <>
-                  <select
-                    className={rowSelectClass}
+                  <RowSelect
                     aria-label={`Stage for ${c.companyName}`}
                     value={c.stage}
                     onChange={(e) => patchClient(c.id, { stage: e.target.value })}
@@ -268,9 +269,8 @@ export default function ClientCrmPage() {
                         {STAGE_LABELS[s]}
                       </option>
                     ))}
-                  </select>
-                  <select
-                    className={rowSelectClass}
+                  </RowSelect>
+                  <RowSelect
                     aria-label={`Status for ${c.companyName}`}
                     value={c.status}
                     onChange={(e) =>
@@ -282,7 +282,7 @@ export default function ClientCrmPage() {
                         {l}
                       </option>
                     ))}
-                  </select>
+                  </RowSelect>
                 </>
               }
               actions={

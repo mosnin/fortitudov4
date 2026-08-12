@@ -1,6 +1,6 @@
 import { type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { BODY_MUTED } from "@/lib/typography";
+import { BODY_MUTED, H3 } from "@/lib/typography";
 
 interface EmptyStateProps {
   /**
@@ -18,6 +18,12 @@ interface EmptyStateProps {
 /**
  * Text-first empty state — a title, one muted line, an optional action pill.
  * No hero icon, no illustration, no tinted chip.
+ *
+ * This is THE empty state for the whole product. Both halves used to draw
+ * their own: `(dashboard)` a left-aligned block under a `border-t` rule,
+ * `(admin)` a centred `py-14 text-center` block with an `H3` — so the same
+ * "nothing here yet" moment changed shape when you crossed from the portal to
+ * the admin side. One component, one silhouette, everywhere.
  */
 export function EmptyState({
   title,
@@ -32,9 +38,11 @@ export function EmptyState({
         className
       )}
     >
-      <h3 className="text-[15px] font-medium text-foreground">{title}</h3>
+      {/* H3 (17px), not a one-off 15px: the ladder in `lib/typography.ts` runs
+          30 · 25 · 21 · 17 · 14 · 12 · 11 and 15 is not a step on it. */}
+      <h3 className={H3}>{title}</h3>
       {description && (
-        <p className={cn(BODY_MUTED, "mt-1.5 max-w-sm")}>{description}</p>
+        <p className={cn(BODY_MUTED, "mt-1.5 max-w-md")}>{description}</p>
       )}
       {action && <div className="mt-5">{action}</div>}
     </div>

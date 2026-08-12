@@ -15,6 +15,7 @@ import {
   ProjectList,
   type ProjectListItem,
 } from "@/components/dashboard/project-list";
+import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/db";
 import {
   projects,
@@ -201,18 +202,16 @@ export default async function DashboardPage() {
         <section className={SECTION_RHYTHM}>
           <p className={SECTION_LABEL}>Active projects</p>
           {activeProjects.length === 0 ? (
-            <div className="border-t border-border py-10">
-              <p className="text-sm font-medium text-foreground">
-                No active projects yet
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Start a new project and we&rsquo;ll track your progress right
-                here.
-              </p>
-              <Link href="/onboarding" className={cn(PRIMARY_PILL, "mt-5")}>
-                New project
-              </Link>
-            </div>
+            <EmptyState
+              className="border-t border-border/60"
+              title="No active projects yet"
+              description="Start a new project and we’ll track your progress right here."
+              action={
+                <Link href="/onboarding" className={PRIMARY_PILL}>
+                  New project
+                </Link>
+              }
+            />
           ) : (
             <ProjectList projects={listItems} showQuickActions />
           )}

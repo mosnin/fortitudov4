@@ -9,6 +9,8 @@ import {
   RecordList,
   RecordRow,
   RowPill,
+  RowSelect,
+  SectionHead,
 } from "@/components/crm";
 import { PhaseTracker, type Phase } from "@/components/dashboard/phase-tracker";
 import { RevisionManager } from "./revision-manager";
@@ -194,9 +196,6 @@ export function ManageClient({
     }
   };
 
-  const selectClass =
-    "h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50";
-
   return (
     <div className={cn(PAGE_RHYTHM, "pb-12")}>
       <div className={cn(READING_COL, PAGE_RHYTHM)}>
@@ -284,9 +283,8 @@ export function ManageClient({
                                 index={i}
                                 primary={phase.name}
                                 meta={
-                                  <select
+                                  <RowSelect
                                     aria-label={`Status for ${phase.name}`}
-                                    className={selectClass}
                                     value={phase.status}
                                     onChange={(e) =>
                                       setPhaseStatus(
@@ -300,7 +298,7 @@ export function ManageClient({
                                         {phaseStatusLabels[opt]}
                                       </option>
                                     ))}
-                                  </select>
+                                  </RowSelect>
                                 }
                               />
                             ))}
@@ -317,13 +315,13 @@ export function ManageClient({
               variants={cascadeItem}
               className="border-b border-border pb-8"
             >
-              <h2 className={cn(H3, "pb-4")}>Revision Requests</h2>
+              <SectionHead title="Revision Requests" className="mb-4" />
               <RevisionManager projectId={projectId} readOnly={!canManage} />
             </motion.section>
 
             {/* Admin message to client */}
             <motion.section variants={cascadeItem}>
-              <h2 className={cn(H3, "pb-4")}>Message Client</h2>
+              <SectionHead title="Message Client" className="mb-4" />
               <div className="space-y-4">
                 <Textarea
                   placeholder="Send a message to the client…"
@@ -375,9 +373,7 @@ export function ManageClient({
             className="space-y-10"
           >
             <motion.section variants={cascadeItem}>
-              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
-                Client Details
-              </p>
+              <SectionHead title="Client Details" />
               <div className="mt-4 space-y-3 text-sm">
                 <div className="flex justify-between gap-3">
                   <span className="text-muted-foreground">Name</span>
@@ -412,9 +408,7 @@ export function ManageClient({
             </motion.section>
 
             <motion.section variants={cascadeItem}>
-              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
-                Onboarding Data
-              </p>
+              <SectionHead title="Onboarding Data" />
               <div className="mt-4 space-y-3 text-sm">
                 {onboarding ? (
                   <>
@@ -496,9 +490,7 @@ export function ManageClient({
             </motion.section>
 
             <motion.section variants={cascadeItem}>
-              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
-                Client Files
-              </p>
+              <SectionHead title="Client Files" />
               {files.length === 0 ? (
                 <p className={cn(BODY_MUTED, "mt-4")}>
                   No files uploaded for this project yet.

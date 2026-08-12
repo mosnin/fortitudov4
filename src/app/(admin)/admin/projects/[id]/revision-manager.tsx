@@ -6,9 +6,9 @@ import {
   RecordListSkeleton,
   RecordRow,
   RowPill,
+  RowSelect,
 } from "@/components/crm";
-import { cn } from "@/lib/utils";
-import { BODY_MUTED, H3 } from "@/lib/typography";
+import { EmptyState } from "@/components/ui/empty-state";
 
 type RevisionStatus = "pending" | "in_progress" | "completed" | "rejected";
 
@@ -89,12 +89,10 @@ export function RevisionManager({
 
   if (revisions.length === 0) {
     return (
-      <div className="py-10 text-center">
-        <h3 className={H3}>No revision requests</h3>
-        <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-          When the client requests changes, they&apos;ll show up here to triage.
-        </p>
-      </div>
+      <EmptyState
+        title="No revision requests"
+        description="When the client requests changes, they’ll show up here to triage."
+      />
     );
   }
 
@@ -124,9 +122,8 @@ export function RevisionManager({
               .join(" · ")}
             meta={
               readOnly ? undefined : (
-                <select
+                <RowSelect
                   aria-label={`Status for revision ${i + 1}`}
-                  className="h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50"
                   value={rev.status}
                   disabled={updating === rev.id}
                   onChange={(e) =>
@@ -138,7 +135,7 @@ export function RevisionManager({
                       {statusLabels[opt]}
                     </option>
                   ))}
-                </select>
+                </RowSelect>
               )
             }
           />

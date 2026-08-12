@@ -7,18 +7,18 @@ import {
   RecordList,
   RecordListSkeleton,
   RecordRow,
+  SectionHead,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { usePolling } from "@/hooks/use-polling";
 import { services } from "@/lib/services";
 import {
   BODY_MUTED,
-  H3,
   PAGE_RHYTHM,
   PRIMARY_PILL,
   READING_COL,
-  SECTION_LABEL,
 } from "@/lib/typography";
 
 const serviceLabels: Record<string, string> = Object.fromEntries(
@@ -158,19 +158,15 @@ export default function AdminMessagesPage() {
         {header}
 
         {projects.length === 0 ? (
-          <div className="py-14 text-center">
-            <h2 className={H3}>No projects yet</h2>
-            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-              Once projects exist, their message threads appear here.
-            </p>
-          </div>
+          <EmptyState
+            title="No projects yet"
+            description="Once projects exist, their message threads appear here."
+          />
         ) : (
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[16rem_1fr]">
             {/* Project list */}
             <aside className="lg:border-r lg:border-border lg:pr-6">
-              <p className={cn(SECTION_LABEL, "border-b border-border pb-3")}>
-                Projects
-              </p>
+              <SectionHead title="Projects" />
               <RecordList className="mt-1">
                 {projects.map((project, i) => (
                   <RecordRow
@@ -189,11 +185,7 @@ export default function AdminMessagesPage() {
 
             {/* Thread */}
             <section className="flex min-h-[28rem] flex-col">
-              <div className="border-b border-border pb-3">
-                <h2 className={H3}>
-                  {selectedProject?.name ?? "Select a project"}
-                </h2>
-              </div>
+              <SectionHead title={selectedProject?.name ?? "Select a project"} />
 
               <div className="flex-1 space-y-3 overflow-y-auto py-5">
                 {messages.length === 0 ? (

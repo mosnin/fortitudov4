@@ -10,6 +10,7 @@ import {
   StatMeta,
   StatStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { db } from "@/db";
 import {
   agencyClients,
@@ -175,15 +176,11 @@ export default async function PaymentsPage() {
         />
 
         {!hasAnything ? (
-          <div className="border-t border-border py-10">
-            <p className="text-sm font-medium text-foreground">
-              No payments yet
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Once your project billing is set up, your invoices and payment
-              history will appear here.
-            </p>
-          </div>
+          <EmptyState
+            className="border-t border-border/60"
+            title="No payments yet"
+            description="Once your project billing is set up, your invoices and payment history will appear here."
+          />
         ) : (
           <>
             {roster ? (

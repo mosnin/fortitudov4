@@ -33,6 +33,7 @@ import {
   RowPill,
   RowAction,
   RecordListSkeleton,
+  SectionHead,
 } from "@/components/crm";
 import { AnimatedNumber } from "@/components/motion";
 import {
@@ -42,7 +43,6 @@ import {
   CAPTION,
   PRIMARY_PILL,
   GHOST_PILL,
-  H3,
 } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
@@ -182,39 +182,37 @@ export default function AdminPaymentsPage() {
 
   return (
     <div className={cn(PAGE_RHYTHM, READING_COL, "pb-12")}>
-      <div className="space-y-5">
-        <CrmPageHeader
-          section="Finance."
-          title="Payments"
-          subtitle={subtitle}
-          action={
-            <>
-              <Link href="/admin/clients" className={GHOST_PILL}>
-                Client roster
-              </Link>
-              <button
-                type="button"
-                className={cn(PRIMARY_PILL, "cursor-pointer")}
-                onClick={() => {
-                  setEditing(null);
-                  setModalOpen(true);
-                }}
-              >
-                Add payment
-              </button>
-            </>
-          }
-        />
+      <CrmPageHeader
+        section="Finance."
+        title="Payments"
+        subtitle={subtitle}
+        action={
+          <>
+            <Link href="/admin/clients" className={GHOST_PILL}>
+              Client roster
+            </Link>
+            <button
+              type="button"
+              className={cn(PRIMARY_PILL, "cursor-pointer")}
+              onClick={() => {
+                setEditing(null);
+                setModalOpen(true);
+              }}
+            >
+              Add payment
+            </button>
+          </>
+        }
+      />
 
-        {!loading && transactions.length > 0 && (
-          <TabStrip
-            tabs={tabs}
-            active={typeFilter}
-            onChange={setTypeFilter}
-            ariaLabel="Payment type"
-          />
-        )}
-      </div>
+      {!loading && transactions.length > 0 && (
+        <TabStrip
+          tabs={tabs}
+          active={typeFilter}
+          onChange={setTypeFilter}
+          ariaLabel="Payment type"
+        />
+      )}
 
       {/* Collections at a glance — global, not filtered. */}
       <StatStrip columns={3} ariaLabel="Collections summary">
@@ -334,10 +332,8 @@ export default function AdminPaymentsPage() {
         </section>
       )}
 
-      <section>
-        <div className="border-b border-border pb-3">
-          <h2 className={H3}>Payment History</h2>
-        </div>
+      <section className={SECTION_RHYTHM}>
+        <SectionHead title="Payment History" />
         {loading ? (
           <RecordListSkeleton rows={6} />
         ) : filtered.length === 0 ? (
@@ -365,7 +361,7 @@ export default function AdminPaymentsPage() {
                   .filter(Boolean)
                   .join(" · ")}
                 meta={
-                  <span className="text-sm font-medium tabular-nums text-foreground">
+                  <span className="text-sm tabular-nums text-foreground">
                     {usd(t.amount)}
                   </span>
                 }

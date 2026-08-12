@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { CrmPageHeader, RecordListSkeleton, TabStrip } from "@/components/crm";
 import { AnalyticsOverview } from "@/components/dashboard/analytics-overview";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { PAGE_RHYTHM, READING_COL } from "@/lib/typography";
 
@@ -57,14 +58,11 @@ export default function AnalyticsPage() {
         {loading ? (
           <RecordListSkeleton rows={4} />
         ) : projects.length === 0 ? (
-          <div className="border-t border-border py-10">
-            <p className="text-sm font-medium text-foreground">
-              No analytics yet
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Analytics will appear here once you have an active project.
-            </p>
-          </div>
+          <EmptyState
+            className="border-t border-border/60"
+            title="No analytics yet"
+            description="Analytics will appear here once you have an active project."
+          />
         ) : (
           <>
             {projects.length > 1 && selectedProjectId && (

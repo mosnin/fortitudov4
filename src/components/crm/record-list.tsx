@@ -220,6 +220,22 @@ export function RecordListSkeleton({ rows = 5 }: { rows?: number }) {
   );
 }
 
+/**
+ * The silhouette of any control that lives in a row's `meta` slot — a status
+ * select, a due-date input. h-8, hairline, xs.
+ *
+ * Exported as a string as well as a component because a row's controls are not
+ * all selects: the tasks list puts a native `<input type="date">` beside two
+ * dropdowns, and three admin pages had each invented their own row-control
+ * class (`border-border/70` here, `border-transparent` there, a `text-center`
+ * variant in a third) so the same row read differently on every screen.
+ */
+export const ROW_CONTROL =
+  'h-8 cursor-pointer rounded-md border border-border bg-background px-2 text-xs ' +
+  'text-foreground transition-colors hover:bg-foreground/[0.04] ' +
+  'focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none ' +
+  'disabled:cursor-not-allowed disabled:opacity-50';
+
 /** The inline control that lives in a row's `meta` slot (a status select, a
  *  date input). One silhouette everywhere: h-8, hairline, xs. */
 export function RowSelect({
@@ -228,13 +244,7 @@ export function RowSelect({
   ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select
-      className={cn(
-        'h-8 cursor-pointer rounded-md border border-border bg-background px-2 text-xs text-foreground transition-colors hover:bg-foreground/[0.04] focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
-        className
-      )}
-      {...props}
-    >
+    <select className={cn(ROW_CONTROL, className)} {...props}>
       {children}
     </select>
   );

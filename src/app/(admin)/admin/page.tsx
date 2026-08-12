@@ -8,12 +8,14 @@ import {
   RecordListSkeleton,
   RowPill,
   RecordRow,
+  SectionHead,
   Stat,
   StatCell,
   StatEmpty,
   StatMeta,
   StatStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { AnimatedNumber } from "@/components/motion";
 import { HelixWaitingStrip } from "@/components/admin/helix-waiting-strip";
 import { AreaChart, BarList } from "@/components/ui/charts";
@@ -21,7 +23,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
-  H3,
   PAGE_RHYTHM,
   READING_COL,
   SECTION_LABEL,
@@ -92,12 +93,10 @@ export default function AdminDashboardPage() {
         />
 
         {denied ? (
-          <div className="py-14 text-center">
-            <h2 className={H3}>Admin overview</h2>
-            <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-              This dashboard is staff-only.
-            </p>
-          </div>
+          <EmptyState
+            title="Admin overview"
+            description="This dashboard is staff-only."
+          />
         ) : (
           <>
             {/* Renders only when Helix has queued something. */}
@@ -147,10 +146,7 @@ export default function AdminDashboardPage() {
             {/* New projects chart + high priority tasks */}
             <section className="grid grid-cols-1 gap-10 lg:grid-cols-3">
               <div className="lg:col-span-2">
-                <div className="border-b border-border pb-3">
-                  <h2 className={H3}>New Projects</h2>
-                  <p className={cn(BODY_MUTED, "mt-0.5")}>Last 6 months</p>
-                </div>
+                <SectionHead title="New Projects" meta="Last 6 months" />
                 {loading ? (
                   <Skeleton className="mt-6 h-64 w-full" />
                 ) : (
@@ -165,10 +161,7 @@ export default function AdminDashboardPage() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between border-b border-border pb-3">
-                  <h2 className={H3}>High Priority Tasks</h2>
-                  <span className={SECTION_LABEL}>Action required</span>
-                </div>
+                <SectionHead title="High Priority Tasks" meta="Action required" />
 
                 {loading ? (
                   <RecordListSkeleton rows={4} />

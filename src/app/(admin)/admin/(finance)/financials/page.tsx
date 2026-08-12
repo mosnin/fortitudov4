@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/filters";
 import {
   CrmPageHeader,
+  SectionHead,
   StatStrip,
   StatCell,
   Stat,
@@ -24,9 +25,7 @@ import { PACKAGE_LABELS, type ClientPackage } from "@/lib/crm";
 import {
   PAGE_RHYTHM,
   READING_COL,
-  SECTION_LABEL,
   CAPTION,
-  H3,
   BODY_MUTED,
 } from "@/lib/typography";
 import { cn } from "@/lib/utils";
@@ -64,16 +63,6 @@ const usd = (cents: number) =>
   `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 const pct = (f: number) => `${(f * 100).toFixed(1)}%`;
 const count = (v: number) => Math.round(v).toLocaleString("en-US");
-
-/** Section heading over a hairline rule — no glyph, no accent. */
-function SectionHead({ title, caption }: { title: string; caption?: string }) {
-  return (
-    <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
-      <h2 className={H3}>{title}</h2>
-      {caption && <p className={SECTION_LABEL}>{caption}</p>}
-    </div>
-  );
-}
 
 export default function AdminFinancialsPage() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
@@ -297,7 +286,7 @@ export default function AdminFinancialsPage() {
           : charts.map((chart) => (
               <Reveal key={chart.title} variant="fade">
                 <div className="tabular-nums">
-                  <SectionHead title={chart.title} caption={rangeCaption} />
+                  <SectionHead title={chart.title} meta={rangeCaption} />
                   <AreaChart
                     className="mt-5"
                     points={chart.series}
@@ -328,7 +317,7 @@ export default function AdminFinancialsPage() {
             )}
           </div>
           <div className="tabular-nums">
-            <SectionHead title="Packages Distribution" />
+            <SectionHead title="Offering mix" />
             {packages.length === 0 ? (
               <p className={cn(BODY_MUTED, "pt-6 text-center")}>
                 No active clients yet.

@@ -137,7 +137,7 @@ export function StageContinue({
 
 export function ErrorLine({ message }: { message: string }) {
   return (
-    <div className="flex items-start gap-2 rounded-lg border border-rose-200 bg-rose-50/70 dark:border-rose-900 dark:bg-rose-950/40 px-3 py-2.5 text-sm text-rose-800 dark:text-rose-200">
+    <div className="flex items-start gap-2 rounded-md border border-destructive/30 bg-destructive/[0.06] px-3 py-2.5 text-sm text-destructive">
       <span>{message}</span>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { CrmPageHeader, TabStrip } from "@/components/crm";
 import { usePolling } from "@/hooks/use-polling";
@@ -160,15 +161,11 @@ export default function MessagesPage() {
         />
 
         {projects.length === 0 ? (
-          <div className="border-t border-border py-10">
-            <p className="text-sm font-medium text-foreground">
-              No messages yet
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Once you have an active project, you can chat directly with the
-              Fortitudo team here.
-            </p>
-          </div>
+          <EmptyState
+            className="border-t border-border/60"
+            title="No messages yet"
+            description="Once you have an active project, you can chat directly with the Fortitudo team here."
+          />
         ) : (
           <>
             {/* Project spine */}

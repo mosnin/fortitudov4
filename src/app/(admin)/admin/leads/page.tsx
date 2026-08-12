@@ -7,6 +7,7 @@ import {
   RecordListSkeleton,
   RecordRow,
   RowPill,
+  RowSelect,
   Stat,
   StatCell,
   StatEmpty,
@@ -15,9 +16,10 @@ import {
   Toolbar,
   ToolbarSearch,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { AnimatedNumber } from "@/components/motion";
 import { cn } from "@/lib/utils";
-import { BODY_MUTED, H3, PAGE_RHYTHM, READING_COL } from "@/lib/typography";
+import { PAGE_RHYTHM, READING_COL, SECTION_RHYTHM } from "@/lib/typography";
 import { services } from "@/lib/services";
 
 type LeadStatus = "new" | "contacted" | "qualified" | "converted" | "lost";
@@ -61,11 +63,6 @@ const sourceLabels: Record<string, string> = {
 const serviceLabels: Record<string, string> = Object.fromEntries(
   services.map((s) => [s.id, s.name])
 );
-
-const rowSelectClass =
-  "h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs " +
-  "text-muted-foreground outline-none transition-colors hover:border-foreground/25 " +
-  "focus:border-foreground/40 disabled:cursor-not-allowed disabled:opacity-50";
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", {
@@ -198,7 +195,7 @@ export default function AdminLeadsPage() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <section className="space-y-4">
+        <section className={SECTION_RHYTHM}>
           <Toolbar>
             <ToolbarSearch
               value={query}
@@ -210,16 +207,14 @@ export default function AdminLeadsPage() {
           {loading ? (
             <RecordListSkeleton rows={6} />
           ) : filtered.length === 0 ? (
-            <div className="py-14 text-center">
-              <h2 className={H3}>
-                {leads.length === 0 ? "No leads yet" : "No matching leads"}
-              </h2>
-              <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-                {leads.length === 0
+            <EmptyState
+              title={leads.length === 0 ? "No leads yet" : "No matching leads"}
+              description={
+                leads.length === 0
                   ? "Leads from the contact form and get-started funnel will land here."
-                  : "Try a different status or search term."}
-              </p>
-            </div>
+                  : "Try a different status or search term."
+              }
+            />
           ) : (
             <RecordList>
               {filtered.map((lead, i) => {
@@ -252,9 +247,8 @@ export default function AdminLeadsPage() {
                         <span className="hidden text-[11px] tabular-nums whitespace-nowrap text-muted-foreground sm:inline">
                           {fmtDate(lead.createdAt)}
                         </span>
-                        <select
+                        <RowSelect
                           aria-label={`Status for ${lead.name}`}
-                          className={rowSelectClass}
                           value={lead.status}
                           disabled={updating === lead.id}
                           onChange={(e) =>
@@ -266,7 +260,7 @@ export default function AdminLeadsPage() {
                               {statusLabels[status]}
                             </option>
                           ))}
-                        </select>
+                        </RowSelect>
                       </>
                     }
                   />

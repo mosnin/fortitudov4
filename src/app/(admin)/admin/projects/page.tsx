@@ -8,6 +8,7 @@ import {
   StatEmpty,
   StatStrip,
 } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { cn } from "@/lib/utils";
 import { db } from "@/db";
 import { projects, users, projectPhases } from "@/db/schema";
@@ -16,8 +17,6 @@ import { getAuthenticatedUser, getAccessibleProjectIds } from "@/lib/auth-utils"
 import { canManageProjects } from "@/lib/permissions";
 import { services } from "@/lib/services";
 import {
-  BODY_MUTED,
-  H3,
   PAGE_RHYTHM,
   READING_COL,
   SECTION_RHYTHM,
@@ -127,12 +126,10 @@ export default async function AdminProjectsPage() {
 
         <section className={SECTION_RHYTHM}>
           {rows.length === 0 ? (
-            <div className="py-14 text-center">
-              <h2 className={H3}>No projects yet</h2>
-              <p className={cn(BODY_MUTED, "mx-auto mt-1 max-w-sm")}>
-                Client projects will appear here once they&apos;re created.
-              </p>
-            </div>
+            <EmptyState
+              title="No projects yet"
+              description="Client projects will appear here once they’re created."
+            />
           ) : (
             <RecordList>
               {rows.map((project, i) => {
