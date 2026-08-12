@@ -10,8 +10,9 @@
  *    their dark treatment here instead of flashing white cards. The product
  *    (outside this group) keeps its own theme untouched.
  *
- *  - ONE VOICE, NO SERIF. Headlines are a tight geometric sans (Geist,
- *    self-hosted) at semibold and eyebrows are the matching monospace. There is
+ *  - ONE VOICE, NO SERIF. Headlines are Inter Tight (self-hosted) at medium
+ *    and eyebrows are the matching monospace. The product runs the same face,
+ *    so the type no longer changes at the sign-in boundary. There is
  *    no serif on this surface: `--font-serif-display` survives only because ~14
  *    components reference it inline, and it points at the sans. The shell is
  *    tagged `data-marketing-shell`; a scoped rule in globals.css makes that

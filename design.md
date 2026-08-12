@@ -145,19 +145,25 @@ light/dark toggle; the logged-out site is charcoal in both.
 | --- | --- | --- |
 | `--fx-yellow` | `#f8cd02` | The accent. A **surface**, and the primary action. |
 | `--fx-yellow-hover` | `#dcb602` | Its pressed state. |
-| `--fx-on-yellow` | `#0d0d0d` | Ink for anything sitting *on* yellow. |
-| `--fx-charcoal` | `#1b1b1d` | The ground. |
-| `--fx-charcoal-deep` | `#141416` | Inset surfaces, alternating bands. |
-| `--fx-charcoal-raised` | `#232326` | Raised surfaces. |
+| `--fx-on-yellow` | `#1b1b1d` | Ink for anything sitting *on* yellow. Charcoal, not black. |
+| `--fx-charcoal` | `#0f0f12` | The ground. |
+| `--fx-charcoal-deep` | `#0a0a0c` | Inset surfaces, alternating bands. |
+| `--fx-charcoal-raised` | `#191a1d` | Raised surfaces. |
 | `--fx-white` / `--fx-muted` / `--fx-faint` | `#fff` / `.58` / `.38` | Text on charcoal. |
 | `--fx-hairline` | white `.12` | Structure. |
 
 **The two rules that define the scheme.** Yellow is a surface and text on it is
-always black. Charcoal is the ground and body text on it is always white.
+always charcoal. Charcoal is the ground and body text on it is always white.
 Yellow as *text* is allowed only for accents a few words long — one clause of a
-headline, a hover state, an eyebrow dot. It clears contrast easily (11.2:1), but
+headline, a hover state, an eyebrow dot. It clears contrast easily (12.5:1), but
 at paragraph length it stops reading as emphasis and starts competing with the
 call to action, which is the only job it has.
+
+**Charcoal, never black.** Every step above runs B two points above R and G.
+That trace of blue is what stops the dark reading as a second, colder colour
+next to the yellow, and it is why `#000` appears nowhere in the palette. The
+ramp moves as a SET — the three steps only read as depth while the gaps between
+them hold, so darkening the ground alone flattens the surface.
 
 **Two yellow buttons on one screen is a bug, not a style choice.** If two things
 both look primary, neither is.
@@ -165,9 +171,14 @@ both look primary, neither is.
 - **Kit**: `src/components/marketing/giga/` — `primitives.tsx` is the vocabulary
   (`Serif`, `Eyebrow`, `BlurRise`, `Band`, `PillPrimary`, `PillGhost`). The
   homepage hero is `src/components/originkit/` (OriginKit `hero-21`, recoloured).
-- **Type**: one voice — a tight geometric sans (Geist, self-hosted) for display
-  at semibold, monospace for eyebrows. **There is no serif on this surface.**
-  `<Serif>` keeps its name only because ~14 files import it; it renders the sans.
+- **Type**: one voice — **Inter Tight**, self-hosted, for display at **medium
+  (500)** with `-0.03em` tracking; monospace for eyebrows. **There is no serif
+  on this surface, and there is none in the product either** — the same face
+  now runs on both sides of the sign-in boundary. `<Serif>` keeps its name only
+  because ~14 files import it; it renders the sans.
+  Body copy has three steps and only three: `LEAD` (15px), `BODY` (14px),
+  `BODY_S` (13px) in `giga/tokens.ts`. They exist because their absence let
+  seven different paragraph sizes onto the homepage.
 - **Shape**: squared. `rounded-[4px]` for controls, `rounded-[6px]` for panels,
   and structure drawn with rules rather than rounded cards. Circles survive only
   as dots and avatars.
