@@ -1,10 +1,15 @@
 "use client";
 
 /**
- * Filter-row primitives (design.md): pill search field, dropdown pills,
- * and a calendar date-range pill that opens a full picker popover — preset rail
+ * Filter-row primitives (design.md): search field, dropdown triggers, and a
+ * calendar date-range trigger that opens a full picker popover — preset rail
  * on the left, dual-month range calendar on the right, with Clear / Apply
  * actions. Shared by the admin finance pages.
+ *
+ * The `…Pill` names are historical. These are the same `h-9 rounded-md`
+ * bordered triggers the kit's `Toolbar` draws, not a rounder second set — a
+ * finance page and a clients page put their filter rows in the same place, so
+ * the rows have to look like the same control.
  *
  * Monochrome throughout: the active/selected state is `bg-foreground/[0.06]`,
  * never an orange tint. Icons here are functional control chrome (a search
@@ -24,9 +29,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { POPOVER_SURFACE } from "@/components/ui/card";
 
 const pillClass =
-  "h-9 rounded-full border border-border bg-background text-sm outline-none " +
+  "h-9 rounded-md border border-border bg-background text-sm outline-none " +
   "transition-colors hover:border-foreground/25 focus:border-foreground/40";
 
 export function SearchPill({
@@ -285,7 +291,7 @@ function MonthGrid({
               aria-label={fmtDay(day)}
               aria-pressed={isFrom || isTo}
               className={cn(
-                "mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg text-[13px] tabular-nums transition-colors",
+                "mx-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-[13px] tabular-nums transition-colors",
                 !c.inMonth && "text-muted-foreground/40",
                 c.inMonth && !isFrom && !isTo && "hover:bg-muted",
                 between && "bg-foreground/[0.06] text-foreground",
@@ -418,7 +424,12 @@ export function DateRangePill({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6, scale: 0.98 }}
             transition={{ duration: 0.15 }}
-            className="z-50 rounded-2xl border border-border bg-background shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] max-sm:fixed max-sm:inset-x-3 max-sm:top-20 max-sm:max-h-[80vh] max-sm:overflow-y-auto sm:absolute sm:right-0 sm:mt-2 sm:w-max sm:max-w-[92vw] sm:overflow-auto"
+            /* The hand-mixed rgba drop shadow this carried was the only
+               elevation in the product that did not track the theme. */
+            className={cn(
+              POPOVER_SURFACE,
+              "z-50 max-sm:fixed max-sm:inset-x-3 max-sm:top-20 max-sm:max-h-[80vh] max-sm:overflow-y-auto sm:absolute sm:right-0 sm:mt-2 sm:w-max sm:max-w-[92vw] sm:overflow-auto"
+            )}
           >
             {/* Phones: presets become a chip row above a single month.
                 sm+: preset rail beside dual months. */}
@@ -437,7 +448,7 @@ export function DateRangePill({
                         setOpen(false);
                       }}
                       className={cn(
-                        "shrink-0 cursor-pointer whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors sm:block sm:w-full sm:text-left",
+                        "shrink-0 cursor-pointer whitespace-nowrap rounded-md px-3 py-2 text-sm transition-colors sm:block sm:w-full sm:text-left",
                         active
                           ? "bg-foreground/[0.06] font-medium text-foreground"
                           : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -455,7 +466,7 @@ export function DateRangePill({
                   <button
                     type="button"
                     onClick={() => setAnchor((a) => ymAdd(a, -1))}
-                    className="absolute left-0 top-0 rounded-full border border-border p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
+                    className="absolute left-0 top-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     aria-label="Previous month"
                   >
                     <ChevronLeft className="h-4 w-4" />
@@ -463,7 +474,7 @@ export function DateRangePill({
                   <button
                     type="button"
                     onClick={() => setAnchor((a) => ymAdd(a, 1))}
-                    className="absolute right-0 top-0 rounded-full border border-border p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer"
+                    className="absolute right-0 top-0 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     aria-label="Next month"
                   >
                     <ChevronRight className="h-4 w-4" />

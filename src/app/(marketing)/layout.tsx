@@ -4,20 +4,20 @@
  * Every page under `app/(marketing)/` renders inside this shell, which is a
  * deliberately separate visual world from the product:
  *
- *  - ALWAYS DARK. A near-black (#1b1b1d) canvas with light text, regardless of
- *    the app's light/dark theme toggle. The `dark` class is forced ON this
- *    subtree so the legacy sub-pages (pricing / realtors / deals / …), which
- *    were authored with `dark:` variants, also render their dark treatment on
- *    this shell instead of flashing white cards. The product (outside this
- *    group) keeps its own theme untouched.
+ *  - ALWAYS DARK. The charcoal ground (`--fx-charcoal`) with light text,
+ *    regardless of the app's light/dark theme toggle. The `dark` class is
+ *    forced ON this subtree so sub-pages authored with `dark:` variants render
+ *    their dark treatment here instead of flashing white cards. The product
+ *    (outside this group) keeps its own theme untouched.
  *
- *  - SAME FONTS AS THE DASHBOARD. Headlines use the product's serif
- *    (`--font-title`, Times) and eyebrows use the product mono (`--font-mono`),
- *    so the logged-out site and the app read as one brand. The shell is tagged
- *    `data-marketing-shell`; a scoped rule in globals.css makes the serif the
- *    DEFAULT for every heading in the tree (out-specifying the global
- *    `h1..h6 { --font-heading }` base rule). No web fonts are loaded, these are
- *    the same system faces the dashboard uses.
+ *  - ONE VOICE, NO SERIF. Headlines are a tight geometric sans (Geist,
+ *    self-hosted) at semibold and eyebrows are the matching monospace. There is
+ *    no serif on this surface: `--font-serif-display` survives only because ~14
+ *    components reference it inline, and it points at the sans. The shell is
+ *    tagged `data-marketing-shell`; a scoped rule in globals.css makes that
+ *    face the DEFAULT for every heading in the tree (out-specifying the global
+ *    `h1..h6 { --font-heading }` base rule) and defines the whole --fx-*
+ *    palette.
  *
  * The marketing site is public; Clerk isn't loaded for unauth visitors (the
  * middleware sets `x-public-page` and the root layout skips ClerkProvider).
@@ -45,12 +45,14 @@ export default function MarketingLayout({
       data-marketing-shell
       className="dark flex min-h-screen flex-col bg-[var(--fx-charcoal)] text-[var(--fx-white)] antialiased"
     >
-      {/* Shared gradient def so icons can be stroked with the brand gradient. */}
+      {/* Shared gradient def so icons can be stroked with the brand gradient.
+          The stops read the palette rather than repeating its hex: the vars are
+          defined on this element, so they resolve for the whole subtree. */}
       <svg aria-hidden width="0" height="0" className="absolute">
         <defs>
           <linearGradient id="chippi-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#f8cd02" />
-            <stop offset="100%" stopColor="#dcb602" />
+            <stop offset="0%" stopColor="var(--fx-yellow)" />
+            <stop offset="100%" stopColor="var(--fx-yellow-hover)" />
           </linearGradient>
         </defs>
       </svg>

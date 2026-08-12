@@ -21,12 +21,21 @@
 
 import { Reveal, RevealGroup } from "@/components/originkit/ui/hero-21/reveal";
 import { services } from "@/lib/services";
+import {
+  Serif,
+  MONO_STYLE,
+  DISPLAY_XL,
+  EYEBROW_TEXT,
+  HERO_Y,
+} from "@/components/marketing/giga/primitives";
 
 /** The five things we sell, read from the module the product prices from. */
 const OFFERINGS = services.map((service) => service.name);
 
 export const Section25Hero = () => (
-  <section className="relative isolate flex min-h-dvh w-full flex-col items-center overflow-hidden bg-[var(--fx-charcoal-deep)] px-5 pt-32 pb-16 sm:px-8 sm:pt-40 sm:pb-20">
+  <section
+    className={`relative isolate flex min-h-dvh w-full flex-col items-center overflow-hidden bg-[var(--fx-charcoal-deep)] px-5 sm:px-8 ${HERO_Y}`}
+  >
     {/* ── The drawn glow ────────────────────────────────────────────────────
         A wide arc sweeping up from the lower right. A broad warm bloom, a
         tighter core, and a thin bright rim where the two meet — the rim is
@@ -55,7 +64,9 @@ export const Section25Hero = () => (
       <Reveal>
         <a
           href="/pricing"
-          className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/[0.06] py-1.5 pr-5 pl-1.5 backdrop-blur-md transition-colors duration-200 hover:border-white/30"
+          /* The one circle on the surface that is not a dot or an avatar: the
+             hero badge, which the system keeps as its single pill. */
+          className="inline-flex items-center gap-3 rounded-full border border-[var(--fx-faint)] bg-[var(--fx-white)]/[0.06] py-1.5 pr-5 pl-1.5 backdrop-blur-md transition-colors duration-200 hover:border-[var(--fx-yellow)]"
         >
           <span className="rounded-full bg-[var(--fx-yellow)] px-3 py-1 text-[12px] font-semibold text-[var(--fx-on-yellow)]">
             Fixed quotes
@@ -67,10 +78,10 @@ export const Section25Hero = () => (
       </Reveal>
 
       <Reveal>
-        <h1 className="mt-8 text-[clamp(2.5rem,7.5vw,5.25rem)] leading-[0.98] font-semibold tracking-[-0.035em] text-[var(--fx-white)]">
+        <Serif as="h1" className={`mt-8 ${DISPLAY_XL} text-[var(--fx-white)]`}>
           Built by people
           <span className="block">who ship.</span>
-        </h1>
+        </Serif>
       </Reveal>
 
       <Reveal>
@@ -141,7 +152,7 @@ export const Section25Hero = () => (
       stagger={0.06}
     >
       <Reveal>
-        <p className="font-mono text-[11px] tracking-[0.2em] text-[var(--fx-muted)] uppercase">
+        <p style={MONO_STYLE} className={EYEBROW_TEXT}>
           What we build
         </p>
       </Reveal>
@@ -150,7 +161,7 @@ export const Section25Hero = () => (
           <Reveal key={offering}>
             <a
               href="/services"
-              className="block rounded-[4px] border border-[var(--fx-hairline)] bg-white/[0.03] px-4 py-2.5 text-[13px] font-medium whitespace-nowrap text-[var(--fx-white)] backdrop-blur-sm transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)] sm:text-[15px]"
+              className="block rounded-[4px] border border-[var(--fx-faint)] bg-[var(--fx-white)]/[0.06] px-4 py-2.5 text-[13px] font-medium whitespace-nowrap text-[var(--fx-white)] backdrop-blur-sm transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)] sm:text-[15px]"
             >
               {offering}
             </a>

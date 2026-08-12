@@ -27,8 +27,7 @@
 
 import Link from 'next/link';
 import { BrandMark } from '@/components/brand-mark';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
+import { Serif, MONO_STYLE, DISPLAY_XL, EYEBROW_TEXT } from './primitives';
 
 /** Where the nav actually goes. Every href here is a route that exists. */
 const EXPLORE = [
@@ -70,19 +69,20 @@ export function SiteFooter() {
           </div>
 
           <div className="relative">
-            {/* Clamped rather than a bare vw: at 9vw an ultrawide monitor puts
-                this past 200px and the second line stops fitting. */}
-            <h2 className="text-[clamp(2rem,7vw,6.25rem)] leading-[0.9] font-semibold tracking-tighter">
+            {/* The kit's largest display step. It is clamped rather than a
+                bare vw: at 9vw an ultrawide monitor puts this past 200px and
+                the second line stops fitting. */}
+            <Serif className={DISPLAY_XL}>
               <span className="block">Tell us what you&apos;re building.</span>
-              <span className="block text-white/60">
+              <span className="block text-[var(--fx-muted)]">
                 We&apos;ll tell you what it costs.
               </span>
-            </h2>
+            </Serif>
 
             {/* Three actions, all of which do something. */}
             <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
               <div>
-                <p style={MONO} className="text-[11px] tracking-[0.18em] text-white/60 uppercase">
+                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                   Get started
                 </p>
                 <a
@@ -110,7 +110,7 @@ export function SiteFooter() {
               </div>
 
               <div>
-                <p style={MONO} className="text-[11px] tracking-[0.18em] text-white/60 uppercase">
+                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                   Schedule a call
                 </p>
                 {/* The one yellow thing in the footer. */}
@@ -141,7 +141,7 @@ export function SiteFooter() {
 
               {SOCIALS.length > 0 ? (
                 <div>
-                  <p style={MONO} className="text-[11px] tracking-[0.18em] text-white/60 uppercase">
+                  <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                     Follow along
                   </p>
                   <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -151,7 +151,7 @@ export function SiteFooter() {
                         href={social.href}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center rounded-[4px] border border-[var(--fx-hairline)] px-4 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
+                        className="inline-flex items-center rounded-[4px] border border-[var(--fx-faint)] px-4 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
                       >
                         {social.label}
                       </a>
@@ -160,12 +160,12 @@ export function SiteFooter() {
                 </div>
               ) : (
                 <div>
-                  <p style={MONO} className="text-[11px] tracking-[0.18em] text-white/60 uppercase">
+                  <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                     Or skip the call
                   </p>
                   <Link
                     href="/onboarding"
-                    className="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-[var(--fx-hairline)] px-5 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
+                    className="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-[var(--fx-faint)] px-5 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
                   >
                     Start a project
                     <svg
@@ -192,7 +192,7 @@ export function SiteFooter() {
 
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
-                <p style={MONO} className="text-[11px] tracking-[0.18em] text-white/60 uppercase">
+                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                   Explore
                 </p>
                 <div className="mt-4 grid grid-cols-2 gap-2.5 text-sm">
@@ -209,7 +209,7 @@ export function SiteFooter() {
               </div>
 
               <div>
-                <p style={MONO} className="text-[11px] tracking-[0.18em] text-white/60 uppercase">
+                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                   Fine print
                 </p>
                 <div className="mt-4 grid grid-cols-1 gap-2.5 text-sm">
@@ -235,7 +235,7 @@ export function SiteFooter() {
                   Fortitudo
                 </span>
               </span>
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-[var(--fx-muted)]">
                 &copy; {new Date().getFullYear()} Fortitudo Agency — remote-first,
                 serving clients worldwide.
               </p>

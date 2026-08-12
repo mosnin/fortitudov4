@@ -2,6 +2,15 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
+ * The one floating surface — menus, modals, popovers, previews. `Card` is the
+ * resting surface and carries no shadow by design; anything that sits *over*
+ * the page needs elevation, and this is the only elevation the product has.
+ * Four panels each picking their own shadow is how the surface came apart.
+ */
+export const POPOVER_SURFACE =
+  "rounded-xl border border-border bg-popover text-popover-foreground shadow-lg";
+
+/**
  * Plain bordered surface (design.md). No shadow at rest, no gradient,
  * no accent border — cards are for a genuine gallery of choices, never for a
  * records list.

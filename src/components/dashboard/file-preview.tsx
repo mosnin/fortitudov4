@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { Download, X } from "lucide-react";
 import { RecordRow, RowAction, RowPill } from "@/components/crm";
+import { POPOVER_SURFACE } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { QUIET_LINK } from "@/lib/typography";
 
@@ -86,11 +87,17 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
           /* Full preview overlay — fixed to the viewport, so its position in
              the row's DOM is immaterial. */
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Same scrim opacity as every other overlay in the product. */}
             <div
-              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               onClick={() => setPreviewOpen(false)}
             />
-            <div className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl animate-fade-in">
+            <div
+              className={cn(
+                POPOVER_SURFACE,
+                "relative max-h-[85vh] w-full max-w-4xl overflow-hidden animate-fade-in"
+              )}
+            >
               <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
                 <p className="truncate text-sm font-medium">{name}</p>
                 <div className="flex shrink-0 items-center gap-3">
@@ -99,7 +106,7 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
                   </a>
                   <button
                     onClick={() => setPreviewOpen(false)}
-                    className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg hover:bg-muted"
+                    className="flex h-7 w-7 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                     aria-label="Close preview"
                   >
                     <X className="h-4 w-4" />
@@ -114,13 +121,13 @@ export function FilePreviewCard({ name, url, type, size }: FilePreviewProps) {
                     alt={name}
                     width={1200}
                     height={800}
-                    className="h-auto max-w-full rounded-lg"
+                    className="h-auto max-w-full rounded-md"
                     style={{ maxHeight: "calc(85vh - 100px)" }}
                   />
                 ) : category === "pdf" ? (
                   <iframe
                     src={url}
-                    className="h-[calc(85vh-100px)] w-full rounded-lg"
+                    className="h-[calc(85vh-100px)] w-full rounded-md"
                     title={name}
                   />
                 ) : null}

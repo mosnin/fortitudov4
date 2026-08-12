@@ -16,10 +16,14 @@ import {
   Eyebrow,
   PillPrimary,
   Serif,
+  MONO_STYLE,
+  EYEBROW_TEXT,
+  DISPLAY_L,
+  DISPLAY_S,
+  HERO_Y,
+  SECTION_Y,
 } from '@/components/marketing/giga/primitives';
 import { CtaSection } from '@/components/marketing/giga/cta';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 const faqCategories = [
   {
@@ -112,7 +116,9 @@ export default function FAQPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] pt-32 pb-20 sm:pt-40 sm:pb-24">
+      <section
+        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
@@ -120,10 +126,7 @@ export default function FAQPage() {
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>FAQ</Eyebrow>
-            <Serif
-              as="h1"
-              className="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] text-[var(--fx-white)]"
-            >
+            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
               Frequently asked{' '}
               <span className="text-[var(--fx-yellow)]">questions.</span>
             </Serif>
@@ -136,15 +139,12 @@ export default function FAQPage() {
       </section>
 
       {/* Questions, by category */}
-      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] py-20 sm:py-28">
+      <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
         <Band innerClassName="max-w-3xl">
           <div className="space-y-16">
             {faqCategories.map((category) => (
               <BlurRise key={category.category}>
-                <p
-                  style={MONO}
-                  className="text-[11px] tracking-[0.18em] text-[var(--fx-faint)] uppercase"
-                >
+                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                   {category.category}
                 </p>
 
@@ -161,7 +161,7 @@ export default function FAQPage() {
                     >
                       <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left text-[16px] font-medium text-[var(--fx-white)] transition-colors [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[var(--fx-yellow)]">
                         {item.q}
-                        <ChevronDown className="h-4 w-4 shrink-0 text-[var(--fx-faint)] transition-transform duration-200" />
+                        <ChevronDown className="h-4 w-4 shrink-0 text-[var(--fx-muted)] transition-transform duration-200" />
                       </Accordion.Trigger>
                       <Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
                         <div className="pb-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
@@ -178,10 +178,12 @@ export default function FAQPage() {
       </section>
 
       {/* Still stuck */}
-      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] py-20 sm:py-24">
+      <section
+        className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] ${SECTION_Y}`}
+      >
         <Band innerClassName="max-w-2xl">
           <BlurRise>
-            <Serif className="text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08] text-[var(--fx-white)]">
+            <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
               Still have questions?
             </Serif>
             <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">

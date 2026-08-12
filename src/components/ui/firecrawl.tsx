@@ -1,22 +1,24 @@
 "use client";
 
 /**
- * Shared product primitives (see design.md). Monochrome, text-first:
- * PageHero (page frame), StatHeader, BracketLabel (section label), MetricRing,
- * Sparkline, SegmentedTabs — pure SVG/motion, no chart deps, no decoration.
+ * Secondary product primitives (see design.md). Monochrome, text-first:
+ * StatHeader, BracketLabel (section label), MetricRing, Sparkline — pure
+ * SVG/motion, no chart deps, no decoration.
+ *
+ * The page header and the tab spine are NOT here. `CrmPageHeader` and
+ * `TabStrip` in `components/crm/` are the only implementations of those; a
+ * second header drawn slightly differently is how two merged branches ended
+ * up looking like two products.
  */
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useInView, animate } from "motion/react";
 import { cn } from "@/lib/utils";
+import { CrmPageHeader } from "@/components/crm";
 import { easeOutExpo } from "@/lib/motion";
-import { H1, TITLE_FONT, BODY_MUTED, SECTION_LABEL } from "@/lib/typography";
+import { H3, META, SECTION_LABEL, STAT_NUMBER, TITLE_FONT } from "@/lib/typography";
 
-/**
- * Page frame header — the canonical product header (docs: design.md).
- * A quiet section line, a serif title, one muted subtitle. No decoration, no
- * icons, no texture: the eye lands on content, not chrome.
- */
+/** Legacy alias for the canonical page frame. Forwards to `CrmPageHeader`. */
 export function PageHero({
   title,
   description,
@@ -34,22 +36,13 @@ export function PageHero({
   typewriter?: boolean;
 }) {
   return (
-    <header className={cn("flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between", className)}>
-      <div className="space-y-1.5">
-        {section && <p className={BODY_MUTED}>{section}</p>}
-        <motion.h1
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: easeOutExpo }}
-          className={H1}
-          style={TITLE_FONT}
-        >
-          {title}
-        </motion.h1>
-        {description && <p className={BODY_MUTED}>{description}</p>}
-      </div>
-      {action && <div className="flex shrink-0 items-center gap-2">{action}</div>}
-    </header>
+    <CrmPageHeader
+      section={section}
+      title={title}
+      subtitle={description}
+      action={action}
+      className={className}
+    />
   );
 }
 
@@ -106,14 +99,10 @@ export function StatHeader({
   return (
     <div className={cn("flex items-start justify-between gap-4", className)}>
       <div>
-        <h3 className="text-[15px] font-semibold">{title}</h3>
-        {caption && (
-          <p className="mt-0.5 text-[11px] tabular-nums text-muted-foreground">
-            {caption}
-          </p>
-        )}
+        <h3 className={H3}>{title}</h3>
+        {caption && <p className={cn(META, "mt-0.5")}>{caption}</p>}
       </div>
-      <p className="text-3xl tracking-tight tabular-nums" style={TITLE_FONT}>
+      <p className={STAT_NUMBER} style={TITLE_FONT}>
         <CountUp value={value} format={format} />
         {unit && (
           <span className="ml-1.5 text-lg font-semibold text-muted-foreground">
@@ -299,47 +288,6 @@ export function Sparkline({
   );
 }
 
-/** Weekly/Monthly-style segmented control. */
-export function SegmentedTabs({
-  options,
-  value,
-  onChange,
-  className,
-}: {
-  options: string[];
-  value: string;
-  onChange: (v: string) => void;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        "inline-flex items-center gap-0.5 rounded-lg bg-muted p-0.5",
-        className
-      )}
-    >
-      {options.map((opt) => {
-        const active = opt === value;
-        return (
-          <button
-            key={opt}
-            onClick={() => onChange(opt)}
-            className={cn(
-              "relative rounded-md px-3 py-1.5 text-[13px] transition-colors cursor-pointer",
-              active ? "font-medium" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            {active && (
-              <motion.span
-                layoutId="segmented-pill"
-                className="absolute inset-0 rounded-md border border-border bg-background shadow-sm"
-                transition={{ type: "spring", stiffness: 400, damping: 32 }}
-              />
-            )}
-            <span className="relative">{opt}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+/* A segmented pill control used to live here. design.md is explicit that the
+   page's spine is `TabStrip` — underline text tabs — and "not a segmented pill
+   control", so it is gone rather than left as a tempting second option. */

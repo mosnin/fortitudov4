@@ -8,7 +8,7 @@
  * them. No eyebrow, no centered headline, exactly the reference layout.
  */
 
-import { BlurRise, Mono, Band } from './primitives';
+import { BlurRise, Mono, Band, Serif, SECTION_Y } from './primitives';
 
 /**
  * Three numbers, and every one of them has to be answerable when a client asks
@@ -27,28 +27,28 @@ const STATS = [
 
 export function Stats() {
   return (
-    <Band className="py-20 sm:py-28">
+    <Band className={SECTION_Y}>
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-20">
         <BlurRise>
-          <p className="max-w-lg text-2xl leading-snug text-white/85 sm:text-[2rem] sm:leading-[1.25]">
+          <p className="max-w-lg text-2xl leading-snug text-[var(--fx-white)] sm:text-[2rem] sm:leading-[1.25]">
             Senior hours go to craft, not to status calls. You can see where
             your project stands from day one.
           </p>
         </BlurRise>
 
         <BlurRise delay={0.1}>
-          <div className="grid grid-cols-3 divide-x divide-white/[0.1]">
+          <div className="grid grid-cols-3 divide-x divide-[var(--fx-hairline)]">
             {STATS.map((s) => (
               <div key={s.label} className="px-5 first:pl-0 sm:px-10">
-                {/* white/60 (6.9:1), not white/40 (3.8:1): the label is what
-                    the number means, so it is body text, not an eyebrow. */}
-                <Mono className="text-[10px] text-white/60">{s.label}</Mono>
-                <span
-                  className="mt-3 block text-[2.75rem] font-light leading-none tracking-tight tabular-nums text-white sm:text-[3.5rem] lg:text-[4.25rem]"
-                  style={{ fontFamily: 'var(--font-sans)' }}
+                {/* --fx-muted (6.5:1), not --fx-faint: the label is what the
+                    number means, so it is body text, not an eyebrow. */}
+                <Mono className="text-[11px] text-[var(--fx-muted)]">{s.label}</Mono>
+                <Serif
+                  as="span"
+                  className="mt-3 block text-[2.75rem] font-light leading-none tabular-nums text-[var(--fx-white)] sm:text-[3.5rem] lg:text-[4.25rem]"
                 >
                   {s.value}
-                </span>
+                </Serif>
               </div>
             ))}
           </div>

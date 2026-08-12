@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AreaChart } from "@/components/ui/charts";
 import {
+  SectionHead,
   Stat,
   StatCell,
   StatEmpty,
@@ -156,14 +157,7 @@ export function PerformanceOverview() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {charts.map((chart) => (
             <div key={chart.title}>
-              <div className="border-b border-border pb-3">
-                <h3 className="text-sm font-medium text-foreground">
-                  {chart.title}
-                </h3>
-                <p className="mt-0.5 text-xs text-muted-foreground">
-                  {chart.caption}
-                </p>
-              </div>
+              <SectionHead title={chart.title} meta={chart.caption} />
               <AreaChart
                 className="mt-5"
                 points={chart.series}

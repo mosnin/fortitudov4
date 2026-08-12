@@ -1,4 +1,4 @@
-import { PageHero } from "@/components/ui/firecrawl";
+import { CrmPageHeader } from "@/components/crm";
 
 interface PageHeaderProps {
   title: string;
@@ -11,10 +11,10 @@ interface PageHeaderProps {
 }
 
 /**
- * Legacy alias for the canonical page frame. `PageHero` IS the product header
- * (design.md): quiet section line, serif H1, one muted subtitle. This
- * wrapper keeps older `PageHeader` call sites on the same frame — prefer
- * importing `PageHero` directly in new code.
+ * Legacy alias for the canonical page frame. `CrmPageHeader` IS the product
+ * header (design.md) — this forwards to it rather than drawing a second one,
+ * so every page keeps the same three lines no matter which name it imports.
+ * Prefer importing `CrmPageHeader` directly in new code.
  */
 export function PageHeader({
   title,
@@ -24,9 +24,9 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <PageHero
+    <CrmPageHeader
       title={title}
-      description={description}
+      subtitle={description}
       action={action}
       section={eyebrow}
       className={className}

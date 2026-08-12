@@ -9,8 +9,9 @@
  * zero. Focal numbers are the scarce serif flourish; everything else is sans.
  */
 
-import { SECTION_LABEL } from '@/lib/typography';
+import { SECTION_LABEL, STAT_NUMBER } from '@/lib/typography';
 import { StaggerReveal } from '@/components/motion';
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 export function StatStrip({
@@ -70,10 +71,7 @@ export function Stat({
 }) {
   return (
     <p className="flex items-baseline gap-1.5">
-      <span
-        className="text-3xl tracking-tight text-foreground tabular-nums"
-        style={{ fontFamily: 'var(--font-title)' }}
-      >
+      <span className={STAT_NUMBER} style={{ fontFamily: 'var(--font-title)' }}>
         {children}
       </span>
       {suffix && <span className="text-xs text-muted-foreground">{suffix}</span>}
@@ -110,8 +108,8 @@ export function StatStripSkeleton({ columns = 3 }: { columns?: 2 | 3 | 4 }) {
     >
       {Array.from({ length: columns }).map((_, i) => (
         <div key={i} className="space-y-3 bg-background px-4 py-4">
-          <div className="h-2.5 w-24 animate-pulse rounded bg-muted" />
-          <div className="h-7 w-20 animate-pulse rounded bg-muted/70" />
+          <Skeleton className="h-2.5 w-24" />
+          <Skeleton className="h-7 w-20" />
         </div>
       ))}
     </div>

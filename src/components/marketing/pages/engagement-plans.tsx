@@ -15,15 +15,28 @@
  * "Ongoing retainer" — the same starting prices apply either way; retainers are
  * scoped from the same build). It renders only when `toggleEnabled` is passed
  * by the server page.
+ *
+ * No card is featured. Two of them carried `featured: true`, so "Most popular"
+ * rendered on two cards at once — a claim that contradicts itself, and one we
+ * have no data behind. It also put two yellow CTAs on one screen, which is the
+ * one thing the palette rule forbids. Every card now takes the ghost treatment
+ * and the page's single yellow action is the closing ask.
  */
 
 import { useState } from 'react';
-import Link from 'next/link';
 import { Check } from 'lucide-react';
 import { type Lang } from '@/lib/i18n/markets';
 import { localizePrice, formatMoney } from '@/lib/i18n/currency';
 import { useDisplayCurrency } from '@/components/marketing/local-price';
-import { Band, BlurRise, Eyebrow } from '@/components/marketing/giga/primitives';
+import {
+  Band,
+  BlurRise,
+  Eyebrow,
+  PillGhost,
+  Serif,
+  TITLE_S,
+  SECTION_Y_TIGHT,
+} from '@/components/marketing/giga/primitives';
 
 type Cycle = 'monthly' | 'annual';
 type CardId = 'websites' | 'digital_marketing' | 'software_solutions' | 'ai_solutions';
@@ -43,7 +56,6 @@ const ENGAGEMENTS: Record<
     highlights: string[];
     cta: string;
     href: string;
-    featured?: boolean;
   }
 > = {
   websites: {
@@ -79,7 +91,6 @@ const ENGAGEMENTS: Record<
     ],
     cta: 'Start marketing',
     href: '/contact',
-    featured: true,
   },
   software_solutions: {
     label: 'Software Solutions',
@@ -114,7 +125,6 @@ const ENGAGEMENTS: Record<
     ],
     cta: 'Scope my AI',
     href: '/contact',
-    featured: true,
   },
 };
 
@@ -130,81 +140,63 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
   const localPrice = localizePrice(p.priceUsd, currency);
 
   return (
-    <div
-      className={
-        'flex h-full flex-col rounded-[6px] border p-8 ' +
-        (p.featured
-          ? 'border-[#f8cd02]/30 bg-gradient-to-b from-[#f8cd02]/[0.08] to-white/[0.02]'
-          : 'border-white/[0.08] bg-white/[0.02]')
-      }
-    >
-      <div className="flex items-center justify-between">
-        <h3 style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
-          {p.label}
-        </h3>
-        {p.featured ? (
-          <span className="rounded-[4px] bg-[#f8cd02]/15 px-2.5 py-0.5 text-[10px] font-medium text-[#f8cd02]">
-            Most popular
-          </span>
-        ) : null}
-      </div>
+    <div className="flex h-full flex-col rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8">
+      <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
+        {p.label}
+      </Serif>
 
       <p className="mt-4 flex items-baseline gap-2">
-        <span
-          className="text-[2.5rem] font-light leading-none tracking-tight tabular-nums text-white"
-          style={{ fontFamily: 'var(--font-sans)' }}
+        <Serif
+          as="span"
+          className="text-[2.5rem] font-light leading-none tabular-nums text-[var(--fx-white)]"
         >
           {formatMoney(localPrice, currency, lang)}
-        </span>
-        <span className="text-sm text-white/45">/ project</span>
+        </Serif>
+        <span className="text-sm text-[var(--fx-muted)]">/ project</span>
       </p>
-      <p className="mt-1.5 text-[12px] text-white/40">
+      <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">
         starting price — fixed quote before kickoff
       </p>
-      <p className="mt-2.5 text-[12.5px] text-white/45">{p.scopeLine}</p>
-      <p className="mt-4 text-[13px] leading-relaxed text-white/55">{p.blurb}</p>
+      <p className="mt-2.5 text-[12.5px] text-[var(--fx-muted)]">{p.scopeLine}</p>
+      <p className="mt-4 text-[13px] leading-relaxed text-[var(--fx-muted)]">{p.blurb}</p>
 
-      <div className="mt-6 border-t border-white/[0.08] pt-5">
+      <div className="mt-6 border-t border-[var(--fx-hairline)] pt-5">
         <p>
-          <span className="text-xl font-semibold tabular-nums text-white">{p.delivery}</span>{' '}
-          <span className="text-[13px] text-white/45">{p.deliveryLabel}</span>
+          <span className="text-xl font-semibold tabular-nums text-[var(--fx-white)]">
+            {p.delivery}
+          </span>{' '}
+          <span className="text-[13px] text-[var(--fx-muted)]">{p.deliveryLabel}</span>
         </p>
-        <p className="mt-1.5 text-[12px] text-white/40">{p.revisionsLine}</p>
+        <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">{p.revisionsLine}</p>
       </div>
 
       <ul className="mt-6 space-y-2.5">
         {p.highlights.map((h) => (
-          <li key={h} className="flex items-start gap-2.5 text-[13px] text-white/70">
-            <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#f8cd02]" />
+          <li key={h} className="flex items-start gap-2.5 text-[13px] text-[var(--fx-muted)]">
+            <Check className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[var(--fx-yellow)]" />
             {h}
           </li>
         ))}
       </ul>
 
-      <Link
-        href={p.href}
-        className={
-          'mt-7 flex h-11 w-full items-center justify-center rounded-full text-[14px] font-medium transition-all duration-200 active:scale-[0.98] ' +
-          (p.featured
-            ? 'bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)] hover:bg-[var(--fx-yellow-hover)]'
-            : 'border border-white/20 text-white hover:bg-white/[0.05]')
-        }
-      >
+      <PillGhost href={p.href} className="mt-7 w-full">
         {p.cta}
-      </Link>
+      </PillGhost>
     </div>
   );
 }
 
 function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => void }) {
   return (
-    <div className="inline-flex items-center rounded-full border border-white/[0.12] bg-white/[0.03] p-1">
+    <div className="inline-flex items-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-1">
       <button
         type="button"
         onClick={() => setCycle('monthly')}
         className={
           'rounded-[4px] px-4 py-1.5 text-[13px] transition-colors ' +
-          (cycle === 'monthly' ? 'bg-[var(--fx-yellow)] font-medium text-[var(--fx-on-yellow)]' : 'text-white/60 hover:text-white')
+          (cycle === 'monthly'
+            ? 'bg-[var(--fx-yellow)] font-medium text-[var(--fx-on-yellow)]'
+            : 'text-[var(--fx-muted)] hover:text-[var(--fx-white)]')
         }
       >
         One-time build
@@ -214,14 +206,18 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
         onClick={() => setCycle('annual')}
         className={
           'flex items-center gap-1.5 rounded-[4px] px-4 py-1.5 text-[13px] transition-colors ' +
-          (cycle === 'annual' ? 'bg-[var(--fx-yellow)] font-medium text-[var(--fx-on-yellow)]' : 'text-white/60 hover:text-white')
+          (cycle === 'annual'
+            ? 'bg-[var(--fx-yellow)] font-medium text-[var(--fx-on-yellow)]'
+            : 'text-[var(--fx-muted)] hover:text-[var(--fx-white)]')
         }
       >
         Ongoing retainer
         <span
           className={
             'rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium ' +
-            (cycle === 'annual' ? 'bg-[#f8cd02]/20 text-[#f8cd02]' : 'bg-[#f8cd02]/15 text-[#f8cd02]')
+            (cycle === 'annual'
+              ? 'bg-[var(--fx-yellow)]/20 text-[var(--fx-yellow)]'
+              : 'bg-[var(--fx-yellow)]/15 text-[var(--fx-yellow)]')
           }
         >
           Same fixed quote
@@ -243,7 +239,7 @@ export function EngagementPlans({
     <>
       {toggleEnabled && (
         <Band className="pt-2">
-          <BlurRise className="flex justify-center">
+          <BlurRise>
             <Toggle cycle={cycle} setCycle={setCycle} />
           </BlurRise>
         </Band>
@@ -251,10 +247,10 @@ export function EngagementPlans({
 
       {/* Validating & launching */}
       <Band className="pb-8 pt-10">
-        <BlurRise className="text-center">
-          <Eyebrow className="justify-center">For validating and launching</Eyebrow>
+        <BlurRise>
+          <Eyebrow>For validating and launching</Eyebrow>
         </BlurRise>
-        <div className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
           {CARD_ORDER.individual.map((id, i) => (
             <BlurRise key={id} delay={i * 0.06}>
               <PlanCard id={id} lang={lang} />
@@ -264,11 +260,11 @@ export function EngagementPlans({
       </Band>
 
       {/* Products & operations */}
-      <Band className="py-16 sm:py-20">
-        <BlurRise className="text-center">
-          <Eyebrow className="justify-center">For scaling products and operations</Eyebrow>
+      <Band className={SECTION_Y_TIGHT}>
+        <BlurRise>
+          <Eyebrow>For scaling products and operations</Eyebrow>
         </BlurRise>
-        <div className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
           {CARD_ORDER.team.map((id, i) => (
             <BlurRise key={id} delay={i * 0.06}>
               <PlanCard id={id} lang={lang} />

@@ -5,9 +5,7 @@
  *
  * One idea: the world moved on; agency work didn't, so we built Fortitudo —
  * senior builders on fixed quotes, working in the open — to close the gap.
- * Hero -> the gap -> beliefs -> the adaptive closing CTA. Cinematic sections
- * live in a forced-dark wrapper; the CTA stays light/dark-adaptive like the
- * rest of the redesign.
+ * Hero -> the gap -> beliefs -> the closing CTA.
  */
 
 import { CtaSection } from '@/components/marketing/giga/cta';
@@ -15,10 +13,14 @@ import {
   Band,
   BlurRise,
   Eyebrow,
-  EyebrowPill,
   Serif,
   PillPrimary,
   PillGhost,
+  DISPLAY_L,
+  DISPLAY_S,
+  TITLE_S,
+  HERO_Y,
+  SECTION_Y,
 } from '@/components/marketing/giga/primitives';
 
 export const metadata = {
@@ -50,32 +52,27 @@ const BELIEFS = [
 export default function AboutPage() {
   return (
     <>
-      <div className="dark bg-[#1b1b1d] text-white">
-        {/* Hero */}
-        <section className="relative isolate overflow-hidden">
-          <div aria-hidden className="absolute inset-0 -z-10">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/marketing/company-hero.jpg" alt="" className="h-full w-full object-cover object-center" />
-            <div className="absolute inset-0 bg-gradient-to-b from-[#1b1b1d]/82 via-[#1b1b1d]/48 to-[#1b1b1d]" />
-            <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_38%,transparent_35%,rgba(27,27,29,0.6)_100%)]" />
-          </div>
-          <Band className="pt-40 pb-24 text-center sm:pt-48 sm:pb-28">
+      <div className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
+        {/* Hero — the same charcoal treatment every other sub-page uses.
+            It used to be a full-bleed stock skyline under two scrims, left
+            from the photography-led design; next to /services and /contact it
+            read as a different website. */}
+        <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
+          />
+          <Band className={HERO_Y} innerClassName="relative max-w-3xl">
             <BlurRise trigger="load">
-              <EyebrowPill>Our story</EyebrowPill>
-            </BlurRise>
-            <BlurRise trigger="load" delay={0.08}>
-              <Serif as="h1" className="mx-auto mt-7 max-w-4xl text-[clamp(2.25rem,5vw,4rem)] leading-[1.05] text-white">
+              <Eyebrow>Our story</Eyebrow>
+              <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
                 Hiring builders deserves to work the way the world already does.
               </Serif>
-            </BlurRise>
-            <BlurRise trigger="load" delay={0.16}>
-              <p className="mx-auto mt-7 max-w-xl text-[15px] leading-relaxed text-white/55">
+              <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
                 We built Fortitudo because the way agencies work was drawn for a slower
                 era. The work should not be the mystery. The work should be the product.
               </p>
-            </BlurRise>
-            <BlurRise trigger="load" delay={0.24}>
-              <div className="mt-9 flex flex-wrap justify-center gap-3">
+              <div className="mt-9 flex flex-wrap gap-3">
                 <PillPrimary href="/contact" withArrow>
                   Talk to us
                 </PillPrimary>
@@ -86,17 +83,17 @@ export default function AboutPage() {
         </section>
 
         {/* The gap */}
-        <Band className="py-24 sm:py-28">
+        <Band className={SECTION_Y}>
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
             <BlurRise>
               <Eyebrow>The gap</Eyebrow>
-              <Serif className="mt-5 text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08] text-white">
+              <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
                 The work moved on.
                 <br className="hidden sm:block" /> The agencies did not.
               </Serif>
             </BlurRise>
             <BlurRise delay={0.1}>
-              <div className="space-y-6 text-[15px] leading-relaxed text-white/60 lg:pt-2">
+              <div className="space-y-6 text-[15px] leading-relaxed text-[var(--fx-muted)] lg:pt-2">
                 <p>
                   A build&apos;s calendar is mostly waiting: opaque quotes, missed
                   deadlines, status calls, weeks of silence between updates. The actual
@@ -116,21 +113,24 @@ export default function AboutPage() {
         </Band>
 
         {/* Beliefs */}
-        <Band className="py-24 sm:py-28">
-          <BlurRise className="mx-auto max-w-2xl text-center">
-            <Eyebrow className="justify-center">What we believe</Eyebrow>
-            <Serif className="mt-5 text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08] text-white">
+        <Band className={SECTION_Y}>
+          <BlurRise className="max-w-2xl">
+            <Eyebrow>What we believe</Eyebrow>
+            <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
               A few things we will not move on.
             </Serif>
           </BlurRise>
-          <div className="mx-auto mt-14 grid max-w-4xl gap-5 sm:grid-cols-2">
+          <div className="mt-14 grid max-w-4xl gap-5 sm:grid-cols-2">
             {BELIEFS.map((b, i) => (
               <BlurRise key={b.title} delay={i * 0.06}>
-                <div className="h-full rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8">
-                  <h3 style={{ fontFamily: 'var(--font-sans)' }} className="text-[16px] font-semibold text-white">
+                {/* 6px, not the ported rounded-3xl: the logged-out site is
+                    squared, and one lozenge in a grid of panels reads as an
+                    import. */}
+                <div className="h-full rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8">
+                  <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                     {b.title}
-                  </h3>
-                  <p className="mt-3 text-[14px] leading-relaxed text-white/55">{b.body}</p>
+                  </Serif>
+                  <p className="mt-3 text-[14px] leading-relaxed text-[var(--fx-muted)]">{b.body}</p>
                 </div>
               </BlurRise>
             ))}

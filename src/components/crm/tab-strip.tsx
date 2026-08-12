@@ -34,7 +34,7 @@ export function TabStrip({
         role="tablist"
         aria-label={ariaLabel}
         className={cn(
-          '-mt-1 flex items-center gap-5 overflow-x-auto border-b border-border/70',
+          '-mt-1 flex items-center gap-5 overflow-x-auto border-b border-border/60',
           className
         )}
       >

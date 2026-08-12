@@ -22,7 +22,18 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
-import { Serif, Eyebrow, BlurRise, Band } from './primitives';
+import {
+  Serif,
+  Eyebrow,
+  BlurRise,
+  Band,
+  MONO_STYLE,
+  DISPLAY_M,
+  TITLE_S,
+  SECTION_Y,
+  ALERT_CHIP,
+  ALERT_RULE,
+} from './primitives';
 
 interface Pill {
   icon: LucideIcon;
@@ -51,9 +62,9 @@ const fortitudoPills: Pill[] = [
 function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' }) {
   const pillStyles =
     tone === 'alert'
-      ? 'border-[#ff405d] bg-[#ff405d]/[0.08] text-[#ff7a8d]'
-      : 'border-[#f8cd02] bg-[#f8cd02]/[0.08] text-[#f8cd02]';
-  const connector = tone === 'alert' ? 'bg-[#ff405d]/60' : 'bg-[#f8cd02]/60';
+      ? ALERT_CHIP
+      : 'border-[var(--fx-yellow)] bg-[var(--fx-yellow)]/[0.08] text-[var(--fx-yellow)]';
+  const connector = tone === 'alert' ? ALERT_RULE : 'bg-[var(--fx-yellow)]/60';
   const ring = tone === 'alert' ? 'rgba(255,64,93,0.25)' : 'rgba(248,205,2,0.25)';
 
   const row = (hidden: boolean) => (
@@ -74,7 +85,7 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
             >
               <Icon className="size-5 shrink-0" />
               <span
-                style={{ fontFamily: 'var(--font-mono)' }}
+                style={MONO_STYLE}
                 className="text-[16px] leading-none tracking-[-0.02em] whitespace-nowrap sm:text-[18px]"
               >
                 {pill.label}
@@ -99,31 +110,33 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
 
 export function Advantage() {
   return (
-    <section className="relative border-t border-white/[0.06] bg-[#1b1b1d] py-24 text-white sm:py-32">
+    <section
+      className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
+    >
       <Band>
-        <BlurRise className="mx-auto max-w-3xl text-center">
-          <Eyebrow className="justify-center">Why Fortitudo</Eyebrow>
-          <Serif className="mt-5 text-[clamp(2rem,4.2vw,3.25rem)] leading-[1.06] text-white">
+        <BlurRise className="max-w-3xl">
+          <Eyebrow>Why Fortitudo</Eyebrow>
+          <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
             Our unique advantage.
           </Serif>
-          <p className="mx-auto mt-5 max-w-xl text-[14.5px] leading-relaxed text-white/55">
+          <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
             Senior builders lead every project, on a fixed quote you can hold us
             to. You get agency craft without agency overhead.
           </p>
         </BlurRise>
 
-        <div className="mx-auto mt-14 grid max-w-6xl gap-6 lg:grid-cols-2">
+        <div className="mt-14 grid max-w-6xl gap-6 lg:grid-cols-2">
           <BlurRise>
-            <div className="overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02]">
+            <div className="overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]">
               <div className="relative aspect-[724/300] overflow-hidden">
                 <PillConveyor pills={legacyPills} tone="alert" />
               </div>
             </div>
             <div className="mt-5 px-1">
-              <h3 style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
+              <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                 Typical agencies
-              </h3>
-              <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-white/50">
+              </Serif>
+              <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
                 An endless conveyor of calls, change orders, and week-old status
                 emails — with account managers between you and the people
                 actually building. The invoice never matches the quote.
@@ -132,16 +145,16 @@ export function Advantage() {
           </BlurRise>
 
           <BlurRise delay={0.08}>
-            <div className="overflow-hidden rounded-[6px] border border-white/[0.08] bg-white/[0.02]">
+            <div className="overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]">
               <div className="relative aspect-[724/300] overflow-hidden">
                 <PillConveyor pills={fortitudoPills} tone="brand" />
               </div>
             </div>
             <div className="mt-5 px-1">
-              <h3 style={{ fontFamily: 'var(--font-sans)' }} className="text-[15px] font-semibold text-white">
+              <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                 Fortitudo
-              </h3>
-              <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-white/50">
+              </Serif>
+              <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
                 One senior team in one dashboard. We use AI tooling where it
                 earns its place — scaffolding, tests, revision churn — always
                 under senior review, and you watch the build happen live.

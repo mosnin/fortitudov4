@@ -23,10 +23,14 @@ import {
   PillGhost,
   PillPrimary,
   Serif,
+  MONO_STYLE,
+  EYEBROW_TEXT,
+  DISPLAY_L,
+  DISPLAY_S,
+  HERO_Y,
+  SECTION_Y,
 } from '@/components/marketing/giga/primitives';
 import { CtaSection } from '@/components/marketing/giga/cta';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 /** What every engagement includes, whichever of the five you buy. */
 const ALWAYS_INCLUDED = [
@@ -42,7 +46,9 @@ export default function ServicesPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] pt-32 pb-20 sm:pt-40 sm:pb-24">
+      <section
+        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
@@ -50,10 +56,7 @@ export default function ServicesPage() {
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>Our services</Eyebrow>
-            <Serif
-              as="h1"
-              className="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] text-[var(--fx-white)]"
-            >
+            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
               Everything you need to{' '}
               <span className="text-[var(--fx-yellow)]">launch &amp; grow.</span>
             </Serif>
@@ -73,7 +76,7 @@ export default function ServicesPage() {
           <section
             key={service.id}
             id={service.id.replace(/_/g, '-')}
-            className={`border-b border-[var(--fx-hairline)] py-20 sm:py-28 ${
+            className={`border-b border-[var(--fx-hairline)] ${SECTION_Y} ${
               isEven
                 ? 'bg-[var(--fx-charcoal)]'
                 : 'bg-[var(--fx-charcoal-deep)]'
@@ -89,24 +92,21 @@ export default function ServicesPage() {
               >
                 <div className={isEven ? '' : 'lg:order-2'}>
                   <div className="mb-5 flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-white/[0.03]">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]">
                       <Icon
                         className="h-5 w-5 text-[var(--fx-yellow)]"
                         strokeWidth={1.75}
                       />
                     </span>
                     <span
-                      style={MONO}
-                      className="rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 text-[11px] tracking-[0.12em] text-[var(--fx-muted)] uppercase"
+                      style={MONO_STYLE}
+                      className={`rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 ${EYEBROW_TEXT}`}
                     >
                       {service.startingPrice}
                     </span>
                   </div>
 
-                  <Serif
-                    as="h2"
-                    className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.06] text-[var(--fx-white)]"
-                  >
+                  <Serif as="h2" className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                     {service.name}
                   </Serif>
                   <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-[var(--fx-muted)]">
@@ -136,11 +136,8 @@ export default function ServicesPage() {
                 {/* What's included — the same list for every offering, which is
                     the point: the floor does not move with the price. */}
                 <div className={isEven ? '' : 'lg:order-1'}>
-                  <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-white/[0.02] p-8 sm:p-10">
-                    <p
-                      style={MONO}
-                      className="text-[11px] tracking-[0.18em] text-[var(--fx-faint)] uppercase"
-                    >
+                  <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8 sm:p-10">
+                    <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                       Included either way
                     </p>
                     <div className="mt-6 space-y-4">
@@ -163,10 +160,10 @@ export default function ServicesPage() {
       })}
 
       {/* Bottom ask */}
-      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] py-24 sm:py-32">
+      <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
         <Band innerClassName="max-w-2xl">
           <BlurRise>
-            <Serif className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.06] text-[var(--fx-white)]">
+            <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
               Not sure which one you need?
             </Serif>
             <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">

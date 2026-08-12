@@ -12,7 +12,9 @@
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EASE_APPLE } from '@/lib/motion';
+import { STATUS_PILL, STATUS_PILL_ACTIVE } from '@/lib/typography';
 import { cn } from '@/lib/utils';
 
 export function RecordList({
@@ -39,6 +41,8 @@ export function RecordRow({
   className,
 }: {
   href?: string;
+  /** Fires on activation. Set alongside `href` to run a side effect (marking
+   *  a notification read) as the row navigates. */
   onClick?: () => void;
   /** The record's name — the line the eye lands on. */
   primary: React.ReactNode;
@@ -105,7 +109,7 @@ export function RecordRow({
       transition={{ duration: 0.2, ease: EASE_APPLE, delay: Math.min(index, 12) * 0.02 }}
     >
       {href ? (
-        <Link href={href} className={cn(rowClassName, 'cursor-pointer')}>
+        <Link href={href} onClick={onClick} className={cn(rowClassName, 'cursor-pointer')}>
           {body}
         </Link>
       ) : onClick ? (
@@ -169,7 +173,14 @@ export function RowAction({
   );
 }
 
-/** The neutral status word pill that sits beside a record's name. */
+/**
+ * The neutral status word pill that sits beside a record's name.
+ *
+ * It renders `STATUS_PILL` / `STATUS_PILL_ACTIVE` verbatim rather than a
+ * lookalike of them, so a row pill, a `Badge` and a pill dropped inline on a
+ * page are one object with one silhouette (design.md: neutral, bordered, 10px
+ * uppercase).
+ */
 export function RowPill({
   children,
   emphasis = false,
@@ -182,10 +193,8 @@ export function RowPill({
   return (
     <span
       className={cn(
-        'inline-flex flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold',
-        emphasis
-          ? 'bg-foreground/[0.06] text-foreground/70'
-          : 'border border-border text-muted-foreground',
+        'flex-shrink-0',
+        emphasis ? STATUS_PILL_ACTIVE : STATUS_PILL,
         className
       )}
     >
@@ -201,10 +210,10 @@ export function RecordListSkeleton({ rows = 5 }: { rows?: number }) {
       {Array.from({ length: rows }).map((_, i) => (
         <li key={i} className="flex items-center gap-3 py-3">
           <div className="min-w-0 flex-1 space-y-2">
-            <div className="h-3.5 w-1/3 animate-pulse rounded bg-muted" />
-            <div className="h-3 w-1/2 animate-pulse rounded bg-muted/70" />
+            <Skeleton className="h-3.5 w-1/3" />
+            <Skeleton className="h-3 w-1/2" />
           </div>
-          <div className="h-3 w-16 animate-pulse rounded bg-muted/70" />
+          <Skeleton className="h-3 w-16" />
         </li>
       ))}
     </ul>
@@ -221,7 +230,7 @@ export function RowSelect({
   return (
     <select
       className={cn(
-        'h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-foreground transition-colors hover:bg-foreground/[0.04] focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
+        'h-8 cursor-pointer rounded-md border border-border bg-background px-2 text-xs text-foreground transition-colors hover:bg-foreground/[0.04] focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:outline-none',
         className
       )}
       {...props}

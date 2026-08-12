@@ -12,8 +12,9 @@ import { useId } from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { easeOutExpo } from "@/lib/motion";
+import { SECTION_LABEL, STAT_NUMBER_COMPACT, TITLE_FONT } from "@/lib/typography";
 
-/** Orange area chart with y-axis ticks and per-point x labels. */
+/** Neutral-ink area chart with y-axis ticks and per-point x labels. */
 export function AreaChart({
   points,
   xLabels,
@@ -60,7 +61,7 @@ export function AreaChart({
           {/* dotted grid rows */}
           <div className="absolute inset-0 flex flex-col justify-between">
             {ticks.map((_, i) => (
-              <div key={i} className="border-t border-dashed border-border/70" />
+              <div key={i} className="border-t border-dashed border-border/60" />
             ))}
           </div>
           <svg
@@ -173,11 +174,13 @@ export function DonutChart({
             />
           ))}
         </svg>
+        {/* The centre total is a focal stat, so it takes the ladder's stat
+            face rather than a bold sans one chart drew for itself. */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold tracking-tight">{total}</span>
-          <span className="text-[10px] uppercase text-muted-foreground">
-            Active
+          <span className={STAT_NUMBER_COMPACT} style={TITLE_FONT}>
+            {total}
           </span>
+          <span className={SECTION_LABEL}>Active</span>
         </div>
       </div>
       <div className="flex flex-wrap justify-center gap-x-4 gap-y-1.5">

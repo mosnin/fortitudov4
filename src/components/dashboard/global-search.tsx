@@ -3,8 +3,10 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, Loader2 } from "lucide-react";
+import { RecordList, RecordRow, RowPill } from "@/components/crm";
+import { POPOVER_SURFACE } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { SECTION_LABEL, STATUS_PILL } from "@/lib/typography";
+import { SECTION_LABEL } from "@/lib/typography";
 
 interface SearchResult {
   id: string;
@@ -167,11 +169,11 @@ export function GlobalSearch() {
       {/* Trigger button */}
       <button
         onClick={() => setOpen(true)}
-        className="flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border/70 bg-background px-3 text-sm text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
+        className="flex h-9 cursor-pointer items-center gap-2 rounded-md border border-border bg-background px-3 text-sm text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
       >
         <Search className="h-3.5 w-3.5" />
         <span className="hidden sm:inline">Search...</span>
-        <kbd className="hidden sm:inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 text-[10px] text-muted-foreground">
+        <kbd className="hidden sm:inline-flex h-5 items-center rounded-sm border border-border bg-muted px-1.5 text-[10px] text-muted-foreground">
           ⌘K
         </kbd>
       </button>
@@ -179,8 +181,17 @@ export function GlobalSearch() {
       {/* Modal overlay */}
       {open && (
         <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[15vh]">
+          {/* Black, not a theme token: a scrim has to darken the page under
+              both themes, and every semantic surface inverts. One opacity
+              everywhere it appears. */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div ref={containerRef} className="relative w-full max-w-lg mx-4 rounded-xl border border-border bg-card shadow-2xl overflow-hidden animate-fade-in">
+          <div
+            ref={containerRef}
+            className={cn(
+              POPOVER_SURFACE,
+              "relative mx-4 w-full max-w-lg overflow-hidden animate-fade-in"
+            )}
+          >
             {/* Search input */}
             <div className="flex items-center gap-3 border-b border-border px-4">
               {loading ? (
@@ -230,33 +241,24 @@ export function GlobalSearch() {
                         <p className={cn(SECTION_LABEL, "pt-3 pb-1")}>
                           {typeLabels[type]}
                         </p>
-                        <ul className="divide-y divide-border/60">
-                          {items.map((result) => (
-                            <li key={result.id}>
-                              <button
-                                onClick={() => {
-                                  setOpen(false);
-                                  router.push(result.href);
-                                }}
-                                className="group/row -mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-muted/30 cursor-pointer"
-                              >
-                                <div className="min-w-0 flex-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className="truncate text-sm font-medium text-foreground">
-                                      {result.title}
-                                    </span>
-                                    <span className={cn(STATUS_PILL, "shrink-0")}>
-                                      {result.type}
-                                    </span>
-                                  </div>
-                                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                                    {result.subtitle}
-                                  </p>
-                                </div>
-                              </button>
-                            </li>
+                        {/* The kit's rows, not a copy of them — a result here
+                            and a record on the page behind it are the same
+                            object. */}
+                        <RecordList>
+                          {items.map((result, i) => (
+                            <RecordRow
+                              key={result.id}
+                              index={i}
+                              primary={result.title}
+                              status={<RowPill>{result.type}</RowPill>}
+                              secondary={result.subtitle}
+                              onClick={() => {
+                                setOpen(false);
+                                router.push(result.href);
+                              }}
+                            />
                           ))}
-                        </ul>
+                        </RecordList>
                       </div>
                     );
                   })}
@@ -274,10 +276,10 @@ export function GlobalSearch() {
             {/* Footer */}
             <div className="border-t border-border px-4 py-2 flex items-center justify-between text-xs text-muted-foreground">
               <span>
-                <kbd className="rounded border border-border px-1">↑↓</kbd> Navigate
+                <kbd className="rounded-sm border border-border px-1">↑↓</kbd> Navigate
               </span>
               <span>
-                <kbd className="rounded border border-border px-1">Esc</kbd> Close
+                <kbd className="rounded-sm border border-border px-1">Esc</kbd> Close
               </span>
             </div>
           </div>

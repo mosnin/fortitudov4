@@ -26,10 +26,15 @@ import {
   Eyebrow,
   PillPrimary,
   Serif,
+  MONO_STYLE,
+  EYEBROW_TEXT,
+  DISPLAY_L,
+  DISPLAY_S,
+  TITLE_L,
+  HERO_Y,
+  SECTION_Y,
 } from '@/components/marketing/giga/primitives';
 import { CtaSection } from '@/components/marketing/giga/cta';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 type CaseStudy = {
   /** The engagement, in the client's words where possible. */
@@ -55,7 +60,9 @@ export default function PortfolioPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] pt-32 pb-20 sm:pt-40 sm:pb-24">
+      <section
+        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
@@ -63,10 +70,7 @@ export default function PortfolioPage() {
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>Portfolio</Eyebrow>
-            <Serif
-              as="h1"
-              className="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] text-[var(--fx-white)]"
-            >
+            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
               Work that speaks{' '}
               <span className="text-[var(--fx-yellow)]">for itself.</span>
             </Serif>
@@ -78,21 +82,18 @@ export default function PortfolioPage() {
         </Band>
       </section>
 
-      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] py-20 sm:py-28">
+      <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
         <Band>
           {CASE_STUDIES.length === 0 ? (
             /* The honest empty state. It says what is missing and gives the
                visitor the next best thing, rather than filling the grid with
                work nobody did. */
-            <BlurRise className="mx-auto max-w-2xl">
+            <BlurRise className="max-w-2xl">
               <div className="rounded-[6px] border border-dashed border-[var(--fx-hairline)] p-10 sm:p-14">
-                <p
-                  style={MONO}
-                  className="text-[11px] tracking-[0.18em] text-[var(--fx-faint)] uppercase"
-                >
+                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                   Nothing published yet
                 </p>
-                <Serif className="mt-5 text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08] text-[var(--fx-white)]">
+                <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
                   We&apos;d rather show you nothing than show you someone
                   else&apos;s work.
                 </Serif>
@@ -116,22 +117,19 @@ export default function PortfolioPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ duration: 0.4, delay: index * 0.06 }}
-                  className="group flex h-full flex-col border-t border-l border-[var(--fx-hairline)] p-7 transition-colors duration-300 hover:bg-white/[0.02]"
+                  className="group flex h-full flex-col border-t border-l border-[var(--fx-hairline)] p-7 transition-colors duration-300 hover:bg-[var(--fx-charcoal-raised)]"
                 >
                   <div className="flex items-start justify-between">
                     <span
-                      style={MONO}
-                      className="rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 text-[10.5px] tracking-[0.12em] text-[var(--fx-muted)] uppercase"
+                      style={MONO_STYLE}
+                      className={`rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 ${EYEBROW_TEXT}`}
                     >
                       {study.service}
                     </span>
-                    <ArrowUpRight className="h-4 w-4 text-[var(--fx-faint)] opacity-0 transition-opacity group-hover:opacity-100" />
+                    <ArrowUpRight className="h-4 w-4 text-[var(--fx-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
                   </div>
 
-                  <Serif
-                    as="h2"
-                    className="mt-6 text-[22px] leading-tight text-[var(--fx-white)]"
-                  >
+                  <Serif as="h2" className={`mt-6 ${TITLE_L} text-[var(--fx-white)]`}>
                     {study.title}
                   </Serif>
                   {/* Muted, not faint: the client name is content, and
@@ -152,7 +150,7 @@ export default function PortfolioPage() {
                       {study.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-[4px] bg-white/[0.05] px-2 py-1 text-[10.5px] leading-none text-[var(--fx-muted)]"
+                          className="rounded-[4px] bg-[var(--fx-charcoal-deep)] px-2 py-1 text-[10.5px] leading-none text-[var(--fx-muted)]"
                         >
                           {tag}
                         </span>

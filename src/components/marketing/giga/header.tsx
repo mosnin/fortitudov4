@@ -8,10 +8,11 @@
  * Background: fully TRANSPARENT at the top; on scroll each cluster animates in a
  * translucent near-black blurred background + hairline border + soft shadow.
  *
- * Nav: two dropdowns, Product (Chippi, Agents, Brokerages, Integrations) and
- * Company (Our story, Research, Careers), each opening a frosted blurred
- * mega-menu, plus a plain Pricing link. Right cluster: Sign in + white
- * "See a demo" pill. Mobile: a full-screen blurred takeover.
+ * Nav: two dropdowns, Product (the five offerings) and Company (About,
+ * Portfolio, FAQ, Contact), each opening a frosted blurred mega-menu, plus a
+ * plain Pricing link. Right cluster: Sign in + the racing-yellow "See a demo"
+ * block — the header's one yellow surface. Mobile: a full-screen blurred
+ * takeover.
  */
 
 import { useState, useRef, useEffect, useCallback } from 'react';
@@ -40,6 +41,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
+import { Serif, MONO_STYLE, EYEBROW_TEXT, TITLE_L } from '@/components/marketing/giga/primitives';
 
 const SIGNIN = '/sign-in';
 const DEMO = '/contact';
@@ -149,8 +151,11 @@ export function SiteHeader() {
   // Each nav cluster is TRANSPARENT at the top and gains a blurred translucent
   // background only once scrolled, animated, so it fades in/out.
   const clusterAnimate = {
+    // Literals, not tokens: these are motion values interpolated by the
+    // animation, and a var() cannot be tweened. They track --fx-charcoal-deep
+    // and --fx-hairline; change them together.
     backgroundColor: scrolled ? 'rgba(20,20,22,0.72)' : 'rgba(20,20,22,0)',
-    borderColor: scrolled ? 'rgba(255,255,255,0.10)' : 'rgba(255,255,255,0)',
+    borderColor: scrolled ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0)',
     boxShadow: scrolled ? '0 10px 30px -12px rgba(0,0,0,0.55)' : '0 0px 0px 0px rgba(0,0,0,0)',
   };
   const clusterStyle = {
@@ -167,7 +172,9 @@ export function SiteHeader() {
       onMouseEnter={() => setOpenMenu(menu)}
       className={cn(
         'inline-flex cursor-pointer items-center gap-1 rounded-[4px] px-3.5 py-2 text-sm transition-colors',
-        openMenu === menu ? 'text-white' : 'text-white/70 hover:text-white',
+        openMenu === menu
+          ? 'text-[var(--fx-white)]'
+          : 'text-[var(--fx-muted)] hover:text-[var(--fx-white)]',
       )}
     >
       {MENUS[menu].label}
@@ -198,7 +205,9 @@ export function SiteHeader() {
                     wordmark beside it is visible text, so naming the mark
                     would announce "Fortitudo" a third time. */}
                 <BrandMark className="h-5 text-[var(--fx-yellow)]" />
-                <span className="ml-2 text-sm font-medium tracking-tight text-white">Fortitudo</span>
+                <span className="ml-2 text-sm font-medium tracking-tight text-[var(--fx-white)]">
+                  Fortitudo
+                </span>
               </Link>
               <nav className="hidden items-center gap-0.5 lg:flex">
                 <NavTrigger menu="product" />
@@ -206,7 +215,7 @@ export function SiteHeader() {
                 <Link
                   href="/pricing"
                   onClick={closeAll}
-                  className="rounded-[4px] px-3.5 py-2 text-sm text-white/70 transition-colors hover:text-white"
+                  className="rounded-[4px] px-3.5 py-2 text-sm text-[var(--fx-muted)] transition-colors hover:text-[var(--fx-white)]"
                 >
                   Pricing
                 </Link>
@@ -225,34 +234,35 @@ export function SiteHeader() {
                   className="absolute left-0 top-full hidden w-[720px] max-w-[calc(100vw-2.5rem)] pt-2.5 lg:block"
                   onMouseLeave={() => setOpenMenu(null)}
                 >
-                  <div className="overflow-hidden rounded-[6px] border border-white/10 bg-[#141416]/65 shadow-2xl shadow-black/60 backdrop-blur-2xl">
+                  <div className="overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)]/65 shadow-2xl shadow-black/60 backdrop-blur-2xl">
                     <div className="grid grid-cols-[280px_1fr]">
                       {/* Featured story */}
                       <Link
                         href={active.featured.href}
                         onClick={closeAll}
-                        className="group/feat relative flex flex-col justify-between overflow-hidden border-r border-white/10 bg-gradient-to-br from-[#f8cd02]/12 via-[#141416]/40 to-[#141416]/40 p-6"
+                        className="group/feat relative flex flex-col justify-between overflow-hidden border-r border-[var(--fx-hairline)] bg-gradient-to-br from-[var(--fx-yellow)]/12 via-[var(--fx-charcoal-deep)]/40 to-[var(--fx-charcoal-deep)]/40 p-6"
                       >
                         <div
                           aria-hidden
                           className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-[4px] bg-[radial-gradient(circle,rgba(248,205,2,0.22),transparent_70%)]"
                         />
                         <div>
+                          {/* Yellow as text, on an accent a few words long —
+                              the one place the rule allows it. */}
                           <p
-                            style={{ fontFamily: 'var(--font-mono-display)' }}
-                            className="text-[10px] font-medium uppercase tracking-[0.22em] text-[#f8cd02]"
+                            style={MONO_STYLE}
+                            className={cn(EYEBROW_TEXT, 'text-[var(--fx-yellow)]')}
                           >
                             {active.featured.eyebrow}
                           </p>
-                          <p
-                            style={{ fontFamily: 'var(--font-serif-display)' }}
-                            className="mt-3 text-[22px] leading-snug text-white"
-                          >
+                          <Serif as="p" className={cn('mt-3', TITLE_L, 'text-[var(--fx-white)]')}>
                             {active.featured.title}
+                          </Serif>
+                          <p className="mt-2.5 text-xs leading-relaxed text-[var(--fx-muted)]">
+                            {active.featured.body}
                           </p>
-                          <p className="mt-2.5 text-xs leading-relaxed text-white/55">{active.featured.body}</p>
                         </div>
-                        <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-white">
+                        <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--fx-white)]">
                           {active.featured.cta}
                           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover/feat:translate-x-0.5" />
                         </span>
@@ -267,16 +277,18 @@ export function SiteHeader() {
                               key={it.label}
                               href={it.href}
                               onClick={closeAll}
-                              className="group flex items-start gap-3 rounded-[4px] px-3 py-2.5 transition-colors hover:bg-white/[0.05]"
+                              className="group flex items-start gap-3 rounded-[4px] px-3 py-2.5 transition-colors hover:bg-[var(--fx-white)]/[0.06]"
                             >
-                              <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[4px] border border-white/10 bg-white/[0.03] text-white/60 transition-colors group-hover:border-[#f8cd02]/40 group-hover:text-[#f8cd02]">
+                              <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-white)]/[0.06] text-[var(--fx-muted)] transition-colors group-hover:border-[var(--fx-yellow)] group-hover:text-[var(--fx-yellow)]">
                                 <Icon className="h-[15px] w-[15px]" />
                               </span>
                               <span className="min-w-0">
-                                <span className="block text-[13px] font-medium text-white">{it.label}</span>
-                                {/* white/60 is 6.9:1; white/45 was 4.45:1,
-                                    just under the 4.5:1 body floor. */}
-                                <span className="mt-0.5 block text-[11px] leading-snug text-white/60">
+                                <span className="block text-[13px] font-medium text-[var(--fx-white)]">
+                                  {it.label}
+                                </span>
+                                {/* --fx-muted is 6.5:1; it describes the link,
+                                    so it is content, not chrome. */}
+                                <span className="mt-0.5 block text-[11px] leading-snug text-[var(--fx-muted)]">
                                   {it.desc}
                                 </span>
                               </span>
@@ -301,7 +313,7 @@ export function SiteHeader() {
           >
             <Link
               href={SIGNIN}
-              className="hidden rounded-[4px] px-3.5 py-1.5 text-sm text-white/70 transition-colors hover:text-white lg:inline-flex"
+              className="hidden rounded-[4px] px-3.5 py-1.5 text-sm text-[var(--fx-muted)] transition-colors hover:text-[var(--fx-white)] lg:inline-flex"
             >
               Sign in
             </Link>
@@ -315,7 +327,7 @@ export function SiteHeader() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMobileOpen(true)}
-              className="flex h-9 w-9 items-center justify-center rounded-[4px] text-white transition-colors hover:bg-white/[0.08] lg:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[var(--fx-white)] transition-colors hover:bg-[var(--fx-white)]/[0.06] lg:hidden"
             >
               <Menu size={20} />
             </button>
@@ -333,7 +345,7 @@ export function SiteHeader() {
             exit={{ opacity: 0 }}
             transition={{ duration: reduce ? 0 : 0.25, ease: EASE_OUT }}
           >
-            <div className="absolute inset-0 bg-[#1b1b1d]/95 backdrop-blur-xl" />
+            <div className="absolute inset-0 bg-[var(--fx-charcoal)]/95 backdrop-blur-xl" />
             <motion.div
               className="relative flex h-full flex-col"
               initial={{ y: 16, opacity: 0 }}
@@ -346,13 +358,15 @@ export function SiteHeader() {
                   {/* Empty alt: the visible wordmark beside it already names
                       the link. */}
                   <BrandMark className="h-5 text-[var(--fx-yellow)]" />
-                  <span className="ml-2 text-sm font-medium tracking-tight text-white">Fortitudo</span>
+                  <span className="ml-2 text-sm font-medium tracking-tight text-[var(--fx-white)]">
+                    Fortitudo
+                  </span>
                 </Link>
                 <button
                   type="button"
                   aria-label="Close menu"
                   onClick={() => setMobileOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-[4px] border border-white/15 text-white transition-colors hover:bg-white/[0.08]"
+                  className="flex h-10 w-10 items-center justify-center rounded-[4px] border border-[var(--fx-faint)] text-[var(--fx-white)] transition-colors hover:bg-[var(--fx-white)]/[0.06]"
                 >
                   <X size={20} />
                 </button>
@@ -368,10 +382,10 @@ export function SiteHeader() {
                   <div key={key}>
                     <motion.p
                       variants={itemVariants}
-                      style={{ fontFamily: 'var(--font-mono-display)' }}
-                      // white/60 is 6.9:1; white/35 was 3.22:1. The heading
-                      // names the group of links under it, so it is content.
-                      className="px-1 text-[10px] font-medium uppercase tracking-[0.22em] text-white/60"
+                      style={MONO_STYLE}
+                      // The heading names the group of links under it, so it
+                      // is content and reads at --fx-muted's 6.5:1.
+                      className={cn('px-1', EYEBROW_TEXT)}
                     >
                       {MENUS[key].label}
                     </motion.p>
@@ -383,9 +397,9 @@ export function SiteHeader() {
                             <Link
                               href={it.href}
                               onClick={closeAll}
-                              className="flex items-center gap-3 rounded-[4px] px-1 py-2.5 text-white"
+                              className="flex items-center gap-3 rounded-[4px] px-1 py-2.5 text-[var(--fx-white)]"
                             >
-                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[4px] border border-white/10 bg-white/[0.03] text-white/70">
+                              <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-white)]/[0.06] text-[var(--fx-muted)]">
                                 <Icon className="h-4 w-4" />
                               </span>
                               <span className="text-[19px]">{it.label}</span>
@@ -400,15 +414,14 @@ export function SiteHeader() {
                   <Link
                     href="/pricing"
                     onClick={closeAll}
-                    style={{ fontFamily: 'var(--font-serif-display)' }}
-                    className="block px-1 py-2 text-2xl text-white"
+                    className="block px-1 py-2 text-[19px] text-[var(--fx-white)]"
                   >
                     Pricing
                   </Link>
                 </motion.div>
               </motion.nav>
 
-              <div className="space-y-3 border-t border-white/10 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+              <div className="space-y-3 border-t border-[var(--fx-hairline)] px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
                 <Link
                   href={DEMO}
                   onClick={closeAll}
@@ -420,7 +433,7 @@ export function SiteHeader() {
                 <Link
                   href={SIGNIN}
                   onClick={closeAll}
-                  className="flex h-12 w-full items-center justify-center rounded-[4px] border border-white/15 text-sm font-medium text-white"
+                  className="flex h-12 w-full items-center justify-center rounded-[4px] border border-[var(--fx-faint)] text-sm font-medium text-[var(--fx-white)]"
                 >
                   Sign in
                 </Link>

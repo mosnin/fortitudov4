@@ -3,15 +3,35 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   TWO SURFACES, ONE STYLESHEET
+   ───────────────────────────────────────────────────────────────────────────
+   The product (dashboard + admin) and the logged-out site (marketing, auth,
+   onboarding) are separate design systems that never mix. This file holds both
+   and keeps them apart with one boundary:
+
+     :root                    → the product. Paper-flat, neutral-first, light by
+                                default with a `.dark` variant.
+     [data-marketing-shell]   → the logged-out site. Racing yellow on charcoal,
+                                `--fx-*` tokens, charcoal in both themes.
+
+   Anything the marketing shell needs to override is redeclared inside that
+   selector, so the product cannot see it and it cannot see the product.
+
+   TYPE — one family, self-hosted, no network fonts.
+   Geist Sans and Geist Mono mount as `--font-geist-sans` / `--font-geist-mono`
+   from `next/font` in `app/layout.tsx`. There is no `@import url(...)` in this
+   file and there must never be one: a webfont request here is render-blocking
+   on first paint, and every face this app uses is already on disk.
+
+   The scales themselves are code, not CSS:
+     · Product   → `src/lib/typography.ts`   (30 · 25 · 21 · 17 · 14 · 12 · 11)
+     · Logged-out→ `src/components/marketing/giga/primitives.tsx`
+                   (DISPLAY_XL…XS, TITLE_L/S, EYEBROW_TEXT, SECTION_Y)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
   --radius: 0.75rem;
-
-  /* Rainbow button colors (legacy marketing flourish) */
-  --color-1: 0 100% 63%;
-  --color-2: 270 100% 63%;
-  --color-3: 210 100% 63%;
-  --color-4: 195 100% 63%;
-  --color-5: 90 100% 63%;
 
   /* ── Product surface: paper-flat neutral-first system ─────────────────────
      Near-black is primary; hairlines structure the page; brand orange is
@@ -52,6 +72,15 @@
   --chart-3: #a16207;
   --chart-4: #b91c1c;
   --chart-5: #f97316;
+
+  /* Rainbow-button gradient stops (components/ui/rainbow-button.tsx reads them
+     as raw `hsl(var(--color-N))` triples, which is why they are angles and not
+     hex). Warm and brand-adjacent — the button is a marketing flourish. */
+  --color-1: 25 95% 62%;
+  --color-2: 35 95% 60%;
+  --color-3: 15 90% 60%;
+  --color-4: 45 95% 58%;
+  --color-5: 5 90% 62%;
 }
 
 .dark {
@@ -123,44 +152,43 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
-  /* Back-compat token names used across existing pages. "charcoal-dark"
-     resolves to the page background so legacy dark-hero sections read as
-     light surfaces under the neutral system. */
-  --color-charcoal: #111113;
-  --color-charcoal-light: #f4f4f5;
+  /* Back-compat names from the GoHighLevel template, kept only because live
+     pages still spell them. "charcoal-dark" resolves to the page background so
+     legacy dark-hero sections read as light surfaces under the neutral system.
+       bg-charcoal-dark → app/error.tsx, app/checkout, (dashboard)/error.tsx
+       text-orange      → ui/badge.tsx, app/checkout
+       bg-orange-dark   → ui/button.tsx (the `brand` variant's hover)
+     The rest of that template's palette — cream/ink/paper/line/panel/night,
+     the orange and alert tints, the charcoal light/dark siblings — had no
+     remaining consumers and is gone. Do not add to this list; new work uses
+     the semantic tokens above. */
   --color-charcoal-dark: #ffffff;
   --color-orange: #f97316;
-  --color-orange-light: #fb923c;
   --color-orange-dark: #ea580c;
-  --color-orange-glow: rgba(249, 115, 22, 0.4);
 
-  /* ── Landing page tokens (extracted from the reference site's system) ──── */
-  --color-cream: #fdfbf6;
-  --color-ink: #191919;
-  --color-ink-soft: #4a4a4a;
-  --color-paper: #ffffff;
-  --color-line: #e1e1e1;
-  --color-line-dark: #585858;
-  --color-panel: #313131;
-  --color-night: #1d1d1d;
-  --color-orange-hover: #fb923c;
-  --color-orange-active: #fdba74;
-  --color-orange-edge: #c2410c;
-  --color-orange-tint: #ffedd5;
-  --color-orange-tint-2: #fed7aa;
-  --color-alert: #ff405d;
-  --color-alert-tint: #ffe9ec;
-  --color-alert-ring: #ff94a4;
-  --color-band: #f6f6f6;
+  /* ── Type ────────────────────────────────────────────────────────────────
+     `--font-title` is the display face, and it is DELIBERATELY REDECLARED on
+     `[data-marketing-shell]` further down. The product sets its headlines in
+     Georgia; the logged-out site has no serif and remaps the same token to the
+     sans. One token, two surfaces, resolved by the cascade — so `.font-title`,
+     `TITLE_FONT` and every `var(--font-title)` consumer is correct wherever it
+     renders and no component has to know which surface it is on.
 
+     Tailwind emits a theme variable to `:root` only when something references
+     it with `var()`. `--font-title` is referenced (by `.font-title` below), so
+     it lands in `:root` and the shell override has something to override.
+     `--font-serif` is not referenced anywhere and exists only as the `font-serif`
+     utility; it is pinned to the same face as `--font-title` so the two can
+     never disagree. */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-serif: Georgia, "Times New Roman", ui-serif, serif;
   --font-title: Georgia, "Times New Roman", ui-serif, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
-  /* The hero-21 kit's two extra breakpoints. Without these the hero silently
-     renders its phone layout on every screen — the `ipad:` / `desktop-sm:`
-     classes would never be generated at all.
+  /* The hero-21 kit's two extra breakpoints. Retained with the kit even though
+     no `ipad:` / `desktop-sm:` class survives the redesign — Tailwind emits
+     nothing for an unused breakpoint, and re-deriving them costs more than
+     keeping them.
 
      (The kit's font aliases — Monda / Switzer / Inter Tight / DM Mono — are
      deliberately NOT redefined here. They would mean four render-blocking
@@ -178,16 +206,13 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  --color-color-1: hsl(var(--color-1));
-  --color-color-2: hsl(var(--color-2));
-  --color-color-3: hsl(var(--color-3));
-  --color-color-4: hsl(var(--color-4));
-  --color-color-5: hsl(var(--color-5));
-
+  /* Animation utilities. `fade-up` and `rainbow` are ALSO declared as plain
+     rules below with different timings; unlayered rules beat `@layer utilities`,
+     so those literals are what renders. The theme entries stay because they are
+     the only way to generate the variant forms — `before:animate-rainbow` in
+     rainbow-button.tsx has no other source. */
   --animate-fade-in: fade-in 0.5s ease-out;
   --animate-fade-up: fade-up 0.5s ease-out;
-  --animate-slide-in: slide-in 0.3s ease-out;
-  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
   --animate-rainbow: rainbow var(--speed, 2s) infinite linear;
 }
 
@@ -201,45 +226,14 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slide-in {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slide-in-right {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
-}
-
-.animate-slide-in-right {
-  animation: slide-in-right 0.3s ease-out;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(249, 115, 22, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(249, 115, 22, 0.6); }
-}
-
 @keyframes rainbow {
   0% { background-position: 0%; }
   100% { background-position: 200%; }
 }
 
-/* Landing page marquee */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-.animate-marquee {
-  animation: marquee var(--marquee-duration, 32s) linear infinite;
-}
-
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Process-pill conveyor (advantage section) */
+/* Process-pill conveyor (marketing advantage section) — both referenced as
+   arbitrary animations, `animate-[marquee-left_26s_linear_infinite]` and
+   `animate-[pill-ring-pulse_2s_ease-in-out_infinite]`. */
 @keyframes marquee-left {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -250,103 +244,14 @@
   50% { box-shadow: 0 0 0 1px var(--pill-ring, #ff94a4); }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
-}
-
-/* Utility classes */
-.text-gradient-orange {
-  background: linear-gradient(135deg, #f97316, #fb923c, #fdba74);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glow-button {
-  position: relative;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
-  transition: all 0.3s ease;
-}
-
-.glow-button:hover {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
-  transform: translateY(-1px);
-}
-
-/* ── Studio ASCII garnish (dashboard + admin) ───────────────────────────────
-   The terminal voice: uppercase mono eyebrows, bracket labels with orange
-   numerals, dotted-matrix textures. Pairs with <AsciiField /> atmospherics. */
-.eyebrow-mono {
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted-foreground);
-  font-weight: 500;
-}
-
-.micro-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--muted-foreground);
-  font-weight: 500;
-}
-
-.bracket-label {
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted-foreground);
-}
-
-.bracket-label b {
-  color: var(--brand);
-  font-weight: 600;
-}
-
-.dot-texture {
-  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
-  background-size: 12px 12px;
-}
-
-/* Serif display voice for page titles (fused from the studio system). */
-.font-title {
-  font-family: var(--font-title), Georgia, serif;
-  letter-spacing: -0.02em;
-}
-
-/* Phase tracker connector line */
-.phase-connector {
-  position: relative;
-}
-
-.phase-connector::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  width: 100%;
-  height: 2px;
-  background: var(--border);
-}
-
-.phase-connector.completed::after {
-  background: linear-gradient(90deg, #f97316, #fb923c);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+/* Flowing gradient for the AnimatedGradientText component (marketing labels). */
+@keyframes gradient-flow {
+  to {
+    background-position: var(--bg-size) 0;
   }
 }
 
-/* Accordion animations for Radix */
+/* Radix accordion height transitions — the FAQ's <Accordion.Content>. */
 @keyframes slideDown {
   from { height: 0; }
   to { height: var(--radix-accordion-content-height); }
@@ -363,6 +268,51 @@ body {
 
 .animate-slideUp {
   animation: slideUp 200ms ease-out;
+}
+
+/* `both` so the element holds its start frame until the animation runs, and
+   4s so the rainbow reads as a slow sweep rather than a strobe. Both override
+   the `@theme` entries above by sitting outside `@layer utilities`. */
+.animate-fade-up { animation: fade-up 0.5s ease-out both; }
+.animate-rainbow { animation: rainbow 4s linear infinite; }
+
+/* The single reduced-motion guard for the whole app. It is deliberately blunt:
+   any animation added anywhere is covered without being listed here. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* The `glow` Button variant (ui/button.tsx) — a marketing CTA, used on the
+   checkout page. */
+.glow-button {
+  position: relative;
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+  transition: all 0.3s ease;
+}
+
+.glow-button:hover {
+  box-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
+  transform: translateY(-1px);
+}
+
+/* The display voice, as a class. Resolves `--font-title` at use time, so it is
+   Georgia in the product and the sans inside `[data-marketing-shell]`. This
+   rule is unlayered on purpose: it out-ranks Tailwind's generated `font-title`
+   utility, which `@theme inline` bakes to the literal `:root` value and which
+   would therefore ignore the marketing override. */
+.font-title {
+  font-family: var(--font-title), Georgia, serif;
+  letter-spacing: -0.02em;
 }
 
 /* ---------------------------------------------------------------------------
@@ -384,13 +334,15 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   LOGGED-OUT SITE (ported wholesale from the UI-framework reference).
-   Fonts pinned to the reference's exact stacks, scoped to the shell.
-   ═══════════════════════════════════════════════════════════════════ */
-/* ── The logged-out site's palette: racing yellow on charcoal ───────────────
+   THE LOGGED-OUT SITE — racing yellow on charcoal
+   ═══════════════════════════════════════════════════════════════════════
  *
- * Scoped to `[data-marketing-shell]` so it cannot reach the product, which
- * stays on the paper-flat neutral system above. Two rules define the scheme:
+ * Scoped to `[data-marketing-shell]`, which wraps `app/(marketing)` and the
+ * auth pages. The product never sees these tokens and this surface never sees
+ * the product's. Nothing here reads the light/dark toggle; the logged-out site
+ * is charcoal in both.
+ *
+ * Two rules define the scheme:
  *
  *   - Racing yellow is a SURFACE, and text sitting on it is always black.
  *   - Charcoal is the GROUND, and body text on it is always white.
@@ -402,8 +354,26 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
  * thing yellow exists here to mark.
  */
 [data-marketing-shell] {
+  /* ── Type ────────────────────────────────────────────────────────────────
+   * The logged-out site is set in ONE voice: a tight geometric sans at
+   * semibold for display, monospace for eyebrows. There is no serif here.
+   *
+   * `--font-title` is remapped from the product's Georgia to the sans, which
+   * is what makes `.font-title` and every `var(--font-title)` consumer render
+   * correctly on both surfaces without knowing where it is.
+   *
+   * `--font-serif-display` and `--font-mono-display` are ALIASES, kept because
+   * seven inline `fontFamily` styles in `giga/primitives.tsx` and
+   * `giga/header.tsx` spell them and those files are the marketing kit's
+   * vocabulary. They are not renamed to `--font-title` / `--font-mono`
+   * because renaming them means editing every consumer to say the same thing.
+   * They must keep pointing at the tokens below — a "serif" alias that
+   * resolves to an actual serif would put a second voice on this surface.
+   */
   --font-title: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-serif-display: var(--font-title);
+  --font-mono-display: var(--font-mono);
 
   /* One accent, used for what you want pressed. */
   --fx-yellow: #f8cd02;
@@ -426,47 +396,12 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-faint: rgba(255, 255, 255, 0.38);
   --fx-hairline: rgba(255, 255, 255, 0.12);
 }
-/* ──────────────────────────────────────────────────────────────────────────
- * MARKETING + AUTH AESTHETIC (fortitudo "studio ASCII" system, Chippi-tinted)
- *
- * Adopted wholesale for the logged-out site and auth pages. The product
- * (dashboard, agent chat, broker app) does NOT use any of this. It stays on
- * the paper-flat neutral system above. Everything here is opt-in via a class
- * (`.font-brand`, `.text-gradient-brand`, etc.) so it can't leak into product
- * chrome. Brand orange is Chippi's #ff964f (var --brand), not fortitudo's
- * #F97316. Works in both light and dark because it leans on the semantic
- * tokens (--background / --foreground / --border) for surfaces and reserves
- * orange for the signature glyphs + headline flourish.
- * ────────────────────────────────────────────────────────────────────────── */
 
-/* The studio brand display face: headings on the marketing/auth site. */
-.font-brand {
-  font-family: var(--font-brand);
-  font-variation-settings: "slnt" 0, "CRSV" 0.5, "ELSH" 0, "ELXP" 0;
-  letter-spacing: 0.01em;
-}
-
-/* ── Giga marketing shell — display face (ROOT-CAUSE FIX) ───────────────────
- *
- * The marketing route-group layout (app/(marketing)/layout.tsx) marks its root
- * with `data-marketing-shell`. The `@layer base` rule above forces every
- * <h1>–<h6> to --font-heading, so inline `fontFamily` styles on individual
- * headlines are not enough — anything that leans on a class, or forgets the
- * inline style, falls back to whatever the base rule says. Setting the face
- * here, on a selector that out-specifies the bare element rule, is the only
- * place that holds for every heading in the tree.
- *
- * The face is the same tight geometric grotesque the hero-21 kit is drawn in.
- * The redesign is set in one voice: a large, tightly-tracked sans for display
- * and monospace for eyebrows. There is no serif on the logged-out site — the
- * `--font-serif-display` alias survives only because ~30 components reference
- * it inline, and it now points at the sans like everything else.
- *
- * Scoped to the shell so the product (dashboard/app) is completely untouched. */
-[data-marketing-shell] {
-  --font-serif-display: var(--font-title);
-  --font-mono-display: var(--font-mono);
-}
+/* The display face for every heading in the shell. Set here, on a selector
+   that out-specifies a bare element rule, so a headline that leans on a class
+   or forgets its inline `fontFamily` still lands on the right face. Semibold,
+   not the old light serif: this face carries the headline on weight rather
+   than on stroke contrast. */
 [data-marketing-shell] h1,
 [data-marketing-shell] h2,
 [data-marketing-shell] h3,
@@ -476,369 +411,10 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
 [data-marketing-shell] .font-serif-display {
   font-family: var(--font-title), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.02em;
-  /* Semibold, not the old light serif: this face carries the headline on
-     weight rather than on stroke contrast. */
   font-weight: 600;
 }
+
 /* Eyebrow labels: uppercase monospace, set apart from the display headings. */
 [data-marketing-shell] .font-mono-display {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
-}
-
-/* Flowing gradient for the AnimatedGradientText component (marketing labels). */
-@keyframes gradient-flow {
-  to {
-    background-position: var(--bg-size) 0;
-  }
-}
-
-/* ── Bold-canvas marketing type (logged-out site only) ──────────────────────
- * --font-display / --font-accent are injected by app/(marketing)/layout.tsx
- * via next/font (Inter Tight + Instrument Serif). Fallbacks keep the classes
- * harmless anywhere the variables aren't mounted. */
-.font-display {
-  font-family: var(--font-display, var(--font-brand));
-}
-.font-accent {
-  font-family: var(--font-accent, Georgia, 'Times New Roman', serif);
-}
-
-/* Orange gradient text: the headline accent word. Tuned to Chippi's #ff964f. */
-.text-gradient-brand {
-  background: linear-gradient(135deg, #ff964f, #ffb27a, #ffc994);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Extra rounded radii for the marketing cards/pill chrome (matches fortitudo's
-   2xl/3xl card language without touching the product's --radius ladder). */
-.rounded-marketing-xl { border-radius: 1.25rem; }
-.rounded-marketing-2xl { border-radius: 1.75rem; }
-.rounded-marketing-3xl { border-radius: 2rem; }
-
-/* Liquid glass — the video-hero surface treatment (marketing-only). A dark
-   luminosity wash + blur with a vertical light-edge ring drawn by a masked
-   gradient border, so the glass reads as lit from above and below. */
-.liquid-glass {
-  background: rgba(0, 0, 0, 0.4);
-  background-blend-mode: luminosity;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-.liquid-glass::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1.4px;
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 20%,
-    rgba(255,255,255,0) 40%, rgba(255,255,255,0) 60%,
-    rgba(255,255,255,0.1) 80%, rgba(255,255,255,0.3) 100%);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
-}
-
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes rainbow {
-  0% { background-position: 0%; }
-  100% { background-position: 200%; }
-}
-.animate-rainbow { animation: rainbow 4s linear infinite; }
-
-/* Rainbow glow stops (marketing ruixen section). Warm, brand-adjacent. */
-:root {
-  --color-1: 25 95% 62%;
-  --color-2: 35 95% 60%;
-  --color-3: 15 90% 60%;
-  --color-4: 45 95% 58%;
-  --color-5: 5 90% 62%;
-}
-
-@keyframes pulse-brand {
-  0%, 100% { box-shadow: 0 0 20px rgba(255, 150, 79, 0.3); }
-  50% { box-shadow: 0 0 36px rgba(255, 150, 79, 0.55); }
-}
-
-/* Vertical text marquee (CTA) + horizontal icon marquee (integrations hero). */
-@keyframes marquee-vertical {
-  from { transform: translateY(0); }
-  to { transform: translateY(-100%); }
-}
-.animate-marquee-vertical { animation: marquee-vertical var(--duration, 30s) linear infinite; }
-
-@keyframes scroll-left {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-@keyframes scroll-right {
-  0% { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
-.animate-scroll-left { animation: scroll-left 30s linear infinite; }
-.animate-scroll-right { animation: scroll-right 30s linear infinite; }
-
-@keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(30px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in-up { animation: fade-in-up 0.7s ease-out both; }
-
-/* Radix accordion height transitions (shadcn accordion primitive). */
-@keyframes accordion-down {
-  from { height: 0; }
-  to { height: var(--radix-accordion-content-height); }
-}
-@keyframes accordion-up {
-  from { height: var(--radix-accordion-content-height); }
-  to { height: 0; }
-}
-.animate-accordion-down { animation: accordion-down 0.2s ease-out; }
-.animate-accordion-up { animation: accordion-up 0.2s ease-out; }
-
-.animate-fade-up { animation: fade-up 0.5s ease-out both; }
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-fade-up,
-  .animate-fade-in-up,
-  .animate-marquee-vertical,
-  .animate-scroll-left,
-  .animate-scroll-right,
-  .animate-accordion-down,
-  .animate-accordion-up,
-  .animate-rainbow { animation: none !important; }
-}
-
-/* ── Marketing particle CTA (owner-provided hero button, recolored brand) ── */
-.pp-btn {
-  cursor: pointer;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition: all 0.25s ease;
-  background:
-    radial-gradient(65.28% 65.28% at 50% 100%, rgba(255, 176, 84, 0.85) 0%, rgba(255, 176, 84, 0) 100%),
-    linear-gradient(0deg, #ff4b29, #ff4b29);
-  border-radius: 9999px;
-  border: none;
-  outline: none;
-  padding: 12px 18px;
-  min-height: 48px;
-  min-width: 102px;
-}
-.pp-btn::before,
-.pp-btn::after {
-  content: "";
-  position: absolute;
-  transition: all 0.5s ease-in-out;
-  z-index: 0;
-}
-.pp-btn::before {
-  inset: 1px;
-  background: linear-gradient(177.95deg, rgba(255, 255, 255, 0.19) 0%, rgba(255, 255, 255, 0) 100%);
-  border-radius: 9999px;
-}
-.pp-btn::after {
-  inset: 2px;
-  background:
-    radial-gradient(65.28% 65.28% at 50% 100%, rgba(255, 176, 84, 0.85) 0%, rgba(255, 176, 84, 0) 100%),
-    linear-gradient(0deg, #ff4b29, #ff4b29);
-  border-radius: 9999px;
-}
-.pp-btn:active { transform: scale(0.95); }
-.pp-points {
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  position: absolute;
-  z-index: 1;
-}
-.pp-point {
-  bottom: -10px;
-  position: absolute;
-  animation: pp-float infinite ease-in-out;
-  pointer-events: none;
-  width: 2px;
-  height: 2px;
-  background-color: #fff;
-  border-radius: 9999px;
-}
-@keyframes pp-float {
-  0% { transform: translateY(0); }
-  85% { opacity: 0; }
-  100% { transform: translateY(-55px); opacity: 0; }
-}
-.pp-inner {
-  z-index: 2;
-  gap: 6px;
-  position: relative;
-  width: 100%;
-  color: white;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.5;
-}
-@media (prefers-reduced-motion: reduce) {
-  .pp-point { animation: none; display: none; }
-}
-
-/* ── scroll-fade-effect (ncdai registry) ─ edges fade as you scroll ── */
-@property --top-mask-height {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 0px;
-}
-@property --bottom-mask-height {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 64px;
-}
-@property --left-mask-width {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 0px;
-}
-@property --right-mask-width {
-  syntax: "<length>";
-  inherits: true;
-  initial-value: 64px;
-}
-@layer base {
-  @keyframes show-top-mask {
-    to {
-      --top-mask-height: var(--mask-height);
-    }
-  }
-  @keyframes hide-bottom-mask {
-    to {
-      --bottom-mask-height: 0px;
-    }
-  }
-  @keyframes show-left-mask {
-    to {
-      --left-mask-width: var(--mask-width);
-    }
-  }
-  @keyframes hide-right-mask {
-    to {
-      --right-mask-width: 0px;
-    }
-  }
-}
-@utility scroll-fade-effect-y {
-  --mask-height: 64px;
-  --mask-offset-top: 0px;
-  --mask-offset-bottom: 0px;
-  --scroll-buffer: 2rem;
-  mask-image: linear-gradient(to top, transparent, black 90%), linear-gradient(to bottom, transparent 0%, black 100%), linear-gradient(black, black);
-  mask-size: 100% var(--top-mask-height), 100% var(--bottom-mask-height), 100% 100%;
-  mask-repeat: no-repeat, no-repeat, no-repeat;
-  mask-position: 0 var(--mask-offset-top), 0 calc(100% - var(--mask-offset-bottom)), 0 0;
-  mask-composite: exclude;
-  animation-name: show-top-mask, hide-bottom-mask;
-  animation-timeline: scroll(self), scroll(self);
-  animation-range: 0 var(--scroll-buffer), calc(100% - var(--scroll-buffer)) 100%;
-  animation-fill-mode: both;
-}
-@utility scroll-fade-effect-x {
-  --mask-width: 64px;
-  --mask-offset-left: 0px;
-  --mask-offset-right: 0px;
-  --scroll-buffer: 2rem;
-  mask-image: linear-gradient(to left, transparent, black 90%), linear-gradient(to right, transparent 0%, black 100%), linear-gradient(black, black);
-  mask-size: var(--left-mask-width) 100%, var(--right-mask-width) 100%, 100% 100%;
-  mask-repeat: no-repeat, no-repeat, no-repeat;
-  mask-position: var(--mask-offset-left) 0, calc(100% - var(--mask-offset-right)) 0, 0 0;
-  mask-composite: exclude;
-  animation-name: show-left-mask, hide-right-mask;
-  animation-timeline: scroll(self inline), scroll(self inline);
-  animation-range: 0 var(--scroll-buffer), calc(100% - var(--scroll-buffer)) 100%;
-  animation-fill-mode: both;
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
- * Chippi composer — agent-mode glow.
- *
- * The traveling border beam in Agent mode is the <BorderBeam> component
- * (border-beam package) wrapping the composer shell in
- * components/ui/chippi-prompt-box.tsx — it paints its own ring, bloom, and
- * animation. The shell just needs a positioning context for the beam's
- * absolutely-positioned bloom layer.
- * ────────────────────────────────────────────────────────────────────────── */
-.chippi-composer-shell {
-  position: relative;
-}
-
-/* ── The Island (.chippi-island-*) ─────────────────────────────────────────
-   Ambient work-session pill (components/island/chippi-island.tsx). Only the
-   breathing-dot keyframes and the embed kill-switch live here — everything
-   else is Tailwind on the component. */
-
-/* Chrome-stripped iframe mode never shows the island (belt-and-braces with
-   the component's own ?embed=1 check). */
-[data-chippi-embed='true'] .chippi-island-root {
-  display: none;
-}
-
-.chippi-island-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  flex-shrink: 0;
-}
-/* Working: Chippi-orange, breathing — alive without shouting. */
-.chippi-island-dot[data-tone='working'] {
-  background: #ff9f0a;
-  box-shadow: 0 0 6px rgba(255, 159, 10, 0.5);
-  animation: chippi-island-breathe 2.4s ease-in-out infinite;
-}
-/* Needs the realtor (approval / question): same orange, quicker breath. */
-.chippi-island-dot[data-tone='attention'] {
-  background: #ff9f0a;
-  box-shadow: 0 0 8px rgba(255, 159, 10, 0.6);
-  animation: chippi-island-breathe 1.3s ease-in-out infinite;
-}
-/* Outcomes hold steady — the state is settled, nothing is "happening". */
-.chippi-island-dot[data-tone='success'] {
-  background: #30d158;
-  box-shadow: 0 0 6px rgba(48, 209, 88, 0.45);
-}
-.chippi-island-dot[data-tone='failure'] {
-  background: #ff453a;
-  box-shadow: 0 0 6px rgba(255, 69, 58, 0.45);
-}
-@keyframes chippi-island-breathe {
-  0%,
-  100% {
-    opacity: 0.45;
-    transform: scale(0.85);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  /* Keep the color signal; drop the breathing. */
-  .chippi-island-dot {
-    animation: none !important;
-    opacity: 1;
-  }
 }

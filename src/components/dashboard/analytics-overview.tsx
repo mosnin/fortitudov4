@@ -13,6 +13,7 @@ import {
   StatStrip,
 } from "@/components/crm";
 import { AnimatedNumber } from "@/components/motion";
+import { EmptyState } from "@/components/ui/empty-state";
 import { SECTION_LABEL } from "@/lib/typography";
 
 interface AnalyticsEvent {
@@ -49,15 +50,10 @@ export function AnalyticsOverview({ projectId }: AnalyticsOverviewProps) {
 
   if (events.length === 0) {
     return (
-      <div className="py-10">
-        <p className="text-sm font-medium text-foreground">
-          No analytics data yet
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Once your project is live and tracking events, metrics will appear
-          here.
-        </p>
-      </div>
+      <EmptyState
+        title="No analytics data yet"
+        description="Once your project is live and tracking events, metrics will appear here."
+      />
     );
   }
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { RecordListSkeleton, RowPill } from "@/components/crm";
+import { EmptyState } from "@/components/ui/empty-state";
 import { usePolling } from "@/hooks/use-polling";
 import { cn } from "@/lib/utils";
 import { PRIMARY_PILL, QUIET_LINK } from "@/lib/typography";
@@ -223,12 +224,10 @@ export function ProjectComments({ projectId }: ProjectCommentsProps) {
       {loading ? (
         <RecordListSkeleton rows={3} />
       ) : tree.length === 0 ? (
-        <div className="py-8">
-          <p className="text-sm font-medium text-foreground">No comments yet</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Leave a comment above to start the conversation with the team.
-          </p>
-        </div>
+        <EmptyState
+          title="No comments yet"
+          description="Leave a comment above to start the conversation with the team."
+        />
       ) : (
         <ul className="divide-y divide-border/60 border-t border-border/60">
           {tree.map((comment) => (

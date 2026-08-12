@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { CrmPageHeader, SectionHead } from "@/components/crm";
 import { Reveal } from "@/components/motion";
 import { GadgetFrame } from "@/components/admin/gadget-frame";
+import { Skeleton } from "@/components/ui/skeleton";
 import { BODY_MUTED } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +63,7 @@ export function ClientGadgets() {
         />
 
         {gadgets === null ? (
-          <div className="h-64 animate-pulse rounded-lg bg-muted/50" />
+          <Skeleton className="h-64 w-full" />
         ) : gadgets.length === 0 ? (
           <Reveal variant="fade">
             <p className={cn(BODY_MUTED, "py-10")}>

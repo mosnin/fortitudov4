@@ -1,16 +1,39 @@
 /**
- * Fortitudo typography + spacing scale (ported with the auth/onboarding
- * surfaces).
+ * Fortitudo typography + spacing scale — THE PRODUCT'S SCALE.
  *
- * Single source of truth for the ported screens' visual hierarchy. The
- * values are Tailwind utility class strings; consumers compose them via
- * `cn(...)`.
+ * Single source of truth for the visual hierarchy of every logged-in screen:
+ * `app/(dashboard)`, `app/(admin)`, and the onboarding flow. The values are
+ * Tailwind utility class strings; consumers compose them via `cn(...)`.
  *
  * ── The type ladder ─────────────────────────────────────────────────────────
  * Snapped to a 1.2 modular ratio (minor third), rounded to whole px:
  *
  *   30 → 25 → 21 → 17 → 14 → 12 → 11
  *   H1   STAT  H2   H3   BODY  CAP   META
+ *
+ * One step sits off the ladder: `text-[13px]`, for chrome and form-field
+ * labels — sidebar nav rows (design.md pins them at 13px), filter and toolbar
+ * controls, and the `mb-1.5 block font-medium` field label the admin modals
+ * share. It exists because 14 crowds a 36px control. It is not a content size;
+ * body copy stays on BODY.
+ *
+ * ── The other surface ───────────────────────────────────────────────────────
+ * The logged-out site does NOT use this file. Its scale lives in
+ * `src/components/marketing/giga/primitives.tsx` — five display steps
+ * (DISPLAY_XL…DISPLAY_XS, each carrying its own leading), two title steps
+ * (TITLE_L / TITLE_S), EYEBROW_TEXT, and the SECTION_Y rhythm. Nothing on that
+ * surface writes a bare `text-[clamp(...)]`.
+ *
+ * The two scales never cross. Importing this file into `(marketing)` puts the
+ * product's density on a cinematic page; importing the marketing steps into the
+ * product puts a 5rem headline on a data screen. Either is the bug.
+ *
+ * ── Faces ───────────────────────────────────────────────────────────────────
+ * One family, self-hosted: Geist Sans + Geist Mono, mounted by `next/font` in
+ * `app/layout.tsx`. `--font-title` is the display token and it resolves per
+ * surface — Georgia in the product, the sans inside `[data-marketing-shell]` —
+ * so `TITLE_FONT` below is correct on both without a branch. See the type
+ * section of `app/globals.css`.
  */
 
 /* ─── Display: focal numbers + page titles ─────────────────────────────── */

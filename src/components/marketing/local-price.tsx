@@ -113,8 +113,8 @@ export function LangSwitcher({ current, basePath }: { current: Lang; basePath: s
           href={`${localizedPath(basePath, l)}?hl=${l}`}
           className={
             l === current
-              ? 'font-medium text-white'
-              : 'text-white/40 transition-colors hover:text-white/70'
+              ? 'font-medium text-[var(--fx-white)]'
+              : 'text-[var(--fx-muted)] transition-colors hover:text-[var(--fx-white)]'
           }
         >
           {LANG_LABELS[l]}

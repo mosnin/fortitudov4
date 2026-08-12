@@ -26,8 +26,96 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
 
-/** Racing yellow. The one accent, spent on what you want pressed. */
-export const ACCENT = '#f8cd02';
+/* ── The one type scale ─────────────────────────────────────────────────────
+ *
+ * Five display steps and two title steps, and nothing else. The surface was
+ * assembled from a ported kit, an OriginKit hero and two reference layouts, so
+ * it arrived carrying eleven different heading clamps that all meant roughly
+ * "section heading". Sizes AND leading live in the step, because a step whose
+ * leading is left to the caller is a step that drifts again on the next page.
+ *
+ * Pass a step to <Serif>; do not write a bare `text-[clamp(...)]` on this
+ * surface.
+ */
+/** The page owns the screen: the homepage hero, the footer's closing line. */
+export const DISPLAY_XL = 'text-[clamp(2.5rem,7.5vw,5.25rem)] leading-[0.98]';
+/** A sub-page `h1`. */
+export const DISPLAY_L = 'text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04]';
+/** A major section `h2` — the ones with an eyebrow above them. */
+export const DISPLAY_M = 'text-[clamp(2rem,4.2vw,3.25rem)] leading-[1.06]';
+/** A secondary section `h2` — a band inside a longer page. */
+export const DISPLAY_S = 'text-[clamp(1.75rem,3.4vw,2.75rem)] leading-[1.08]';
+/** A closing ask or an in-panel headline. */
+export const DISPLAY_XS = 'text-[clamp(1.5rem,3vw,2.25rem)] leading-[1.08]';
+
+/** A card headline set in the display face. */
+export const TITLE_L = 'text-[22px] leading-tight';
+/** A sub-card or list-row heading. */
+export const TITLE_S = 'text-[17px] leading-snug font-semibold';
+
+/* ── Alignment ───────────────────────────────────────────────────────────────
+ *
+ * Everything on this surface is LEFT-ALIGNED. The page is built out of
+ * hairlines and squared edges, and a centred headline over a left-aligned rule
+ * fights the structure it is sitting on. Read top to bottom, the homepage used
+ * to alternate centred and left section by section, which looks like drift
+ * rather than rhythm.
+ *
+ * The one deliberate exception is the homepage hero, which is a full-viewport
+ * centred column and is the only thing on the site with no structure beside it.
+ */
+
+/* ── Alert ───────────────────────────────────────────────────────────────────
+ *
+ * The one colour on this surface outside the --fx-* palette, and it earns its
+ * place: the "typical agencies" belt is a bad-vs-good comparison, and the bad
+ * half has to read as a warning rather than as a second brand accent. Held
+ * here so both users (the comparison belt, the contact form's failure notice)
+ * say the same red — these want to be `--fx-alert*` in the marketing-shell
+ * block in globals.css, which this surface does not own.
+ */
+/** An outlined alert chip: border, wash, and ink. */
+export const ALERT_CHIP = 'border-[#ff405d] bg-[#ff405d]/[0.08] text-[#ff7a8d]';
+/** The alert rule/connector fill. */
+export const ALERT_RULE = 'bg-[#ff405d]/60';
+/** Alert ink on charcoal. */
+export const ALERT_TEXT = 'text-[#ff7a8d]';
+
+/* ── Section rhythm ──────────────────────────────────────────────────────── */
+
+/**
+ * Two vertical steps, not five. `py-20`/`py-24`/`py-28`/`py-32` were in use
+ * simultaneously, which reads as sections that do not know their own rank.
+ */
+/** A top-level section. */
+export const SECTION_Y = 'py-24 sm:py-32';
+/** A band that stacks with others inside one continuous page (pricing, legal). */
+export const SECTION_Y_TIGHT = 'py-16 sm:py-20';
+/** A page hero. The extra top pad clears the fixed header. */
+export const HERO_Y = 'pt-32 pb-20 sm:pt-40 sm:pb-24';
+
+/* ── Mono ────────────────────────────────────────────────────────────────── */
+
+/**
+ * The eyebrow / caption face. Exported so no file declares its own copy — the
+ * surface previously carried two spellings of the same role (`--font-mono` and
+ * `--font-mono-display`), which resolve to the same face and so hid the drift
+ * rather than preventing it.
+ */
+export const MONO_STYLE = {
+  fontFamily: 'var(--font-mono-display), ui-monospace, monospace',
+} as const;
+
+/**
+ * The eyebrow treatment, as a class string, for the labels that are a bare
+ * `<p>` rather than the dotted `<Eyebrow>` — footer column heads, category
+ * labels, mock captions. One size, one tracking, one colour.
+ *
+ * `--fx-muted`, never `--fx-faint`: a label that names the content under it is
+ * content, and `--fx-faint` is 3.6:1.
+ */
+export const EYEBROW_TEXT =
+  'text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--fx-muted)]';
 
 /* ── Serif display headline ─────────────────────────────────────────────── */
 
@@ -70,46 +158,31 @@ export function Eyebrow({
 }: {
   children: React.ReactNode;
   className?: string;
-  /** Override the dot color (defaults to the warm brand orange). */
+  /** Override the dot colour (defaults to the racing-yellow accent). */
   dotClassName?: string;
 }) {
   return (
     <span
-      style={{ fontFamily: 'var(--font-mono-display), ui-monospace, monospace' }}
-      className={cn(
-        'inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-white/55',
-        className,
-      )}
+      style={MONO_STYLE}
+      className={cn('inline-flex items-center gap-2', EYEBROW_TEXT, className)}
     >
       <span
         aria-hidden
-        className={cn('inline-block size-1.5 rounded-full', dotClassName)}
-        style={dotClassName ? undefined : { backgroundColor: ACCENT }}
+        className={cn(
+          'inline-block size-1.5 rounded-full',
+          dotClassName ?? 'bg-[var(--fx-yellow)]',
+        )}
       />
       {children}
     </span>
   );
 }
 
-/** A squared, hairline-bordered eyebrow chip (the hero / sub-page treatment). */
-export function EyebrowPill({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center rounded-[4px] border border-white/15 bg-white/[0.04] px-4 py-1.5 backdrop-blur-md',
-        className,
-      )}
-    >
-      <Eyebrow>{children}</Eyebrow>
-    </span>
-  );
-}
+/* `EyebrowPill` — a bordered chip wrapping an eyebrow — is gone. It existed
+ * only for the two photographic heroes (/about, /pricing), which needed a
+ * backdrop to stay legible over a stock image. Those heroes are charcoal now,
+ * the plain dotted <Eyebrow> reads fine on them, and one page wearing a chip
+ * while five wear a dot was the eyebrow drift in miniature. */
 
 /* ── Mono label (footers, stat captions) ────────────────────────────────── */
 
@@ -121,10 +194,7 @@ export function Mono({
   className?: string;
 }) {
   return (
-    <span
-      style={{ fontFamily: 'var(--font-mono-display), ui-monospace, monospace' }}
-      className={cn('uppercase tracking-[0.2em]', className)}
-    >
+    <span style={MONO_STYLE} className={cn('uppercase tracking-[0.22em]', className)}>
       {children}
     </span>
   );
@@ -164,13 +234,19 @@ export function PillPrimary({ href, children, className, withArrow }: PillProps)
   );
 }
 
-/** The secondary CTA: hairline border, transparent fill, white text. */
+/**
+ * The secondary CTA: a bordered block with no fill.
+ *
+ * The border is `--fx-faint` rather than a hairline: this is a control, and
+ * WCAG 1.4.11 asks 3:1 of the boundary that identifies one. The hairline is
+ * 1.4:1 on charcoal; `--fx-faint` is 3.6:1.
+ */
 export function PillGhost({ href, children, className, withArrow }: PillProps) {
   return (
     <Link
       href={href}
       className={cn(
-        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] border border-white/20 px-6 text-[14px] font-medium text-white transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]',
+        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] border border-[var(--fx-faint)] px-6 text-[14px] font-medium text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]',
         className,
       )}
     >

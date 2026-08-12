@@ -27,9 +27,15 @@
 
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { Band, BlurRise, Serif } from './primitives';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
+import {
+  Band,
+  BlurRise,
+  Serif,
+  MONO_STYLE,
+  DISPLAY_M,
+  EYEBROW_TEXT,
+  SECTION_Y,
+} from './primitives';
 
 export type Testimonial = {
   /** What they actually said, in their words. */
@@ -138,7 +144,7 @@ function TestimonialCard({
           <div className="text-sm font-medium">{testimonial.name}</div>
           <div
             className={`mt-1 text-xs ${
-              highlight ? 'text-[var(--fx-on-yellow)]/70' : 'text-white/60'
+              highlight ? 'text-[var(--fx-on-yellow)]/70' : 'text-[var(--fx-muted)]'
             }`}
           >
             {testimonial.title}
@@ -157,7 +163,7 @@ function TestimonialCard({
             className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold ${
               highlight
                 ? 'bg-[var(--fx-on-yellow)]/10 text-[var(--fx-on-yellow)]'
-                : 'bg-white/10 text-white/70'
+                : 'bg-[var(--fx-charcoal-raised)] text-[var(--fx-white)]'
             }`}
           >
             {testimonial.name.trim().charAt(0).toUpperCase()}
@@ -174,10 +180,7 @@ function PlaceholderCard({ slot, index }: { slot: string; index: number }) {
       <div className="flex h-full flex-col rounded-[4px] border border-dashed border-[var(--fx-hairline)] p-6">
         <div className="flex items-center justify-between">
           <QuoteMark className="text-[var(--fx-faint)]" />
-          <span
-            style={MONO}
-            className="text-[10px] tracking-[0.2em] text-[var(--fx-faint)] uppercase"
-          >
+          <span style={MONO_STYLE} className={EYEBROW_TEXT}>
             Slot {String(index + 1).padStart(2, '0')}
           </span>
         </div>
@@ -193,7 +196,8 @@ function PlaceholderCard({ slot, index }: { slot: string; index: number }) {
             aria-hidden
             className="h-9 w-9 shrink-0 rounded-full border border-dashed border-[var(--fx-hairline)]"
           />
-          <span className="text-xs text-[var(--fx-faint)]">
+          {/* Says what belongs in the slot, so it is read, not decoration. */}
+          <span className="text-xs text-[var(--fx-muted)]">
             Name, title, company
           </span>
         </div>
@@ -211,13 +215,15 @@ export function Testimonials() {
   const highlightIndex = TESTIMONIALS.length >= 3 ? 1 : -1;
 
   return (
-    <section className="border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] py-20 sm:py-28">
+    <section
+      className={`border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}
+    >
       <Band innerClassName="max-w-6xl">
         {/* Meta row */}
         <BlurRise>
           <div
-            style={MONO}
-            className="flex items-center justify-between text-[12px] tracking-[0.18em] text-[var(--fx-white)] uppercase sm:text-[13px]"
+            style={MONO_STYLE}
+            className={`flex items-center justify-between ${EYEBROW_TEXT} text-[var(--fx-white)]`}
           >
             <span>Proof</span>
             {/* Counts what is actually published, so it cannot go stale. */}
@@ -231,10 +237,10 @@ export function Testimonials() {
         {/* Header */}
         <div className="mt-10 grid grid-cols-1 items-center gap-8 lg:grid-cols-12">
           <BlurRise className="lg:col-span-7">
-            <Serif
-              as="h2"
-              className="text-[clamp(2rem,5.5vw,4.5rem)] leading-[0.92] text-[var(--fx-white)] uppercase"
-            >
+            {/* Sentence case at the standard section step. Uppercase is the
+                eyebrow's treatment on this surface; a headline wearing it read
+                as a second, competing voice. */}
+            <Serif as="h2" className={`${DISPLAY_M} text-[var(--fx-white)]`}>
               What clients say.
             </Serif>
           </BlurRise>
@@ -247,9 +253,9 @@ export function Testimonials() {
             </p>
             <Link
               href="/contact"
-              className="group mt-6 inline-flex items-center gap-3 rounded-full border border-[var(--fx-hairline)] bg-white/[0.04] p-2 transition-colors duration-200 hover:border-[var(--fx-yellow)]"
+              className="group mt-6 inline-flex items-center gap-3 rounded-[4px] border border-[var(--fx-faint)] bg-[var(--fx-charcoal-raised)] p-2 transition-colors duration-200 hover:border-[var(--fx-yellow)]"
             >
-              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)]">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)]">
                 <ArrowUpRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
               <span className="px-3 text-sm font-medium text-[var(--fx-white)]">
@@ -283,9 +289,12 @@ export function Testimonials() {
                       key={metric.label}
                       className="bg-[var(--fx-charcoal-deep)] p-7"
                     >
-                      <div className="text-3xl font-semibold tracking-tight text-[var(--fx-white)] sm:text-4xl">
+                      <Serif
+                        as="p"
+                        className="text-3xl font-light tabular-nums text-[var(--fx-white)] sm:text-4xl"
+                      >
                         {metric.value}
-                      </div>
+                      </Serif>
                       <div className="mt-2 text-xs text-[var(--fx-muted)]">
                         {metric.label}
                       </div>
@@ -297,13 +306,13 @@ export function Testimonials() {
                       className="bg-[var(--fx-charcoal-deep)] p-7"
                     >
                       <div className="rounded-[4px] border border-dashed border-[var(--fx-hairline)] px-4 py-5">
-                        <div className="text-3xl font-semibold tracking-tight text-[var(--fx-faint)] sm:text-4xl">
+                        {/* Decorative: an em-dash pair standing in for a
+                            number nobody has measured yet. --fx-faint is
+                            correct here precisely because it says nothing. */}
+                        <div className="text-3xl font-light text-[var(--fx-faint)] sm:text-4xl">
                           &mdash;&mdash;
                         </div>
-                        <div
-                          style={MONO}
-                          className="mt-3 text-[10px] tracking-[0.18em] text-[var(--fx-faint)] uppercase"
-                        >
+                        <div style={MONO_STYLE} className={`mt-3 ${EYEBROW_TEXT}`}>
                           {label}
                         </div>
                       </div>

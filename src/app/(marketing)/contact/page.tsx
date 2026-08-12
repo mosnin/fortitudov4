@@ -23,20 +23,25 @@ import {
   Eyebrow,
   PillGhost,
   Serif,
+  MONO_STYLE,
+  EYEBROW_TEXT,
+  ALERT_TEXT,
+  DISPLAY_L,
+  TITLE_L,
+  HERO_Y,
+  SECTION_Y,
 } from '@/components/marketing/giga/primitives';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
 
 const EMPTY = { name: '', email: '', company: '', service: '', message: '' };
 
-// The resting border is white/40 rather than --fx-hairline: the hairline is
-// 1.43:1 on charcoal, and WCAG 1.4.11 asks 3:1 of any boundary that is what
-// identifies a control. white/40 measures 3.66:1 against the field interior and
-// 3.97:1 against the card behind it. Placeholder is --fx-muted (6.5:1) because
-// in the textarea it is the only hint of what to write, and --fx-faint's 3.57:1
-// is under the 4.5:1 body floor. Yellow focus border unchanged.
+// The resting border is --fx-faint rather than --fx-hairline: the hairline is
+// 1.4:1 on charcoal, and WCAG 1.4.11 asks 3:1 of any boundary that is what
+// identifies a control. --fx-faint measures 3.6:1, and it is the same token
+// PillGhost draws its edge with, so every control on the surface has one
+// boundary value. Placeholder is --fx-muted (6.5:1): in the textarea it is the
+// only hint of what to write. Yellow focus border unchanged.
 const FIELD =
-  'w-full rounded-[4px] border border-white/40 bg-white/[0.03] px-3.5 py-2.5 text-[14px] text-[var(--fx-white)] placeholder:text-[var(--fx-muted)] transition-colors focus:border-[var(--fx-yellow)] focus:outline-none';
+  'w-full rounded-[4px] border border-[var(--fx-faint)] bg-[var(--fx-charcoal-raised)] px-3.5 py-2.5 text-[14px] text-[var(--fx-white)] placeholder:text-[var(--fx-muted)] transition-colors focus:border-[var(--fx-yellow)] focus:outline-none';
 
 const LABEL =
   'mb-1.5 block text-[13px] font-medium text-[var(--fx-muted)]';
@@ -100,7 +105,9 @@ export default function ContactPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] pt-32 pb-20 sm:pt-40 sm:pb-24">
+      <section
+        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
+      >
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
@@ -108,10 +115,7 @@ export default function ContactPage() {
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
             <Eyebrow>Contact</Eyebrow>
-            <Serif
-              as="h1"
-              className="mt-5 text-[clamp(2.25rem,5vw,3.75rem)] leading-[1.04] text-[var(--fx-white)]"
-            >
+            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
               Let&apos;s talk about{' '}
               <span className="text-[var(--fx-yellow)]">your project.</span>
             </Serif>
@@ -123,16 +127,16 @@ export default function ContactPage() {
         </Band>
       </section>
 
-      <section className="border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] py-20 sm:py-28">
+      <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
         <Band innerClassName="max-w-6xl">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
             {/* Form */}
             <BlurRise className="lg:col-span-3">
-              <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-white/[0.02] p-6 sm:p-8">
+              <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6 sm:p-8">
                 {status === 'sent' ? (
-                  <div className="py-10 text-center">
-                    <CheckCircle className="mx-auto mb-4 h-10 w-10 text-[var(--fx-yellow)]" />
-                    <Serif className="text-[24px] leading-tight text-[var(--fx-white)]">
+                  <div className="py-10">
+                    <CheckCircle className="mb-4 h-10 w-10 text-[var(--fx-yellow)]" />
+                    <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
                       Message received.
                     </Serif>
                     <p className="mt-2 text-[14px] text-[var(--fx-muted)]">
@@ -234,7 +238,7 @@ export default function ContactPage() {
                     {error && (
                       <p
                         role="alert"
-                        className="rounded-[4px] border border-[#ff405d]/40 bg-[#ff405d]/[0.08] px-3.5 py-2.5 text-[13px] text-[#ff7a8d]"
+                        className={`rounded-[4px] border border-[#ff405d]/40 bg-[#ff405d]/[0.08] px-3.5 py-2.5 text-[13px] ${ALERT_TEXT}`}
                       >
                         {error}
                       </p>
@@ -256,7 +260,7 @@ export default function ContactPage() {
                     {/* A promise about what happens to their address is
                         content, not decoration, so it reads at --fx-muted's
                         6.5:1 rather than --fx-faint's 3.57:1. */}
-                    <p className="text-center text-[12px] text-[var(--fx-muted)]">
+                    <p className="text-[12px] text-[var(--fx-muted)]">
                       No spam. We&apos;ll respond within 24 hours.
                     </p>
                   </form>
@@ -277,10 +281,7 @@ export default function ContactPage() {
                       strokeWidth={1.75}
                     />
                     <div>
-                      <p
-                        style={MONO}
-                        className="text-[11px] tracking-[0.18em] text-[var(--fx-faint)] uppercase"
-                      >
+                      <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                         {detail.title}
                       </p>
                       <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--fx-white)]">
@@ -292,7 +293,7 @@ export default function ContactPage() {
               </div>
 
               <div className="mt-8 rounded-[6px] border border-dashed border-[var(--fx-hairline)] p-6">
-                <Serif className="text-[20px] leading-tight text-[var(--fx-white)]">
+                <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
                   Prefer to jump right in?
                 </Serif>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">

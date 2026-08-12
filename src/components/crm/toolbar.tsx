@@ -42,9 +42,11 @@ export function ToolbarSearch({
         size={14}
         className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
       />
+      {/* Only the leading-glyph inset is a local concern — height, radius and
+          border come from the primitive. */}
       <Input
         placeholder={placeholder}
-        className="h-9 w-full border-border/70 bg-background pl-9 sm:w-64"
+        className="w-full pl-9 sm:w-64"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -77,7 +79,7 @@ export function FilterSelect({
   return (
     <label
       className={cn(
-        'inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-border/70 bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-foreground/[0.04]',
+        'inline-flex h-9 cursor-pointer items-center gap-1.5 rounded-md border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-foreground/[0.04]',
         className
       )}
     >

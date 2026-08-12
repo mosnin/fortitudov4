@@ -14,8 +14,8 @@ import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
 import { TextFlip } from '@/components/ui/text-flip';
+import { Serif, Eyebrow, DISPLAY_M, SECTION_Y } from './primitives';
 
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
 const reveal = {
   initial: { opacity: 0, y: 22 },
   whileInView: { opacity: 1, y: 0 },
@@ -24,7 +24,9 @@ const reveal = {
 
 export function CtaSection() {
   return (
-    <section className="relative overflow-hidden bg-[var(--fx-charcoal)] px-5 py-24 sm:px-8 sm:py-28">
+    <section
+      className={`relative overflow-hidden bg-[var(--fx-charcoal)] px-5 sm:px-8 ${SECTION_Y}`}
+    >
       {/* Brand bloom (adapted from pixel-perfect gradient-glow-fade: behind
           content, brand hues, both themes) — a soft radial lift under the
           closing ask so the page ends warm instead of flat. */}
@@ -34,14 +36,11 @@ export function CtaSection() {
       />
       <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT }}>
-          <span
-            style={MONO}
-            className="inline-flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.22em] text-[var(--fx-muted)]"
-          >
-            <span className="inline-block size-1.5 rounded-full bg-[#f8cd02]" />
-            Get a demo
-          </span>
-          <h2 className="mt-5 text-[clamp(2rem,4vw,3.5rem)] leading-[1.04] tracking-[-0.02em] text-[var(--fx-white)]">
+          {/* The kit's eyebrow, not a local copy of it: this section had its
+              own hand-rolled version, which is how the dot and the tracking
+              drifted apart from every other eyebrow on the site. */}
+          <Eyebrow>Get a demo</Eyebrow>
+          <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
             Ready to build
             {/* The second line flips through what we actually build.
                 Left-aligned headline, punctuation inside each item — no
@@ -52,7 +51,7 @@ export function CtaSection() {
               <>your software?</>
               <>your next launch?</>
             </TextFlip>
-          </h2>
+          </Serif>
         </motion.div>
 
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }} className="lg:pt-3">

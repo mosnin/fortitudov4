@@ -119,7 +119,7 @@ export function HelixClientPanel() {
           <p
             className={cn(
               CAPTION,
-              "rounded-md border border-border/60 bg-muted/30 px-3 py-2"
+              "rounded-md border border-border bg-muted/30 px-3 py-2"
             )}
           >
             Helix is not fully switched on yet in this environment, so answers
@@ -148,7 +148,7 @@ export function HelixClientPanel() {
                   <button
                     type="button"
                     onClick={() => setDraft(suggestion)}
-                    className="rounded-full border border-border/70 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+                    className="rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
                   >
                     {suggestion}
                   </button>
@@ -206,7 +206,7 @@ export function HelixClientPanel() {
             }}
             placeholder="Ask about your project…"
             rows={3}
-            className="resize-none border-border/70"
+            className="resize-none"
             disabled={thinking || !data}
           />
           <div className="flex items-center justify-between">

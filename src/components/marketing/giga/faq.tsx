@@ -2,7 +2,7 @@
 
 /**
  * FAQ — carried forward from the previous landing and re-set in the Giga
- * system: hairline accordion rows on the near-black band, serif section
+ * system: hairline accordion rows on the near-black band, display-face section
  * title, plus-icon toggles. Content covers the five offerings.
  */
 
@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
-import { Serif, Eyebrow, BlurRise, Band } from './primitives';
+import { Serif, Eyebrow, BlurRise, Band, DISPLAY_M, TITLE_S, SECTION_Y } from './primitives';
 
 const FAQS = [
   {
@@ -42,20 +42,17 @@ const FAQS = [
 function Row({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-white/[0.08]">
+    <div className="border-b border-[var(--fx-hairline)]">
       <button
         onClick={() => setOpen((o) => !o)}
         className="flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left"
         aria-expanded={open}
       >
-        <span
-          style={{ fontFamily: 'var(--font-sans)' }}
-          className="text-[15px] font-medium text-white"
-        >
+        <Serif as="span" className={`${TITLE_S} text-[var(--fx-white)]`}>
           {q}
-        </span>
+        </Serif>
         <Plus
-          className={`h-4 w-4 shrink-0 text-white/40 transition-transform duration-200 ${open ? 'rotate-45' : ''}`}
+          className={`h-4 w-4 shrink-0 text-[var(--fx-muted)] transition-transform duration-200 ${open ? 'rotate-45' : ''}`}
         />
       </button>
       <AnimatePresence initial={false}>
@@ -67,7 +64,7 @@ function Row({ q, a }: { q: string; a: string }) {
             transition={{ duration: 0.3, ease: EASE_OUT }}
             className="overflow-hidden"
           >
-            <p className="pb-5 pr-8 text-[13.5px] leading-relaxed text-white/55">{a}</p>
+            <p className="pb-5 pr-8 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">{a}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -77,24 +74,29 @@ function Row({ q, a }: { q: string; a: string }) {
 
 export function Faq() {
   return (
-    <section className="relative border-t border-white/[0.06] bg-[#1b1b1d] py-24 text-white sm:py-32">
+    <section
+      className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
+    >
       <Band>
         <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_1.6fr]">
           <BlurRise>
             <Eyebrow>FAQ</Eyebrow>
-            <Serif className="mt-5 text-[clamp(2rem,4vw,3rem)] leading-[1.06] text-white">
+            <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
               Questions, answered.
             </Serif>
-            <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-white/55">
+            <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-[var(--fx-muted)]">
               Can&apos;t find what you&apos;re looking for?{' '}
-              <a href="/contact" className="text-white underline underline-offset-4 hover:text-white/80">
+              <a
+                href="/contact"
+                className="text-[var(--fx-white)] underline underline-offset-4 hover:text-[var(--fx-yellow)]"
+              >
                 Get in touch
               </a>
               .
             </p>
           </BlurRise>
           <BlurRise delay={0.08}>
-            <div className="border-t border-white/[0.08]">
+            <div className="border-t border-[var(--fx-hairline)]">
               {FAQS.map((faq) => (
                 <Row key={faq.q} q={faq.q} a={faq.a} />
               ))}

@@ -18,9 +18,16 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { CRM_STAGES, STAGE_LABELS } from '@/lib/crm';
-import { Band, BlurRise, Eyebrow, Serif } from './primitives';
-
-const MONO = { fontFamily: 'var(--font-mono)' } as const;
+import {
+  Band,
+  BlurRise,
+  Eyebrow,
+  Serif,
+  MONO_STYLE,
+  DISPLAY_M,
+  EYEBROW_TEXT,
+  SECTION_Y,
+} from './primitives';
 
 /** What the client actually gets to see at each stage, in their own words. */
 const STAGE_NOTES: Record<(typeof CRM_STAGES)[number], string> = {
@@ -49,12 +56,14 @@ export function Pipeline() {
   }, [reduce]);
 
   return (
-    <section className="relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] py-24 text-[var(--fx-white)] sm:py-32">
+    <section
+      className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] text-[var(--fx-white)] ${SECTION_Y}`}
+    >
       <Band>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-20">
           <BlurRise>
             <Eyebrow>How an engagement runs</Eyebrow>
-            <Serif className="mt-5 text-[clamp(2rem,4.2vw,3.25rem)] leading-[1.06] text-[var(--fx-white)]">
+            <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
               Seven stages, and you can see which one you&apos;re in.
             </Serif>
             <p className="mt-5 text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
@@ -82,11 +91,14 @@ export function Pipeline() {
                       className="flex w-full cursor-pointer items-start gap-5 px-1 py-5 text-left"
                     >
                       <span
-                        style={MONO}
-                        className={`mt-[3px] w-8 shrink-0 text-[11px] tracking-[0.2em] transition-colors duration-300 ${
+                        style={MONO_STYLE}
+                        /* The inactive number is muted, not faint: it is the
+                           step's name, and --fx-faint is 3.6:1. The active
+                           state still reads, because it moves to yellow. */
+                        className={`mt-[3px] w-8 shrink-0 text-[11px] tracking-[0.22em] transition-colors duration-300 ${
                           isActive
                             ? 'text-[var(--fx-yellow)]'
-                            : 'text-[var(--fx-faint)]'
+                            : 'text-[var(--fx-muted)]'
                         }`}
                       >
                         {String(i + 1).padStart(2, '0')}
@@ -133,10 +145,9 @@ export function Pipeline() {
               })}
             </ol>
 
-            <p
-              style={MONO}
-              className="mt-5 text-[10.5px] tracking-[0.16em] text-[var(--fx-faint)] uppercase"
-            >
+            {/* The honesty caption. It is the thing that stops the diagram
+                reading as a live engagement, so it is content, not chrome. */}
+            <p style={MONO_STYLE} className={`mt-5 ${EYEBROW_TEXT}`}>
               Diagram of the pipeline — not a live engagement
             </p>
           </BlurRise>

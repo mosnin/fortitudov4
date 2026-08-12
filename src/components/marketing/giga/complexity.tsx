@@ -1,13 +1,21 @@
 'use client';
 
 /**
- * Complexity, the brokerage-floor closer. Shares the showcases' frosted, premium
- * aesthetic (rounded cards, gradient-stroked icons) but a distinct layout: a
- * centered header over a three-up grid of frosted cards (no animated mockup).
+ * Complexity, the closer. A centered header over a three-up grid of raised
+ * cards (no animated mockup).
  */
 
 import { ShieldCheck, GitBranch, BarChart3 } from 'lucide-react';
-import { BlurRise, Eyebrow, PillGhost, Serif, Band } from './primitives';
+import {
+  BlurRise,
+  Eyebrow,
+  PillGhost,
+  Serif,
+  Band,
+  DISPLAY_M,
+  TITLE_S,
+  SECTION_Y,
+} from './primitives';
 
 const COLUMNS = [
   {
@@ -29,20 +37,20 @@ const COLUMNS = [
 
 export function Complexity() {
   return (
-    <Band className="py-24 sm:py-32">
+    <Band className={SECTION_Y}>
       <BlurRise>
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="max-w-2xl">
           <Eyebrow>Built for complexity</Eyebrow>
-          <Serif className="mt-5 text-[clamp(2.25rem,4vw,3.75rem)] leading-[1.04] text-white">
+          <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
             Built to handle the
             <br className="hidden sm:block" /> complexity of a real agency.
           </Serif>
-          <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60">
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--fx-muted)]">
             One senior team, one way of working. Work routed, progress visible, bottlenecks
             surfaced, every change reviewable. It holds up on a single site and on a multi-year
             software engagement.
           </p>
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8">
             <PillGhost href="/about">See how the studio runs</PillGhost>
           </div>
         </div>
@@ -55,16 +63,13 @@ export function Complexity() {
             return (
               <div
                 key={c.title}
-                className="rounded-[6px] border border-white/[0.08] bg-white/[0.02] p-8 backdrop-blur-sm transition-colors hover:border-white/[0.14]"
+                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8 backdrop-blur-sm transition-colors hover:border-[var(--fx-faint)]"
               >
                 <Icon className="h-7 w-7" stroke="url(#chippi-grad)" strokeWidth={1.6} />
-                <h3
-                  style={{ fontFamily: 'var(--font-sans)' }}
-                  className="mt-6 text-[17px] font-medium text-white"
-                >
+                <Serif as="h3" className={`mt-6 ${TITLE_S} text-[var(--fx-white)]`}>
                   {c.title}
-                </h3>
-                <p className="mt-2.5 text-sm leading-relaxed text-white/55">{c.desc}</p>
+                </Serif>
+                <p className="mt-2.5 text-sm leading-relaxed text-[var(--fx-muted)]">{c.desc}</p>
               </div>
             );
           })}

@@ -4,8 +4,10 @@ import { useState, useRef, useEffect } from "react";
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { RecordList, RecordRow, RowPill } from "@/components/crm";
+import { POPOVER_SURFACE } from "@/components/ui/card";
 import { usePolling } from "@/hooks/use-polling";
-import { QUIET_LINK, SECTION_LABEL, STATUS_PILL_ACTIVE } from "@/lib/typography";
+import { QUIET_LINK, SECTION_LABEL } from "@/lib/typography";
 
 interface NotificationItem {
   id: string;
@@ -117,7 +119,12 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-card animate-fade-in sm:w-96">
+        <div
+          className={cn(
+            POPOVER_SURFACE,
+            "absolute right-0 top-full z-50 mt-2 w-80 overflow-hidden animate-fade-in sm:w-96"
+          )}
+        >
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <p className={SECTION_LABEL}>Notifications</p>
@@ -142,48 +149,39 @@ export function NotificationBell() {
                 No notifications yet
               </div>
             ) : (
-              <ul className="divide-y divide-border/60">
-                {notifications.map((notification) => (
-                  <li key={notification.id}>
-                    <Link
-                      href={notification.actionUrl || "#"}
-                      onClick={() => {
-                        markRead(notification.id);
-                        setOpen(false);
-                      }}
-                      className="group/row -mx-2 flex items-start gap-3 rounded-md px-2 py-3 transition-colors hover:bg-muted/30"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-start justify-between gap-2">
-                          <p
-                            className={cn(
-                              "text-sm",
-                              notification.read
-                                ? "text-muted-foreground"
-                                : "font-medium text-foreground"
-                            )}
-                          >
-                            {notification.title}
-                          </p>
-                          {!notification.read && (
-                            <span className={cn(STATUS_PILL_ACTIVE, "shrink-0")}>
-                              New
-                            </span>
-                          )}
-                        </div>
-                        {notification.body && (
-                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                            {notification.body}
-                          </p>
+              /* The kit's rows. A notification is a record like any other, and
+                 drawing it by hand is what let this list drift. */
+              <RecordList>
+                {notifications.map((notification, i) => (
+                  <RecordRow
+                    key={notification.id}
+                    index={i}
+                    href={notification.actionUrl || "#"}
+                    onClick={() => {
+                      markRead(notification.id);
+                      setOpen(false);
+                    }}
+                    primary={
+                      <span
+                        className={cn(
+                          notification.read && "font-normal text-muted-foreground"
                         )}
-                        <p className="mt-1 text-xs tabular-nums text-muted-foreground">
-                          {formatRelativeTime(notification.createdAt)}
-                        </p>
-                      </div>
-                    </Link>
-                  </li>
+                      >
+                        {notification.title}
+                      </span>
+                    }
+                    status={
+                      !notification.read ? <RowPill emphasis>New</RowPill> : undefined
+                    }
+                    secondary={notification.body}
+                    meta={
+                      <span className="text-xs tabular-nums text-muted-foreground">
+                        {formatRelativeTime(notification.createdAt)}
+                      </span>
+                    }
+                  />
                 ))}
-              </ul>
+              </RecordList>
             )}
           </div>
 
@@ -192,7 +190,7 @@ export function NotificationBell() {
             <Link
               href="/notifications"
               onClick={() => setOpen(false)}
-              className="block rounded-lg py-1.5 text-center text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="block rounded-md py-1.5 text-center text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
             >
               View all notifications
             </Link>

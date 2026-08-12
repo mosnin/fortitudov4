@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,19 +42,19 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
 
   if (submitted) {
     return (
-      <div className="animate-fade-up rounded-xl border border-border bg-card p-6">
+      <Card className="animate-fade-up p-6">
         <p className="text-sm font-medium text-foreground">
           Thank you for your feedback
         </p>
         <p className="mt-1 text-sm text-muted-foreground">
           Your response helps us improve our service.
         </p>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="animate-fade-up relative rounded-xl border border-border bg-card p-6">
+    <Card className="animate-fade-up relative p-6">
       <button
         onClick={onDismiss}
         className="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors hover:bg-muted"
@@ -82,7 +83,7 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
                 key={n}
                 onClick={() => setScore(n)}
                 className={cn(
-                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg text-sm tabular-nums transition-colors",
+                  "flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-sm tabular-nums transition-colors",
                   score === n
                     ? "bg-foreground font-medium text-background"
                     : "border border-border text-foreground hover:bg-foreground/[0.04]"
@@ -119,6 +120,6 @@ export function NPSSurvey({ projectId, projectName, onDismiss }: NPSSurveyProps)
           {submitting ? "Submitting…" : "Submit feedback"}
         </button>
       </div>
-    </div>
+    </Card>
   );
 }

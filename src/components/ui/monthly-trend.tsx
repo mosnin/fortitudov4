@@ -1,8 +1,8 @@
 "use client";
 
 import { AreaChart } from "@/components/ui/charts";
+import { SectionHead } from "@/components/crm";
 import { cn } from "@/lib/utils";
-import { H3, SECTION_LABEL } from "@/lib/typography";
 
 export interface TrendPoint {
   date: string;
@@ -33,9 +33,10 @@ export function monthlySeries(points: TrendPoint[], months = 6) {
 }
 
 /**
- * House-style trend section: hairline header + monochrome area chart of
- * monthly-bucketed points. Caption is quiet sans (`SECTION_LABEL`), the series
- * is neutral chart ink, values are `tabular-nums` — no mono, no accent.
+ * House-style trend section: the kit's `SectionHead` over a monochrome area
+ * chart of monthly-bucketed points. The header is the kit's rather than a
+ * hand-drawn near-copy, so a trend block and a section elsewhere on the page
+ * rule off at the same weight.
  */
 export function TrendCard({
   title,
@@ -55,10 +56,7 @@ export function TrendCard({
   const { labels, series } = monthlySeries(points);
   return (
     <div className={cn("tabular-nums", className)}>
-      <div className="flex items-baseline justify-between gap-4 border-b border-border pb-3">
-        <h3 className={H3}>{title}</h3>
-        <p className={SECTION_LABEL}>{caption}</p>
-      </div>
+      <SectionHead title={title} meta={caption} />
       <AreaChart
         className="mt-5"
         points={series}
