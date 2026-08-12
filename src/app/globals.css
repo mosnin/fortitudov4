@@ -339,19 +339,25 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-yellow: #f8cd02;
   --fx-yellow-hover: #dcb602;
   /* Ink for anything sitting on yellow.
-     Charcoal, not black. The brand's dark is #1b1b1d and it carries a trace of
-     warmth; flat black beside it reads as a second, colder dark. It clears
-     11.2:1 on the yellow, so nothing is bought by going darker.
-     Deliberately NOT written as --fx-charcoal-deep. Ink and a surface that
-     happen to be the same value today will not stay that way, and a page that
-     reads correctly by coincidence is one edit from reading wrong. */
-  --fx-on-yellow: #1b1b1d;
+     Charcoal, not black. The brand's dark carries a trace of blue — every step
+     below runs B two points above R and G — and flat #000 beside it reads as a
+     second, colder dark. It clears 12.5:1 on the yellow, so going to black
+     buys nothing a reader could see.
+     Deliberately NOT written as var(--fx-charcoal-deep). Ink and a surface
+     that happen to be the same value today will not stay that way, and a page
+     that reads correctly by coincidence is one edit from reading wrong. */
+  --fx-on-yellow: #0f0f12;
 
   /* Charcoal ground, plus the panel one step deeper for inset surfaces and
-     one step lighter for raised ones. */
-  --fx-charcoal: #1b1b1d;
-  --fx-charcoal-deep: #141416;
-  --fx-charcoal-raised: #232326;
+     one step lighter for raised ones.
+     This ramp was darkened as a set. Moving one step alone is what flattens
+     the surface — the three only read as depth while the gaps between them
+     hold, and `raised` has to stay far enough off the ground that a card has
+     an edge without needing a border. On the ground below, white body copy is
+     19.1:1, --fx-muted is 6.8:1 and the yellow accent is 12.5:1. */
+  --fx-charcoal: #0f0f12;
+  --fx-charcoal-deep: #0a0a0c;
+  --fx-charcoal-raised: #191a1d;
 
   /* Text on charcoal. */
   --fx-white: #ffffff;
@@ -389,7 +395,7 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
  * the same bug in a narrower strip.
  */
 body:has([data-marketing-shell]) {
-  background-color: #1b1b1d;
+  background-color: #0f0f12;
   color-scheme: dark;
 }
 
@@ -422,20 +428,20 @@ body:has([data-marketing-shell]) {
      on this yellow is a hole in the page, where charcoal sits on it. The two
      steps stay one notch apart so `deep` still reads as further back than
      `raised`. */
-  --fx-charcoal-deep: #1b1b1d;
-  --fx-charcoal-raised: #232326;
+  --fx-charcoal-deep: #0f0f12;
+  --fx-charcoal-raised: #191a1d;
 
-  --fx-white: #1b1b1d;
-  --fx-muted: rgba(27, 27, 29, 0.72);
-  --fx-faint: rgba(27, 27, 29, 0.48);
-  --fx-hairline: rgba(27, 27, 29, 0.20);
+  --fx-white: #0f0f12;
+  --fx-muted: rgba(15, 15, 18, 0.72);
+  --fx-faint: rgba(15, 15, 18, 0.48);
+  --fx-hairline: rgba(15, 15, 18, 0.20);
 
   /* The accent has no hue of its own here, and should not get one. On a
      yellow ground every colour that is not black is either invisible or
      alarming, so the accent differentiates by WEIGHT — full black against
      black-68% body copy — and by treatment: a filled block, an underline. A
      third hue on this ground would read as a fourth brand colour. */
-  --fx-yellow: #1b1b1d;
+  --fx-yellow: #0f0f12;
   --fx-yellow-hover: #0f0f11;
   --fx-on-yellow: #f8cd02;
 
@@ -455,7 +461,7 @@ body:has([data-marketing-shell]) {
   --fx-hairline: rgba(255, 255, 255, 0.14);
   --fx-yellow: #f8cd02;
   --fx-yellow-hover: #dcb602;
-  --fx-on-yellow: #1b1b1d;
+  --fx-on-yellow: #0f0f12;
   /* Alert has to come back too. The light scope darkens it to survive on
      yellow; left unreset, that dark red lands on a black card at about 2:1 —
      on a form's failure notice, which is the one message a visitor cannot be

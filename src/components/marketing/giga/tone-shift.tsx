@@ -64,7 +64,7 @@ export function ToneShift({
         // exists to prevent. It fades to transparent within ~200px and takes
         // no pointer events, so overlaying the top of the first section costs
         // nothing.
-        className="pointer-events-none absolute inset-x-0 top-0 z-20 h-40 bg-gradient-to-b from-[#1b1b1d] via-[#1b1b1d]/55 to-transparent sm:h-56"
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 h-40 bg-gradient-to-b from-[#0f0f12] via-[#0f0f12]/55 to-transparent sm:h-56"
       />
       <div className="relative z-10">{children}</div>
     </div>

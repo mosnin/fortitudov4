@@ -15,7 +15,7 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#1b1b1d] px-6 text-center text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f0f12] px-6 text-center text-white">
       <p
         style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}
         // "Error 404" is the only place the status code appears, so it reads
@@ -32,7 +32,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-9 inline-flex h-11 items-center justify-center rounded-[4px] bg-[#f8cd02] px-6 text-[14px] font-medium text-[#0d0d0d] transition-colors duration-200 hover:bg-[#dcb602]"
+        className="mt-9 inline-flex h-11 items-center justify-center rounded-[4px] bg-[#f8cd02] px-6 text-[14px] font-medium text-[#0f0f12] transition-colors duration-200 hover:bg-[#dcb602]"
       >
         Go home
       </Link>

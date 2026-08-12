@@ -91,8 +91,8 @@ type Paint = {
  */
 const FALLBACK = {
   paper: '#f8cd02',
-  ink: '#0d0d0d',
-  pin: '#1b1b1d',
+  ink: '#0f0f12',
+  pin: '#0f0f12',
 } as const;
 
 function readPaint(host: HTMLElement): Paint {

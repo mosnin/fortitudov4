@@ -152,7 +152,7 @@ export function SiteHeader({ lang = 'en' }: { lang?: Lang }) {
     // Literals, not tokens: these are motion values interpolated by the
     // animation, and a var() cannot be tweened. They track --fx-charcoal-deep
     // and --fx-hairline; change them together.
-    backgroundColor: scrolled ? 'rgba(20,20,22,0.72)' : 'rgba(20,20,22,0)',
+    backgroundColor: scrolled ? 'rgba(10,10,12,0.72)' : 'rgba(10,10,12,0)',
     borderColor: scrolled ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0)',
     boxShadow: scrolled ? '0 10px 30px -12px rgba(0,0,0,0.55)' : '0 0px 0px 0px rgba(0,0,0,0)',
   };
