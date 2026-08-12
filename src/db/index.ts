@@ -6,40 +6,57 @@ const isPgUrl = (v: string | undefined): v is string =>
   !!v && /^postgres(?:ql)?:\/\//.test(v);
 
 /**
- * The connection variables we accept, in the order we want them.
+ * Resolve the Postgres connection string.
  *
- * This used to fall back to scanning `Object.values(process.env)` and taking
- * the first `postgres://` it found. That is unordered, and Vercel's Postgres
- * integrations set several of these at once — so on a deployment where
- * DATABASE_URL happened to be unset, the app would bind to whichever URL the
- * environment enumerated first. In practice that is often the NON_POOLING
- * direct connection, which is the one thing a serverless deployment must not
- * use: every lambda opens its own session and the connection limit is gone
- * long before the traffic is.
+ * Two failure modes have to be avoided at once, and the obvious fix for each
+ * causes the other:
  *
- * An explicit, ordered list picks the pooled connection deliberately, and a
- * name we do not recognise now fails loudly instead of being silently
- * promoted to the app's database.
+ *  - Scanning every env value for the first `postgres://` match is unordered.
+ *    Vercel's integrations set several URLs at once, so the app could bind to
+ *    the NON_POOLING direct connection — fine for migrations, wrong for
+ *    serverless, where every lambda opens its own session and the connection
+ *    limit is gone long before the traffic is.
+ *  - Hardcoding an exact list breaks the moment the integration prefixes its
+ *    variables. This production deployment sets STORAGE_POSTGRES_URL,
+ *    STORAGE_POSTGRES_PRISMA_URL and STORAGE_POSTGRES_URL_NON_POOLING and no
+ *    unprefixed name at all, so a list of five exact names found nothing and
+ *    took the whole database down.
+ *
+ * So: exact preferred names first, then a pattern match over the environment
+ * that accepts any prefix but is SORTED for determinism and ranks pooled above
+ * direct. The prefix is the integration's business; the pooling is ours.
  */
-const CONNECTION_VARS = [
-  "DATABASE_URL",
-  "POSTGRES_URL",
-  "POSTGRES_PRISMA_URL",
-  // Direct/session connections, last: correct for migrations, wrong for
-  // serverless request handling, but better than no database at all.
-  "POSTGRES_URL_NON_POOLING",
-  "DATABASE_URL_UNPOOLED",
-] as const;
+const EXACT_VARS = ["DATABASE_URL", "POSTGRES_URL", "POSTGRES_PRISMA_URL"] as const;
+
+/** A direct/session connection — usable, but only once nothing pooled exists. */
+const isDirect = (name: string) =>
+  /NON_POOLING|UNPOOLED|DIRECT/i.test(name);
+
+/** Any `*POSTGRES_URL` / `*DATABASE_URL`, whatever the integration prefixed it with. */
+const isConnectionName = (name: string) =>
+  /(?:POSTGRES|DATABASE)_(?:PRISMA_)?URL(?:_NON_POOLING|_UNPOOLED)?$/i.test(name);
 
 export function resolveConnectionString(): string {
-  for (const name of CONNECTION_VARS) {
-    const value = process.env[name];
-    if (isPgUrl(value)) return value;
+  for (const name of EXACT_VARS) {
+    if (isPgUrl(process.env[name])) return process.env[name] as string;
   }
 
+  // Sorted so the choice is reproducible rather than dependent on the order
+  // the runtime happens to enumerate keys in.
+  const candidates = Object.keys(process.env)
+    .filter((name) => isConnectionName(name) && isPgUrl(process.env[name]))
+    .sort();
+
+  const pooled = candidates.find((name) => !isDirect(name));
+  if (pooled) return process.env[pooled] as string;
+
+  const direct = candidates[0];
+  if (direct) return process.env[direct] as string;
+
   throw new Error(
-    `No Postgres connection string found. Checked ${CONNECTION_VARS.join(", ")}. ` +
-      "Set DATABASE_URL in the Vercel project's environment variables and redeploy."
+    "No Postgres connection string found. Looked for DATABASE_URL, POSTGRES_URL, " +
+      "POSTGRES_PRISMA_URL, and any prefixed *_POSTGRES_URL / *_DATABASE_URL. " +
+      "Connect a Postgres integration in Vercel, or set DATABASE_URL, then redeploy."
   );
 }
 
