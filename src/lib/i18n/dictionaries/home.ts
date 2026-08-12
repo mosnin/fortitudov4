@@ -2,8 +2,8 @@
  * Home page copy (`/`), every user-facing string on the logged-out homepage.
  *
  * One section per key, mirroring the components that render them: the hero
- * (`components/originkit/ui/hero-21/section-25-hero.tsx`) and the eight giga
- * sections the page composes below it.
+ * (`components/marketing/giga/home-hero.tsx`) and the eight giga sections the
+ * page composes below it.
  *
  * HOW TO EDIT.
  *  - `en` (American English) is the CANONICAL BASE. `HomeDict` is derived from
