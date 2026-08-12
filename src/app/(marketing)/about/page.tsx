@@ -13,9 +13,10 @@
  */
 
 import { CtaSection } from '@/components/marketing/giga/cta';
-import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { PageHero } from '@/components/marketing/giga/page-hero';
+import { Band, BlurRise, Eyebrow, Serif } from '@/components/marketing/giga/primitives';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
-import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
+import { DISPLAY_S, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
 import { ABOUT } from '@/lib/i18n/dictionaries/about';
 import type { Lang } from '@/lib/i18n/markets';
 
@@ -40,33 +41,21 @@ export default function AboutPage({ lang = 'en' }: { lang?: Lang }) {
   return (
     <>
       <div className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
-        {/* Hero — the same charcoal treatment every other sub-page uses.
+        {/* Hero — the same dot-matrix field every other sub-page now opens on.
             It used to be a full-bleed stock skyline under two scrims, left
             from the photography-led design; next to /services and /contact it
-            read as a different website. */}
-        <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
-          />
-          <Band className={HERO_Y} innerClassName="relative max-w-3xl">
-            <BlurRise trigger="load">
-              <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-              <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-                {t.hero.title}
-              </Serif>
-              <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                {t.hero.body}
-              </p>
-              <div className="mt-9 flex flex-wrap gap-3">
-                <PillPrimary href="/contact" withArrow>
-                  {t.hero.ctaPrimary}
-                </PillPrimary>
-                <PillGhost href="/services">{t.hero.ctaSecondary}</PillGhost>
-              </div>
-            </BlurRise>
-          </Band>
-        </section>
+            read as a different website.
+
+            The only sub-page hero that keeps a pair of buttons: nothing below
+            it competes for the primary action until the closing ask. */}
+        <PageHero
+          eyebrow={t.hero.eyebrow}
+          title={t.hero.title}
+          lead={t.hero.body}
+          cta={{ label: t.hero.ctaPrimary, href: '/contact' }}
+          secondaryCta={{ label: t.hero.ctaSecondary, href: '/services' }}
+          seed={3}
+        />
 
         {/* The gap */}
         <Band className={SECTION_Y}>

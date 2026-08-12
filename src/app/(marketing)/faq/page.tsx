@@ -21,8 +21,9 @@
 
 import { ChevronDown } from 'lucide-react';
 import * as Accordion from '@radix-ui/react-accordion';
-import { Band, BlurRise, Eyebrow, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
-import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
+import { Band, BlurRise, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
+import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { FAQ } from '@/lib/i18n/dictionaries/faq-page';
@@ -33,27 +34,19 @@ export default function FAQPage({ lang = 'en' }: { lang?: Lang }) {
 
   return (
     <>
-      {/* Hero */}
-      <section
-        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
-        />
-        <Band innerClassName="relative max-w-3xl">
-          <BlurRise trigger="load">
-            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              {t.hero.titleLead}{' '}
-              <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
-            </Serif>
-            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              {t.hero.body}
-            </p>
-          </BlurRise>
-        </Band>
-      </section>
+      {/* Hero. No `cta`: the page's ask is the "still stuck" band further down,
+          which already carries the one yellow pill. */}
+      <PageHero
+        eyebrow={t.hero.eyebrow}
+        title={
+          <>
+            {t.hero.titleLead}{' '}
+            <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
+          </>
+        }
+        lead={t.hero.body}
+        seed={5}
+      />
 
       {/* The tone shift. Everything below runs in the inverted scope — racing
           yellow ground, black ink — see `[data-fx-tone="light"]` in

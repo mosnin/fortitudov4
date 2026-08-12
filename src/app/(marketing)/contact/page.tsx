@@ -22,8 +22,9 @@
 import { useState } from 'react';
 import { CheckCircle, Loader2, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { services } from '@/lib/services';
-import { Band, BlurRise, Eyebrow, PillGhost, Serif } from '@/components/marketing/giga/primitives';
-import { ALERT_TEXT, DISPLAY_L, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
+import { Band, BlurRise, PillGhost, Serif } from '@/components/marketing/giga/primitives';
+import { ALERT_TEXT, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
+import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CONTACT } from '@/lib/i18n/dictionaries/contact';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
 import type { Lang } from '@/lib/i18n/markets';
@@ -112,27 +113,19 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
 
   return (
     <>
-      {/* Hero */}
-      <section
-        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
-        />
-        <Band innerClassName="relative max-w-3xl">
-          <BlurRise trigger="load">
-            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              {t.hero.titleLead}{' '}
-              <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
-            </Serif>
-            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              {t.hero.body}
-            </p>
-          </BlurRise>
-        </Band>
-      </section>
+      {/* Hero. No `cta`: this page's action is the form, and its yellow submit
+          button is the one primary control on the screen. */}
+      <PageHero
+        eyebrow={t.hero.eyebrow}
+        title={
+          <>
+            {t.hero.titleLead}{' '}
+            <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
+          </>
+        }
+        lead={t.hero.body}
+        seed={4}
+      />
 
       <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
         <Band innerClassName="max-w-6xl">

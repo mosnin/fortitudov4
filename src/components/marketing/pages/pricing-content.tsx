@@ -26,8 +26,10 @@ import { PRICING_PAGE } from '@/lib/i18n/dictionaries/pricing-page';
 import { EngagementPlans } from '@/components/marketing/pages/engagement-plans';
 import { LocalPrice, PriceText, CurrencyNote } from '@/components/marketing/local-price';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { CurrencyRing } from '@/components/marketing/giga/currency-ring';
+import { PageHero } from '@/components/marketing/giga/page-hero';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
-import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
+import { DISPLAY_S, SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
 
 /** Starting prices for the full service list (mirrors lib/services.ts /
  *  lib/pricing.ts — the checkout source of truth; keep in sync). */
@@ -95,27 +97,21 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
 
   return (
     <div lang={LANG_TAG[lang]} className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
-      {/* Hero — the same charcoal treatment every other sub-page uses. It used
-          to be a full-bleed stock photograph under two scrims, left from the
-          photography-led design, and it made /pricing look like a different
-          site to the page it links from. */}
-      <section className="relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
-        />
-        <Band className={HERO_Y} innerClassName="relative max-w-3xl">
-          <BlurRise trigger="load">
-            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              {t.hero.title}
-            </Serif>
-            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              {t.hero.body}
-            </p>
-          </BlurRise>
-        </Band>
-      </section>
+      {/* Hero — the same dot-matrix field every other sub-page now opens on. It
+          used to be a full-bleed stock photograph under two scrims, left from
+          the photography-led design, and it made /pricing look like a different
+          site to the page it links from.
+
+          No `cta`: the engagement cards directly below are the ask, and each
+          one carries its own yellow pill. The vertical step is `PageHero`'s
+          own `HERO_Y` — the `Band` that used to apply it is gone with the block
+          it padded, rather than stacking two heroes' worth of air. */}
+      <PageHero
+        eyebrow={t.hero.eyebrow}
+        title={t.hero.title}
+        lead={t.hero.body}
+        seed={1}
+      />
 
       {/* Engagement cards */}
       <EngagementPlans lang={lang} />
@@ -124,6 +120,16 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
             6.5:1, not the 3.1:1 it was set in. */}
         <CurrencyNote lang={lang} className="text-[12px] text-[var(--fx-muted)]" />
       </Band>
+
+      {/* The ring of display currencies. It belongs here and nowhere else: its
+          copy says "This page does it", which is only literally true next to
+          the prices above it — and the claim is checkable by reloading them.
+
+          Above the tone shift on purpose. The section's one accent is a single
+          yellow card on charcoal, and it carries no `data-fx-surface="dark"`;
+          inside the flip its raised cards would invert to black plates with
+          black ink. */}
+      <CurrencyRing lang={lang} />
 
       {/* The tone shift. Everything below runs in the inverted scope — racing
           yellow ground, black ink — see `[data-fx-tone="light"]` in

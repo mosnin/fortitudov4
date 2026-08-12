@@ -27,8 +27,9 @@ import { services } from '@/lib/services';
 import { DEFAULT_LANG } from '@/lib/i18n/markets';
 import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { SERVICES_PAGE } from '@/lib/i18n/dictionaries/services-page';
-import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
-import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
+import { Band, BlurRise, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { DISPLAY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
+import { PageHero } from '@/components/marketing/giga/page-hero';
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
 
@@ -58,27 +59,19 @@ export default function ServicesPage() {
 
   return (
     <>
-      {/* Hero */}
-      <section
-        className={`relative overflow-hidden border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${HERO_Y}`}
-      >
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 [background:radial-gradient(ellipse_at_top,rgba(248,205,2,0.10),transparent_55%)]"
-        />
-        <Band innerClassName="relative max-w-3xl">
-          <BlurRise trigger="load">
-            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
-            <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              {t.hero.titleLead}{' '}
-              <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
-            </Serif>
-            <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              {t.hero.body}
-            </p>
-          </BlurRise>
-        </Band>
-      </section>
+      {/* Hero. No `cta`: every offering band below carries its own yellow
+          "Start with …" pill, and one screen gets one primary action. */}
+      <PageHero
+        eyebrow={t.hero.eyebrow}
+        title={
+          <>
+            {t.hero.titleLead}{' '}
+            <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
+          </>
+        }
+        lead={t.hero.body}
+        seed={0}
+      />
 
       {/* One band per offering, alternating sides */}
       {services.map((service, index) => {

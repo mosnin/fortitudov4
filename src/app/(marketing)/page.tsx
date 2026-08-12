@@ -31,6 +31,7 @@ import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
 import { Advantage } from '@/components/marketing/giga/advantage';
+import { GlobalReach } from '@/components/marketing/giga/global-reach';
 import { Testimonials } from '@/components/marketing/giga/testimonials';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { Complexity } from '@/components/marketing/giga/complexity';
@@ -54,6 +55,10 @@ export default async function MarketingHomePage() {
         <Offerings lang={lang} />
         <Pipeline lang={lang} />
         <Advantage lang={lang} />
+        {/* Last section of the charcoal half. The globe is cut off by its own
+            section's bottom edge, so that edge has to be the page's turn to
+            yellow — the horizon lands exactly on the tone shift below. */}
+        <GlobalReach lang={lang} />
       </div>
 
       {/* Halfway down, the ground flips to racing yellow and the ink to black.
