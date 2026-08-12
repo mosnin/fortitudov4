@@ -10,35 +10,37 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
+import type { ServiceType } from '@/lib/services';
+import { formatUsd, getPricing } from '@/lib/pricing';
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME } from '@/lib/i18n/dictionaries/home';
+import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
 
-const FAQS = [
-  {
-    q: 'What does it cost?',
-    a: 'Websites start at $1,500. Software Solutions at $3,500. AI Solutions at $3,000. A Consultation is $500. Digital Marketing is $1,200 a month. You see your own price before you pay anything, and it does not move. No hourly billing. No surprise bills.',
-  },
-  {
-    q: 'How soon can I start?',
-    a: 'Today. Pick what you want, answer a few questions about it, check your price, and pay. Your project page opens straight away, and we start digging into the work the next working day.',
-  },
-  {
-    q: 'Do you use AI?',
-    a: 'Yes, on the dull parts — setup, boilerplate, test code, and the small repeated changes. It decides nothing. A senior builder checks and shapes every change before it lands, so the judgement calls are still made by people.',
-  },
-  {
-    q: 'How do I see how it is going?',
-    a: 'Your project page shows the stage you are in: Discovery, Design, Development, Testing, Review, and Launch. You can message us, send files, and ask for changes in the same place.',
-  },
-  {
-    q: 'What if I want changes?',
-    a: 'Ask for them on your project page. Changes inside what we agreed to build cost you nothing. If you want something bigger than that, we price it first and you decide.',
-  },
-  {
-    q: 'Who owns it at the end?',
-    a: 'You do. All of it. The code, the design files, the campaign work, and the logins are handed to you at launch. Nothing is locked to us.',
-  },
-];
+/**
+ * The price tokens the answers interpolate, read from the table checkout
+ * charges from (`src/lib/pricing.ts`) rather than typed into the sentence —
+ * a figure written into prose is a figure that will disagree with the invoice,
+ * three languages at a time.
+ *
+ * A service that somehow has no pricing row contributes no value, so `fill()`
+ * leaves its `{token}` standing: visible in review, where a silently vanished
+ * price is not.
+ */
+const PRICE_TOKENS: Record<string, string> = (
+  [
+    ['websites', 'websites'],
+    ['software', 'software_solutions'],
+    ['ai', 'ai_solutions'],
+    ['consultation', 'consultation'],
+    ['marketing', 'digital_marketing'],
+  ] as [string, ServiceType][]
+).reduce<Record<string, string>>((tokens, [token, service]) => {
+  const pricing = getPricing(service);
+  if (pricing) tokens[token] = formatUsd(pricing.amountCents);
+  return tokens;
+}, {});
 
 function Row({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
@@ -73,7 +75,8 @@ function Row({ q, a }: { q: string; a: string }) {
   );
 }
 
-export function Faq() {
+export function Faq({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].faq;
   return (
     <section
       className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
@@ -81,25 +84,25 @@ export function Faq() {
       <Band>
         <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_1.6fr]">
           <BlurRise>
-            <Eyebrow>FAQ</Eyebrow>
+            <Eyebrow>{t.eyebrow}</Eyebrow>
             <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-              Questions, answered.
+              {t.heading}
             </Serif>
             <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-[var(--fx-muted)]">
-              Can&apos;t find what you&apos;re looking for?{' '}
+              {t.helpText}{' '}
               <a
                 href="/contact"
                 className="text-[var(--fx-white)] underline underline-offset-4 hover:text-[var(--fx-yellow)]"
               >
-                Get in touch
+                {t.helpLink}
               </a>
               .
             </p>
           </BlurRise>
           <BlurRise delay={0.08}>
             <div className="border-t border-[var(--fx-hairline)]">
-              {FAQS.map((faq) => (
-                <Row key={faq.q} q={faq.q} a={faq.a} />
+              {t.items.map((faq) => (
+                <Row key={faq.q} q={faq.q} a={fill(faq.a, PRICE_TOKENS)} />
               ))}
             </div>
           </BlurRise>

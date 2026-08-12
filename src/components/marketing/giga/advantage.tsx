@@ -29,6 +29,8 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME } from '@/lib/i18n/dictionaries/home';
 import { KineticText, Marquee } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { ALERT_CHIP, ALERT_RULE, DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
@@ -40,22 +42,31 @@ interface Pill {
   delay: number;
 }
 
-const legacyPills: Pill[] = [
-  { icon: CalendarClock, label: 'Meeting number four', duration: 1.7, delay: -0.2 },
-  { icon: FileWarning, label: 'Another change fee', duration: 2.4, delay: -0.8 },
-  { icon: Mail, label: 'Week-old status email', duration: 2.0, delay: -1.3 },
-  { icon: Receipt, label: 'A bill you did not expect', duration: 1.8, delay: -0.5 },
-  { icon: AlertTriangle, label: 'Passed to a stranger', duration: 2.2, delay: -1.7 },
+/** Everything about a pill except its words. The labels come from the
+ *  dictionary and are zipped on by position, so a translated belt keeps the
+ *  icon and the ring timing it was tuned with. */
+type PillStyling = Omit<Pill, 'label'>;
+
+const legacyPillStyling: PillStyling[] = [
+  { icon: CalendarClock, duration: 1.7, delay: -0.2 },
+  { icon: FileWarning, duration: 2.4, delay: -0.8 },
+  { icon: Mail, duration: 2.0, delay: -1.3 },
+  { icon: Receipt, duration: 1.8, delay: -0.5 },
+  { icon: AlertTriangle, duration: 2.2, delay: -1.7 },
 ];
 
-const fortitudoPills: Pill[] = [
-  { icon: GaugeCircle, label: 'A fixed price', duration: 2.1, delay: -0.4 },
-  { icon: Users, label: 'Senior builders', duration: 1.8, delay: -1.1 },
-  { icon: Bot, label: 'AI on the repeat work', duration: 2.3, delay: -0.7 },
-  { icon: CheckCircle2, label: 'Watch it live', duration: 1.9, delay: -1.5 },
-  { icon: UserCheck, label: 'Checked by a person', duration: 2.2, delay: -0.2 },
-  { icon: Rocket, label: 'Launch', duration: 1.7, delay: -0.9 },
+const fortitudoPillStyling: PillStyling[] = [
+  { icon: GaugeCircle, duration: 2.1, delay: -0.4 },
+  { icon: Users, duration: 1.8, delay: -1.1 },
+  { icon: Bot, duration: 2.3, delay: -0.7 },
+  { icon: CheckCircle2, duration: 1.9, delay: -1.5 },
+  { icon: UserCheck, duration: 2.2, delay: -0.2 },
+  { icon: Rocket, duration: 1.7, delay: -0.9 },
 ];
+
+function buildPills(styling: PillStyling[], labels: string[]): Pill[] {
+  return styling.map((pill, i) => ({ ...pill, label: labels[i] }));
+}
 
 function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' }) {
   const pillStyles =
@@ -102,7 +113,11 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
   );
 }
 
-export function Advantage() {
+export function Advantage({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].advantage;
+  const legacyPills = buildPills(legacyPillStyling, t.legacyPills);
+  const fortitudoPills = buildPills(fortitudoPillStyling, t.fortitudoPills);
+
   return (
     <section
       className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
@@ -110,16 +125,14 @@ export function Advantage() {
       <Band>
         <div className="max-w-3xl">
           <BlurRise>
-            <Eyebrow>Why Fortitudo</Eyebrow>
+            <Eyebrow>{t.eyebrow}</Eyebrow>
           </BlurRise>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-            <KineticText lines={['You deal with the people who build it.']} />
+            <KineticText lines={t.headingLines} />
           </Serif>
           <BlurRise delay={0.28}>
             <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-              No account manager in the middle. The senior people building your
-              project are the ones you talk to, and the price is set before we
-              start.
+              {t.lead}
             </p>
           </BlurRise>
         </div>
@@ -133,12 +146,10 @@ export function Advantage() {
             </div>
             <div className="mt-5 px-1">
               <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                Typical agencies
+                {t.legacyTitle}
               </Serif>
               <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-                Calls you did not need. Change fees you did not expect. An
-                account manager sitting between you and whoever is actually
-                building. The bill never matches the quote.
+                {t.legacyDesc}
               </p>
             </div>
           </BlurRise>
@@ -151,12 +162,10 @@ export function Advantage() {
             </div>
             <div className="mt-5 px-1">
               <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                Fortitudo
+                {t.fortitudoTitle}
               </Serif>
               <p className="mt-2 max-w-[540px] text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-                One senior team, and one page to watch them on. We use AI for
-                the repetitive parts. A person checks every change before it
-                counts.
+                {t.fortitudoDesc}
               </p>
             </div>
           </BlurRise>

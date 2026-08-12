@@ -10,11 +10,19 @@
  *
  * Server component; stays statically generated (currency hydrates client-side
  * from the cookie — no per-request rendering).
+ *
+ * The words are in `src/lib/i18n/dictionaries/pricing-page.ts`. `lang`
+ * defaults to English because the `[lang]` route tree that will pass a real
+ * one has not shipped yet (plans/i18n.md); when it does, both trees render
+ * this one component with a different `lang`, so there is never a forked
+ * English and Spanish page to drift apart.
  */
 
 import Link from 'next/link';
-import { services } from '@/lib/services';
+import { services, projectPhaseNames } from '@/lib/services';
 import { LANG_TAG, type Lang } from '@/lib/i18n/markets';
+import { fill } from '@/lib/i18n/dictionaries/pricing';
+import { PRICING_PAGE } from '@/lib/i18n/dictionaries/pricing-page';
 import { EngagementPlans } from '@/components/marketing/pages/engagement-plans';
 import { LocalPrice, PriceText, CurrencyNote } from '@/components/marketing/local-price';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
@@ -32,22 +40,59 @@ const SERVICE_STARTING_USD: Record<string, number> = {
 };
 
 /**
- * What every engagement commits to. This band used to read "The engagement, by
- * the numbers" and present a 14–30 day delivery window and 1–3 revision rounds
- * as measured facts; neither had a source anywhere in the codebase, and a
- * measurement we have not taken is a fabrication. Each entry now traces to one:
- * the phase count to `projectPhaseNames` in lib/services.ts (the same phases
- * the dashboard tracker and the FAQ name), the support window to the
- * always-included list on /services, and revisions to the approved scope the
- * CRM checklist gates kickoff on (`Scope & fixed quote approved`, lib/crm.ts).
+ * Days of help after launch, included with every engagement.
+ *
+ * DUPLICATED. The same figure is stated in the always-included list on
+ * /services and in the /faq answers, and nothing owns it — it is not in
+ * `src/lib/services.ts` beside the offerings it applies to, which is where it
+ * belongs. Centralise it there; until then, changing it means changing it in
+ * all four places. It is a number, so it never sits inside a dictionary
+ * string: the copy carries `{days}` and this fills it.
  */
-const ENGAGEMENT_COMMITMENTS = [
-  { id: 'phases', label: 'Watch it live', figure: '6', line: 'stages, from start to launch' },
-  { id: 'revisions', label: 'Changes', figure: 'Included', line: 'rounds are set in the price you approve' },
-  { id: 'support', label: 'Help after launch', figure: '30', line: 'days with every project' },
-] as const;
+const SUPPORT_DAYS = 30;
 
-export function PricingContent({ lang }: { lang: Lang }) {
+export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
+  const t = PRICING_PAGE[lang];
+
+  /**
+   * What every engagement commits to. This band used to read "The engagement,
+   * by the numbers" and present a 14–30 day delivery window and 1–3 revision
+   * rounds as measured facts; neither had a source anywhere in the codebase,
+   * and a measurement we have not taken is a fabrication. Each entry now
+   * traces to one: the stage count to `projectPhaseNames` in lib/services.ts
+   * (the same stages the dashboard tracker and the FAQ name), the support
+   * window to the always-included list on /services, and revisions to the
+   * approved scope the CRM checklist gates kickoff on (`Scope & fixed quote
+   * approved`, lib/crm.ts).
+   *
+   * The figures are built here, not in the dictionary: two of the three are
+   * numbers, and a number written into translated prose is a number that
+   * silently disagrees with itself one language over.
+   */
+  const commitments = [
+    {
+      id: 'phases',
+      label: t.commitments.phases.label,
+      figure: String(projectPhaseNames.length),
+      line: t.commitments.phases.line,
+    },
+    {
+      id: 'revisions',
+      label: t.commitments.revisions.label,
+      figure: t.commitments.revisions.figure,
+      line: t.commitments.revisions.line,
+    },
+    {
+      id: 'support',
+      label: t.commitments.support.label,
+      figure: String(SUPPORT_DAYS),
+      line: t.commitments.support.line,
+    },
+  ];
+
+  /** The four questions, in render order. */
+  const faqs = [t.faq.fixed, t.faq.from, t.faq.afterLaunch, t.faq.payments];
+
   return (
     <div lang={LANG_TAG[lang]} className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
       {/* Hero — the same charcoal treatment every other sub-page uses. It used
@@ -61,13 +106,12 @@ export function PricingContent({ lang }: { lang: Lang }) {
         />
         <Band className={HERO_Y} innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
-            <Eyebrow>Pricing</Eyebrow>
+            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Fixed prices. No surprises.
+              {t.hero.title}
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              You get a price before we start, and it does not move. You can watch the
-              work go stage by stage. Everything is yours the day it goes live.
+              {t.hero.body}
             </p>
           </BlurRise>
         </Band>
@@ -102,13 +146,12 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-3xl">
             <div>
-              <Eyebrow>Two more things</Eyebrow>
+              <Eyebrow>{t.specialists.eyebrow}</Eyebrow>
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-                Two more ways we can help.
+                {t.specialists.title}
               </Serif>
               <p className="mt-5 max-w-xl text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                You can hire us for advice on its own. And we can keep working on your
-                build after it launches. Same fixed price, same page to watch it on.
+                {t.specialists.body}
               </p>
             </div>
             {/* Both cards paint `--fx-charcoal-raised`, which inverts to
@@ -119,19 +162,19 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
               >
                 <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                  Consultation
+                  {t.specialists.consultation.title}
                 </Serif>
                 <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                  Work out what to build, before you spend
+                  {t.specialists.consultation.scopeLine}
                 </p>
                 <p className="mt-4">
                   <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
                     <LocalPrice usd={SERVICE_STARTING_USD.consultation} lang={lang} />
                   </Serif>
-                  <span className="text-[13px] text-[var(--fx-muted)]"> / project, starting</span>
+                  <span className="text-[13px] text-[var(--fx-muted)]">{t.specialists.consultation.unit}</span>
                 </p>
                 <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                  + a written plan you keep
+                  {t.specialists.consultation.note}
                 </p>
               </div>
               <div
@@ -139,29 +182,29 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
               >
                 <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                  Ongoing support
+                  {t.specialists.retainer.title}
                 </Serif>
                 <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                  We keep working on it after launch
+                  {t.specialists.retainer.scopeLine}
                 </p>
                 <p className="mt-4">
                   <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
-                    Custom
+                    {t.specialists.retainer.figure}
                   </Serif>
-                  <span className="text-[13px] text-[var(--fx-muted)]"> / month, priced to your build</span>
+                  <span className="text-[13px] text-[var(--fx-muted)]">{t.specialists.retainer.unit}</span>
                 </p>
                 {/* A custom retainer cannot promise fixed inclusions; scope is
                     what it agrees. It used to advertise priority support and a
                     dedicated point of contact, neither of which we define. */}
                 <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                  + what we cover, and how fast we answer, agreed up front
+                  {t.specialists.retainer.note}
                 </p>
               </div>
             </div>
             <p className="mt-6 text-[13px] text-[var(--fx-muted)]">
-              Running something bigger?{' '}
+              {t.specialists.biggerLead}{' '}
               <Link href="/contact" className="font-medium text-[var(--fx-yellow)] hover:underline">
-                Talk to us
+                {t.specialists.biggerLink}
               </Link>
               .
             </p>
@@ -172,14 +215,12 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-3xl">
             <div>
-              <Eyebrow>How pricing works</Eyebrow>
+              <Eyebrow>{t.howPricing.eyebrow}</Eyebrow>
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-                Every project starts with a fixed price.
+                {t.howPricing.title}
               </Serif>
               <p className="mt-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                Pick what you need. We write you a price up front, and it never moves
-                without your say-so. You watch the work go stage by stage on your project
-                page. Starting prices are below.
+                {t.howPricing.body}
               </p>
             </div>
             {/* The price list is a raised panel, so it is a black plate on the
@@ -192,17 +233,18 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 <li key={s.id} className="flex items-center justify-between px-5 py-3.5">
                   <span className="text-[13.5px] text-[var(--fx-white)]">{s.name}</span>
                   <span className="text-[13px] tabular-nums text-[var(--fx-muted)]">
-                    from <LocalPrice usd={SERVICE_STARTING_USD[s.id] ?? 0} lang={lang} />
+                    {t.howPricing.fromPrefix}
+                    <LocalPrice usd={SERVICE_STARTING_USD[s.id] ?? 0} lang={lang} />
                   </span>
                 </li>
               ))}
             </ul>
 
             <p className="mt-10">
-              <Eyebrow>What every project includes</Eyebrow>
+              <Eyebrow>{t.commitments.eyebrow}</Eyebrow>
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
-              {ENGAGEMENT_COMMITMENTS.map((fact) => (
+              {commitments.map((fact) => (
                 <div
                   key={fact.id}
                   data-fx-surface="dark"
@@ -225,39 +267,26 @@ export function PricingContent({ lang }: { lang: Lang }) {
         {/* FAQ */}
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-3xl">
-            <Eyebrow>Questions</Eyebrow>
+            <Eyebrow>{t.faq.eyebrow}</Eyebrow>
             <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-              What people ask first.
+              {t.faq.title}
             </Serif>
           </BlurRise>
           {/* Price tokens are named for the offering they resolve to. They were
               `validate` and `scale` — the source template's plan tiers, which we
               do not sell and which leaked into the copy as "a Scale web
-              application". */}
+              application".
+
+              `{days}` is filled here, before <PriceText/> fills the price
+              tokens: fill() leaves a token it has no value for alone, so the
+              two passes compose and an unfilled one stays visible in review. */}
           <ul className="mt-12 max-w-3xl divide-y divide-[var(--fx-hairline)]">
-            {[
-              {
-                q: 'Is the price really fixed?',
-                a: 'Yes. You get a written price before anything starts. Once you approve it, that is what you pay. If you want something we did not agree to, we price that separately and you decide. No hourly billing. No surprise bills.',
-              },
-              {
-                q: 'What does "from {websites}" mean?',
-                a: 'It is the price for the simplest version. Your own price depends on how much you need — pages, features, and the tools it has to talk to — and it is fixed before we start.',
-              },
-              {
-                q: 'What happens after launch?',
-                a: 'You own everything: the code, the design files, and the logins are handed over, and nothing is locked to us. Every project includes 30 days of help after launch. If you want us to keep going after that, we price that against your build.',
-              },
-              {
-                q: 'How do payments work?',
-                a: 'You approve the price, pay to start, and watch each stage on your project page — a software build, for example, starts at {software}. Your invoice lists exactly what you approved. Changes inside what we agreed cost you nothing extra.',
-              },
-            ].map((item, i) => (
+            {faqs.map((item, i) => (
               <BlurRise key={item.q} delay={i * 0.04}>
                 <li className="py-7">
                   <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
                     <PriceText
-                      template={item.q}
+                      template={fill(item.q, { days: SUPPORT_DAYS })}
                       tokens={{ websites: SERVICE_STARTING_USD.websites }}
                       lang={lang}
                     />
@@ -265,7 +294,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
                   <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
                     {/* Prices in prose localize with the visitor's currency */}
                     <PriceText
-                      template={item.a}
+                      template={fill(item.a, { days: SUPPORT_DAYS })}
                       tokens={{
                         websites: SERVICE_STARTING_USD.websites,
                         software: SERVICE_STARTING_USD.software_solutions,
@@ -283,16 +312,16 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-2xl">
             <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
-              Get a fixed price for your build.
+              {t.cta.title}
             </Serif>
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Tell us what you want. We price it, then you watch us build it.
+              {t.cta.body}
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <PillPrimary href="/sign-up" withArrow>
-                Start your project
+                {t.cta.primary}
               </PillPrimary>
-              <PillGhost href="/contact">Talk to us</PillGhost>
+              <PillGhost href="/contact">{t.cta.secondary}</PillGhost>
             </div>
           </BlurRise>
         </Band>

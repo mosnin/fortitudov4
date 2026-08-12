@@ -12,6 +12,8 @@
  * so "100%" does not shove its own divider around on the way up.
  */
 
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME } from '@/lib/i18n/dictionaries/home';
 import { Counter } from './motion-kit';
 import { Band, BlurRise, Mono, Serif } from './primitives';
 import { SECTION_Y } from './tokens';
@@ -24,21 +26,25 @@ import { SECTION_Y } from './tokens';
  * offering list is five long (`src/lib/services.ts`), the delivery pipeline the
  * client's portal reads from is seven stages (`CRM_STAGES` in `src/lib/crm.ts`),
  * and handover at launch is total — the promise the beliefs and the FAQ make.
+ *
+ * The figures stay here rather than in the dictionary: they are the same in
+ * every language, and a number a translator can edit is a number that will
+ * disagree with the codebase it came from. Only the labels are translated.
  */
-const STATS = [
-  { value: 5, suffix: '', label: 'Things we build' },
-  { value: 7, suffix: '', label: 'Stages you can watch' },
-  { value: 100, suffix: '%', label: 'Yours at launch' },
+const FIGURES = [
+  { value: 5, suffix: '' },
+  { value: 7, suffix: '' },
+  { value: 100, suffix: '%' },
 ];
 
-export function Stats() {
+export function Stats({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].stats;
   return (
     <Band className={SECTION_Y}>
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-20">
         <BlurRise>
           <p className="max-w-lg text-2xl leading-snug text-[var(--fx-white)] sm:text-[2rem] sm:leading-[1.25]">
-            No weekly status call. Open your project page and see where the
-            work has got to, any day you like.
+            {t.statement}
           </p>
         </BlurRise>
 
@@ -46,11 +52,11 @@ export function Stats() {
             Nothing else here animates — a count-up underneath a blur-rise
             underneath a stagger is three arrivals for three figures. */}
         <div className="grid grid-cols-3 divide-x divide-[var(--fx-hairline)]">
-          {STATS.map((s) => (
-            <div key={s.label} className="px-5 first:pl-0 sm:px-10">
+          {FIGURES.map((s, i) => (
+            <div key={t.labels[i]} className="px-5 first:pl-0 sm:px-10">
               {/* --fx-muted (6.5:1), not --fx-faint: the label is what the
                   number means, so it is body text, not an eyebrow. */}
-              <Mono className="text-[11px] text-[var(--fx-muted)]">{s.label}</Mono>
+              <Mono className="text-[11px] text-[var(--fx-muted)]">{t.labels[i]}</Mono>
               <Serif
                 as="span"
                 className="mt-3 block text-[2.75rem] font-light leading-none tabular-nums text-[var(--fx-white)] sm:text-[3.5rem] lg:text-[4.25rem]"

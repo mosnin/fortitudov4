@@ -6,40 +6,37 @@
  * One idea: the world moved on; agency work didn't, so we built Fortitudo —
  * senior builders on fixed quotes, working in the open — to close the gap.
  * Hero -> the gap -> beliefs -> the closing CTA.
+ *
+ * Every word of it lives in `src/lib/i18n/dictionaries/about.ts`, including the
+ * `metadata` below. This file is structure only, and takes a `lang` so the
+ * `[lang]` tree can render it without a second copy of the page.
  */
 
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
+import { ABOUT } from '@/lib/i18n/dictionaries/about';
+import type { Lang } from '@/lib/i18n/markets';
 
+/**
+ * English by necessity, not by choice: `metadata` is a module-level export and
+ * cannot see the component's `lang` prop. It reads the same dictionary as the
+ * page so the title cannot drift from the copy under it; the `[lang]` tree will
+ * export a `generateMetadata` off `ABOUT[lang].meta` when it lands.
+ *
+ * This page is a Server Component, so its metadata stays here — unlike
+ * /contact, /faq and /portfolio, which are Client Components and carry a
+ * sibling `layout.tsx` for exactly this export.
+ */
 export const metadata = {
-  title: 'Our story · Fortitudo Agency',
-  description:
-    'You should know what your build costs, and how it is going. Most agencies keep both to themselves. We built Fortitudo to do the opposite.',
+  title: ABOUT.en.meta.title,
+  description: ABOUT.en.meta.description,
 };
 
-/* Beliefs, the things we will not move on. */
-const BELIEFS = [
-  {
-    title: 'A fixed price is a promise.',
-    body: 'An hourly meter means we could not work out what the job was. Working that out is the job. The price you approve is the price you pay, and it only changes if you say so.',
-  },
-  {
-    title: 'Nothing goes out without a senior’s name on it.',
-    body: 'We use AI for the repetitive parts — setup, boilerplate, the mechanical hours. It decides nothing. A senior builder checks and shapes every change before it lands. That is where the speed comes from, and where the trust lives.',
-  },
-  {
-    title: 'You watch the build as it happens.',
-    body: 'The stage you are in, the change we just made, the preview you can click — it is all on one page, all the time. No status-call theater, and nothing you have to ask for.',
-  },
-  {
-    title: 'You own everything at launch.',
-    body: 'The code, the design files, the logins. All handed over the day you go live. Nothing is locked to us, and there are no license games.',
-  },
-];
+export default function AboutPage({ lang = 'en' }: { lang?: Lang }) {
+  const t = ABOUT[lang];
 
-export default function AboutPage() {
   return (
     <>
       <div className="dark bg-[var(--fx-charcoal)] text-[var(--fx-white)]">
@@ -54,19 +51,18 @@ export default function AboutPage() {
           />
           <Band className={HERO_Y} innerClassName="relative max-w-3xl">
             <BlurRise trigger="load">
-              <Eyebrow>Our story</Eyebrow>
+              <Eyebrow>{t.hero.eyebrow}</Eyebrow>
               <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-                You should know what it costs, and how it is going.
+                {t.hero.title}
               </Serif>
               <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                Most agencies keep both of those to themselves. We built Fortitudo to do
-                the opposite: one price, agreed up front, and a build you can watch.
+                {t.hero.body}
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <PillPrimary href="/contact" withArrow>
-                  Talk to us
+                  {t.hero.ctaPrimary}
                 </PillPrimary>
-                <PillGhost href="/services">See what we build</PillGhost>
+                <PillGhost href="/services">{t.hero.ctaSecondary}</PillGhost>
               </div>
             </BlurRise>
           </Band>
@@ -76,25 +72,21 @@ export default function AboutPage() {
         <Band className={SECTION_Y}>
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
             <BlurRise>
-              <Eyebrow>The problem</Eyebrow>
+              <Eyebrow>{t.problem.eyebrow}</Eyebrow>
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-                The work moved on.
-                <br className="hidden sm:block" /> The agencies did not.
+                {t.problem.titleLead}
+                {/* The space belongs to this text node, not to a separate
+                    `{' '}` child: two adjacent text children would render an
+                    extra separator comment where the original markup had one
+                    node, and this refactor has to leave the DOM untouched. */}
+                <br className="hidden sm:block" />
+                {` ${t.problem.titleRest}`}
               </Serif>
             </BlurRise>
             <BlurRise delay={0.1}>
               <div className="space-y-6 text-[15px] leading-relaxed text-[var(--fx-muted)] lg:pt-2">
-                <p>
-                  Most of a build is waiting. Vague prices. Missed dates. Calls that say
-                  nothing. Weeks of silence between updates. The actual thinking and
-                  making is a small slice of it.
-                </p>
-                <p>
-                  Everywhere else, that waiting has been squeezed out. In agency work it
-                  has not. That gap, between what could happen and what clients actually
-                  get, is why Fortitudo exists: senior people, better tools, and a build
-                  you can watch happen.
-                </p>
+                <p>{t.problem.para1}</p>
+                <p>{t.problem.para2}</p>
               </div>
             </BlurRise>
           </div>
@@ -119,13 +111,13 @@ export default function AboutPage() {
         {/* Beliefs */}
         <Band className={SECTION_Y}>
           <BlurRise className="max-w-2xl">
-            <Eyebrow>What we believe</Eyebrow>
+            <Eyebrow>{t.beliefs.eyebrow}</Eyebrow>
             <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-              A few things we will not move on.
+              {t.beliefs.title}
             </Serif>
           </BlurRise>
           <div className="mt-14 grid max-w-4xl gap-5 sm:grid-cols-2">
-            {BELIEFS.map((b, i) => (
+            {t.beliefs.items.map((b, i) => (
               <BlurRise key={b.title} delay={i * 0.06}>
                 {/* 6px, not the ported rounded-3xl: the logged-out site is
                     squared, and one lozenge in a grid of panels reads as an

@@ -27,8 +27,14 @@
 
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME, type HomeDict } from '@/lib/i18n/dictionaries/home';
+import { fill } from '@/lib/i18n/dictionaries/pricing';
 import { Band, BlurRise, Serif } from './primitives';
 import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
+
+/** This section's slice of the home dictionary, handed down to the cards. */
+type Copy = HomeDict['testimonials'];
 
 export type Testimonial = {
   /** What they actually said, in their words. */
@@ -57,25 +63,18 @@ export type ProofMetric = {
 /** Measured numbers only. If you cannot point at where it came from, leave it out. */
 export const METRICS: ProofMetric[] = [];
 
-/** The slot copy, so an empty section still explains itself to whoever edits it. */
-const TESTIMONIAL_SLOTS = [
-  'A client quote goes here — what they came to us with, and what changed.',
-  'The strongest one you have. This card is the one people read first.',
-  'A quote from a different kind of project, so the three do not all sound alike.',
-];
+/* The slot copy — what belongs in each empty card — lives in the home
+   dictionary (`testimonials.slots` / `testimonials.metricSlots`) with the rest
+   of the section's words. It is copy an editor reads, so it translates like
+   any other line, and it stays a description of what is missing: filling it in
+   with an invented quote is the exact thing this section was cleared of. */
 
-const METRIC_SLOTS = [
-  'A number you can source',
-  'A number you can source',
-  'A number you can source',
-];
-
-function Stars({ rating }: { rating?: number }) {
+function Stars({ rating, copy }: { rating?: number; copy: Copy }) {
   return (
     <div
       className="flex items-center gap-1"
       role="img"
-      aria-label={rating ? `${rating} out of 5` : 'No rating given'}
+      aria-label={rating ? fill(copy.ratingLabel, { rating }) : copy.noRatingLabel}
     >
       {[1, 2, 3, 4, 5].map((i) => (
         <svg
@@ -113,9 +112,11 @@ function QuoteMark({ className = '' }: { className?: string }) {
 function TestimonialCard({
   testimonial,
   highlight,
+  copy,
 }: {
   testimonial: Testimonial;
   highlight: boolean;
+  copy: Copy;
 }) {
   return (
     <article
@@ -128,7 +129,7 @@ function TestimonialCard({
     >
       <QuoteMark className={highlight ? 'opacity-70' : 'opacity-60'} />
       <div className="mt-4">
-        <Stars rating={testimonial.rating} />
+        <Stars rating={testimonial.rating} copy={copy} />
       </div>
       <p className="mt-5 flex-1 text-[15px] leading-relaxed">
         {testimonial.quote}
@@ -168,19 +169,19 @@ function TestimonialCard({
   );
 }
 
-function PlaceholderCard({ slot, index }: { slot: string; index: number }) {
+function PlaceholderCard({ slot, index, copy }: { slot: string; index: number; copy: Copy }) {
   return (
     <article data-fx-surface="dark" className="flex h-full flex-col bg-[var(--fx-charcoal-deep)] p-7">
       <div className="flex h-full flex-col rounded-[4px] border border-dashed border-[var(--fx-hairline)] p-6">
         <div className="flex items-center justify-between">
           <QuoteMark className="text-[var(--fx-faint)]" />
           <span style={MONO_STYLE} className={EYEBROW_TEXT}>
-            Slot {String(index + 1).padStart(2, '0')}
+            {fill(copy.slotLabel, { n: String(index + 1).padStart(2, '0') })}
           </span>
         </div>
         {/* Hollow stars: the shape of a rating without asserting one. */}
         <div className="mt-4 text-[var(--fx-faint)]">
-          <Stars />
+          <Stars copy={copy} />
         </div>
         <p className="mt-5 flex-1 text-[14px] leading-relaxed text-[var(--fx-muted)]">
           {slot}
@@ -192,7 +193,7 @@ function PlaceholderCard({ slot, index }: { slot: string; index: number }) {
           />
           {/* Says what belongs in the slot, so it is read, not decoration. */}
           <span className="text-xs text-[var(--fx-muted)]">
-            Name, title, company
+            {copy.slotAttribution}
           </span>
         </div>
       </div>
@@ -200,7 +201,8 @@ function PlaceholderCard({ slot, index }: { slot: string; index: number }) {
   );
 }
 
-export function Testimonials() {
+export function Testimonials({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].testimonials;
   const hasQuotes = TESTIMONIALS.length > 0;
   const hasMetrics = METRICS.length > 0;
   /* The middle card is the highlight, exactly as in the reference. With two or
@@ -219,7 +221,7 @@ export function Testimonials() {
             style={MONO_STYLE}
             className={`flex items-center justify-between ${EYEBROW_TEXT} text-[var(--fx-white)]`}
           >
-            <span>Proof</span>
+            <span>{t.eyebrow}</span>
             {/* Counts what is actually published, so it cannot go stale. */}
             <span className="text-[var(--fx-muted)]">
               ({String(TESTIMONIALS.length).padStart(2, '0')})
@@ -235,15 +237,13 @@ export function Testimonials() {
                 eyebrow's treatment on this surface; a headline wearing it read
                 as a second, competing voice. */}
             <Serif as="h2" className={`${DISPLAY_M} text-[var(--fx-white)]`}>
-              What clients say.
+              {t.heading}
             </Serif>
           </BlurRise>
 
           <BlurRise delay={0.08} className="lg:col-span-5">
             <p className="max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)] sm:text-[16px]">
-              {hasQuotes
-                ? 'In their own words, with their names on them.'
-                : 'Nothing here yet. A quote goes up once the client has read it back and agreed to put their name on it.'}
+              {hasQuotes ? t.leadWithQuotes : t.leadEmpty}
             </p>
             <Link
               href="/contact"
@@ -254,7 +254,7 @@ export function Testimonials() {
                 <ArrowUpRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
               </span>
               <span className="px-3 text-sm font-medium text-[var(--fx-white)]">
-                Start a project
+                {t.cta}
               </span>
             </Link>
           </BlurRise>
@@ -270,10 +270,11 @@ export function Testimonials() {
                       key={`${testimonial.name}-${i}`}
                       testimonial={testimonial}
                       highlight={i === highlightIndex}
+                      copy={t}
                     />
                   ))
-                : TESTIMONIAL_SLOTS.map((slot, i) => (
-                    <PlaceholderCard key={slot} slot={slot} index={i} />
+                : t.slots.map((slot, i) => (
+                    <PlaceholderCard key={slot} slot={slot} index={i} copy={t} />
                   ))}
             </div>
 
@@ -296,7 +297,7 @@ export function Testimonials() {
                       </div>
                     </div>
                   ))
-                : METRIC_SLOTS.map((label, i) => (
+                : t.metricSlots.map((label, i) => (
                     <div
                       key={i}
                       data-fx-surface="dark"

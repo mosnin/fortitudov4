@@ -7,11 +7,21 @@
  */
 
 import type { Metadata } from "next";
+import { FAQ } from "@/lib/i18n/dictionaries/faq-page";
 
+/**
+ * English because this file is the unprefixed route. Title and description come
+ * from the same dictionary as the questions, so the description cannot name the
+ * four categories in an order the page no longer uses, and cannot stay English
+ * once the page is translated. The `[lang]` tree will read `FAQ[lang]` from a
+ * `generateMetadata` here.
+ *
+ * The dictionary is plain data with no `'use client'`, which is what lets this
+ * Server Component import it.
+ */
 export const metadata: Metadata = {
-  title: "Questions · Fortitudo Agency",
-  description:
-    "What people ask before they hire us: getting started, price and payment, how your project runs, and the tech we build on.",
+  title: FAQ.en.meta.title,
+  description: FAQ.en.meta.description,
 };
 
 export default function FaqLayout({ children }: { children: React.ReactNode }) {

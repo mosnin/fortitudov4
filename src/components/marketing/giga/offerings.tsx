@@ -17,11 +17,14 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { services } from '@/lib/services';
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME } from '@/lib/i18n/dictionaries/home';
 import { KineticText, StaggerGrid } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_L } from './tokens';
 
-export function Offerings() {
+export function Offerings({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].offerings;
   return (
     <section
       className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
@@ -29,15 +32,14 @@ export function Offerings() {
       <Band>
         <div className="max-w-3xl">
           <BlurRise>
-            <Eyebrow>What we build</Eyebrow>
+            <Eyebrow>{t.eyebrow}</Eyebrow>
           </BlurRise>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-            <KineticText lines={['Five things we build for you.']} />
+            <KineticText lines={t.headingLines} />
           </Serif>
           <BlurRise delay={0.28}>
             <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-              Every one has a fixed price, agreed before we start. Senior
-              people do the work. You can watch it happen.
+              {t.lead}
             </p>
           </BlurRise>
         </div>
@@ -78,7 +80,7 @@ export function Offerings() {
                   {service.startingPrice}
                 </span>
                 <span className="flex items-center gap-1 text-[12.5px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
-                  Explore
+                  {t.cardCta}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </span>
               </div>
@@ -93,15 +95,14 @@ export function Offerings() {
           >
             <div>
               <Serif as="h3" className={`${TITLE_L} text-[var(--fx-white)]`}>
-                Something else?
+                {t.somethingElseTitle}
               </Serif>
               <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--fx-muted)]">
-                Moving an old site. Joining two tools together. Finishing a
-                build someone else left. Tell us what you need.
+                {t.somethingElseDesc}
               </p>
             </div>
             <span className="mt-5 flex items-center gap-1 text-[12.5px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">
-              Talk to us
+              {t.somethingElseCta}
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </span>
           </Link>

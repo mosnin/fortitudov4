@@ -43,69 +43,62 @@ import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
 import { Serif } from '@/components/marketing/giga/primitives';
 import { EYEBROW_TEXT, MONO_STYLE, TITLE_L } from '@/components/marketing/giga/tokens';
+import type { Lang } from '@/lib/i18n/markets';
+import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
 
 const SIGNIN = '/sign-in';
 const DEMO = '/contact';
 
+/**
+ * Structure only — every string in this menu lives in
+ * `lib/i18n/dictionaries/chrome.ts`. An item's icon and href stay here (a URL
+ * is not translatable copy) and its label/desc are matched BY KEY, never by
+ * array index: `key` is `keyof ChromeDict['nav']['items']`, so a typo or a
+ * renamed dictionary key is a compile error rather than an empty link.
+ */
 interface MegaItem {
   icon: React.ElementType;
-  label: string;
-  desc: string;
+  key: NavItemKey;
   href: string;
 }
 
-type MenuKey = 'product' | 'company';
+type MenuKey = keyof ChromeDict['nav']['menus'];
+type NavItemKey = keyof ChromeDict['nav']['items'];
 
 interface MenuConfig {
-  label: string;
-  featured: { eyebrow: string; title: string; body: string; cta: string; href: string };
+  featuredHref: string;
   items: MegaItem[];
 }
 
-/** The two nav dropdowns, reference-styled frosted panels. */
+/** The two nav dropdowns, reference-styled frosted panels. The `product` key
+ *  is wired through MenuKey and the open/close state; its visible label is
+ *  "What we build" and lives in the dictionary. */
 const MENUS: Record<MenuKey, MenuConfig> = {
   product: {
-    // "Product" is what a SaaS company calls this menu. We are an agency: the
-    // menu lists the five things we build for someone else, not a thing we
-    // sell seats in. The KEY stays `product` — it is wired through MenuKey and
-    // the open/close state — but nobody reads a key.
-    label: 'What we build',
-    featured: {
-      eyebrow: 'WHAT WE BUILD',
-      title: 'Five things we build for you.',
-      body: 'Websites, apps, AI tools, advice, and marketing. Every one has a fixed price, agreed before we start.',
-      cta: 'See what we build',
-      href: '/services',
-    },
+    featuredHref: '/services',
     items: [
-      { icon: Aperture, label: 'Websites', desc: 'A site people can find and buy from', href: '/services#websites' },
-      { icon: Building2, label: 'Software Solutions', desc: 'An app your team will actually use', href: '/services#software-solutions' },
-      { icon: Blocks, label: 'AI Solutions', desc: 'Hand the repeat work to a computer', href: '/services#ai-solutions' },
-      { icon: Compass, label: 'Consultation', desc: 'Know what to build before you spend', href: '/services#consultation' },
-      { icon: UserRound, label: 'Digital Marketing', desc: 'Turn more of your visitors into customers', href: '/services#digital-marketing' },
+      { icon: Aperture, key: 'websites', href: '/services#websites' },
+      { icon: Building2, key: 'softwareSolutions', href: '/services#software-solutions' },
+      { icon: Blocks, key: 'aiSolutions', href: '/services#ai-solutions' },
+      { icon: Compass, key: 'consultation', href: '/services#consultation' },
+      { icon: UserRound, key: 'digitalMarketing', href: '/services#digital-marketing' },
     ],
   },
   company: {
-    label: 'Company',
-    featured: {
-      eyebrow: 'OUR STORY',
-      title: 'Why we work the way we do.',
-      body: 'Senior people, a fixed price, and a project you can watch. On every job we take.',
-      cta: 'Read our story',
-      href: '/about',
-    },
+    featuredHref: '/about',
     items: [
-      { icon: Compass, label: 'About', desc: 'How we work, and why', href: '/about' },
-      { icon: Microscope, label: 'Portfolio', desc: 'Work we can show you', href: '/portfolio' },
-      { icon: LifeBuoy, label: 'FAQ', desc: 'The questions we get asked most', href: '/faq' },
-      { icon: Sprout, label: 'Contact', desc: 'Tell us what you want built', href: '/contact' },
+      { icon: Compass, key: 'about', href: '/about' },
+      { icon: Microscope, key: 'portfolio', href: '/portfolio' },
+      { icon: LifeBuoy, key: 'faq', href: '/faq' },
+      { icon: Sprout, key: 'contact', href: '/contact' },
     ],
   },
 };
 
 const MENU_ORDER: MenuKey[] = ['product', 'company'];
 
-export function SiteHeader() {
+export function SiteHeader({ lang = 'en' }: { lang?: Lang }) {
+  const t = CHROME[lang].nav;
   const reduce = useReducedMotion();
   const [scrolled, setScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState<MenuKey | null>(null);
@@ -182,7 +175,7 @@ export function SiteHeader() {
           : 'text-[var(--fx-muted)] hover:text-[var(--fx-white)]',
       )}
     >
-      {MENUS[menu].label}
+      {t.menus[menu].label}
       <ChevronDown
         className={cn('h-3.5 w-3.5 transition-transform duration-200', openMenu === menu && 'rotate-180')}
       />
@@ -190,6 +183,7 @@ export function SiteHeader() {
   );
 
   const active = openMenu ? MENUS[openMenu] : null;
+  const activeCopy = openMenu ? t.menus[openMenu] : null;
 
   return (
     <>
@@ -205,7 +199,7 @@ export function SiteHeader() {
               style={clusterStyle}
               className="flex items-center gap-0.5 rounded-[4px] border px-1.5"
             >
-              <Link href="/" aria-label="Fortitudo home" className="flex items-center px-3 py-2.5" onClick={closeAll}>
+              <Link href="/" aria-label={t.aria.home} className="flex items-center px-3 py-2.5" onClick={closeAll}>
                 {/* Empty alt: the link carries its own aria-label and the
                     wordmark beside it is visible text, so naming the mark
                     would announce "Fortitudo" a third time. */}
@@ -222,14 +216,14 @@ export function SiteHeader() {
                   onClick={closeAll}
                   className="rounded-[4px] px-3.5 py-2 text-sm text-[var(--fx-muted)] transition-colors hover:text-[var(--fx-white)]"
                 >
-                  Pricing
+                  {t.pricing}
                 </Link>
               </nav>
             </motion.div>
 
             {/* Dropdown mega-menu (Product / Company), frosted blurred panel */}
             <AnimatePresence>
-              {active && (
+              {active && activeCopy && (
                 <motion.div
                   key={openMenu}
                   initial={{ opacity: 0, y: 8, scale: 0.98 }}
@@ -243,7 +237,7 @@ export function SiteHeader() {
                     <div className="grid grid-cols-[280px_1fr]">
                       {/* Featured story */}
                       <Link
-                        href={active.featured.href}
+                        href={active.featuredHref}
                         onClick={closeAll}
                         className="group/feat relative flex flex-col justify-between overflow-hidden border-r border-[var(--fx-hairline)] bg-gradient-to-br from-[var(--fx-yellow)]/12 via-[var(--fx-charcoal-deep)]/40 to-[var(--fx-charcoal-deep)]/40 p-6"
                       >
@@ -258,17 +252,17 @@ export function SiteHeader() {
                             style={MONO_STYLE}
                             className={cn(EYEBROW_TEXT, 'text-[var(--fx-yellow)]')}
                           >
-                            {active.featured.eyebrow}
+                            {activeCopy.featured.eyebrow}
                           </p>
                           <Serif as="p" className={cn('mt-3', TITLE_L, 'text-[var(--fx-white)]')}>
-                            {active.featured.title}
+                            {activeCopy.featured.title}
                           </Serif>
                           <p className="mt-2.5 text-xs leading-relaxed text-[var(--fx-muted)]">
-                            {active.featured.body}
+                            {activeCopy.featured.body}
                           </p>
                         </div>
                         <span className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-[var(--fx-white)]">
-                          {active.featured.cta}
+                          {activeCopy.featured.cta}
                           <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover/feat:translate-x-0.5" />
                         </span>
                       </Link>
@@ -277,9 +271,10 @@ export function SiteHeader() {
                       <div className="grid grid-cols-2 gap-0.5 p-4">
                         {active.items.map((it) => {
                           const Icon = it.icon;
+                          const copy = t.items[it.key];
                           return (
                             <Link
-                              key={it.label}
+                              key={it.key}
                               href={it.href}
                               onClick={closeAll}
                               className="group flex items-start gap-3 rounded-[4px] px-3 py-2.5 transition-colors hover:bg-[var(--fx-white)]/[0.06]"
@@ -289,12 +284,12 @@ export function SiteHeader() {
                               </span>
                               <span className="min-w-0">
                                 <span className="block text-[13px] font-medium text-[var(--fx-white)]">
-                                  {it.label}
+                                  {copy.label}
                                 </span>
                                 {/* --fx-muted is 6.5:1; it describes the link,
                                     so it is content, not chrome. */}
                                 <span className="mt-0.5 block text-[11px] leading-snug text-[var(--fx-muted)]">
-                                  {it.desc}
+                                  {copy.desc}
                                 </span>
                               </span>
                             </Link>
@@ -320,17 +315,17 @@ export function SiteHeader() {
               href={SIGNIN}
               className="hidden rounded-[4px] px-3.5 py-1.5 text-sm text-[var(--fx-muted)] transition-colors hover:text-[var(--fx-white)] lg:inline-flex"
             >
-              Sign in
+              {t.signIn}
             </Link>
             <Link
               href={DEMO}
               className="hidden h-9 items-center rounded-[4px] bg-[var(--fx-yellow)] px-4 text-sm font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98] lg:inline-flex"
             >
-              Get a price
+              {t.getPrice}
             </Link>
             <button
               type="button"
-              aria-label="Open menu"
+              aria-label={t.aria.openMenu}
               onClick={() => setMobileOpen(true)}
               className="flex h-9 w-9 items-center justify-center rounded-[4px] text-[var(--fx-white)] transition-colors hover:bg-[var(--fx-white)]/[0.06] lg:hidden"
             >
@@ -369,7 +364,7 @@ export function SiteHeader() {
                 </Link>
                 <button
                   type="button"
-                  aria-label="Close menu"
+                  aria-label={t.aria.closeMenu}
                   onClick={() => setMobileOpen(false)}
                   className="flex h-10 w-10 items-center justify-center rounded-[4px] border border-[var(--fx-faint)] text-[var(--fx-white)] transition-colors hover:bg-[var(--fx-white)]/[0.06]"
                 >
@@ -392,13 +387,13 @@ export function SiteHeader() {
                       // is content and reads at --fx-muted's 6.5:1.
                       className={cn('px-1', EYEBROW_TEXT)}
                     >
-                      {MENUS[key].label}
+                      {t.menus[key].label}
                     </motion.p>
                     <div className="mt-2 space-y-0.5">
                       {MENUS[key].items.map((it) => {
                         const Icon = it.icon;
                         return (
-                          <motion.div key={it.label} variants={itemVariants}>
+                          <motion.div key={it.key} variants={itemVariants}>
                             <Link
                               href={it.href}
                               onClick={closeAll}
@@ -407,7 +402,7 @@ export function SiteHeader() {
                               <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-white)]/[0.06] text-[var(--fx-muted)]">
                                 <Icon className="h-4 w-4" />
                               </span>
-                              <span className="text-[19px]">{it.label}</span>
+                              <span className="text-[19px]">{t.items[it.key].label}</span>
                             </Link>
                           </motion.div>
                         );
@@ -421,7 +416,7 @@ export function SiteHeader() {
                     onClick={closeAll}
                     className="block px-1 py-2 text-[19px] text-[var(--fx-white)]"
                   >
-                    Pricing
+                    {t.pricing}
                   </Link>
                 </motion.div>
               </motion.nav>
@@ -432,7 +427,7 @@ export function SiteHeader() {
                   onClick={closeAll}
                   className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[var(--fx-yellow)] text-sm font-medium text-[var(--fx-on-yellow)]"
                 >
-                  Get a price
+                  {t.getPrice}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -440,7 +435,7 @@ export function SiteHeader() {
                   onClick={closeAll}
                   className="flex h-12 w-full items-center justify-center rounded-[4px] border border-[var(--fx-faint)] text-sm font-medium text-[var(--fx-white)]"
                 >
-                  Sign in
+                  {t.signIn}
                 </Link>
               </div>
             </motion.div>

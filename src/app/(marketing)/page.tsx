@@ -11,14 +11,22 @@
  * platform is how the work gets run, not the thing on the invoice. Git has
  * them if that judgement ever needs revisiting.
  *
- * Every child here is a self-contained client component that takes NO props, so
- * nothing crosses the server→client boundary (this page is a Server Component;
- * it `auth()`s and bounces signed-in users to their workspace first).
+ * Every child here is a self-contained client component whose only prop is the
+ * language, a plain string, so nothing unserializable crosses the server→client
+ * boundary (this page is a Server Component; it `auth()`s and bounces signed-in
+ * users to their workspace first). Each section looks its own copy up in
+ * `src/lib/i18n/dictionaries/home.ts`.
+ *
+ * English is the only shipped language: this file pins `lang` to 'en', and the
+ * `[lang]` tree that will render the same sections in es/ru does not exist yet
+ * (`plans/i18n.md`). The hero is imported from its leaf rather than through the
+ * `hero-21` default wrapper so it can be handed the same prop as the rest.
  */
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import Hero21 from '@/components/originkit/hero-21';
+import type { Lang } from '@/lib/i18n/markets';
+import { Section25Hero } from '@/components/originkit/ui/hero-21/section-25-hero';
 import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
@@ -35,15 +43,17 @@ export default async function MarketingHomePage() {
     redirect('/post-login');
   }
 
+  const lang: Lang = 'en';
+
   return (
     <>
       {/* The whole logged-out site is charcoal; the shell already forces it. */}
       <div className="bg-[var(--fx-charcoal)] text-white">
-        <Hero21 />
-        <Stats />
-        <Offerings />
-        <Pipeline />
-        <Advantage />
+        <Section25Hero lang={lang} />
+        <Stats lang={lang} />
+        <Offerings lang={lang} />
+        <Pipeline lang={lang} />
+        <Advantage lang={lang} />
       </div>
 
       {/* Halfway down, the ground flips to racing yellow and the ink to black.
@@ -53,10 +63,10 @@ export default async function MarketingHomePage() {
           and the colour change marks the turn. */}
       <ToneShift>
         {/* Proof follows the claim. Ships empty — the slots say what goes in them. */}
-        <Testimonials />
-        <Complexity />
-        <Faq />
-        <CtaSection />
+        <Testimonials lang={lang} />
+        <Complexity lang={lang} />
+        <Faq lang={lang} />
+        <CtaSection lang={lang} />
       </ToneShift>
     </>
   );

@@ -12,6 +12,11 @@
  * window were describing a product that does not exist — every number here is
  * now traceable to `services.ts`, `crm.ts` or the terms of service, and the
  * ones that were not have been replaced with what we actually commit to.
+ *
+ * The four headings and sixteen answers now live in
+ * `src/lib/i18n/dictionaries/faq-page.ts`, along with the `metadata` the
+ * sibling `layout.tsx` renders. This file is structure and behaviour only, and
+ * takes a `lang` so the `[lang]` tree can render it without a second copy.
  */
 
 import { ChevronDown } from 'lucide-react';
@@ -20,95 +25,12 @@ import { Band, BlurRise, Eyebrow, PillPrimary, Serif } from '@/components/market
 import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
+import { FAQ } from '@/lib/i18n/dictionaries/faq-page';
+import type { Lang } from '@/lib/i18n/markets';
 
-const faqCategories = [
-  {
-    category: "Getting started",
-    questions: [
-      {
-        q: "How does it work?",
-        a: "Pick what you need. Make an account. Answer a few questions about your project. Pay. Your project page opens, and you can see every stage of the build from there.",
-      },
-      {
-        q: "How long does it take?",
-        a: "It depends what you are building — a marketing site is not the same job as an app or an AI build. We work out your dates along with your price, and you see both before you agree to anything.",
-      },
-      {
-        q: "What do you need from me?",
-        a: "What your business does, who you sell to, what you want the thing to do, and your logo and brand files if you have them. The more you tell us, the closer the first version will be.",
-      },
-      {
-        q: "What if I do not know what I need yet?",
-        a: "That is normal. The first stage is us working it out with you. You can also send us a note first, and we will help you decide before you pay anything.",
-      },
-    ],
-  },
-  {
-    category: "Price & payment",
-    questions: [
-      {
-        q: "How can I pay?",
-        a: "Through Creem.io. It takes all the major credit and debit cards, and some digital wallets.",
-      },
-      {
-        q: "Are there any hidden fees?",
-        a: "No. The price you see before you pay is the price you pay. If you want something outside what we agreed to build, we price that first and you decide.",
-      },
-      {
-        q: "Do you offer refunds?",
-        a: "If you do not like what we made, we fix it through the revision rounds in your project. Fees are not refundable unless we have agreed otherwise in writing. The full wording is in our terms of service.",
-      },
-      {
-        q: "Can I pay in parts?",
-        a: "Payment is due before work starts, as our terms of service set out. For a bigger build, talk to us before you approve the price.",
-      },
-    ],
-  },
-  {
-    category: "Running your project",
-    questions: [
-      {
-        q: "How do I see how it is going?",
-        a: "Your project page shows the stage you are in, a bit like tracking a food delivery. Discovery, Design, Development, Testing, Review, and Launch. It moves as we work.",
-      },
-      {
-        q: "How many changes do I get?",
-        a: "The rounds are written into what you approve before we start. Changes inside that cost you nothing extra. Ask for them on your project page.",
-      },
-      {
-        q: "Can I send you files?",
-        a: "Yes. Your project page has a place to upload logos, photos, text, and anything else we need.",
-      },
-      {
-        q: "How do I talk to you?",
-        a: "There is a message box on your project page. You write there, we answer there. No email chains, no Slack channels.",
-      },
-    ],
-  },
-  {
-    category: "The tech",
-    questions: [
-      {
-        q: "What is it built with?",
-        a: "Next.js, React, TypeScript and Tailwind CSS, plus whatever your project needs behind them. All of it is standard, so another team could pick it up later.",
-      },
-      {
-        q: "Do I own it?",
-        a: "Yes. Once the work is done and paid for, the code, the designs, and the files we made are all yours.",
-      },
-      {
-        q: "Do you host it?",
-        a: "We can put it wherever you want — Vercel, AWS, or somewhere else — or tell you what suits your project. Hosting is billed by them, not by us.",
-      },
-      {
-        q: "What happens after launch?",
-        a: "Every project comes with 30 days of help after launch. If you want us to keep working on it after that, we agree that separately.",
-      },
-    ],
-  },
-];
+export default function FAQPage({ lang = 'en' }: { lang?: Lang }) {
+  const t = FAQ[lang];
 
-export default function FAQPage() {
   return (
     <>
       {/* Hero */}
@@ -121,14 +43,13 @@ export default function FAQPage() {
         />
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
-            <Eyebrow>FAQ</Eyebrow>
+            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Frequently asked{' '}
-              <span className="text-[var(--fx-yellow)]">questions.</span>
+              {t.hero.titleLead}{' '}
+              <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              The things people ask us before they start. Can&apos;t find
-              yours? Send us a note and we will answer it.
+              {t.hero.body}
             </p>
           </BlurRise>
         </Band>
@@ -154,7 +75,7 @@ export default function FAQPage() {
         <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
           <Band innerClassName="max-w-3xl">
             <div className="space-y-16">
-              {faqCategories.map((category) => (
+              {t.categories.map((category) => (
                 <BlurRise key={category.category}>
                   <p style={MONO_STYLE} className={EYEBROW_TEXT}>
                     {category.category}
@@ -199,13 +120,13 @@ export default function FAQPage() {
           <Band innerClassName="max-w-2xl">
             <BlurRise>
               <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
-                Still have questions?
+                {t.still.title}
               </Serif>
               <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                Send us a note. We answer within 24 hours.
+                {t.still.body}
               </p>
               <PillPrimary href="/contact" className="mt-8" withArrow>
-                Contact us
+                {t.still.cta}
               </PillPrimary>
             </BlurRise>
           </Band>

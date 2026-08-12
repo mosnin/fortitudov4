@@ -12,6 +12,11 @@
  * table the admin CRM already reads from — and when that call fails it says so
  * and leaves the message in the box, instead of clearing the form and
  * claiming success.
+ *
+ * The copy — labels, the placeholder, both failure notices, the success state —
+ * lives in `src/lib/i18n/dictionaries/contact.ts`, with the `metadata` the
+ * sibling `layout.tsx` renders. Field names, validation and the POST are
+ * behaviour and stay here; so does the email address, which is not copy.
  */
 
 import { useState } from 'react';
@@ -19,8 +24,18 @@ import { CheckCircle, Loader2, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { services } from '@/lib/services';
 import { Band, BlurRise, Eyebrow, PillGhost, Serif } from '@/components/marketing/giga/primitives';
 import { ALERT_TEXT, DISPLAY_L, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
+import { CONTACT } from '@/lib/i18n/dictionaries/contact';
+import { fill } from '@/lib/i18n/dictionaries/pricing';
+import type { Lang } from '@/lib/i18n/markets';
 
 const EMPTY = { name: '', email: '', company: '', service: '', message: '' };
+
+/**
+ * An address, not copy: it is the same in every language, and a translated
+ * inbox does not exist. It interpolates into the two failure notices as
+ * `{email}` so no dictionary ever has to carry it.
+ */
+const CONTACT_EMAIL = 'hello@fortitudo.agency';
 
 // The resting border is --fx-faint rather than --fx-hairline: the hairline is
 // 1.4:1 on charcoal, and WCAG 1.4.11 asks 3:1 of any boundary that is what
@@ -34,23 +49,9 @@ const FIELD =
 const LABEL =
   'mb-1.5 block text-[13px] font-medium text-[var(--fx-muted)]';
 
-const DETAILS = [
-  {
-    icon: Mail,
-    title: 'Email',
-    body: 'hello@fortitudo.agency',
-  },
-  {
-    icon: Clock,
-    title: 'Response time',
-    body: 'We answer within 24 hours on working days.',
-  },
-  {
-    icon: MapPin,
-    title: 'Where we are',
-    body: 'We work remotely, with clients anywhere.',
-  },
-];
+/** The icons for the three detail rows, in render order. They pair with the
+ *  strings in `t.details` below; icons are not copy and do not translate. */
+const DETAIL_ICONS = [Mail, Clock, MapPin] as const;
 
 /**
  * No tone shift on this page, deliberately, for two reasons.
@@ -67,10 +68,17 @@ const DETAILS = [
  * visitor must not miss would be the one they cannot read. Fix the tokens
  * first; then this page can turn yellow.
  */
-export default function ContactPage() {
+export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
+  const t = CONTACT[lang];
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [error, setError] = useState<string | null>(null);
+
+  const details = [
+    { icon: DETAIL_ICONS[0], title: t.details.emailTitle, body: CONTACT_EMAIL },
+    { icon: DETAIL_ICONS[1], title: t.details.responseTitle, body: t.details.responseBody },
+    { icon: DETAIL_ICONS[2], title: t.details.locationTitle, body: t.details.locationBody },
+  ];
 
   const set = (key: keyof typeof EMPTY) => (value: string) =>
     setForm((current) => ({ ...current, [key]: value }));
@@ -90,17 +98,14 @@ export default function ContactPage() {
         // The form is deliberately NOT cleared here — what they wrote is the
         // only copy, and losing it is worse than the failure itself.
         setError(
-          payload.error ??
-            'We could not send that. Please email us directly at hello@fortitudo.agency.'
+          payload.error ?? fill(t.form.errorSend, { email: CONTACT_EMAIL })
         );
         setStatus('idle');
         return;
       }
       setStatus('sent');
     } catch {
-      setError(
-        'We could not reach the server. Please email us directly at hello@fortitudo.agency.'
-      );
+      setError(fill(t.form.errorNetwork, { email: CONTACT_EMAIL }));
       setStatus('idle');
     }
   }
@@ -117,13 +122,13 @@ export default function ContactPage() {
         />
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
-            <Eyebrow>Contact</Eyebrow>
+            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Let&apos;s talk about{' '}
-              <span className="text-[var(--fx-yellow)]">your project.</span>
+              {t.hero.titleLead}{' '}
+              <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Tell us what you want built. We answer within 24 hours.
+              {t.hero.body}
             </p>
           </BlurRise>
         </Band>
@@ -139,10 +144,10 @@ export default function ContactPage() {
                   <div className="py-10">
                     <CheckCircle className="mb-4 h-10 w-10 text-[var(--fx-yellow)]" />
                     <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
-                      Message received.
+                      {t.sent.title}
                     </Serif>
                     <p className="mt-2 text-[14px] text-[var(--fx-muted)]">
-                      We have it. You will hear from us within 24 hours.
+                      {t.sent.body}
                     </p>
                     <PillGhost
                       href="/contact"
@@ -150,7 +155,7 @@ export default function ContactPage() {
                       // A link rather than a button: re-mounting the page is
                       // the simplest way to get a genuinely clean form.
                     >
-                      Send another
+                      {t.sent.again}
                     </PillGhost>
                   </div>
                 ) : (
@@ -158,7 +163,12 @@ export default function ContactPage() {
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                       <div>
                         <label htmlFor="name" className={LABEL}>
-                          Name <span className="text-[var(--fx-yellow)]">*</span>
+                          {/* The trailing space is inside the expression, not a
+                              sibling `{' '}`: two adjacent text children render
+                              a separator comment, and this label had one text
+                              node before the extraction. */}
+                          {`${t.form.nameLabel} `}
+                          <span className="text-[var(--fx-yellow)]">*</span>
                         </label>
                         <input
                           id="name"
@@ -171,7 +181,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <label htmlFor="email" className={LABEL}>
-                          Email{' '}
+                          {t.form.emailLabel}{' '}
                           <span className="text-[var(--fx-yellow)]">*</span>
                         </label>
                         <input
@@ -189,7 +199,7 @@ export default function ContactPage() {
                     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                       <div>
                         <label htmlFor="company" className={LABEL}>
-                          Company
+                          {t.form.companyLabel}
                         </label>
                         <input
                           id="company"
@@ -201,7 +211,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <label htmlFor="service" className={LABEL}>
-                          What you need
+                          {t.form.serviceLabel}
                         </label>
                         <select
                           id="service"
@@ -209,7 +219,7 @@ export default function ContactPage() {
                           value={form.service}
                           onChange={(e) => set('service')(e.target.value)}
                         >
-                          <option value="">Not sure yet</option>
+                          <option value="">{t.form.serviceUnset}</option>
                           {services.map((service) => (
                             <option key={service.id} value={service.id}>
                               {service.name}
@@ -221,7 +231,7 @@ export default function ContactPage() {
 
                     <div>
                       <label htmlFor="message" className={LABEL}>
-                        Message{' '}
+                        {t.form.messageLabel}{' '}
                         <span className="text-[var(--fx-yellow)]">*</span>
                       </label>
                       <textarea
@@ -230,7 +240,7 @@ export default function ContactPage() {
                         rows={6}
                         maxLength={5000}
                         className={FIELD}
-                        placeholder="What do you want built, and what should it do for you?"
+                        placeholder={t.form.messagePlaceholder}
                         value={form.message}
                         onChange={(e) => set('message')(e.target.value)}
                       />
@@ -255,14 +265,14 @@ export default function ContactPage() {
                       ) : (
                         <Send className="h-4 w-4" />
                       )}
-                      Send message
+                      {t.form.submit}
                     </button>
 
                     {/* A promise about what happens to their address is
                         content, not decoration, so it reads at --fx-muted's
                         6.5:1 rather than --fx-faint's 3.57:1. */}
                     <p className="text-[12px] text-[var(--fx-muted)]">
-                      No spam. We answer within 24 hours.
+                      {t.form.privacyNote}
                     </p>
                   </form>
                 )}
@@ -272,7 +282,7 @@ export default function ContactPage() {
             {/* Details */}
             <BlurRise delay={0.08} className="lg:col-span-2">
               <div className="border-t border-[var(--fx-hairline)]">
-                {DETAILS.map((detail) => (
+                {details.map((detail) => (
                   <div
                     key={detail.title}
                     className="flex items-start gap-4 border-b border-[var(--fx-hairline)] py-6"
@@ -295,14 +305,13 @@ export default function ContactPage() {
 
               <div className="mt-8 rounded-[6px] border border-dashed border-[var(--fx-hairline)] p-6">
                 <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
-                  Rather just start?
+                  {t.start.title}
                 </Serif>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-                  Skip the form and start your project here instead. Same
-                  questions, asked as a chat.
+                  {t.start.body}
                 </p>
                 <PillGhost href="/sign-up" className="mt-5 w-full">
-                  Create an account
+                  {t.start.cta}
                 </PillGhost>
               </div>
             </BlurRise>

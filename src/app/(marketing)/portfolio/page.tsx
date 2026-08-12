@@ -16,6 +16,10 @@
  * CASE_STUDIES below as engagements complete and the empty state disappears on
  * its own. Every field is required precisely so a half-filled entry cannot
  * quietly become filler again.
+ *
+ * The hero and the empty state live in
+ * `src/lib/i18n/dictionaries/portfolio.ts`, with the `metadata` the sibling
+ * `layout.tsx` renders. No case study was seeded there either.
  */
 
 import { ArrowUpRight } from 'lucide-react';
@@ -23,6 +27,8 @@ import { motion } from 'motion/react';
 import { Band, BlurRise, Eyebrow, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
 import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
+import { PORTFOLIO } from '@/lib/i18n/dictionaries/portfolio';
+import type { Lang } from '@/lib/i18n/markets';
 
 type CaseStudy = {
   /** The engagement, in the client's words where possible. */
@@ -41,6 +47,13 @@ type CaseStudy = {
 /**
  * Real engagements only. An entry here is a public claim about a client — if
  * you cannot point at where the number came from, it does not go in.
+ *
+ * Deliberately still empty after the copy was moved into
+ * `src/lib/i18n/dictionaries/portfolio.ts`: the dictionary carries the hero and
+ * the empty state and nothing else, and no placeholder study was seeded there
+ * "for the translators". A study's strings are claims about a named third
+ * party, so they land here and in the dictionary at the same time, once the
+ * client has agreed to them.
  */
 const CASE_STUDIES: CaseStudy[] = [];
 
@@ -57,7 +70,9 @@ const CASE_STUDIES: CaseStudy[] = [];
  * When CASE_STUDIES fills, revisit: a grid of real work below a hero is proof,
  * and proof is what the yellow is for.
  */
-export default function PortfolioPage() {
+export default function PortfolioPage({ lang = 'en' }: { lang?: Lang }) {
+  const t = PORTFOLIO[lang];
+
   return (
     <>
       {/* Hero */}
@@ -70,14 +85,13 @@ export default function PortfolioPage() {
         />
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
-            <Eyebrow>Portfolio</Eyebrow>
+            <Eyebrow>{t.hero.eyebrow}</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Our work,{' '}
-              <span className="text-[var(--fx-yellow)]">with names on it.</span>
+              {t.hero.titleLead}{' '}
+              <span className="text-[var(--fx-yellow)]">{t.hero.titleAccent}</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              What we built, who we built it for, and what changed after. Only
-              ever with the client&apos;s name on it.
+              {t.hero.body}
             </p>
           </BlurRise>
         </Band>
@@ -92,20 +106,16 @@ export default function PortfolioPage() {
             <BlurRise className="max-w-2xl">
               <div className="rounded-[6px] border border-dashed border-[var(--fx-hairline)] p-10 sm:p-14">
                 <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  Nothing published yet
+                  {t.empty.eyebrow}
                 </p>
                 <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-                  We&apos;d rather show you nothing than show you someone
-                  else&apos;s work.
+                  {t.empty.title}
                 </Serif>
                 <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                  A project goes up here once the client has read it and
-                  agreed to the numbers in it. Until then, just ask. We will
-                  walk you through recent work on a call, including the parts
-                  that went wrong.
+                  {t.empty.body}
                 </p>
                 <PillPrimary href="/contact" className="mt-8" withArrow>
-                  Ask about recent work
+                  {t.empty.cta}
                 </PillPrimary>
               </div>
             </BlurRise>

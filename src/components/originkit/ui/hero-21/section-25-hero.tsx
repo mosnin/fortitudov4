@@ -34,6 +34,8 @@
 import { Reveal, RevealGroup } from "@/components/originkit/ui/hero-21/reveal";
 import { motion, useReducedMotion } from "motion/react";
 import { services } from "@/lib/services";
+import type { Lang } from "@/lib/i18n/markets";
+import { HOME } from "@/lib/i18n/dictionaries/home";
 import { Serif } from "@/components/marketing/giga/primitives";
 import { KineticText, Parallax, useMagnetic } from "@/components/marketing/giga/motion-kit";
 import { DISPLAY_XL, EYEBROW_TEXT, HERO_Y, MONO_STYLE } from "@/components/marketing/giga/tokens";
@@ -41,7 +43,8 @@ import { DISPLAY_XL, EYEBROW_TEXT, HERO_Y, MONO_STYLE } from "@/components/marke
 /** The five things we sell, read from the module the product prices from. */
 const OFFERINGS = services.map((service) => service.name);
 
-export const Section25Hero = () => {
+export const Section25Hero = ({ lang = "en" }: { lang?: Lang }) => {
+  const t = HOME[lang].hero;
   const reduce = useReducedMotion();
   const magnetic = useMagnetic<HTMLAnchorElement>();
 
@@ -88,10 +91,10 @@ export const Section25Hero = () => {
             className="inline-flex items-center gap-3 rounded-full border border-[var(--fx-faint)] bg-[var(--fx-white)]/[0.06] py-1.5 pr-5 pl-1.5 backdrop-blur-md transition-colors duration-200 hover:border-[var(--fx-yellow)]"
           >
             <span className="rounded-full bg-[var(--fx-yellow)] px-3 py-1 text-[12px] font-semibold text-[var(--fx-on-yellow)]">
-              Fixed price
+              {t.badgeTag}
             </span>
             <span className="text-[13.5px] font-medium text-[var(--fx-white)] sm:text-[14px]">
-              The price you approve is the price you pay
+              {t.badgeText}
             </span>
           </a>
         </Reveal>
@@ -104,15 +107,13 @@ export const Section25Hero = () => {
           <KineticText
             trigger="load"
             delay={0.18}
-            lines={['We build it.', 'You own it.']}
+            lines={t.headlineLines}
           />
         </Serif>
-  
+
         <Reveal>
           <p className="mt-7 max-w-xl text-[16px] leading-relaxed text-[var(--fx-muted)] sm:text-[18px]">
-            Websites, apps, AI tools, and marketing. You get a fixed price
-            before we start, a page that shows you how it is going, and every
-            file the day it goes live.
+            {t.lead}
           </p>
         </Reveal>
   
@@ -124,7 +125,7 @@ export const Section25Hero = () => {
             transition={{ duration: 0.12 }}
             className="group inline-flex items-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-7 py-4 text-[16px] font-medium tracking-[-0.01em] text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)]"
           >
-            Start a project
+            {t.ctaPrimary}
             <svg
               aria-hidden
               xmlns="http://www.w3.org/2000/svg"
@@ -147,7 +148,7 @@ export const Section25Hero = () => {
             href="/portfolio"
             className="group inline-flex items-center gap-2 text-[16px] font-medium text-[var(--fx-white)] transition-colors duration-200 hover:text-[var(--fx-yellow)]"
           >
-            See our work
+            {t.ctaSecondary}
             <svg
               aria-hidden
               xmlns="http://www.w3.org/2000/svg"
@@ -185,7 +186,7 @@ export const Section25Hero = () => {
       >
         <Reveal>
           <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-            What we build
+            {t.offeringsEyebrow}
           </p>
         </Reveal>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-3">

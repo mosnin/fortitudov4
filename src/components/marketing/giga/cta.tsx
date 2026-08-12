@@ -13,6 +13,8 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { EASE_OUT } from '@/lib/motion';
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME } from '@/lib/i18n/dictionaries/home';
 import { TextFlip } from '@/components/ui/text-flip';
 import { Eyebrow, Serif } from './primitives';
 import { DISPLAY_M, SECTION_Y } from './tokens';
@@ -23,7 +25,8 @@ const reveal = {
   viewport: { once: true, margin: '-80px' },
 };
 
-export function CtaSection() {
+export function CtaSection({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].cta;
   return (
     <section
       className={`relative overflow-hidden bg-[var(--fx-charcoal)] px-5 sm:px-8 ${SECTION_Y}`}
@@ -40,31 +43,27 @@ export function CtaSection() {
           {/* The kit's eyebrow, not a local copy of it: this section had its
               own hand-rolled version, which is how the dot and the tracking
               drifted apart from every other eyebrow on the site. */}
-          <Eyebrow>Get a price</Eyebrow>
+          <Eyebrow>{t.eyebrow}</Eyebrow>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-            Ready to build
+            {t.headingLead}
             {/* The second line flips through what we actually build.
                 Left-aligned headline, punctuation inside each item — no
                 trailing-character jitter as widths change. */}
             <TextFlip as={motion.span} interval={2.8} className="block">
-              <>something real?</>
-              <>your website?</>
-              <>your software?</>
-              <>your next launch?</>
+              {t.headingFlips}
             </TextFlip>
           </Serif>
         </motion.div>
 
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }} className="lg:pt-3">
           <p className="max-w-sm text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-            Tell us what you want. We give you a fixed price, then you watch us build
-            it. You own everything the day it goes live.
+            {t.lead}
           </p>
           <Link
             href="/contact"
             className="mt-6 inline-flex h-11 items-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98]"
           >
-            Talk to us
+            {t.button}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>

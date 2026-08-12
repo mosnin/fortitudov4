@@ -29,21 +29,28 @@ import Link from 'next/link';
 import { BrandMark } from '@/components/brand-mark';
 import { Serif } from './primitives';
 import { DISPLAY_XL, EYEBROW_TEXT, MONO_STYLE } from './tokens';
+import type { Lang } from '@/lib/i18n/markets';
+import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
 
-/** Where the nav actually goes. Every href here is a route that exists. */
-const EXPLORE = [
-  { label: 'Our work', href: '/portfolio' },
-  { label: 'What we do', href: '/services' },
-  { label: 'Pricing', href: '/pricing' },
-  { label: 'About', href: '/about' },
-  { label: 'FAQ', href: '/faq' },
-  { label: 'Sign in', href: '/sign-in' },
+/**
+ * Where the nav actually goes. Every href here is a route that exists. The
+ * label text lives in `lib/i18n/dictionaries/chrome.ts` and is matched BY KEY
+ * — `key` is typed against the dictionary, so a link with no copy behind it
+ * cannot compile. Order is layout and stays here.
+ */
+const EXPLORE: { key: keyof ChromeDict['footer']['explore']; href: string }[] = [
+  { key: 'work', href: '/portfolio' },
+  { key: 'services', href: '/services' },
+  { key: 'pricing', href: '/pricing' },
+  { key: 'about', href: '/about' },
+  { key: 'faq', href: '/faq' },
+  { key: 'signIn', href: '/sign-in' },
 ];
 
-const FINE_PRINT = [
-  { label: 'Terms of Service', href: '/terms' },
-  { label: 'Privacy Notice', href: '/privacy' },
-  { label: 'Contact', href: '/contact' },
+const FINE_PRINT: { key: keyof ChromeDict['footer']['finePrint']; href: string }[] = [
+  { key: 'terms', href: '/terms' },
+  { key: 'privacy', href: '/privacy' },
+  { key: 'contact', href: '/contact' },
 ];
 
 /**
@@ -52,9 +59,14 @@ const FINE_PRINT = [
  */
 const SOCIALS: { label: string; href: string }[] = [];
 
+/** An address, not copy: it reads the same in every language. */
 const EMAIL = 'hello@fortitudo.agency';
 
-export function SiteFooter() {
+export function SiteFooter({ lang = 'en' }: { lang?: Lang }) {
+  const t = CHROME[lang].footer;
+  // Computed at render, never frozen into the dictionary — see chrome.ts.
+  const copyright = t.copyright.replace('{year}', String(new Date().getFullYear()));
+
   return (
     <footer className="bg-[var(--fx-charcoal)] px-4 pb-16 sm:px-6">
       <div className="mx-auto mt-8 w-full max-w-7xl sm:mt-10">
@@ -74,17 +86,15 @@ export function SiteFooter() {
                 bare vw: at 9vw an ultrawide monitor puts this past 200px and
                 the second line stops fitting. */}
             <Serif className={DISPLAY_XL}>
-              <span className="block">Tell us what you&apos;re building.</span>
-              <span className="block text-[var(--fx-muted)]">
-                We&apos;ll tell you what it costs.
-              </span>
+              <span className="block">{t.headline.line1}</span>
+              <span className="block text-[var(--fx-muted)]">{t.headline.line2}</span>
             </Serif>
 
             {/* Three actions, all of which do something. */}
             <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
               <div>
                 <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  Get started
+                  {t.email.eyebrow}
                 </p>
                 <a
                   href={`mailto:${EMAIL}`}
@@ -112,7 +122,7 @@ export function SiteFooter() {
 
               <div>
                 <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  Schedule a call
+                  {t.call.eyebrow}
                 </p>
                 {/* The one yellow thing in the footer. */}
                 <Link
@@ -136,14 +146,14 @@ export function SiteFooter() {
                     <rect width="18" height="18" x="3" y="4" rx="2" />
                     <path d="M3 10h18" />
                   </svg>
-                  Book a meeting
+                  {t.call.cta}
                 </Link>
               </div>
 
               {SOCIALS.length > 0 ? (
                 <div>
                   <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                    Follow along
+                    {t.social.eyebrow}
                   </p>
                   <div className="mt-3 flex flex-wrap items-center gap-3">
                     {SOCIALS.map((social) => (
@@ -162,13 +172,13 @@ export function SiteFooter() {
               ) : (
                 <div>
                   <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                    Or skip the call
+                    {t.project.eyebrow}
                   </p>
                   <Link
                     href="/onboarding"
                     className="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-[var(--fx-faint)] px-5 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
                   >
-                    Start a project
+                    {t.project.cta}
                     <svg
                       aria-hidden
                       xmlns="http://www.w3.org/2000/svg"
@@ -194,7 +204,7 @@ export function SiteFooter() {
             <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  Explore
+                  {t.exploreEyebrow}
                 </p>
                 <div className="mt-4 grid grid-cols-2 gap-2.5 text-sm">
                   {EXPLORE.map((link) => (
@@ -203,7 +213,7 @@ export function SiteFooter() {
                       href={link.href}
                       className="font-medium tracking-tight text-[var(--fx-white)] transition-colors hover:text-[var(--fx-yellow)]"
                     >
-                      {link.label}
+                      {t.explore[link.key]}
                     </Link>
                   ))}
                 </div>
@@ -211,7 +221,7 @@ export function SiteFooter() {
 
               <div>
                 <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  Fine print
+                  {t.finePrintEyebrow}
                 </p>
                 <div className="mt-4 grid grid-cols-1 gap-2.5 text-sm">
                   {FINE_PRINT.map((link) => (
@@ -220,7 +230,7 @@ export function SiteFooter() {
                       href={link.href}
                       className="font-medium tracking-tight text-[var(--fx-white)] transition-colors hover:text-[var(--fx-yellow)]"
                     >
-                      {link.label}
+                      {t.finePrint[link.key]}
                     </Link>
                   ))}
                 </div>
@@ -236,10 +246,7 @@ export function SiteFooter() {
                   Fortitudo
                 </span>
               </span>
-              <p className="text-xs text-[var(--fx-muted)]">
-                &copy; {new Date().getFullYear()} Fortitudo Agency — we work
-                remotely, with clients anywhere.
-              </p>
+              <p className="text-xs text-[var(--fx-muted)]">{copyright}</p>
             </div>
           </div>
         </div>

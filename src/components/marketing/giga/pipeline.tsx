@@ -18,24 +18,19 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { CRM_STAGES, STAGE_LABELS } from '@/lib/crm';
+import type { Lang } from '@/lib/i18n/markets';
+import { HOME } from '@/lib/i18n/dictionaries/home';
 import { KineticText } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
 
-/** What the client actually gets to see at each stage, in their own words. */
-const STAGE_NOTES: Record<(typeof CRM_STAGES)[number], string> = {
-  onboarding: 'You tell us what you want. We set up your checklist and get the access we need.',
-  discovery: 'We dig into it properly. Then we tell you what we found, and what it will cost.',
-  design: 'You see the real screens, not a slide deck.',
-  build: 'We build it. You watch the task list move. A senior builder checks every change.',
-  client_review: 'Your turn. You leave your notes on the work itself.',
-  launched: 'It goes live. You get the files, the logins, and notes on how it all works.',
-  retained: 'If you want us to, we keep working on it after launch.',
-};
-
 const DWELL_MS = 2600;
 
-export function Pipeline() {
+export function Pipeline({ lang = 'en' }: { lang?: Lang }) {
+  const t = HOME[lang].pipeline;
+  /* Typed against CRM_STAGES rather than read loosely off the dictionary, so a
+     stage added to the product without a note here is a build error. */
+  const stageNotes: Record<(typeof CRM_STAGES)[number], string> = t.stageNotes;
   const reduce = useReducedMotion();
   const [active, setActive] = useState(0);
 
@@ -56,18 +51,16 @@ export function Pipeline() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-20">
           <div>
             <BlurRise>
-              <Eyebrow>How a project runs</Eyebrow>
+              <Eyebrow>{t.eyebrow}</Eyebrow>
             </BlurRise>
             <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
               {/* One string, not two: the mask is per WORD, so the heading
                   still wraps wherever the column tells it to. */}
-              <KineticText lines={['Seven stages. You can see which one you’re in.']} />
+              <KineticText lines={t.headingLines} />
             </Serif>
             <BlurRise delay={0.28}>
               <p className="mt-5 text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-                No Friday status email. We run your project on the same seven
-                stages you see, so &ldquo;where are we?&rdquo; is a page you
-                open, not a question you have to ask.
+                {t.lead}
               </p>
             </BlurRise>
           </div>
@@ -124,7 +117,7 @@ export function Pipeline() {
                         >
                           <span className="overflow-hidden">
                             <span className="block pt-2 text-[13px] leading-relaxed text-[var(--fx-muted)]">
-                              {STAGE_NOTES[stage]}
+                              {stageNotes[stage]}
                             </span>
                           </span>
                         </span>
@@ -147,7 +140,7 @@ export function Pipeline() {
             {/* The honesty caption. It is the thing that stops the diagram
                 reading as a live engagement, so it is content, not chrome. */}
             <p style={MONO_STYLE} className={`mt-5 ${EYEBROW_TEXT}`}>
-              A drawing of the stages — not a real project
+              {t.caption}
             </p>
           </BlurRise>
         </div>
