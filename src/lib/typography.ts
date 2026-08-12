@@ -29,21 +29,26 @@
  * product puts a 5rem headline on a data screen. Either is the bug.
  *
  * ── Faces ───────────────────────────────────────────────────────────────────
- * One family, self-hosted: Geist Sans + Geist Mono, mounted by `next/font` in
- * `app/layout.tsx`. `--font-title` is the display token and it resolves per
- * surface — Georgia in the product, the sans inside `[data-marketing-shell]` —
- * so `TITLE_FONT` below is correct on both without a branch. See the type
- * section of `app/globals.css`.
+ * One family, self-hosted: Inter Tight + Geist Mono, mounted by `next/font` in
+ * `app/layout.tsx`. `--font-title` is the display token and it now resolves to
+ * the SAME face on both surfaces, so `TITLE_FONT` below is correct everywhere
+ * without a branch.
+ *
+ * It used to resolve to Georgia here and to a sans on the logged-out site,
+ * which meant the app changed voice at the sign-in boundary. The names below
+ * still say "serif" in a couple of places — H1's comment, STAT_NUMBER's — and
+ * those are historical: there is no serif in this product any more. See the
+ * type section of `app/globals.css`.
  */
 
 /* ─── Display: focal numbers + page titles ─────────────────────────────── */
 
-/** Page-level h1 — serif Times, the screen's headline. */
+/** Page-level h1 — the screen's headline, in the display face. */
 export const H1 = "text-3xl tracking-tight text-foreground";
 /** Inline style — apply with style={{ fontFamily: 'var(--font-title)' }} */
 export const TITLE_FONT = { fontFamily: "var(--font-title)" } as const;
 
-/** Focal stat number — same scale as H1 but treated as data. Use serif. */
+/** Focal stat number — same scale as H1 but treated as data. */
 export const STAT_NUMBER = "text-3xl tracking-tight text-foreground tabular-nums";
 /** Compact stat (when 4+ sit in a row). 25px = H1 x 1/1.2. */
 export const STAT_NUMBER_COMPACT =

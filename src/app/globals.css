@@ -19,10 +19,15 @@
    selector, so the product cannot see it and it cannot see the product.
 
    TYPE — one family, self-hosted, no network fonts.
-   Geist Sans and Geist Mono mount as `--font-geist-sans` / `--font-geist-mono`
+   Inter Tight and Geist Mono mount as `--font-sans-tight` / `--font-geist-mono`
    from `next/font` in `app/layout.tsx`. There is no `@import url(...)` in this
    file and there must never be one: a webfont request here is render-blocking
-   on first paint, and every face this app uses is already on disk.
+   on first paint, and every face this app uses is already on disk. (The
+   OriginKit CLI has added such an import five times; delete it each time.)
+
+   ONE face across both surfaces. The product used to set headings in Georgia
+   while the logged-out site set them in a sans, so the app changed voice at
+   the sign-in boundary. It does not any more, and there is no serif anywhere.
 
    The scales themselves are code, not CSS:
      · Product   → `src/lib/typography.ts`   (30 · 25 · 21 · 17 · 14 · 12 · 11)
@@ -158,22 +163,30 @@
   --color-orange-dark: #ea580c;
 
   /* ── Type ────────────────────────────────────────────────────────────────
-     `--font-title` is the display face, and it is DELIBERATELY REDECLARED on
-     `[data-marketing-shell]` further down. The product sets its headlines in
-     Georgia; the logged-out site has no serif and remaps the same token to the
-     sans. One token, two surfaces, resolved by the cascade — so `.font-title`,
-     `TITLE_FONT` and every `var(--font-title)` consumer is correct wherever it
-     renders and no component has to know which surface it is on.
+     ONE FACE, BOTH SURFACES. Inter Tight for body and for display, mounted by
+     `next/font` in app/layout.tsx and self-hosted — there is no `@import
+     url(...)` in this file and there must never be one.
+
+     `--font-title` used to be Georgia here and the sans inside
+     `[data-marketing-shell]`, so the app spoke in a serif when you were signed
+     in and a sans when you were not. That is the single biggest reason the two
+     halves did not read as one product. The token survives because dozens of
+     consumers spell it — `.font-title`, `TITLE_FONT`, seven inline
+     `fontFamily` styles in the marketing kit — but it now resolves to the same
+     face everywhere, so the surface a component renders on no longer changes
+     its voice.
+
+     `--font-serif` is kept ONLY as the backing for Tailwind's `font-serif`
+     utility, and it is pinned to the same sans on purpose: there is no serif
+     in this product, and a `font-serif` class that actually produced one would
+     reintroduce the split silently.
 
      Tailwind emits a theme variable to `:root` only when something references
-     it with `var()`. `--font-title` is referenced (by `.font-title` below), so
-     it lands in `:root` and the shell override has something to override.
-     `--font-serif` is not referenced anywhere and exists only as the `font-serif`
-     utility; it is pinned to the same face as `--font-title` so the two can
-     never disagree. */
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-serif: Georgia, "Times New Roman", ui-serif, serif;
-  --font-title: Georgia, "Times New Roman", ui-serif, serif;
+     it with `var()`, and `--font-title` is referenced by `.font-title` below,
+     which is what keeps it in the cascade. */
+  --font-sans: var(--font-sans-tight), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-sans-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-title: var(--font-sans-tight), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 
   /* The hero-21 kit's two extra breakpoints. Retained with the kit even though
@@ -265,13 +278,17 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* The display voice, as a class. Resolves `--font-title` at use time, so it is
-   Georgia in the product and the sans inside `[data-marketing-shell]`. This
-   rule is unlayered on purpose: it out-ranks Tailwind's generated `font-title`
-   utility, which `@theme inline` bakes to the literal `:root` value and which
-   would therefore ignore the marketing override. */
+/* The display voice, as a class. Resolves `--font-title` at use time. The rule
+   is unlayered on purpose: it out-ranks Tailwind's generated `font-title`
+   utility, which `@theme inline` bakes to the literal `:root` value.
+
+   The fallback chain is SANS. It used to end in `Georgia, serif`, which meant
+   that if the variable ever failed to resolve — a font that did not load, a
+   component rendered outside the shell — the product silently fell back to the
+   serif this change exists to remove. A fallback should degrade to something
+   close to the real face, not to the thing it replaced. */
 .font-title {
-  font-family: var(--font-title), Georgia, serif;
+  font-family: var(--font-title), ui-sans-serif, system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
@@ -315,12 +332,11 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
  */
 [data-marketing-shell] {
   /* ── Type ────────────────────────────────────────────────────────────────
-   * The logged-out site is set in ONE voice: a tight geometric sans at
-   * semibold for display, monospace for eyebrows. There is no serif here.
-   *
-   * `--font-title` is remapped from the product's Georgia to the sans, which
-   * is what makes `.font-title` and every `var(--font-title)` consumer render
-   * correctly on both surfaces without knowing where it is.
+   * One voice, and it is now the SAME voice the product uses — `:root` already
+   * resolves `--font-title` to Inter Tight, so this block no longer has a face
+   * to override. The declarations below are inherited rather than remapped,
+   * and they are left spelled out because the aliases underneath have to point
+   * at something.
    *
    * `--font-serif-display` and `--font-mono-display` are ALIASES, kept because
    * seven inline `fontFamily` styles in `giga/primitives.tsx` and
@@ -330,7 +346,7 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
    * They must keep pointing at the tokens below — a "serif" alias that
    * resolves to an actual serif would put a second voice on this surface.
    */
-  --font-title: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-title: var(--font-sans-tight), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-serif-display: var(--font-title);
   --font-mono-display: var(--font-mono);
@@ -478,8 +494,15 @@ body:has([data-marketing-shell]) {
 [data-marketing-shell] h6,
 [data-marketing-shell] .font-serif-display {
   font-family: var(--font-title), ui-sans-serif, system-ui, sans-serif;
-  letter-spacing: -0.02em;
-  font-weight: 600;
+  /* Tighter than before (-0.02em). Inter Tight already carries narrow
+     sidebearings, and a display face wants the tracking to close up as the
+     size grows — at 84px the old value left the headline looking spaced. */
+  letter-spacing: -0.03em;
+  /* 500, not 600. Half of what read as heavy was the weight rather than the
+     face, and Inter Tight at medium holds a 84px headline without the slab-ish
+     density semibold gave it. It is a variable font, so this is a point on an
+     axis rather than a separate cut being downloaded. */
+  font-weight: 500;
 }
 
 /* Eyebrow labels: uppercase monospace, set apart from the display headings. */
