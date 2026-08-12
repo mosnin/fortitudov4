@@ -75,7 +75,6 @@ export default function ServicesPage() {
 
       {/* One band per offering, alternating sides */}
       {services.map((service, index) => {
-        const Icon = service.icon;
         const isEven = index % 2 === 0;
         return (
           <section
@@ -96,13 +95,13 @@ export default function ServicesPage() {
                 className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center"
               >
                 <div className={isEven ? '' : 'lg:order-2'}>
+                  {/* The price, and nothing else. There used to be an icon in a
+                      bordered, filled square sitting beside it — the badge
+                      pattern AGENTS.md rules out by name, because a glyph in a
+                      tinted box above a heading decorates rather than does
+                      anything. The price is the thing a buyer is looking for
+                      here; the offering is named in the h2 directly below. */}
                   <div className="mb-5 flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-[4px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]">
-                      <Icon
-                        className="h-5 w-5 text-[var(--fx-yellow)]"
-                        strokeWidth={1.75}
-                      />
-                    </span>
                     <span
                       style={MONO_STYLE}
                       className={`rounded-[4px] border border-[var(--fx-hairline)] px-2.5 py-1 ${EYEBROW_TEXT}`}
