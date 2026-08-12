@@ -88,7 +88,7 @@ export const Section25Hero = () => {
             className="inline-flex items-center gap-3 rounded-full border border-[var(--fx-faint)] bg-[var(--fx-white)]/[0.06] py-1.5 pr-5 pl-1.5 backdrop-blur-md transition-colors duration-200 hover:border-[var(--fx-yellow)]"
           >
             <span className="rounded-full bg-[var(--fx-yellow)] px-3 py-1 text-[12px] font-semibold text-[var(--fx-on-yellow)]">
-              Fixed quotes
+              Fixed price
             </span>
             <span className="text-[13.5px] font-medium text-[var(--fx-white)] sm:text-[14px]">
               The price you approve is the price you pay
@@ -104,15 +104,15 @@ export const Section25Hero = () => {
           <KineticText
             trigger="load"
             delay={0.18}
-            lines={['Built by people', 'who ship.']}
+            lines={['We build it.', 'You own it.']}
           />
         </Serif>
   
         <Reveal>
           <p className="mt-7 max-w-xl text-[16px] leading-relaxed text-[var(--fx-muted)] sm:text-[18px]">
-            Websites, software, AI and digital marketing for founders who need it
-            done properly the first time. A senior team, a fixed quote, and a
-            dashboard that shows you exactly where your build stands.
+            Websites, apps, AI tools, and marketing. You get a fixed price
+            before we start, a page that shows you how it is going, and every
+            file the day it goes live.
           </p>
         </Reveal>
   

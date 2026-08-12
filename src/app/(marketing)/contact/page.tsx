@@ -43,12 +43,12 @@ const DETAILS = [
   {
     icon: Clock,
     title: 'Response time',
-    body: 'We typically respond within 24 hours on business days.',
+    body: 'We answer within 24 hours on working days.',
   },
   {
     icon: MapPin,
-    title: 'Location',
-    body: 'Remote-first agency, serving clients worldwide.',
+    title: 'Where we are',
+    body: 'We work remotely, with clients anywhere.',
   },
 ];
 
@@ -123,8 +123,7 @@ export default function ContactPage() {
               <span className="text-[var(--fx-yellow)]">your project.</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Have a question or ready to start? Send us a note and we&apos;ll
-              get back to you within 24 hours.
+              Tell us what you want built. We answer within 24 hours.
             </p>
           </BlurRise>
         </Band>
@@ -143,8 +142,7 @@ export default function ContactPage() {
                       Message received.
                     </Serif>
                     <p className="mt-2 text-[14px] text-[var(--fx-muted)]">
-                      It&apos;s in our queue. We&apos;ll get back to you within
-                      24 hours.
+                      We have it. You will hear from us within 24 hours.
                     </p>
                     <PillGhost
                       href="/contact"
@@ -232,7 +230,7 @@ export default function ContactPage() {
                         rows={6}
                         maxLength={5000}
                         className={FIELD}
-                        placeholder="What are you building, and what would make it a success?"
+                        placeholder="What do you want built, and what should it do for you?"
                         value={form.message}
                         onChange={(e) => set('message')(e.target.value)}
                       />
@@ -264,7 +262,7 @@ export default function ContactPage() {
                         content, not decoration, so it reads at --fx-muted's
                         6.5:1 rather than --fx-faint's 3.57:1. */}
                     <p className="text-[12px] text-[var(--fx-muted)]">
-                      No spam. We&apos;ll respond within 24 hours.
+                      No spam. We answer within 24 hours.
                     </p>
                   </form>
                 )}
@@ -297,11 +295,11 @@ export default function ContactPage() {
 
               <div className="mt-8 rounded-[6px] border border-dashed border-[var(--fx-hairline)] p-6">
                 <Serif className={`${TITLE_L} text-[var(--fx-white)]`}>
-                  Prefer to jump right in?
+                  Rather just start?
                 </Serif>
                 <p className="mt-2 text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-                  Skip the form and start your project through the platform.
-                  You&apos;ll answer the same questions, in a conversation.
+                  Skip the form and start your project here instead. Same
+                  questions, asked as a chat.
                 </p>
                 <PillGhost href="/sign-up" className="mt-5 w-full">
                   Create an account

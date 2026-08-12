@@ -27,7 +27,7 @@ import { SECTION_Y } from './tokens';
  */
 const STATS = [
   { value: 5, suffix: '', label: 'Things we build' },
-  { value: 7, suffix: '', label: 'Stages you can track' },
+  { value: 7, suffix: '', label: 'Stages you can watch' },
   { value: 100, suffix: '%', label: 'Yours at launch' },
 ];
 
@@ -37,8 +37,8 @@ export function Stats() {
       <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto] lg:gap-20">
         <BlurRise>
           <p className="max-w-lg text-2xl leading-snug text-[var(--fx-white)] sm:text-[2rem] sm:leading-[1.25]">
-            Senior hours go to craft, not to status calls. You can see where
-            your project stands from day one.
+            No weekly status call. Open your project page and see where the
+            work has got to, any day you like.
           </p>
         </BlurRise>
 

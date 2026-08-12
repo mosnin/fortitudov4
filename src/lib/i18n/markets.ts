@@ -9,11 +9,11 @@
  * Resolution order everywhere in the product:
  *   1. Explicit user choice (profile fields for logged-in users, the
  *      `fx_lang` / `fx_currency` cookies for logged-out visitors).
- *   2. Geo (Vercel's `x-vercel-ip-country` header, read in middleware).
+ *   2. Geo (Vercel's `x-vercel-ip-country` header, read in src/proxy.ts).
  *   3. Default: English / USD — the American English site is the canonical
  *      base version of the product.
  *
- * Pure TS with no imports so it is safe in Edge middleware, server
+ * Pure TS with no imports so it is safe in the Edge proxy, server
  * components, and client components alike.
  */
 
@@ -131,7 +131,7 @@ export const CURRENCY_COOKIE = 'fx_currency';
 
 /**
  * Marketing paths that exist in every language tree (`/pricing` ↔
- * `/es/pricing` ↔ `/ru/pricing`). The middleware only auto-redirects across
+ * `/es/pricing` ↔ `/ru/pricing`). The proxy only auto-redirects across
  * languages for paths in this list, so a page can't be redirected to a
  * translation that hasn't shipped yet. Grow this list as pages are localized.
  */
@@ -151,7 +151,7 @@ export function localizedPath(basePath: string, lang: Lang): string {
 }
 
 /**
- * The pure language-routing decision the middleware executes — extracted so
+ * The pure language-routing decision src/proxy.ts executes — extracted so
  * behavior is unit-testable without Clerk/Next plumbing.
  *
  * Inputs: the request path, the visitor's country, the `fx_lang` cookie,

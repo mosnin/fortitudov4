@@ -24,13 +24,13 @@ import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
 
 /** What the client actually gets to see at each stage, in their own words. */
 const STAGE_NOTES: Record<(typeof CRM_STAGES)[number], string> = {
-  onboarding: 'Your brief, your access, your checklist — generated and unassigned until a human picks it up.',
-  discovery: 'What we found, what it changes, and the number that follows from it.',
-  design: 'Screens to react to, not a deck to sit through.',
-  build: 'The task list, live. Nothing lands without a senior builder reviewing it.',
-  client_review: 'Your turn. Comments go on the work, not into an inbox.',
-  launched: 'Shipped, handed over, and documented well enough to leave.',
-  retained: 'The part most agencies stop doing. We keep the build current.',
+  onboarding: 'You tell us what you want. We set up your checklist and get the access we need.',
+  discovery: 'We dig into it properly. Then we tell you what we found, and what it will cost.',
+  design: 'You see the real screens, not a slide deck.',
+  build: 'We build it. You watch the task list move. A senior builder checks every change.',
+  client_review: 'Your turn. You leave your notes on the work itself.',
+  launched: 'It goes live. You get the files, the logins, and notes on how it all works.',
+  retained: 'If you want us to, we keep working on it after launch.',
 };
 
 const DWELL_MS = 2600;
@@ -56,18 +56,18 @@ export function Pipeline() {
         <div className="grid gap-12 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-20">
           <div>
             <BlurRise>
-              <Eyebrow>How an engagement runs</Eyebrow>
+              <Eyebrow>How a project runs</Eyebrow>
             </BlurRise>
             <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
               {/* One string, not two: the mask is per WORD, so the heading
                   still wraps wherever the column tells it to. */}
-              <KineticText lines={['Seven stages, and you can see which one you’re in.']} />
+              <KineticText lines={['Seven stages. You can see which one you’re in.']} />
             </Serif>
             <BlurRise delay={0.28}>
               <p className="mt-5 text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-                Not a status email on Fridays. The same pipeline we run the work
-                on is the one your portal reads from, so &ldquo;where are
-                we?&rdquo; is a page you open rather than a question you ask.
+                No Friday status email. We run your project on the same seven
+                stages you see, so &ldquo;where are we?&rdquo; is a page you
+                open, not a question you have to ask.
               </p>
             </BlurRise>
           </div>
@@ -147,7 +147,7 @@ export function Pipeline() {
             {/* The honesty caption. It is the thing that stops the diagram
                 reading as a live engagement, so it is content, not chrome. */}
             <p style={MONO_STYLE} className={`mt-5 ${EYEBROW_TEXT}`}>
-              Diagram of the pipeline — not a live engagement
+              A drawing of the stages — not a real project
             </p>
           </BlurRise>
         </div>

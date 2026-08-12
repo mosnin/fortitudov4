@@ -23,12 +23,12 @@ import { ToneShift } from '@/components/marketing/giga/tone-shift';
 
 /** What every engagement includes, whichever of the five you buy. */
 const ALWAYS_INCLUDED = [
-  'Project discovery & requirements',
-  'Custom UI/UX design',
-  'Full development & integration',
-  'Quality assurance & testing',
-  'Deployment & launch support',
-  '30-day post-launch support',
+  'We work out what you need',
+  'Screens designed for you',
+  'Built, and joined to your other tools',
+  'Tested before it goes out',
+  'We put it live',
+  '30 days of help after launch',
 ];
 
 export default function ServicesPage() {
@@ -44,14 +44,15 @@ export default function ServicesPage() {
         />
         <Band innerClassName="relative max-w-3xl">
           <BlurRise trigger="load">
-            <Eyebrow>Our services</Eyebrow>
+            <Eyebrow>What we build</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Everything you need to{' '}
-              <span className="text-[var(--fx-yellow)]">launch &amp; grow.</span>
+              Five things we build.{' '}
+              <span className="text-[var(--fx-yellow)]">Pick the one you need.</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              From concept to deployment, we build digital solutions that drive
-              results. Pick the service that fits — we handle the rest.
+              Each one has a starting price. You get your own fixed price
+              before we start, and it does not move. Tell us which you need and
+              we do the rest.
             </p>
           </BlurRise>
         </Band>
@@ -168,13 +169,13 @@ export default function ServicesPage() {
                 Not sure which one you need?
               </Serif>
               <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                Book a free consultation and we&apos;ll help you pick the path
-                that actually fits — including telling you when the answer is
-                &ldquo;not yet&rdquo;.
+                Tell us what you are trying to do and we will say which one
+                fits — including when the honest answer is &ldquo;not
+                yet&rdquo;.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <PillPrimary href="/contact" withArrow>
-                  Book a consultation
+                  Ask us which one
                 </PillPrimary>
                 <PillGhost href="/pricing">View pricing</PillGhost>
               </div>

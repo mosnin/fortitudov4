@@ -78,6 +78,11 @@ const PRICING: Record<ServiceType, ServicePricing> = {
  * service so callers can fail defensively.
  */
 export function getPricing(serviceType: string): ServicePricing | undefined {
+  // Own properties only. A bare index reads through the prototype, so
+  // getPricing("constructor") or ("toString") returned a function rather than
+  // undefined — which is exactly what a caller following the contract above
+  // would not be defending against.
+  if (!Object.prototype.hasOwnProperty.call(PRICING, serviceType)) return undefined;
   return PRICING[serviceType as ServiceType];
 }
 

@@ -237,8 +237,8 @@ export function SiteFooter() {
                 </span>
               </span>
               <p className="text-xs text-[var(--fx-muted)]">
-                &copy; {new Date().getFullYear()} Fortitudo Agency — remote-first,
-                serving clients worldwide.
+                &copy; {new Date().getFullYear()} Fortitudo Agency — we work
+                remotely, with clients anywhere.
               </p>
             </div>
           </div>

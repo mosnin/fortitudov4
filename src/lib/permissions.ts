@@ -19,7 +19,7 @@ export function isAdmin(role: string): boolean {
   return role === "admin";
 }
 
-/** Billing, GHL integration settings, team roles. */
+/** Billing, invoices and payments, team roles. Admin only. */
 export function canManageAgency(role: string): boolean {
   return role === "admin";
 }
@@ -50,7 +50,12 @@ export function canUpdateTask(
   task: { assigneeId: string | null }
 ): boolean {
   if (role === "admin" || role === "project_manager") return true;
-  if (role === "va") return task.assigneeId === userId;
+  // `task.assigneeId === userId` alone matches null to null, so a caller with
+  // no id would pass on every UNASSIGNED task. Not reachable today — users.id
+  // is a non-null uuid and every caller passes a row straight from the
+  // database — but an ownership check that can be satisfied by two absent
+  // values is the wrong shape to leave in an access-control function.
+  if (role === "va") return Boolean(userId) && task.assigneeId === userId;
   return false;
 }
 

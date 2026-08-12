@@ -15,7 +15,6 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/db";
 import { leads } from "@/db/schema";
-import { services } from "@/lib/services";
 
 const leadSchema = z.object({
   name: z.string().trim().min(1).max(255),
@@ -28,23 +27,77 @@ const leadSchema = z.object({
   message: z.string().trim().min(1).max(5000),
 });
 
-/** Offerings the form's select is allowed to submit, for the label lookup. */
-const KNOWN_SERVICES = new Set<string>(services.map((s) => s.id));
+/** Field names a prospect can actually act on, for the 400 message. */
+const FIELD_LABELS: Record<string, string> = {
+  name: "name",
+  email: "email",
+  company: "company",
+  service: "service",
+  message: "message",
+};
 
 /* In-memory, per-instance rate limit. It is not a distributed limiter and does
  * not pretend to be one — it is the cheap ceiling that stops a single client
  * from filling the table faster than anyone would notice. */
 const WINDOW_MS = 60 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
+
+/**
+ * The ceiling for callers we could not identify.
+ *
+ * Behind Vercel `x-forwarded-for` is always set, so this bucket should never
+ * fill in production. If the site is ever served direct-to-origin, or a proxy
+ * in front of it is misconfigured, every visitor keys to the same string — and
+ * with one shared allowance of five the form would stop accepting leads for
+ * the whole world after five submissions, silently, with a message blaming the
+ * prospect's connection. That failure is far more expensive than the spam it
+ * would be preventing, so the anonymous bucket gets its own much larger
+ * allowance and says so in the log.
+ */
+const ANON_KEY = "unknown";
+const MAX_PER_WINDOW_ANON = 500;
+
 const hits = new Map<string, number[]>();
 
+/** Requests in the current window, oldest entries dropped. */
+function recentHits(key: string, now: number): number[] {
+  return (hits.get(key) ?? []).filter((at) => now - at < WINDOW_MS);
+}
+
+function limitFor(key: string): number {
+  return key === ANON_KEY ? MAX_PER_WINDOW_ANON : MAX_PER_WINDOW;
+}
+
+/** Peek: is this caller already at their ceiling? Consumes nothing. */
 function overLimit(key: string): boolean {
   const now = Date.now();
-  const recent = (hits.get(key) ?? []).filter((at) => now - at < WINDOW_MS);
-  if (recent.length >= MAX_PER_WINDOW) {
-    hits.set(key, recent);
-    return true;
+  const recent = recentHits(key, now);
+  hits.set(key, recent);
+  if (recent.length < limitFor(key)) return false;
+
+  if (key === ANON_KEY) {
+    console.error(
+      "[api/leads] the anonymous rate-limit bucket is full — no x-forwarded-for " +
+        "reached this route, so every caller is sharing one allowance. Check the " +
+        "proxy in front of the app; leads are being rejected."
+    );
   }
+  return true;
+}
+
+/**
+ * Spend one unit of the caller's allowance.
+ *
+ * Called only after a lead is actually written. Rejected submissions cost
+ * nothing on purpose: the limiter exists to stop the table being flooded, and
+ * a prospect who mistypes their email five times should not then be locked out
+ * for an hour on the attempt that was finally correct. A caller sending
+ * nothing but malformed bodies writes no rows, which is the outcome the
+ * limiter wanted anyway.
+ */
+function recordHit(key: string): void {
+  const now = Date.now();
+  const recent = recentHits(key, now);
   recent.push(now);
   hits.set(key, recent);
   // Bound the map so a long-lived instance under spray does not grow forever.
@@ -53,38 +106,73 @@ function overLimit(key: string): boolean {
       if (v.every((at) => now - at >= WINDOW_MS)) hits.delete(k);
     }
   }
-  return false;
 }
 
 export async function POST(request: Request) {
+  const forwarded = request.headers.get("x-forwarded-for") ?? "";
+  const ip = forwarded.split(",")[0].trim() || ANON_KEY;
+  if (overLimit(ip)) {
+    return NextResponse.json(
+      { error: "Too many messages from this connection. Try again later." },
+      { status: 429 }
+    );
+  }
+
+  /* Parsed OUTSIDE the try below, and separately from the insert.
+   *
+   * A body that is not JSON is the caller's mistake; a database that will not
+   * accept the row is ours. Sharing one catch made them the same 500, so a
+   * malformed request told the prospect "we could not record that message" —
+   * as if we had lost it — and logged an error that read like an outage. */
+  let body: unknown;
   try {
-    const forwarded = request.headers.get("x-forwarded-for") ?? "";
-    const ip = forwarded.split(",")[0].trim() || "unknown";
-    if (overLimit(ip)) {
-      return NextResponse.json(
-        { error: "Too many messages from this connection. Try again later." },
-        { status: 429 }
-      );
-    }
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: "That message could not be read. Please try again." },
+      { status: 400 }
+    );
+  }
 
-    const parsed = leadSchema.safeParse(await request.json());
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Please check your name, email and message." },
-        { status: 400 }
-      );
-    }
+  const parsed = leadSchema.safeParse(body);
+  if (!parsed.success) {
+    // Name the fields that actually failed. "Check your name, email and
+    // message" sent someone re-reading three correct fields when the problem
+    // was a company name over the length cap.
+    const bad = [
+      ...new Set(
+        parsed.error.issues
+          .map((issue) => FIELD_LABELS[String(issue.path[0])])
+          .filter(Boolean)
+      ),
+    ];
+    return NextResponse.json(
+      {
+        error: bad.length
+          ? `Please check your ${bad.join(", ")}.`
+          : "Please check the form and try again.",
+      },
+      { status: 400 }
+    );
+  }
 
+  try {
     const { name, email, company, service, message } = parsed.data;
     await db.insert(leads).values({
       name,
       email,
       company: company || null,
-      serviceInterest:
-        service && KNOWN_SERVICES.has(service) ? service : service || null,
+      // Stored as sent. The five offerings are what the form's select offers,
+      // but free text is accepted (see the schema note), so there is nothing
+      // to map it against — an earlier version looked the value up in a set of
+      // known ids and then returned it unchanged either way.
+      serviceInterest: service || null,
       message,
       source: "contact_form",
     });
+
+    // Only a written row spends the caller's allowance.
+    recordHit(ip);
 
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (error) {

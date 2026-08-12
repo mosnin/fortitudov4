@@ -32,13 +32,12 @@ export function Offerings() {
             <Eyebrow>What we build</Eyebrow>
           </BlurRise>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-            <KineticText lines={['Five ways we can build with you.']} />
+            <KineticText lines={['Five things we build for you.']} />
           </Serif>
           <BlurRise delay={0.28}>
             <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-              Websites, software, AI, consultation, and digital marketing —
-              every engagement on a fixed quote, tracked live, built and
-              reviewed by senior people.
+              Every one has a fixed price, agreed before we start. Senior
+              people do the work. You can watch it happen.
             </p>
           </BlurRise>
         </div>
@@ -97,8 +96,8 @@ export function Offerings() {
                 Something else?
               </Serif>
               <p className="mt-2.5 text-[13px] leading-relaxed text-[var(--fx-muted)]">
-                Migrations, integrations, rescue projects — if it ships to a
-                browser, we&apos;ve probably built it. Tell us what you need.
+                Moving an old site. Joining two tools together. Finishing a
+                build someone else left. Tell us what you need.
               </p>
             </div>
             <span className="mt-5 flex items-center gap-1 text-[12.5px] font-medium text-[var(--fx-muted)] transition-colors group-hover:text-[var(--fx-white)]">

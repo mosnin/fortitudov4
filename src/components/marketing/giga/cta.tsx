@@ -40,7 +40,7 @@ export function CtaSection() {
           {/* The kit's eyebrow, not a local copy of it: this section had its
               own hand-rolled version, which is how the dot and the tracking
               drifted apart from every other eyebrow on the site. */}
-          <Eyebrow>Get a demo</Eyebrow>
+          <Eyebrow>Get a price</Eyebrow>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
             Ready to build
             {/* The second line flips through what we actually build.
@@ -57,8 +57,8 @@ export function CtaSection() {
 
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT, delay: 0.1 }} className="lg:pt-3">
           <p className="max-w-sm text-[13.5px] leading-relaxed text-[var(--fx-muted)]">
-            Senior builders, a fixed quote, and a tracker you can watch from kickoff to
-            launch — and you own everything the day it ships.
+            Tell us what you want. We give you a fixed price, then you watch us build
+            it. You own everything the day it goes live.
           </p>
           <Link
             href="/contact"

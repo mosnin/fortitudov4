@@ -296,8 +296,10 @@ export const analyticsEvents = pgTable("analytics_events", {
   index("idx_analytics_project_id").on(table.projectId),
 ]);
 
-// Leads — captured from the public site (contact form, get-started funnel)
-// and synced into GoHighLevel, which is the agency's CRM of record.
+// Leads — captured from the public site (contact form, get-started funnel).
+// This table IS the record; there is no external CRM behind it. The comment
+// here used to say leads were synced into GoHighLevel, which was true of the
+// template this project started from and has never been true of Fortitudo.
 export const leadStatusEnum = pgEnum("lead_status", [
   "new",
   "contacted",

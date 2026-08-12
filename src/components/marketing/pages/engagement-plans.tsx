@@ -63,16 +63,16 @@ const ENGAGEMENTS: Record<
   websites: {
     label: 'Websites',
     priceUsd: 1500,
-    scopeLine: 'For marketing sites & storefronts',
-    blurb: 'A site that sells — designed, built, and launched fast, with checkout when you need it.',
+    scopeLine: 'For sites and online shops',
+    blurb: 'A site people can find, and buy from. We design it, build it, and put it live.',
     figure: '30 days',
-    figureLabel: 'post-launch support, included',
-    subLine: '+revisions within the scope you approve',
+    figureLabel: 'of help after launch, included',
+    subLine: '+changes inside what we agreed to build',
     highlights: [
-      'Custom design & build',
-      'Ecommerce & checkout',
-      'SEO fundamentals',
-      'Analytics wired in',
+      'Designed and built for you',
+      'A shop and a checkout',
+      'Built so Google can find it',
+      'See who visits',
     ],
     cta: 'Start a website',
     href: '/sign-up',
@@ -80,16 +80,16 @@ const ENGAGEMENTS: Record<
   digital_marketing: {
     label: 'Digital Marketing',
     priceUsd: 1200,
-    scopeLine: 'Monthly — funnels & campaigns',
-    blurb: 'Funnels, campaigns, and conversion work that turn traffic into revenue, measured end to end.',
+    scopeLine: 'Monthly — pages, ads and emails',
+    blurb: 'More of the people who find you turn into customers. We run the pages, the ads, and the follow-ups.',
     figure: 'Monthly',
-    figureLabel: 'retainer, billed month to month',
-    subLine: '+continuous testing & iteration',
+    figureLabel: 'we keep working on it, billed monthly',
+    subLine: '+we keep testing and improving it',
     highlights: [
-      'Funnels & landing pages',
-      'Email & SMS sequences',
-      'A/B testing',
-      'Campaign analytics',
+      'Pages built to sell',
+      'Emails and texts that follow up',
+      'We test what works',
+      'You see the numbers',
     ],
     cta: 'Start marketing',
     href: '/contact',
@@ -97,35 +97,35 @@ const ENGAGEMENTS: Record<
   software_solutions: {
     label: 'Software Solutions',
     priceUsd: 3500,
-    scopeLine: 'For applications & internal tools',
-    blurb: 'A custom application built to grow — portals, platforms, and the tools your team runs on.',
+    scopeLine: 'For apps and internal tools',
+    blurb: 'An app your team will actually use. Portals, platforms, and the tools you run the place on.',
     figure: '30 days',
-    figureLabel: 'post-launch support, included',
-    subLine: '+revisions within the scope you approve',
+    figureLabel: 'of help after launch, included',
+    subLine: '+changes inside what we agreed to build',
     highlights: [
-      'Product architecture',
-      'Custom UI/UX',
-      'Auth, database & APIs',
-      'Deployment & support',
+      'Planned before it is built',
+      'Screens made for your team',
+      'Logins and data, handled',
+      'Launched and supported',
     ],
-    cta: 'Scope my build',
+    cta: 'Get a price for my build',
     href: '/sign-up',
   },
   ai_solutions: {
     label: 'AI Solutions',
     priceUsd: 3000,
-    scopeLine: 'For agents & automation',
-    blurb: 'Put AI to work on your operations — agents, automated workflows, and content pipelines.',
+    scopeLine: 'For work you do over and over',
+    blurb: 'Hand the repetitive jobs to a computer. Your team stops doing them by hand and gets the time back.',
     figure: '30 days',
-    figureLabel: 'post-launch support, included',
-    subLine: '+revisions within the scope you approve',
+    figureLabel: 'of help after launch, included',
+    subLine: '+changes inside what we agreed to build',
     highlights: [
-      'Custom AI agents',
-      'Workflow automation',
-      'Data pipelines',
-      'Deployed on your stack',
+      'AI that does a job for you',
+      'The repeat steps, automatic',
+      'Your data moved for you',
+      'Runs on the tools you already use',
     ],
-    cta: 'Scope my AI',
+    cta: 'Get a price for my AI',
     href: '/contact',
   },
 };
@@ -160,7 +160,7 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
         <span className="text-sm text-[var(--fx-muted)]">/ project</span>
       </p>
       <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">
-        starting price — fixed quote before kickoff
+        starting price — your own fixed price comes before we start
       </p>
       <p className="mt-2.5 text-[12.5px] text-[var(--fx-muted)]">{p.scopeLine}</p>
       <p className="mt-4 text-[13px] leading-relaxed text-[var(--fx-muted)]">{p.blurb}</p>
@@ -216,7 +216,7 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
             : 'text-[var(--fx-muted)] hover:text-[var(--fx-white)]')
         }
       >
-        Ongoing retainer
+        We keep going after launch
         <span
           className={
             'rounded-[4px] px-1.5 py-0.5 text-[10px] font-medium ' +
@@ -225,7 +225,7 @@ function Toggle({ cycle, setCycle }: { cycle: Cycle; setCycle: (c: Cycle) => voi
               : 'bg-[var(--fx-yellow)]/15 text-[var(--fx-yellow)]')
           }
         >
-          Same fixed quote
+          Same fixed price
         </span>
       </button>
     </div>
@@ -253,7 +253,7 @@ export function EngagementPlans({
       {/* Sites & campaigns */}
       <Band className="pb-8 pt-10">
         <BlurRise>
-          <Eyebrow>Sites and campaigns</Eyebrow>
+          <Eyebrow>Sites and marketing</Eyebrow>
         </BlurRise>
         <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
           {CARD_ORDER.sites.map((id, i) => (
@@ -267,7 +267,7 @@ export function EngagementPlans({
       {/* Applications & automation */}
       <Band className={SECTION_Y_TIGHT}>
         <BlurRise>
-          <Eyebrow>Applications and automation</Eyebrow>
+          <Eyebrow>Apps and automation</Eyebrow>
         </BlurRise>
         <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
           {CARD_ORDER.platforms.map((id, i) => (

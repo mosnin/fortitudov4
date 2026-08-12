@@ -10,7 +10,7 @@
  *
  * Nav: two dropdowns, Product (the five offerings) and Company (About,
  * Portfolio, FAQ, Contact), each opening a frosted blurred mega-menu, plus a
- * plain Pricing link. Right cluster: Sign in + the racing-yellow "See a demo"
+ * plain Pricing link. Right cluster: Sign in + the racing-yellow "Get a price"
  * block — the header's one yellow surface. Mobile: a full-screen blurred
  * takeover.
  */
@@ -65,36 +65,40 @@ interface MenuConfig {
 /** The two nav dropdowns, reference-styled frosted panels. */
 const MENUS: Record<MenuKey, MenuConfig> = {
   product: {
-    label: 'Product',
+    // "Product" is what a SaaS company calls this menu. We are an agency: the
+    // menu lists the five things we build for someone else, not a thing we
+    // sell seats in. The KEY stays `product` — it is wired through MenuKey and
+    // the open/close state — but nobody reads a key.
+    label: 'What we build',
     featured: {
       eyebrow: 'WHAT WE BUILD',
-      title: 'Five services, one senior team.',
-      body: 'Websites, software, AI solutions, consultation, and digital marketing — each on a fixed quote, tracked live.',
-      cta: 'See our services',
+      title: 'Five things we build for you.',
+      body: 'Websites, apps, AI tools, advice, and marketing. Every one has a fixed price, agreed before we start.',
+      cta: 'See what we build',
       href: '/services',
     },
     items: [
-      { icon: Aperture, label: 'Websites', desc: 'Marketing sites and storefronts, launched fast', href: '/services#websites' },
-      { icon: Building2, label: 'Software Solutions', desc: 'Custom applications, portals, and internal tools', href: '/services#software-solutions' },
-      { icon: Blocks, label: 'AI Solutions', desc: 'Agents and automations that clear the busywork', href: '/services#ai-solutions' },
-      { icon: Compass, label: 'Consultation', desc: 'Senior product, engineering, and AI strategy', href: '/services#consultation' },
-      { icon: UserRound, label: 'Digital Marketing', desc: 'Funnels and campaigns, measured end to end', href: '/services#digital-marketing' },
+      { icon: Aperture, label: 'Websites', desc: 'A site people can find and buy from', href: '/services#websites' },
+      { icon: Building2, label: 'Software Solutions', desc: 'An app your team will actually use', href: '/services#software-solutions' },
+      { icon: Blocks, label: 'AI Solutions', desc: 'Hand the repeat work to a computer', href: '/services#ai-solutions' },
+      { icon: Compass, label: 'Consultation', desc: 'Know what to build before you spend', href: '/services#consultation' },
+      { icon: UserRound, label: 'Digital Marketing', desc: 'Turn more of your visitors into customers', href: '/services#digital-marketing' },
     ],
   },
   company: {
     label: 'Company',
     featured: {
       eyebrow: 'OUR STORY',
-      title: 'Product building, caught up to the world.',
-      body: 'Why we put senior builders, fixed quotes, and a live tracker on every single project.',
+      title: 'Why we work the way we do.',
+      body: 'Senior people, a fixed price, and a project you can watch. On every job we take.',
       cta: 'Read our story',
       href: '/about',
     },
     items: [
-      { icon: Compass, label: 'About', desc: 'The team, the method, and why we build this way', href: '/about' },
-      { icon: Microscope, label: 'Portfolio', desc: 'Recent builds and the results behind them', href: '/portfolio' },
-      { icon: LifeBuoy, label: 'FAQ', desc: 'Answers to the questions founders ask most', href: '/faq' },
-      { icon: Sprout, label: 'Contact', desc: 'Tell us about your build, we reply fast', href: '/contact' },
+      { icon: Compass, label: 'About', desc: 'How we work, and why', href: '/about' },
+      { icon: Microscope, label: 'Portfolio', desc: 'Work we can show you', href: '/portfolio' },
+      { icon: LifeBuoy, label: 'FAQ', desc: 'The questions we get asked most', href: '/faq' },
+      { icon: Sprout, label: 'Contact', desc: 'Tell us what you want built', href: '/contact' },
     ],
   },
 };
@@ -322,7 +326,7 @@ export function SiteHeader() {
               href={DEMO}
               className="hidden h-9 items-center rounded-[4px] bg-[var(--fx-yellow)] px-4 text-sm font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98] lg:inline-flex"
             >
-              See a demo
+              Get a price
             </Link>
             <button
               type="button"
@@ -428,7 +432,7 @@ export function SiteHeader() {
                   onClick={closeAll}
                   className="flex h-12 w-full items-center justify-center gap-1.5 rounded-[4px] bg-[var(--fx-yellow)] text-sm font-medium text-[var(--fx-on-yellow)]"
                 >
-                  See a demo
+                  Get a price
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link

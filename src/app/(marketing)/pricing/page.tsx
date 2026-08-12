@@ -14,7 +14,7 @@ import { PricingContent } from '@/components/marketing/pages/pricing-content';
 export const metadata = {
   title: 'Pricing · Fortitudo Agency',
   description:
-    'Fixed quotes for websites, software solutions, AI solutions, consultation, and digital marketing. The price you approve is the price you pay.',
+    'Websites, Software Solutions, AI Solutions, Consultation and Digital Marketing. You get a fixed price before we start. The price you approve is the price you pay.',
 };
 
 export default function PricingPage() {

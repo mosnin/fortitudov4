@@ -23,86 +23,86 @@ import { ToneShift } from '@/components/marketing/giga/tone-shift';
 
 const faqCategories = [
   {
-    category: "Getting Started",
+    category: "Getting started",
     questions: [
       {
-        q: "How does the process work?",
-        a: "It's simple: choose a service, create your account, complete a quick onboarding form with your project details, and submit payment. Once confirmed, you'll get access to your project dashboard where you can track every phase of the build in real-time.",
+        q: "How does it work?",
+        a: "Pick what you need. Make an account. Answer a few questions about your project. Pay. Your project page opens, and you can see every stage of the build from there.",
       },
       {
-        q: "How long does a typical project take?",
-        a: "Timelines vary by service and by scope — a marketing site is not the same job as a custom application or an AI agent build. Your timeline is scoped alongside your fixed quote and agreed before kickoff, so you'll see your specific dates during onboarding.",
+        q: "How long does it take?",
+        a: "It depends what you are building — a marketing site is not the same job as an app or an AI build. We work out your dates along with your price, and you see both before you agree to anything.",
       },
       {
-        q: "What information do I need to provide?",
-        a: "During onboarding, we'll ask about your business, target audience, desired features, brand guidelines, and any specific requirements. The more detail you provide, the better we can tailor the build to your needs.",
+        q: "What do you need from me?",
+        a: "What your business does, who you sell to, what you want the thing to do, and your logo and brand files if you have them. The more you tell us, the closer the first version will be.",
       },
       {
-        q: "Can I start a project without knowing exactly what I need?",
-        a: "Absolutely. Our discovery phase is designed to help clarify your requirements. You can also send us a message through our contact page and we'll help you figure out the best approach.",
+        q: "What if I do not know what I need yet?",
+        a: "That is normal. The first stage is us working it out with you. You can also send us a note first, and we will help you decide before you pay anything.",
       },
     ],
   },
   {
-    category: "Pricing & Payment",
+    category: "Price & payment",
     questions: [
       {
-        q: "What payment methods do you accept?",
-        a: "We process payments securely through Creem.io, which supports all major credit cards, debit cards, and select digital payment methods.",
+        q: "How can I pay?",
+        a: "Through Creem.io. It takes all the major credit and debit cards, and some digital wallets.",
       },
       {
         q: "Are there any hidden fees?",
-        a: "No hidden fees. The price you see during onboarding is the price you pay. If your project scope changes significantly, we'll discuss any adjustments transparently before proceeding.",
+        a: "No. The price you see before you pay is the price you pay. If you want something outside what we agreed to build, we price that first and you decide.",
       },
       {
         q: "Do you offer refunds?",
-        a: "If you're not happy with a deliverable, we'll work with you through the revision process to make it right. Fees are non-refundable unless we've agreed otherwise in writing — the full policy is in our terms of service.",
+        a: "If you do not like what we made, we fix it through the revision rounds in your project. Fees are not refundable unless we have agreed otherwise in writing. The full wording is in our terms of service.",
       },
       {
-        q: "Can I pay in installments?",
-        a: "Payment is due before project work begins, as set out in our terms of service. If you need to discuss payment options for a larger build, contact us before you sign off on the quote.",
-      },
-    ],
-  },
-  {
-    category: "Project Management",
-    questions: [
-      {
-        q: "How do I track my project's progress?",
-        a: "Your dashboard includes a real-time phase tracker (similar to DoorDash order tracking) that shows exactly where your project stands. Each phase — Discovery, Design, Development, Testing, Review, and Launch — updates as work progresses.",
-      },
-      {
-        q: "How many revisions are included?",
-        a: "Revision rounds are part of the scope you approve before kickoff — your fixed quote spells out what's included, and revisions within that scope cost nothing extra. You can request them directly through your project dashboard.",
-      },
-      {
-        q: "Can I upload files and assets?",
-        a: "Yes! Your project page has a built-in file upload section where you can share brand assets, content documents, images, and any other files relevant to your project.",
-      },
-      {
-        q: "How do I communicate with the team?",
-        a: "Every project includes a direct messaging feature. You can chat with our team in real-time through your dashboard — no need for external email threads or Slack channels.",
+        q: "Can I pay in parts?",
+        a: "Payment is due before work starts, as our terms of service set out. For a bigger build, talk to us before you approve the price.",
       },
     ],
   },
   {
-    category: "Technical",
+    category: "Running your project",
     questions: [
       {
-        q: "What technologies do you use?",
-        a: "We use modern, industry-standard technologies including Next.js, React, TypeScript, Tailwind CSS, and various backend services depending on your project's needs. All projects are built for performance, scalability, and maintainability.",
+        q: "How do I see how it is going?",
+        a: "Your project page shows the stage you are in, a bit like tracking a food delivery. Discovery, Design, Development, Testing, Review, and Launch. It moves as we work.",
       },
       {
-        q: "Will I own the code?",
-        a: "Yes. Once your project is complete and payment is finalized, you have full ownership of all code, designs, and assets created for your project.",
+        q: "How many changes do I get?",
+        a: "The rounds are written into what you approve before we start. Changes inside that cost you nothing extra. Ask for them on your project page.",
       },
       {
-        q: "Do you provide hosting?",
-        a: "We can deploy to your preferred hosting provider (Vercel, AWS, etc.) or recommend the best option for your project. Hosting costs are separate from our development fees.",
+        q: "Can I send you files?",
+        a: "Yes. Your project page has a place to upload logos, photos, text, and anything else we need.",
       },
       {
-        q: "What about ongoing maintenance?",
-        a: "Every engagement includes 30 days of post-launch support. For maintenance beyond that, we offer separate support agreements — contact us for details.",
+        q: "How do I talk to you?",
+        a: "There is a message box on your project page. You write there, we answer there. No email chains, no Slack channels.",
+      },
+    ],
+  },
+  {
+    category: "The tech",
+    questions: [
+      {
+        q: "What is it built with?",
+        a: "Next.js, React, TypeScript and Tailwind CSS, plus whatever your project needs behind them. All of it is standard, so another team could pick it up later.",
+      },
+      {
+        q: "Do I own it?",
+        a: "Yes. Once the work is done and paid for, the code, the designs, and the files we made are all yours.",
+      },
+      {
+        q: "Do you host it?",
+        a: "We can put it wherever you want — Vercel, AWS, or somewhere else — or tell you what suits your project. Hosting is billed by them, not by us.",
+      },
+      {
+        q: "What happens after launch?",
+        a: "Every project comes with 30 days of help after launch. If you want us to keep working on it after that, we agree that separately.",
       },
     ],
   },
@@ -127,8 +127,8 @@ export default function FAQPage() {
               <span className="text-[var(--fx-yellow)]">questions.</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Everything you need to know about working with Fortitudo Agency.
-              Can&apos;t find what you&apos;re looking for? Reach out directly.
+              The things people ask us before they start. Can&apos;t find
+              yours? Send us a note and we will answer it.
             </p>
           </BlurRise>
         </Band>
@@ -202,8 +202,7 @@ export default function FAQPage() {
                 Still have questions?
               </Serif>
               <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                We&apos;re here to help. Reach out and we&apos;ll get back to you
-                within 24 hours.
+                Send us a note. We answer within 24 hours.
               </p>
               <PillPrimary href="/contact" className="mt-8" withArrow>
                 Contact us

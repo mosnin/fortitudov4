@@ -15,28 +15,28 @@ import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
 
 const FAQS = [
   {
-    q: 'What does an engagement cost?',
-    a: 'Websites start at $1,500, software solutions at $3,500, AI solutions at $3,000, consultations at $500, and digital marketing retainers at $1,200/month. You see your exact fixed quote during onboarding — the price you approve is the price you pay. No hourly billing, no surprise invoices.',
+    q: 'What does it cost?',
+    a: 'Websites start at $1,500. Software Solutions at $3,500. AI Solutions at $3,000. A Consultation is $500. Digital Marketing is $1,200 a month. You see your own price before you pay anything, and it does not move. No hourly billing. No surprise bills.',
   },
   {
-    q: 'How fast can I actually get started?',
-    a: 'Same day. Pick a service, run through onboarding (about five minutes), review your quote, and submit payment. Your project dashboard and build tracker go live immediately, and the team kicks off discovery within one business day.',
+    q: 'How soon can I start?',
+    a: 'Today. Pick what you want, answer a few questions about it, check your price, and pay. Your project page opens straight away, and we start digging into the work the next working day.',
   },
   {
-    q: 'Do you use AI on the build?',
-    a: 'Where it earns its place, yes — scaffolding, boilerplate, test suites, and revision churn, the mechanical hours that inflate agency timelines. It works alongside our senior team, never instead of it: every change is reviewed and shaped by a senior builder before it lands. You get human judgment on design and architecture, with weeks shaved off delivery.',
+    q: 'Do you use AI?',
+    a: 'Yes, on the dull parts — setup, boilerplate, test code, and the small repeated changes. It decides nothing. A senior builder checks and shapes every change before it lands, so the judgement calls are still made by people.',
   },
   {
-    q: 'How do I track my project?',
-    a: 'Your dashboard includes a real-time phase tracker — Discovery, Design, Development, Testing, Review, and Launch — plus direct messaging with the team, file sharing, and revision requests, all in one place.',
+    q: 'How do I see how it is going?',
+    a: 'Your project page shows the stage you are in: Discovery, Design, Development, Testing, Review, and Launch. You can message us, send files, and ask for changes in the same place.',
   },
   {
-    q: 'What if I need changes along the way?',
-    a: 'Revision rounds are built into every engagement, and you request them right from your dashboard. If scope changes significantly, we re-quote transparently before any extra work starts.',
+    q: 'What if I want changes?',
+    a: 'Ask for them on your project page. Changes inside what we agreed to build cost you nothing. If you want something bigger than that, we price it first and you decide.',
   },
   {
-    q: 'Who owns the work when we’re done?',
-    a: 'You do — completely. Full source code, design files, campaign assets, and infrastructure access are handed over at launch. No lock-in, no licensing games.',
+    q: 'Who owns it at the end?',
+    a: 'You do. All of it. The code, the design files, the campaign work, and the logins are handed to you at launch. Nothing is locked to us.',
   },
 ];
 

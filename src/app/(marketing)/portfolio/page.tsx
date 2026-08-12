@@ -72,12 +72,12 @@ export default function PortfolioPage() {
           <BlurRise trigger="load">
             <Eyebrow>Portfolio</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Work that speaks{' '}
-              <span className="text-[var(--fx-yellow)]">for itself.</span>
+              Our work,{' '}
+              <span className="text-[var(--fx-yellow)]">with names on it.</span>
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Builds we have shipped, what they were for, and what changed
-              afterwards — with the client&apos;s name on them.
+              What we built, who we built it for, and what changed after. Only
+              ever with the client&apos;s name on it.
             </p>
           </BlurRise>
         </Band>
@@ -99,10 +99,10 @@ export default function PortfolioPage() {
                   else&apos;s work.
                 </Serif>
                 <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                  Case studies go up here once the client has signed off on
-                  them, with their name and the numbers they agreed to. Until
-                  then, ask us directly — we&apos;ll walk you through recent
-                  builds on a call, including the parts that went sideways.
+                  A project goes up here once the client has read it and
+                  agreed to the numbers in it. Until then, just ask. We will
+                  walk you through recent work on a call, including the parts
+                  that went wrong.
                 </p>
                 <PillPrimary href="/contact" className="mt-8" withArrow>
                   Ask about recent work

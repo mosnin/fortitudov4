@@ -16,26 +16,26 @@ import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y, TITLE_S } from '@/components/m
 export const metadata = {
   title: 'Our story · Fortitudo Agency',
   description:
-    'Hiring an agency deserves to work the way the rest of the world already does. We built Fortitudo to close the gap between what is now possible and what clients actually get.',
+    'You should know what your build costs, and how it is going. Most agencies keep both to themselves. We built Fortitudo to do the opposite.',
 };
 
 /* Beliefs, the things we will not move on. */
 const BELIEFS = [
   {
-    title: 'A fixed quote is a promise.',
-    body: 'Hourly meters and drifting estimates are admissions the team could not scope. Scoping is the work. The quote you approve is the price you pay, and scope changes only happen with your sign-off.',
+    title: 'A fixed price is a promise.',
+    body: 'An hourly meter means we could not work out what the job was. Working that out is the job. The price you approve is the price you pay, and it only changes if you say so.',
   },
   {
-    title: 'Nothing ships without a senior’s name on it.',
-    body: 'We use AI tooling where it earns its place — scaffolding, boilerplate, the mechanical hours. It never decides anything. A senior builder reviews and shapes every change before it lands. That is where the speed comes from, and where the trust lives.',
+    title: 'Nothing goes out without a senior’s name on it.',
+    body: 'We use AI for the repetitive parts — setup, boilerplate, the mechanical hours. It decides nothing. A senior builder checks and shapes every change before it lands. That is where the speed comes from, and where the trust lives.',
   },
   {
-    title: 'You watch the build live.',
-    body: 'Wherever your project stands, a phase, a revision, a preview, the same dashboard shows it in real time. No status-call theater, no black boxes. It is how you learn to trust the team across every build.',
+    title: 'You watch the build as it happens.',
+    body: 'The stage you are in, the change we just made, the preview you can click — it is all on one page, all the time. No status-call theater, and nothing you have to ask for.',
   },
   {
     title: 'You own everything at launch.',
-    body: 'No lock-in headline games. Full source code, design files, and infrastructure are handed over the day you launch. The day we can make ownership even cleaner, we will, and we will say exactly how.',
+    body: 'The code, the design files, the logins. All handed over the day you go live. Nothing is locked to us, and there are no license games.',
   },
 ];
 
@@ -56,11 +56,11 @@ export default function AboutPage() {
             <BlurRise trigger="load">
               <Eyebrow>Our story</Eyebrow>
               <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-                Hiring builders deserves to work the way the world already does.
+                You should know what it costs, and how it is going.
               </Serif>
               <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-                We built Fortitudo because the way agencies work was drawn for a slower
-                era. The work should not be the mystery. The work should be the product.
+                Most agencies keep both of those to themselves. We built Fortitudo to do
+                the opposite: one price, agreed up front, and a build you can watch.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <PillPrimary href="/contact" withArrow>
@@ -76,7 +76,7 @@ export default function AboutPage() {
         <Band className={SECTION_Y}>
           <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
             <BlurRise>
-              <Eyebrow>The gap</Eyebrow>
+              <Eyebrow>The problem</Eyebrow>
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
                 The work moved on.
                 <br className="hidden sm:block" /> The agencies did not.
@@ -85,17 +85,15 @@ export default function AboutPage() {
             <BlurRise delay={0.1}>
               <div className="space-y-6 text-[15px] leading-relaxed text-[var(--fx-muted)] lg:pt-2">
                 <p>
-                  A build&apos;s calendar is mostly waiting: opaque quotes, missed
-                  deadlines, status calls, weeks of silence between updates. The actual
-                  craft, the judgment and taste and knowing, happens in maybe ten percent
-                  of it.
+                  Most of a build is waiting. Vague prices. Missed dates. Calls that say
+                  nothing. Weeks of silence between updates. The actual thinking and
+                  making is a small slice of it.
                 </p>
                 <p>
-                  Everywhere else, that other ninety percent has started to run itself. In
-                  agency work it still does not. The process is stuck a generation behind
-                  what is now possible. That distance, between what could happen and what
-                  clients actually get, is the whole reason Fortitudo exists: senior
-                  builders, modern tooling, and a build you can watch happen.
+                  Everywhere else, that waiting has been squeezed out. In agency work it
+                  has not. That gap, between what could happen and what clients actually
+                  get, is why Fortitudo exists: senior people, better tools, and a build
+                  you can watch happen.
                 </p>
               </div>
             </BlurRise>

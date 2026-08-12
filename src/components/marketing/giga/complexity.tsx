@@ -12,18 +12,18 @@ import { DISPLAY_M, SECTION_Y, TITLE_S } from './tokens';
 const COLUMNS = [
   {
     icon: GitBranch,
-    title: 'Routing that thinks',
-    desc: 'Projects land with the right senior by specialty and load, or hand-pick and write the brief. Every assignment is logged with the reason.',
+    title: 'The right person gets it',
+    desc: 'Your project goes to the senior who does that kind of work. We write down who took it and why.',
   },
   {
     icon: BarChart3,
-    title: 'The whole studio, live',
-    desc: 'Builds active, drafts pending, reviews due, per builder, read live from the work itself, not a Monday status meeting.',
+    title: 'Nothing sits in a queue',
+    desc: 'We can see every job in progress and every one waiting. It comes from the work itself, not from a Monday meeting.',
   },
   {
     icon: ShieldCheck,
-    title: 'Audit-ready by design',
-    desc: 'Every assignment, revision, and approval is logged with the reason behind it, so the whole build stays honest and reviewable.',
+    title: 'Everything is written down',
+    desc: 'Who did what, what changed, and who said yes to it. You can go back and read any of it.',
   },
 ];
 
@@ -32,18 +32,18 @@ export function Complexity() {
     <Band className={SECTION_Y}>
       <BlurRise>
         <div className="max-w-2xl">
-          <Eyebrow>Built for complexity</Eyebrow>
+          <Eyebrow>Big projects too</Eyebrow>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-            Built to handle the
-            <br className="hidden sm:block" /> complexity of a real agency.
+            Nothing about your project
+            <br className="hidden sm:block" /> gets lost.
           </Serif>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--fx-muted)]">
-            One senior team, one way of working. Work routed, progress visible, bottlenecks
-            surfaced, every change reviewable. It holds up on a single site and on a multi-year
-            software engagement.
+            One team, one way of working. Every job has a name on it, every change is
+            written down, and you can see all of it. That holds for a one-page site and
+            for software we build over years.
           </p>
           <div className="mt-8">
-            <PillGhost href="/about">See how the studio runs</PillGhost>
+            <PillGhost href="/about">See how we work</PillGhost>
           </div>
         </div>
       </BlurRise>

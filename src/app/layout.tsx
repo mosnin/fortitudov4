@@ -6,14 +6,14 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fortitudo Agency | A Digital Agency Built for Founders",
+  title: "Fortitudo Agency | We build it. You own it.",
   description:
-    "Web applications, ecommerce stores, funnels, and AI automation — built by a senior team and accelerated by our AI build agent. Fixed quotes, real-time tracking.",
+    "Websites, apps, AI tools, and marketing. You get a fixed price before we start, a page that shows you how it is going, and every file the day it goes live.",
   metadataBase: new URL("https://fortitudo.agency"),
   openGraph: {
-    title: "Fortitudo Agency | A Digital Agency Built for Founders",
+    title: "Fortitudo Agency | We build it. You own it.",
     description:
-      "Web applications, ecommerce stores, funnels, and AI automation — built by a senior team, accelerated by AI.",
+      "Websites, apps, AI tools, and marketing. A fixed price before we start, and everything is yours the day it goes live.",
     url: "https://fortitudo.agency",
     siteName: "Fortitudo Agency",
     type: "website",

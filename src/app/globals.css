@@ -367,6 +367,29 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-alert-text: #ff7a8d;
 }
 
+/* Charcoal all the way to the edges of the window.
+ *
+ * The shell is a div inside <body>, and <body> keeps the PRODUCT's ground,
+ * which is white in the light theme. `min-h-screen` covers the viewport, so
+ * this is invisible until the viewport is not where the painting stops:
+ * overscroll — the rubber-band bounce at the top of the page on a trackpad or
+ * on iOS — pulls the dark shell away from the edge and shows a white band
+ * behind a page that is otherwise near-black. Browsers also take the page's
+ * background from <body>, so the mobile address bar tints white against it.
+ *
+ * `:has()` rather than a class on <body>: the marketing group is a layout
+ * nested inside the root layout, and a child layout cannot put a class on the
+ * <body> its parent renders.
+ *
+ * `color-scheme: dark` comes along for the ride so form controls and the
+ * scrollbar are drawn dark. A light scrollbar down the side of this page is
+ * the same bug in a narrower strip.
+ */
+body:has([data-marketing-shell]) {
+  background-color: #1b1b1d;
+  color-scheme: dark;
+}
+
 /* The display face for every heading in the shell. Set here, on a selector
    that out-specifies a bare element rule, so a headline that leans on a class
    or forgets its inline `fontFamily` still lands on the right face. Semibold,

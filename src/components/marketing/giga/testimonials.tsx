@@ -61,7 +61,7 @@ export const METRICS: ProofMetric[] = [];
 const TESTIMONIAL_SLOTS = [
   'A client quote goes here — what they came to us with, and what changed.',
   'The strongest one you have. This card is the one people read first.',
-  'A quote from a different kind of engagement, so the three do not all sound alike.',
+  'A quote from a different kind of project, so the three do not all sound alike.',
 ];
 
 const METRIC_SLOTS = [
@@ -242,8 +242,8 @@ export function Testimonials() {
           <BlurRise delay={0.08} className="lg:col-span-5">
             <p className="max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)] sm:text-[16px]">
               {hasQuotes
-                ? 'What our clients say about working with us — in their words, published with their names on them.'
-                : 'Nothing here yet. Client quotes go up once the client has read them back and agreed to have their name on it.'}
+                ? 'In their own words, with their names on them.'
+                : 'Nothing here yet. A quote goes up once the client has read it back and agreed to put their name on it.'}
             </p>
             <Link
               href="/contact"

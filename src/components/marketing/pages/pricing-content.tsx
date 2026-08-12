@@ -42,9 +42,9 @@ const SERVICE_STARTING_USD: Record<string, number> = {
  * CRM checklist gates kickoff on (`Scope & fixed quote approved`, lib/crm.ts).
  */
 const ENGAGEMENT_COMMITMENTS = [
-  { id: 'phases', label: 'Tracked live', figure: '6', line: 'phases, discovery to launch' },
-  { id: 'revisions', label: 'Revisions', figure: 'In scope', line: 'rounds set in the quote you approve' },
-  { id: 'support', label: 'Post-launch support', figure: '30', line: 'days included with every engagement' },
+  { id: 'phases', label: 'Watch it live', figure: '6', line: 'stages, from start to launch' },
+  { id: 'revisions', label: 'Changes', figure: 'Included', line: 'rounds are set in the price you approve' },
+  { id: 'support', label: 'Help after launch', figure: '30', line: 'days with every project' },
 ] as const;
 
 export function PricingContent({ lang }: { lang: Lang }) {
@@ -63,12 +63,11 @@ export function PricingContent({ lang }: { lang: Lang }) {
           <BlurRise trigger="load">
             <Eyebrow>Pricing</Eyebrow>
             <Serif as="h1" className={`mt-5 ${DISPLAY_L} text-[var(--fx-white)]`}>
-              Fixed quotes. No surprises.
+              Fixed prices. No surprises.
             </Serif>
             <p className="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Every engagement is a scoped project with a fixed quote approved before work
-              begins. You watch the build move phase by phase, and you own everything at
-              launch — the price you approve is the price you pay.
+              You get a price before we start, and it does not move. You can watch the
+              work go stage by stage. Everything is yours the day it goes live.
             </p>
           </BlurRise>
         </Band>
@@ -103,14 +102,13 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-3xl">
             <div>
-              <Eyebrow>Specialist engagements</Eyebrow>
+              <Eyebrow>Two more things</Eyebrow>
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-                Two more ways we can build with you.
+                Two more ways we can help.
               </Serif>
               <p className="mt-5 max-w-xl text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                Beyond the core builds, we offer senior consultation engagements, and we
-                stay on after launch when you want us to — same fixed-quote transparency,
-                same live tracking.
+                You can hire us for advice on its own. And we can keep working on your
+                build after it launches. Same fixed price, same page to watch it on.
               </p>
             </div>
             {/* Both cards paint `--fx-charcoal-raised`, which inverts to
@@ -124,16 +122,16 @@ export function PricingContent({ lang }: { lang: Lang }) {
                   Consultation
                 </Serif>
                 <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                  Roadmap, architecture & AI strategy sessions
+                  Work out what to build, before you spend
                 </p>
                 <p className="mt-4">
                   <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
                     <LocalPrice usd={SERVICE_STARTING_USD.consultation} lang={lang} />
                   </Serif>
-                  <span className="text-[13px] text-[var(--fx-muted)]"> / engagement, starting</span>
+                  <span className="text-[13px] text-[var(--fx-muted)]"> / project, starting</span>
                 </p>
                 <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                  + a written action plan you keep
+                  + a written plan you keep
                 </p>
               </div>
               <div
@@ -141,22 +139,22 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
               >
                 <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                  Ongoing retainer
+                  Ongoing support
                 </Serif>
                 <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                  Support & iteration after launch
+                  We keep working on it after launch
                 </p>
                 <p className="mt-4">
                   <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
                     Custom
                   </Serif>
-                  <span className="text-[13px] text-[var(--fx-muted)]"> / month, scoped to your build</span>
+                  <span className="text-[13px] text-[var(--fx-muted)]"> / month, priced to your build</span>
                 </p>
                 {/* A custom retainer cannot promise fixed inclusions; scope is
                     what it agrees. It used to advertise priority support and a
                     dedicated point of contact, neither of which we define. */}
                 <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                  + scope and response times agreed up front
+                  + what we cover, and how fast we answer, agreed up front
                 </p>
               </div>
             </div>
@@ -176,12 +174,12 @@ export function PricingContent({ lang }: { lang: Lang }) {
             <div>
               <Eyebrow>How pricing works</Eyebrow>
               <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-                Every engagement starts with a fixed quote.
+                Every project starts with a fixed price.
               </Serif>
               <p className="mt-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                Pick a service, get a scoped quote up front, and watch the build move phase by
-                phase in your dashboard. Starting prices below — your quote is fixed before
-                kickoff and never moves without your sign-off.
+                Pick what you need. We write you a price up front, and it never moves
+                without your say-so. You watch the work go stage by stage on your project
+                page. Starting prices are below.
               </p>
             </div>
             {/* The price list is a raised panel, so it is a black plate on the
@@ -201,7 +199,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
             </ul>
 
             <p className="mt-10">
-              <Eyebrow>What every engagement includes</Eyebrow>
+              <Eyebrow>What every project includes</Eyebrow>
             </p>
             <div className="mt-5 grid gap-4 sm:grid-cols-3">
               {ENGAGEMENT_COMMITMENTS.map((fact) => (
@@ -240,19 +238,19 @@ export function PricingContent({ lang }: { lang: Lang }) {
             {[
               {
                 q: 'Is the price really fixed?',
-                a: 'Yes. Every engagement starts with a scoped, written quote. Once you approve it, that is the price — scope changes are quoted separately and only happen with your sign-off. No hourly meters, no surprise invoices.',
+                a: 'Yes. You get a written price before anything starts. Once you approve it, that is what you pay. If you want something we did not agree to, we price that separately and you decide. No hourly billing. No surprise bills.',
               },
               {
                 q: 'What does "from {websites}" mean?',
-                a: 'The starting price for the simplest version of that engagement. Your exact quote depends on scope — pages, integrations, and features — and is fixed before kickoff.',
+                a: 'It is the price for the simplest version. Your own price depends on how much you need — pages, features, and the tools it has to talk to — and it is fixed before we start.',
               },
               {
                 q: 'What happens after launch?',
-                a: 'You own everything: full source code, design files, and infrastructure are handed over — no lock-in. Every engagement includes 30 days of post-launch support, and if you want us to stay on, an ongoing retainer is scoped to your build.',
+                a: 'You own everything: the code, the design files, and the logins are handed over, and nothing is locked to us. Every project includes 30 days of help after launch. If you want us to keep going after that, we price that against your build.',
               },
               {
                 q: 'How do payments work?',
-                a: 'You approve the fixed quote, pay to kick off, and track the build live through every phase — a software solutions build, for example, starts at {software}. Invoices itemize exactly what you approved, and revisions within scope are included.',
+                a: 'You approve the price, pay to start, and watch each stage on your project page — a software build, for example, starts at {software}. Your invoice lists exactly what you approved. Changes inside what we agreed cost you nothing extra.',
               },
             ].map((item, i) => (
               <BlurRise key={item.q} delay={i * 0.04}>
@@ -285,11 +283,10 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <Band className={SECTION_Y_TIGHT}>
           <BlurRise className="max-w-2xl">
             <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
-              Get a fixed quote for your build.
+              Get a fixed price for your build.
             </Serif>
             <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Tell us what you are building and get a scoped quote — then watch it move from
-              kickoff to launch.
+              Tell us what you want. We price it, then you watch us build it.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <PillPrimary href="/sign-up" withArrow>
