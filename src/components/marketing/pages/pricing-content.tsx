@@ -44,6 +44,7 @@ import {
   BODY_S,
   DISPLAY_S,
   EYEBROW_TEXT,
+  MONO_STYLE,
   LEAD,
   SECTION_Y_TIGHT,
   TITLE_S,
@@ -210,7 +211,7 @@ export function PricingContent({ lang = 'en' }: { lang?: Lang }) {
                   data-fx-surface="dark"
                   className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-5"
                 >
-                  <p className={EYEBROW_TEXT}>{String(i + 1).padStart(2, '0')}</p>
+                  <p style={MONO_STYLE} className={EYEBROW_TEXT}>{String(i + 1).padStart(2, '0')}</p>
                   <p className={`mt-3 ${BODY} font-medium text-[var(--fx-white)]`}>{step.title}</p>
                   <p className={`mt-1.5 ${BODY_S} text-[var(--fx-muted)]`}>{step.body}</p>
                 </li>

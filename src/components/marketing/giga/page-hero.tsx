@@ -62,9 +62,13 @@ import { DISPLAY_L, HERO_Y, LEAD } from './tokens';
  * equal to the `[data-marketing-shell]` block in globals.css — they exist so a
  * hero rendered outside the shell is charcoal-and-yellow rather than black,
  * not as a second source of truth.
+ *
+ * There were two more, for `--fx-hairline` and `--fx-faint`. They went dead
+ * when the ramp stopped reading those two: both are TEXT tokens, pre-alpha'd
+ * for copy rather than for a field, and against the current ground the bottom
+ * of the ramp landed under 4% effective. Only the two SOLID tokens are read
+ * now, so only those two need a fallback.
  */
-const FALLBACK_HAIRLINE = 'rgba(255, 255, 255, 0.12)';
-const FALLBACK_FAINT = 'rgba(255, 255, 255, 0.38)';
 const FALLBACK_WHITE = '#ffffff';
 const FALLBACK_YELLOW = '#f8cd02';
 
