@@ -401,6 +401,11 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-faint: rgba(13, 13, 13, 0.46);
   --fx-hairline: rgba(13, 13, 13, 0.18);
 
+  /* The accent has no hue of its own here, and should not get one. On a
+     yellow ground every colour that is not black is either invisible or
+     alarming, so the accent differentiates by WEIGHT — full black against
+     black-68% body copy — and by treatment: a filled block, an underline. A
+     third hue on this ground would read as a fourth brand colour. */
   --fx-yellow: #0d0d0d;
   --fx-yellow-hover: #000000;
   --fx-on-yellow: #f8cd02;
@@ -422,6 +427,12 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-yellow: #f8cd02;
   --fx-yellow-hover: #dcb602;
   --fx-on-yellow: #0d0d0d;
+  /* Alert has to come back too. The light scope darkens it to survive on
+     yellow; left unreset, that dark red lands on a black card at about 2:1 —
+     on a form's failure notice, which is the one message a visitor cannot be
+     allowed to miss. */
+  --fx-alert: #ff405d;
+  --fx-alert-text: #ff7a8d;
 }
 
 [data-marketing-shell] h1,

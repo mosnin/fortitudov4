@@ -18,6 +18,7 @@
 import { useEffect, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import { CRM_STAGES, STAGE_LABELS } from '@/lib/crm';
+import { KineticText } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { DISPLAY_M, EYEBROW_TEXT, MONO_STYLE, SECTION_Y } from './tokens';
 
@@ -53,17 +54,23 @@ export function Pipeline() {
     >
       <Band>
         <div className="grid gap-12 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-20">
-          <BlurRise>
-            <Eyebrow>How an engagement runs</Eyebrow>
+          <div>
+            <BlurRise>
+              <Eyebrow>How an engagement runs</Eyebrow>
+            </BlurRise>
             <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-              Seven stages, and you can see which one you&apos;re in.
+              {/* One string, not two: the mask is per WORD, so the heading
+                  still wraps wherever the column tells it to. */}
+              <KineticText lines={['Seven stages, and you can see which one you’re in.']} />
             </Serif>
-            <p className="mt-5 text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-              Not a status email on Fridays. The same pipeline we run the work
-              on is the one your portal reads from, so &ldquo;where are
-              we?&rdquo; is a page you open rather than a question you ask.
-            </p>
-          </BlurRise>
+            <BlurRise delay={0.28}>
+              <p className="mt-5 text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
+                Not a status email on Fridays. The same pipeline we run the work
+                on is the one your portal reads from, so &ldquo;where are
+                we?&rdquo; is a page you open rather than a question you ask.
+              </p>
+            </BlurRise>
+          </div>
 
           <BlurRise delay={0.08}>
             <ol className="border-t border-[var(--fx-hairline)]">

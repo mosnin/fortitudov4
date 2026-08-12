@@ -19,6 +19,7 @@ import * as Accordion from '@radix-ui/react-accordion';
 import { Band, BlurRise, Eyebrow, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
 import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
+import { ToneShift } from '@/components/marketing/giga/tone-shift';
 
 const faqCategories = [
   {
@@ -133,66 +134,86 @@ export default function FAQPage() {
         </Band>
       </section>
 
-      {/* Questions, by category */}
-      <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
-        <Band innerClassName="max-w-3xl">
-          <div className="space-y-16">
-            {faqCategories.map((category) => (
-              <BlurRise key={category.category}>
-                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  {category.category}
-                </p>
+      {/* The tone shift. Everything below runs in the inverted scope — racing
+          yellow ground, black ink — see `[data-fx-tone="light"]` in
+          globals.css.
 
-                <Accordion.Root
-                  type="single"
-                  collapsible
-                  className="mt-5 border-t border-[var(--fx-hairline)]"
-                >
-                  {category.questions.map((item, i) => (
-                    <Accordion.Item
-                      key={item.q}
-                      value={`${category.category}-${i}`}
-                      className="border-b border-[var(--fx-hairline)]"
-                    >
-                      <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left text-[16px] font-medium text-[var(--fx-white)] transition-colors [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[var(--fx-yellow)]">
-                        {item.q}
-                        <ChevronDown className="h-4 w-4 shrink-0 text-[var(--fx-muted)] transition-transform duration-200" />
-                      </Accordion.Trigger>
-                      <Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
-                        <div className="pb-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                          {item.a}
-                        </div>
-                      </Accordion.Content>
-                    </Accordion.Item>
-                  ))}
-                </Accordion.Root>
-              </BlurRise>
-            ))}
-          </div>
-        </Band>
-      </section>
+          The split is directly under the hero, which is the whole pitch this
+          page has: four words of promise, and then sixteen answers. Everything
+          below the hero is the substance, so the substance is what turns
+          yellow.
 
-      {/* Still stuck */}
-      <section
-        className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] ${SECTION_Y}`}
-      >
-        <Band innerClassName="max-w-2xl">
-          <BlurRise>
-            <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
-              Still have questions?
-            </Serif>
-            <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              We&apos;re here to help. Reach out and we&apos;ll get back to you
-              within 24 hours.
-            </p>
-            <PillPrimary href="/contact" className="mt-8" withArrow>
-              Contact us
-            </PillPrimary>
-          </BlurRise>
-        </Band>
-      </section>
+          The obvious alternative — splitting after the questions, the way the
+          homepage splits before its proof — was tried and rejected. The
+          section that follows the accordions paints `--fx-charcoal-deep`,
+          which inverts to black, so the flip would land on a black band and
+          the page would show no yellow at all until the closing ask. A tone
+          shift that produces no tone is not one. */}
+      <ToneShift>
+        {/* Questions, by category */}
+        <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
+          <Band innerClassName="max-w-3xl">
+            <div className="space-y-16">
+              {faqCategories.map((category) => (
+                <BlurRise key={category.category}>
+                  <p style={MONO_STYLE} className={EYEBROW_TEXT}>
+                    {category.category}
+                  </p>
 
-      <CtaSection />
+                  <Accordion.Root
+                    type="single"
+                    collapsible
+                    className="mt-5 border-t border-[var(--fx-hairline)]"
+                  >
+                    {category.questions.map((item, i) => (
+                      <Accordion.Item
+                        key={item.q}
+                        value={`${category.category}-${i}`}
+                        className="border-b border-[var(--fx-hairline)]"
+                      >
+                        <Accordion.Trigger className="group flex w-full cursor-pointer items-center justify-between gap-6 py-5 text-left text-[16px] font-medium text-[var(--fx-white)] transition-colors [&[data-state=open]>svg]:rotate-180 [&[data-state=open]]:text-[var(--fx-yellow)]">
+                          {item.q}
+                          <ChevronDown className="h-4 w-4 shrink-0 text-[var(--fx-muted)] transition-transform duration-200" />
+                        </Accordion.Trigger>
+                        <Accordion.Content className="overflow-hidden data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown">
+                          <div className="pb-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                            {item.a}
+                          </div>
+                        </Accordion.Content>
+                      </Accordion.Item>
+                    ))}
+                  </Accordion.Root>
+                </BlurRise>
+              ))}
+            </div>
+          </Band>
+        </section>
+
+        {/* Still stuck. `--fx-charcoal-deep` inverts to black, so this band is
+            a full-width black plate on the yellow and its ink has to flip
+            back — hence the surface mark. */}
+        <section
+          data-fx-surface="dark"
+          className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] ${SECTION_Y}`}
+        >
+          <Band innerClassName="max-w-2xl">
+            <BlurRise>
+              <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
+                Still have questions?
+              </Serif>
+              <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
+                We&apos;re here to help. Reach out and we&apos;ll get back to you
+                within 24 hours.
+              </p>
+              <PillPrimary href="/contact" className="mt-8" withArrow>
+                Contact us
+              </PillPrimary>
+            </BlurRise>
+          </Band>
+        </section>
+
+        <CtaSection />
+      </ToneShift>
     </>
   );
 }

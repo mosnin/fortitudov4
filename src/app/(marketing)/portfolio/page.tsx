@@ -44,6 +44,19 @@ type CaseStudy = {
  */
 const CASE_STUDIES: CaseStudy[] = [];
 
+/**
+ * No tone shift on this page, deliberately.
+ *
+ * The flip marks a turn — pitch above, proof below. This page is one thing all
+ * the way down: a hero, a single band, and the shared closing ask. The only
+ * boundary available is between the hero and the band, which is not a turn,
+ * and the only other place to put it would wrap `CtaSection` alone. A colour
+ * change that lands on one shared component is a change of colour, not a
+ * change of subject.
+ *
+ * When CASE_STUDIES fills, revisit: a grid of real work below a hero is proof,
+ * and proof is what the yellow is for.
+ */
 export default function PortfolioPage() {
   return (
     <>

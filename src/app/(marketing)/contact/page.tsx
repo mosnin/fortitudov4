@@ -52,6 +52,21 @@ const DETAILS = [
   },
 ];
 
+/**
+ * No tone shift on this page, deliberately, for two reasons.
+ *
+ * The page is a hero and one grid row. There is no turn from pitch to proof to
+ * mark — the form is both, and the only split available would flip the ask
+ * itself, which is the one thing here that has to stay a familiar object.
+ *
+ * The second reason is a hard one. The failure notice draws on `--fx-alert`
+ * and `--fx-alert-text`, and the `[data-fx-surface="dark"]` reset in
+ * globals.css does not redefine either. Inside the flip the form card is
+ * black, while the alert tokens still hold the dark red picked to survive on
+ * yellow — #8c0f24 on #141416, about 2:1. The one message on this site a
+ * visitor must not miss would be the one they cannot read. Fix the tokens
+ * first; then this page can turn yellow.
+ */
 export default function ContactPage() {
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');

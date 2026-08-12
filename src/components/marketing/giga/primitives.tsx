@@ -18,6 +18,13 @@
  *
  * Motion is the installed `motion` package; everything respects
  * prefers-reduced-motion (BlurRise falls back to a plain block).
+ *
+ * `BlurRise` is the quiet end of the vocabulary — the entrance for a block
+ * that should simply appear. The deliberate moves (the headline mask, the
+ * parallax glow, the magnetic pull on this file's primary CTA, the ticker, the
+ * counter, the grid cascade) live in `motion-kit.tsx`, which is where a new
+ * one goes. This file imports from it; it must never import back, or the two
+ * modules become a cycle.
  */
 
 import Link from 'next/link';
@@ -25,7 +32,11 @@ import { motion, useReducedMotion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
+import { useMagnetic } from './motion-kit';
 import { EYEBROW_TEXT, MONO_STYLE } from './tokens';
+
+/** `PillPrimary` is the one magnetic control on the surface — see below. */
+const MotionLink = motion.create(Link);
 
 /* ── Serif display headline ─────────────────────────────────────────────── */
 
@@ -126,13 +137,29 @@ type PillProps = {
  * place to change. The token is defined on `[data-marketing-shell]`, which
  * wraps every logged-out route; outside that tree it would resolve to nothing,
  * and this component is not for the product.
+ *
+ * It is also the only thing on the surface that leans toward the cursor
+ * (`useMagnetic`). That is deliberate and it is why the pull is scoped to this
+ * component rather than offered as a class: the system already says there is
+ * one primary action per screen, so there is one magnetic element per screen.
+ * `PillGhost` stays still — a secondary action that reaches for you is a
+ * secondary action pretending.
+ *
+ * The transform now belongs to motion, so the press is `whileTap` rather than
+ * `active:scale-*`, and the class list transitions colour only. A CSS
+ * `transition-all` here would smear every spring frame through a 200ms curve.
  */
 export function PillPrimary({ href, children, className, withArrow }: PillProps) {
+  const reduce = useReducedMotion();
+  const magnetic = useMagnetic<HTMLAnchorElement>();
   return (
-    <Link
+    <MotionLink
       href={href}
+      {...magnetic}
+      whileTap={reduce ? undefined : { scale: 0.98 }}
+      transition={{ duration: 0.12, ease: EASE_OUT }}
       className={cn(
-        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-all duration-200 hover:bg-[var(--fx-yellow-hover)] active:scale-[0.98]',
+        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)]',
         className,
       )}
     >
@@ -140,7 +167,7 @@ export function PillPrimary({ href, children, className, withArrow }: PillProps)
       {withArrow ? (
         <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
       ) : null}
-    </Link>
+    </MotionLink>
   );
 }
 

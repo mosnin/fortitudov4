@@ -25,6 +25,7 @@
  * call `auth()` from their own server component before rendering.
  */
 
+import { Cursor } from '@/components/marketing/giga/cursor';
 import { SiteHeader } from '@/components/marketing/giga/header';
 import { SiteFooter } from '@/components/marketing/giga/footer';
 import { FooterReveal } from '@/components/ui/footer-reveal';
@@ -56,6 +57,8 @@ export default function MarketingLayout({
           </linearGradient>
         </defs>
       </svg>
+      {/* Pointer devices only, never on touch, off under reduced motion. */}
+      <Cursor />
       <SiteHeader />
       {/* FooterReveal: the footer stays pinned under the page and is uncovered
           as the content slides up on the last stretch of scroll. The content

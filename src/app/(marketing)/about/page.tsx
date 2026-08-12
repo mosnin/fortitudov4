@@ -10,6 +10,7 @@
 
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
 
 export const metadata = {
@@ -100,7 +101,23 @@ export default function AboutPage() {
             </BlurRise>
           </div>
         </Band>
+      </div>
 
+      {/* The tone shift. Everything below runs in the inverted scope — racing
+          yellow ground, black ink — see `[data-fx-tone="light"]` in
+          globals.css.
+
+          The split is between the diagnosis and the commitments. The hero and
+          "the gap" argue that agency work is behind; the beliefs are the four
+          things we sign up to because of it. That is the page's turn from
+          explaining itself to putting something on the record, and a promise
+          is the part a visitor comes back to check. Yellow is where the
+          promises live.
+
+          `text-[var(--fx-white)]` is restated here because the charcoal
+          wrapper above computed it to white; inside the flip the same token
+          resolves to black, so inherited ink follows the ground. */}
+      <ToneShift className="text-[var(--fx-white)]">
         {/* Beliefs */}
         <Band className={SECTION_Y}>
           <BlurRise className="max-w-2xl">
@@ -114,8 +131,12 @@ export default function AboutPage() {
               <BlurRise key={b.title} delay={i * 0.06}>
                 {/* 6px, not the ported rounded-3xl: the logged-out site is
                     squared, and one lozenge in a grid of panels reads as an
-                    import. */}
-                <div className="h-full rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8">
+                    import. `--fx-charcoal-raised` inverts to black, so the
+                    card carries the surface mark and its ink flips back. */}
+                <div
+                  data-fx-surface="dark"
+                  className="h-full rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8"
+                >
                   <Serif as="h3" className={`${TITLE_S} text-[var(--fx-white)]`}>
                     {b.title}
                   </Serif>
@@ -125,8 +146,9 @@ export default function AboutPage() {
             ))}
           </div>
         </Band>
-      </div>
-      <CtaSection />
+
+        <CtaSection />
+      </ToneShift>
     </>
   );
 }

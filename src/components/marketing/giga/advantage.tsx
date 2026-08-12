@@ -6,6 +6,13 @@
  * "typical agencies" belt of red warning pills against the "Fortitudo" belt of
  * brand-lit pipeline pills — the same marquee-left + pill-ring-pulse
  * keyframes (globals.css), restaged on the near-black band.
+ *
+ * Motion: the belts ARE this section's one idea, so nothing else here moves on
+ * scroll beyond the heading's mask reveal. The loop now runs through the kit's
+ * `<Marquee>` rather than a local copy of the same flex-and-keyframe trick —
+ * one ticker implementation on the surface, and the wrapper adds the edge fade
+ * the hand-rolled version never had, so pills dissolve at the card boundary
+ * instead of being guillotined by it.
  */
 
 import {
@@ -22,6 +29,7 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react';
+import { KineticText, Marquee } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { ALERT_CHIP, ALERT_RULE, DISPLAY_M, MONO_STYLE, SECTION_Y, TITLE_S } from './tokens';
 
@@ -57,12 +65,17 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
   const connector = tone === 'alert' ? ALERT_RULE : 'bg-[var(--fx-yellow)]/60';
   const ring = tone === 'alert' ? 'rgba(255,64,93,0.25)' : 'rgba(248,205,2,0.25)';
 
-  const row = (hidden: boolean) => (
-    <div aria-hidden={hidden} className="flex shrink-0 items-center gap-2">
+  return (
+    /* The kit duplicates the belt for the seamless loop and hides the copy
+       from assistive tech, so the row below is written once. */
+    <Marquee className="absolute inset-x-0 top-1/2 -translate-y-1/2 py-2" seconds={26}>
       {pills.map((pill) => {
         const Icon = pill.icon;
         return (
-          <div key={pill.label} className="flex shrink-0 items-center gap-2">
+          /* The trailing pad rides on the pill group rather than on a gap on
+             the row, so the spacing is identical at the seam where the second
+             copy of the belt begins. */
+          <div key={pill.label} className="flex shrink-0 items-center gap-2 pr-2">
             <div
               className={`flex shrink-0 items-center gap-2.5 rounded-[6px] border p-3.5 motion-safe:animate-[pill-ring-pulse_2s_ease-in-out_infinite] ${pillStyles}`}
               style={
@@ -85,16 +98,7 @@ function PillConveyor({ pills, tone }: { pills: Pill[]; tone: 'alert' | 'brand' 
           </div>
         );
       })}
-    </div>
-  );
-
-  return (
-    <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 overflow-x-clip">
-      <div className="flex w-max items-center py-2 motion-safe:animate-[marquee-left_26s_linear_infinite]">
-        {row(false)}
-        {row(true)}
-      </div>
-    </div>
+    </Marquee>
   );
 }
 
@@ -104,16 +108,20 @@ export function Advantage() {
       className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
     >
       <Band>
-        <BlurRise className="max-w-3xl">
-          <Eyebrow>Why Fortitudo</Eyebrow>
+        <div className="max-w-3xl">
+          <BlurRise>
+            <Eyebrow>Why Fortitudo</Eyebrow>
+          </BlurRise>
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
-            Our unique advantage.
+            <KineticText lines={['Our unique advantage.']} />
           </Serif>
-          <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
-            Senior builders lead every project, on a fixed quote you can hold us
-            to. You get agency craft without agency overhead.
-          </p>
-        </BlurRise>
+          <BlurRise delay={0.28}>
+            <p className="mt-5 max-w-xl text-[14.5px] leading-relaxed text-[var(--fx-muted)]">
+              Senior builders lead every project, on a fixed quote you can hold
+              us to. You get agency craft without agency overhead.
+            </p>
+          </BlurRise>
+        </div>
 
         <div className="mt-14 grid max-w-6xl gap-6 lg:grid-cols-2">
           <BlurRise>

@@ -58,7 +58,13 @@ export function ToneShift({
       <motion.div
         aria-hidden
         style={reduce ? undefined : { y: seamY, opacity: seamOpacity }}
-        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-40 bg-gradient-to-b from-[#1b1b1d] via-[#1b1b1d]/55 to-transparent sm:h-56"
+        // ABOVE the children, not below. Sections paint their own full-bleed
+        // grounds, so a seam underneath them is a seam nobody sees — the flip
+        // then reads as a hard cut, which is the exact failure this element
+        // exists to prevent. It fades to transparent within ~200px and takes
+        // no pointer events, so overlaying the top of the first section costs
+        // nothing.
+        className="pointer-events-none absolute inset-x-0 top-0 z-20 h-40 bg-gradient-to-b from-[#1b1b1d] via-[#1b1b1d]/55 to-transparent sm:h-56"
       />
       <div className="relative z-10">{children}</div>
     </div>

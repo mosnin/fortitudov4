@@ -19,6 +19,7 @@ import { services } from '@/lib/services';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
 import { DISPLAY_L, DISPLAY_S, EYEBROW_TEXT, HERO_Y, MONO_STYLE, SECTION_Y } from '@/components/marketing/giga/tokens';
 import { CtaSection } from '@/components/marketing/giga/cta';
+import { ToneShift } from '@/components/marketing/giga/tone-shift';
 
 /** What every engagement includes, whichever of the five you buy. */
 const ALWAYS_INCLUDED = [
@@ -147,29 +148,42 @@ export default function ServicesPage() {
         );
       })}
 
-      {/* Bottom ask */}
-      <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
-        <Band innerClassName="max-w-2xl">
-          <BlurRise>
-            <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
-              Not sure which one you need?
-            </Serif>
-            <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
-              Book a free consultation and we&apos;ll help you pick the path
-              that actually fits — including telling you when the answer is
-              &ldquo;not yet&rdquo;.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <PillPrimary href="/contact" withArrow>
-                Book a consultation
-              </PillPrimary>
-              <PillGhost href="/pricing">View pricing</PillGhost>
-            </div>
-          </BlurRise>
-        </Band>
-      </section>
+      {/* The tone shift. Everything below runs in the inverted scope — racing
+          yellow ground, black ink — see `[data-fx-tone="light"]` in
+          globals.css.
 
-      <CtaSection />
+          The split is after the fifth offering because that is where the page
+          stops describing and starts asking. The five bands are the catalogue,
+          and a visitor reads them one at a time; the two sections below are
+          addressed to whoever reached the end of the list without picking. The
+          colour marks that change of address. Splitting anywhere inside the
+          list would cut the catalogue in half, which is the one thing this
+          page's structure will not take. */}
+      <ToneShift>
+        {/* Bottom ask */}
+        <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
+          <Band innerClassName="max-w-2xl">
+            <BlurRise>
+              <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
+                Not sure which one you need?
+              </Serif>
+              <p className="mt-4 text-[15px] leading-relaxed text-[var(--fx-muted)]">
+                Book a free consultation and we&apos;ll help you pick the path
+                that actually fits — including telling you when the answer is
+                &ldquo;not yet&rdquo;.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <PillPrimary href="/contact" withArrow>
+                  Book a consultation
+                </PillPrimary>
+                <PillGhost href="/pricing">View pricing</PillGhost>
+              </div>
+            </BlurRise>
+          </Band>
+        </section>
+
+        <CtaSection />
+      </ToneShift>
     </>
   );
 }

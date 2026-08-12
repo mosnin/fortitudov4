@@ -18,6 +18,7 @@ import { LANG_TAG, type Lang } from '@/lib/i18n/markets';
 import { EngagementPlans } from '@/components/marketing/pages/engagement-plans';
 import { LocalPrice, PriceText, CurrencyNote } from '@/components/marketing/local-price';
 import { Band, BlurRise, Eyebrow, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { DISPLAY_L, DISPLAY_S, HERO_Y, SECTION_Y_TIGHT, TITLE_S } from '@/components/marketing/giga/tokens';
 
 /** Starting prices for the full service list (mirrors lib/services.ts /
@@ -81,192 +82,224 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <CurrencyNote lang={lang} className="text-[12px] text-[var(--fx-muted)]" />
       </Band>
 
-      {/* Specialist engagements (consultation + retainer) */}
-      <Band className={SECTION_Y_TIGHT}>
-        <BlurRise className="max-w-3xl">
-          <div>
-            <Eyebrow>Specialist engagements</Eyebrow>
-            <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-              Two more ways we can build with you.
-            </Serif>
-            <p className="mt-5 max-w-xl text-[14px] leading-relaxed text-[var(--fx-muted)]">
-              Beyond the core builds, we offer senior consultation engagements, and we
-              stay on after launch when you want us to — same fixed-quote transparency,
-              same live tracking.
-            </p>
-          </div>
-          <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
-            <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6">
-              <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                Consultation
-              </Serif>
-              <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                Roadmap, architecture & AI strategy sessions
-              </p>
-              <p className="mt-4">
-                <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
-                  <LocalPrice usd={SERVICE_STARTING_USD.consultation} lang={lang} />
-                </Serif>
-                <span className="text-[13px] text-[var(--fx-muted)]"> / engagement, starting</span>
-              </p>
-              <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                + a written action plan you keep
-              </p>
-            </div>
-            <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6">
-              <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                Ongoing retainer
-              </Serif>
-              <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
-                Support & iteration after launch
-              </p>
-              <p className="mt-4">
-                <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
-                  Custom
-                </Serif>
-                <span className="text-[13px] text-[var(--fx-muted)]"> / month, scoped to your build</span>
-              </p>
-              {/* A custom retainer cannot promise fixed inclusions; scope is
-                  what it agrees. It used to advertise priority support and a
-                  dedicated point of contact, neither of which we define. */}
-              <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                + scope and response times agreed up front
-              </p>
-            </div>
-          </div>
-          <p className="mt-6 text-[13px] text-[var(--fx-muted)]">
-            Running something bigger?{' '}
-            <Link href="/contact" className="font-medium text-[var(--fx-yellow)] hover:underline">
-              Talk to us
-            </Link>
-            .
-          </p>
-        </BlurRise>
-      </Band>
+      {/* The tone shift. Everything below runs in the inverted scope — racing
+          yellow ground, black ink — see `[data-fx-tone="light"]` in
+          globals.css.
 
-      {/* Every service, one fixed quote + the engagement by the numbers */}
-      <Band className={SECTION_Y_TIGHT}>
-        <BlurRise className="max-w-3xl">
-          <div>
-            <Eyebrow>How pricing works</Eyebrow>
-            <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-              Every engagement starts with a fixed quote.
-            </Serif>
-            <p className="mt-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
-              Pick a service, get a scoped quote up front, and watch the build move phase by
-              phase in your dashboard. Starting prices below — your quote is fixed before
-              kickoff and never moves without your sign-off.
+          The split is after the engagement cards and the currency note that
+          belongs to them. Above it the page answers "what does this cost";
+          below it, everything is qualification — the two specialist
+          engagements, how a quote is arrived at, the four questions people ask
+          before they commit, and the ask. A visitor who is still reading past
+          the prices has already accepted the number, and the colour marks that
+          they crossed. Splitting between the cards and their currency note
+          would separate a price from its own disclosure.
+
+          `text-[var(--fx-white)]` is restated here because the charcoal
+          wrapper above computed it to white; inside the flip the same token
+          resolves to black, so inherited ink follows the ground. */}
+      <ToneShift className="text-[var(--fx-white)]">
+        {/* Specialist engagements (consultation + retainer) */}
+        <Band className={SECTION_Y_TIGHT}>
+          <BlurRise className="max-w-3xl">
+            <div>
+              <Eyebrow>Specialist engagements</Eyebrow>
+              <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
+                Two more ways we can build with you.
+              </Serif>
+              <p className="mt-5 max-w-xl text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                Beyond the core builds, we offer senior consultation engagements, and we
+                stay on after launch when you want us to — same fixed-quote transparency,
+                same live tracking.
+              </p>
+            </div>
+            {/* Both cards paint `--fx-charcoal-raised`, which inverts to
+                black; the surface mark flips their ink back. */}
+            <div className="mt-8 grid max-w-2xl gap-4 sm:grid-cols-2">
+              <div
+                data-fx-surface="dark"
+                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
+              >
+                <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
+                  Consultation
+                </Serif>
+                <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
+                  Roadmap, architecture & AI strategy sessions
+                </p>
+                <p className="mt-4">
+                  <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
+                    <LocalPrice usd={SERVICE_STARTING_USD.consultation} lang={lang} />
+                  </Serif>
+                  <span className="text-[13px] text-[var(--fx-muted)]"> / engagement, starting</span>
+                </p>
+                <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
+                  + a written action plan you keep
+                </p>
+              </div>
+              <div
+                data-fx-surface="dark"
+                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6"
+              >
+                <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
+                  Ongoing retainer
+                </Serif>
+                <p className="mt-1 text-[12.5px] text-[var(--fx-muted)]">
+                  Support & iteration after launch
+                </p>
+                <p className="mt-4">
+                  <Serif as="span" className="text-2xl font-light tabular-nums text-[var(--fx-white)]">
+                    Custom
+                  </Serif>
+                  <span className="text-[13px] text-[var(--fx-muted)]"> / month, scoped to your build</span>
+                </p>
+                {/* A custom retainer cannot promise fixed inclusions; scope is
+                    what it agrees. It used to advertise priority support and a
+                    dedicated point of contact, neither of which we define. */}
+                <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
+                  + scope and response times agreed up front
+                </p>
+              </div>
+            </div>
+            <p className="mt-6 text-[13px] text-[var(--fx-muted)]">
+              Running something bigger?{' '}
+              <Link href="/contact" className="font-medium text-[var(--fx-yellow)] hover:underline">
+                Talk to us
+              </Link>
+              .
             </p>
-          </div>
-          <ul className="mt-8 divide-y divide-[var(--fx-hairline)] overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]">
-            {services.map((s) => (
-              <li key={s.id} className="flex items-center justify-between px-5 py-3.5">
-                <span className="text-[13.5px] text-[var(--fx-white)]">{s.name}</span>
-                <span className="text-[13px] tabular-nums text-[var(--fx-muted)]">
-                  from <LocalPrice usd={SERVICE_STARTING_USD[s.id] ?? 0} lang={lang} />
-                </span>
-              </li>
+          </BlurRise>
+        </Band>
+
+        {/* Every service, one fixed quote + the engagement by the numbers */}
+        <Band className={SECTION_Y_TIGHT}>
+          <BlurRise className="max-w-3xl">
+            <div>
+              <Eyebrow>How pricing works</Eyebrow>
+              <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
+                Every engagement starts with a fixed quote.
+              </Serif>
+              <p className="mt-5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                Pick a service, get a scoped quote up front, and watch the build move phase by
+                phase in your dashboard. Starting prices below — your quote is fixed before
+                kickoff and never moves without your sign-off.
+              </p>
+            </div>
+            {/* The price list is a raised panel, so it is a black plate on the
+                yellow and its rows need the light ink back. */}
+            <ul
+              data-fx-surface="dark"
+              className="mt-8 divide-y divide-[var(--fx-hairline)] overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]"
+            >
+              {services.map((s) => (
+                <li key={s.id} className="flex items-center justify-between px-5 py-3.5">
+                  <span className="text-[13.5px] text-[var(--fx-white)]">{s.name}</span>
+                  <span className="text-[13px] tabular-nums text-[var(--fx-muted)]">
+                    from <LocalPrice usd={SERVICE_STARTING_USD[s.id] ?? 0} lang={lang} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-10">
+              <Eyebrow>What every engagement includes</Eyebrow>
+            </p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {ENGAGEMENT_COMMITMENTS.map((fact) => (
+                <div
+                  key={fact.id}
+                  data-fx-surface="dark"
+                  className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-5"
+                >
+                  <p className="text-[13.5px] font-medium text-[var(--fx-white)]">{fact.label}</p>
+                  <Serif
+                    as="p"
+                    className="mt-2 text-2xl font-light tabular-nums text-[var(--fx-white)]"
+                  >
+                    {fact.figure}
+                  </Serif>
+                  <p className="mt-1 text-[12px] text-[var(--fx-muted)]">{fact.line}</p>
+                </div>
+              ))}
+            </div>
+          </BlurRise>
+        </Band>
+
+        {/* FAQ */}
+        <Band className={SECTION_Y_TIGHT}>
+          <BlurRise className="max-w-3xl">
+            <Eyebrow>Questions</Eyebrow>
+            <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
+              What people ask first.
+            </Serif>
+          </BlurRise>
+          {/* Price tokens are named for the offering they resolve to. They were
+              `validate` and `scale` — the source template's plan tiers, which we
+              do not sell and which leaked into the copy as "a Scale web
+              application". */}
+          <ul className="mt-12 max-w-3xl divide-y divide-[var(--fx-hairline)]">
+            {[
+              {
+                q: 'Is the price really fixed?',
+                a: 'Yes. Every engagement starts with a scoped, written quote. Once you approve it, that is the price — scope changes are quoted separately and only happen with your sign-off. No hourly meters, no surprise invoices.',
+              },
+              {
+                q: 'What does "from {websites}" mean?',
+                a: 'The starting price for the simplest version of that engagement. Your exact quote depends on scope — pages, integrations, and features — and is fixed before kickoff.',
+              },
+              {
+                q: 'What happens after launch?',
+                a: 'You own everything: full source code, design files, and infrastructure are handed over — no lock-in. Every engagement includes 30 days of post-launch support, and if you want us to stay on, an ongoing retainer is scoped to your build.',
+              },
+              {
+                q: 'How do payments work?',
+                a: 'You approve the fixed quote, pay to kick off, and track the build live through every phase — a software solutions build, for example, starts at {software}. Invoices itemize exactly what you approved, and revisions within scope are included.',
+              },
+            ].map((item, i) => (
+              <BlurRise key={item.q} delay={i * 0.04}>
+                <li className="py-7">
+                  <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
+                    <PriceText
+                      template={item.q}
+                      tokens={{ websites: SERVICE_STARTING_USD.websites }}
+                      lang={lang}
+                    />
+                  </Serif>
+                  <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
+                    {/* Prices in prose localize with the visitor's currency */}
+                    <PriceText
+                      template={item.a}
+                      tokens={{
+                        websites: SERVICE_STARTING_USD.websites,
+                        software: SERVICE_STARTING_USD.software_solutions,
+                      }}
+                      lang={lang}
+                    />
+                  </p>
+                </li>
+              </BlurRise>
             ))}
           </ul>
+        </Band>
 
-          <p className="mt-10">
-            <Eyebrow>What every engagement includes</Eyebrow>
-          </p>
-          <div className="mt-5 grid gap-4 sm:grid-cols-3">
-            {ENGAGEMENT_COMMITMENTS.map((fact) => (
-              <div
-                key={fact.id}
-                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-5"
-              >
-                <p className="text-[13.5px] font-medium text-[var(--fx-white)]">{fact.label}</p>
-                <Serif
-                  as="p"
-                  className="mt-2 text-2xl font-light tabular-nums text-[var(--fx-white)]"
-                >
-                  {fact.figure}
-                </Serif>
-                <p className="mt-1 text-[12px] text-[var(--fx-muted)]">{fact.line}</p>
-              </div>
-            ))}
-          </div>
-        </BlurRise>
-      </Band>
-
-      {/* FAQ */}
-      <Band className={SECTION_Y_TIGHT}>
-        <BlurRise className="max-w-3xl">
-          <Eyebrow>Questions</Eyebrow>
-          <Serif className={`mt-5 ${DISPLAY_S} text-[var(--fx-white)]`}>
-            What people ask first.
-          </Serif>
-        </BlurRise>
-        {/* Price tokens are named for the offering they resolve to. They were
-            `validate` and `scale` — the source template's plan tiers, which we
-            do not sell and which leaked into the copy as "a Scale web
-            application". */}
-        <ul className="mt-12 max-w-3xl divide-y divide-[var(--fx-hairline)]">
-          {[
-            {
-              q: 'Is the price really fixed?',
-              a: 'Yes. Every engagement starts with a scoped, written quote. Once you approve it, that is the price — scope changes are quoted separately and only happen with your sign-off. No hourly meters, no surprise invoices.',
-            },
-            {
-              q: 'What does "from {websites}" mean?',
-              a: 'The starting price for the simplest version of that engagement. Your exact quote depends on scope — pages, integrations, and features — and is fixed before kickoff.',
-            },
-            {
-              q: 'What happens after launch?',
-              a: 'You own everything: full source code, design files, and infrastructure are handed over — no lock-in. Every engagement includes 30 days of post-launch support, and if you want us to stay on, an ongoing retainer is scoped to your build.',
-            },
-            {
-              q: 'How do payments work?',
-              a: 'You approve the fixed quote, pay to kick off, and track the build live through every phase — a software solutions build, for example, starts at {software}. Invoices itemize exactly what you approved, and revisions within scope are included.',
-            },
-          ].map((item, i) => (
-            <BlurRise key={item.q} delay={i * 0.04}>
-              <li className="py-7">
-                <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
-                  <PriceText
-                    template={item.q}
-                    tokens={{ websites: SERVICE_STARTING_USD.websites }}
-                    lang={lang}
-                  />
-                </Serif>
-                <p className="mt-2.5 text-[14px] leading-relaxed text-[var(--fx-muted)]">
-                  {/* Prices in prose localize with the visitor's currency */}
-                  <PriceText
-                    template={item.a}
-                    tokens={{
-                      websites: SERVICE_STARTING_USD.websites,
-                      software: SERVICE_STARTING_USD.software_solutions,
-                    }}
-                    lang={lang}
-                  />
-                </p>
-              </li>
-            </BlurRise>
-          ))}
-        </ul>
-      </Band>
-
-      {/* Closing CTA */}
-      <Band className={SECTION_Y_TIGHT}>
-        <BlurRise className="max-w-2xl">
-          <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
-            Get a fixed quote for your build.
-          </Serif>
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)]">
-            Tell us what you are building and get a scoped quote — then watch it move from
-            kickoff to launch.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <PillPrimary href="/sign-up" withArrow>
-              Start your project
-            </PillPrimary>
-            <PillGhost href="/contact">Talk to us</PillGhost>
-          </div>
-        </BlurRise>
-      </Band>
+        {/* Closing CTA */}
+        <Band className={SECTION_Y_TIGHT}>
+          <BlurRise className="max-w-2xl">
+            <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
+              Get a fixed quote for your build.
+            </Serif>
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)]">
+              Tell us what you are building and get a scoped quote — then watch it move from
+              kickoff to launch.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <PillPrimary href="/sign-up" withArrow>
+                Start your project
+              </PillPrimary>
+              <PillGhost href="/contact">Talk to us</PillGhost>
+            </div>
+          </BlurRise>
+        </Band>
+      </ToneShift>
     </div>
   );
 }
