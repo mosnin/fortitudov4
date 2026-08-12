@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { PAYMENT_METHODS } from "@/lib/payment-methods";
 import { cn } from "@/lib/utils";
 import {
   CAPTION,
   GHOST_PILL,
-  H1,
+  H2,
   PRIMARY_PILL,
   TITLE_FONT,
 } from "@/lib/typography";
@@ -31,9 +32,6 @@ export interface EditablePayment {
   amount: number;
   notes?: string | null;
 }
-
-const selectClass =
-  "h-10 w-full rounded-full border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
 
 /** Today as the admin sees it on their own calendar. Using the UTC date
  * here would default to *tomorrow* for US users after ~5pm. */
@@ -171,7 +169,7 @@ export function ClientPaymentModal({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-background/60 backdrop-blur-xl"
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
             onClick={onClose}
           />
           <motion.form
@@ -182,7 +180,7 @@ export function ClientPaymentModal({
             className="relative w-full max-w-lg rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-6">
-              <h2 className={cn(H1, "text-xl")} style={TITLE_FONT}>
+              <h2 className={H2} style={TITLE_FONT}>
                 {payment ? "Edit Payment" : "Record Payment"}
               </h2>
               <button
@@ -201,8 +199,7 @@ export function ClientPaymentModal({
                   <span className="mb-1.5 block text-[13px] font-medium">
                     Client <span aria-hidden>*</span>
                   </span>
-                  <select
-                    className={selectClass}
+                  <Select
                     value={form.clientId}
                     onChange={(e) =>
                       setForm({ ...form, clientId: e.target.value })
@@ -214,7 +211,7 @@ export function ClientPaymentModal({
                         {c.companyName}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
               )}
 
@@ -223,8 +220,7 @@ export function ClientPaymentModal({
                   <span className="mb-1.5 block text-[13px] font-medium">
                     Payment Type
                   </span>
-                  <select
-                    className={selectClass}
+                  <Select
                     value={form.paymentType}
                     onChange={(e) =>
                       setForm({ ...form, paymentType: e.target.value })
@@ -232,14 +228,13 @@ export function ClientPaymentModal({
                   >
                     <option value="setup_fee">Setup Fee</option>
                     <option value="monthly_retainer">Monthly Retainer</option>
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <span className="mb-1.5 block text-[13px] font-medium">
                     Payment Method
                   </span>
-                  <select
-                    className={selectClass}
+                  <Select
                     value={form.method}
                     onChange={(e) =>
                       setForm({ ...form, method: e.target.value })
@@ -250,7 +245,7 @@ export function ClientPaymentModal({
                         {m}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
                 <div>
                   <span className="mb-1.5 block text-[13px] font-medium">

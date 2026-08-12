@@ -11,7 +11,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SectionHead } from "@/components/crm";
+import { RowSelect, SectionHead } from "@/components/crm";
 import {
   BODY_MUTED,
   CAPTION,
@@ -100,17 +100,16 @@ export function HelixBlueprints({ clients }: { clients: ClientOption[] }) {
           clients.length > 0 ? (
             <label className="flex items-center gap-1.5">
               <span className={META}>Install for</span>
-              <select
+              <RowSelect
                 value={clientId}
                 onChange={(event) => setClientId(event.target.value)}
-                className="h-7 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-foreground"
               >
                 {clients.map((client) => (
                   <option key={client.id} value={client.id}>
                     {client.companyName}
                   </option>
                 ))}
-              </select>
+              </RowSelect>
             </label>
           ) : undefined
         }

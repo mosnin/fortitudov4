@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Trash2, X } from "lucide-react";
 import {
   RecordList,
   RecordRow,
   RowAction,
   RowPill,
+  RowSelect,
 } from "@/components/crm";
 import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
 import { cn } from "@/lib/utils";
@@ -16,7 +18,7 @@ import {
   BODY_MUTED,
   CAPTION,
   GHOST_PILL,
-  H1,
+  H2,
   H3,
   PRIMARY_PILL,
   QUIET_LINK,
@@ -27,7 +29,10 @@ import {
 const STATUSES = [
   { value: "active", label: "Active" },
   { value: "paused", label: "Paused" },
-  { value: "churned", label: "Canceled" },
+  // "Churned" everywhere: the roster filter, the row pill and this dropdown
+  // are the same state, and this screen used to be the one calling it
+  // "Canceled".
+  { value: "churned", label: "Churned" },
 ];
 
 const TASK_STATUSES = [
@@ -35,9 +40,6 @@ const TASK_STATUSES = [
   { value: "in_progress", label: "In Progress" },
   { value: "completed", label: "Completed" },
 ];
-
-const selectClass =
-  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
 
 interface Task {
   id: string;
@@ -279,7 +281,7 @@ export function ClientDetailModal({
             className="relative max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-6">
-              <h2 className={cn(H1, "text-2xl")} style={TITLE_FONT}>
+              <h2 className={H2} style={TITLE_FONT}>
                 Client Details &amp; Tasks
               </h2>
               <button
@@ -344,8 +346,7 @@ export function ClientDetailModal({
                     )}
                   </Field>
                   <Field label="Status">
-                    <select
-                      className={selectClass}
+                    <Select
                       value={form.status}
                       onChange={(e) =>
                         setForm({ ...form, status: e.target.value })
@@ -356,11 +357,10 @@ export function ClientDetailModal({
                           {s.label}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                   </Field>
                   <Field label="Industry">
-                    <select
-                      className={selectClass}
+                    <Select
                       value={form.industry}
                       onChange={(e) =>
                         setForm({ ...form, industry: e.target.value })
@@ -372,7 +372,7 @@ export function ClientDetailModal({
                           {i}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                     {form.industry === "Custom" && (
                       <Input
                         className="mt-2"
@@ -385,8 +385,7 @@ export function ClientDetailModal({
                     )}
                   </Field>
                   <Field label="Package">
-                    <select
-                      className={selectClass}
+                    <Select
                       value={form.package}
                       onChange={(e) =>
                         setForm({ ...form, package: e.target.value })
@@ -398,7 +397,7 @@ export function ClientDetailModal({
                           {PACKAGE_LABELS[p]}
                         </option>
                       ))}
-                    </select>
+                    </Select>
                     {form.package === "custom" && (
                       <Input
                         className="mt-2"
@@ -478,9 +477,8 @@ export function ClientDetailModal({
                         primary={t.title}
                         secondary={t.assigneeName ?? undefined}
                         meta={
-                          <select
+                          <RowSelect
                             aria-label={`Status for ${t.title}`}
-                            className="h-8 cursor-pointer rounded-md border border-border/70 bg-background px-2 text-xs text-muted-foreground outline-none transition-colors hover:border-foreground/25 focus:border-foreground/40"
                             value={t.status}
                             onChange={(e) => setTaskStatus(t.id, e.target.value)}
                           >
@@ -489,7 +487,7 @@ export function ClientDetailModal({
                                 {s.label}
                               </option>
                             ))}
-                          </select>
+                          </RowSelect>
                         }
                         actions={
                           <RowAction

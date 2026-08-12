@@ -3,19 +3,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { X } from "lucide-react";
 import { CLIENT_PACKAGES, INDUSTRIES, PACKAGE_LABELS } from "@/lib/crm";
 import { cn } from "@/lib/utils";
 import {
   BODY_MUTED,
   CAPTION,
-  H1,
+  H2,
   PRIMARY_PILL,
   TITLE_FONT,
 } from "@/lib/typography";
-
-const selectClass =
-  "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none transition-colors focus:border-foreground/40";
 
 function Field({
   label,
@@ -157,7 +155,7 @@ export function NewClientModal({
             className="relative max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-xl border border-border bg-background p-6 shadow-[0_1px_3px_rgba(15,16,16,0.06),0_24px_60px_-16px_rgba(15,16,16,0.3)] sm:p-8"
           >
             <div className="flex items-start justify-between pb-1">
-              <h2 className={cn(H1, "text-2xl")} style={TITLE_FONT}>
+              <h2 className={H2} style={TITLE_FONT}>
                 Create New Client
               </h2>
               <button
@@ -207,8 +205,7 @@ export function NewClientModal({
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Field label="Industry">
-                  <select
-                    className={selectClass}
+                  <Select
                     value={form.industry}
                     onChange={(e) =>
                       setForm({ ...form, industry: e.target.value })
@@ -220,7 +217,7 @@ export function NewClientModal({
                         {i}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   {form.industry === "Custom" && (
                     <Input
                       className="mt-2"
@@ -233,8 +230,7 @@ export function NewClientModal({
                   )}
                 </Field>
                 <Field label="Package">
-                  <select
-                    className={selectClass}
+                  <Select
                     value={form.package}
                     onChange={(e) =>
                       setForm({ ...form, package: e.target.value })
@@ -246,7 +242,7 @@ export function NewClientModal({
                         {PACKAGE_LABELS[p]}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   {form.package === "custom" && (
                     <Input
                       className="mt-2"

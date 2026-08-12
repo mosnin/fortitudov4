@@ -140,9 +140,12 @@ export function IntroducePicker({
     [groups]
   );
 
+  // Black, not `bg-foreground/*`: that token inverts with the theme, so a
+  // foreground scrim throws a pale veil over a dark page instead of darkening
+  // it. One opacity everywhere an overlay appears in the product.
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-foreground/20 p-4 pt-[10vh] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 p-4 pt-[10vh] backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Introduce a resource"
