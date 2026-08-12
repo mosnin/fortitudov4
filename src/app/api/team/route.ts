@@ -1,10 +1,31 @@
 import { NextResponse } from "next/server";
 import { clerkClient } from "@clerk/nextjs/server";
 import { db } from "@/db";
-import { users, userRoles, tasks, files, messages } from "@/db/schema";
-import { eq, ne, count } from "drizzle-orm";
+import { users, tasks, files, messages } from "@/db/schema";
+import { eq, ne, and, count } from "drizzle-orm";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth-utils";
+
+/**
+ * The roles this endpoint may assign — NOT `userRoles`.
+ *
+ * It used to validate with `z.enum(userRoles)`, which meant adding `partner`
+ * to that union silently made "partner" assignable here. That produces a
+ * broken account rather than a partner: the `/partner` surface scopes every
+ * read by the caller's row in `partners`, and this route creates a `users` row
+ * and nothing else, so the person would land on a surface with no record
+ * behind it and no way to get one.
+ *
+ * Partners are created on `/admin/partners`, which writes the `partners` row
+ * and links the login. A team member is a different thing, and this list is
+ * the place that says so.
+ */
+const ASSIGNABLE_TEAM_ROLES = [
+  "admin",
+  "project_manager",
+  "va",
+  "client",
+] as const;
 
 export async function GET(req: Request) {
   try {
@@ -13,9 +34,16 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const includeClients = searchParams.get("includeClients") === "true";
 
+    /* Partners are excluded from both branches. This filter used to read
+       "everyone who is not a client", which quietly started listing partners
+       as staff the moment the role existed — on the page an admin uses to
+       hand out agency permissions. A partner is a third party. */
     const results = includeClients
-      ? await db.select().from(users).limit(200)
-      : await db.select().from(users).where(ne(users.role, "client"));
+      ? await db.select().from(users).where(ne(users.role, "partner")).limit(200)
+      : await db
+          .select()
+          .from(users)
+          .where(and(ne(users.role, "client"), ne(users.role, "partner")));
 
     return NextResponse.json(results);
   } catch (error) {
@@ -29,7 +57,7 @@ const createSchema = z.object({
   firstName: z.string().min(1).max(255),
   lastName: z.string().max(255).optional(),
   email: z.string().email(),
-  role: z.enum(userRoles).default("project_manager"),
+  role: z.enum(ASSIGNABLE_TEAM_ROLES).default("project_manager"),
 });
 
 /**
@@ -99,7 +127,7 @@ export async function POST(req: Request) {
 
 const patchSchema = z.object({
   userId: z.string().uuid(),
-  role: z.enum(userRoles).optional(),
+  role: z.enum(ASSIGNABLE_TEAM_ROLES).optional(),
   firstName: z.string().min(1).max(255).optional(),
   lastName: z.string().max(255).nullable().optional(),
   email: z.string().email().optional(),
