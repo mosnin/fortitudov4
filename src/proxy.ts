@@ -11,7 +11,21 @@ import {
   splitLocalizedPath,
 } from "@/lib/i18n/markets";
 
-const isPublicRoute = createRouteMatcher([
+/**
+ * Everything reachable without signing in.
+ *
+ * Exported so it can be asserted in a test. A page missing from this list is
+ * merely annoying — a signed-out visitor gets bounced to sign-in and comes
+ * back. An API route missing from it is silent data loss, which is what
+ * happened to `/api/leads`: the contact form POSTed to a route Clerk was
+ * protecting, so every anonymous prospect got a 307 to sign-in and their
+ * message went nowhere. That route exists specifically because the form used
+ * to throw messages away, and it was throwing them away again for want of one
+ * line here.
+ *
+ * When adding a public route, add the test with it.
+ */
+export const PUBLIC_ROUTES = [
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
@@ -23,9 +37,14 @@ const isPublicRoute = createRouteMatcher([
   "/faq(.*)",
   "/privacy(.*)",
   "/terms(.*)",
+  // The public contact form's submit target. Unauthenticated by design — it
+  // validates hard, caps every field and rate-limits by IP instead.
+  "/api/leads(.*)",
   "/api/webhooks(.*)",
   "/api/db-check(.*)",
-]);
+];
+
+const isPublicRoute = createRouteMatcher(PUBLIC_ROUTES);
 
 const clerkHandler = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
