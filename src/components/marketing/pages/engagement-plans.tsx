@@ -21,6 +21,15 @@
  * have no data behind. It also put two yellow CTAs on one screen, which is the
  * one thing the palette rule forbids. Every card now takes the ghost treatment
  * and the page's single yellow action is the closing ask.
+ *
+ * For the same reason the cards no longer quote a delivery time or a revision
+ * count. They advertised "14 days / 21 days / 30 days typical delivery" and
+ * "+2 / +3 rounds of revisions included", figures that appear nowhere in
+ * services.ts, pricing.ts or crm.ts — we have not measured a delivery time and
+ * we do not sell revision allowances. The band under the price now carries the
+ * commitments we can source: the 30-day post-launch support every engagement
+ * includes, and revisions inside the scope the client approves before kickoff
+ * (`Scope & fixed quote approved`, lib/crm.ts).
  */
 
 import { useState } from 'react';
@@ -43,9 +52,9 @@ const ENGAGEMENTS: Record<
     priceUsd: number;
     scopeLine: string;
     blurb: string;
-    delivery: string;
-    deliveryLabel: string;
-    revisionsLine: string;
+    figure: string;
+    figureLabel: string;
+    subLine: string;
     highlights: string[];
     cta: string;
     href: string;
@@ -56,9 +65,9 @@ const ENGAGEMENTS: Record<
     priceUsd: 1500,
     scopeLine: 'For marketing sites & storefronts',
     blurb: 'A site that sells — designed, built, and launched fast, with checkout when you need it.',
-    delivery: '14 days',
-    deliveryLabel: 'typical delivery, kickoff to launch',
-    revisionsLine: '+2 rounds of revisions included',
+    figure: '30 days',
+    figureLabel: 'post-launch support, included',
+    subLine: '+revisions within the scope you approve',
     highlights: [
       'Custom design & build',
       'Ecommerce & checkout',
@@ -73,9 +82,9 @@ const ENGAGEMENTS: Record<
     priceUsd: 1200,
     scopeLine: 'Monthly — funnels & campaigns',
     blurb: 'Funnels, campaigns, and conversion work that turn traffic into revenue, measured end to end.',
-    delivery: 'Ongoing',
-    deliveryLabel: 'monthly retainer, cancel anytime',
-    revisionsLine: '+continuous testing & iteration',
+    figure: 'Monthly',
+    figureLabel: 'retainer, billed month to month',
+    subLine: '+continuous testing & iteration',
     highlights: [
       'Funnels & landing pages',
       'Email & SMS sequences',
@@ -90,9 +99,9 @@ const ENGAGEMENTS: Record<
     priceUsd: 3500,
     scopeLine: 'For applications & internal tools',
     blurb: 'A custom application built to grow — portals, platforms, and the tools your team runs on.',
-    delivery: '21 days',
-    deliveryLabel: 'typical delivery, kickoff to launch',
-    revisionsLine: '+3 rounds of revisions included',
+    figure: '30 days',
+    figureLabel: 'post-launch support, included',
+    subLine: '+revisions within the scope you approve',
     highlights: [
       'Product architecture',
       'Custom UI/UX',
@@ -107,9 +116,9 @@ const ENGAGEMENTS: Record<
     priceUsd: 3000,
     scopeLine: 'For agents & automation',
     blurb: 'Put AI to work on your operations — agents, automated workflows, and content pipelines.',
-    delivery: '30 days',
-    deliveryLabel: 'typical delivery, kickoff to launch',
-    revisionsLine: '+3 rounds of revisions included',
+    figure: '30 days',
+    figureLabel: 'post-launch support, included',
+    subLine: '+revisions within the scope you approve',
     highlights: [
       'Custom AI agents',
       'Workflow automation',
@@ -121,9 +130,12 @@ const ENGAGEMENTS: Record<
   },
 };
 
-const CARD_ORDER: { individual: CardId[]; team: CardId[] } = {
-  individual: ['websites', 'digital_marketing'],
-  team: ['software_solutions', 'ai_solutions'],
+/** The two groups name what is in them. They were headed "For validating and
+ *  launching" and "For scaling products and operations" — the source template's
+ *  Validate and Scale tiers, kept as headings after the tiers themselves went. */
+const CARD_ORDER: { sites: CardId[]; platforms: CardId[] } = {
+  sites: ['websites', 'digital_marketing'],
+  platforms: ['software_solutions', 'ai_solutions'],
 };
 
 function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
@@ -156,11 +168,11 @@ function PlanCard({ id, lang }: { id: CardId; lang: Lang }) {
       <div className="mt-6 border-t border-[var(--fx-hairline)] pt-5">
         <p>
           <span className="text-xl font-semibold tabular-nums text-[var(--fx-white)]">
-            {p.delivery}
+            {p.figure}
           </span>{' '}
-          <span className="text-[13px] text-[var(--fx-muted)]">{p.deliveryLabel}</span>
+          <span className="text-[13px] text-[var(--fx-muted)]">{p.figureLabel}</span>
         </p>
-        <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">{p.revisionsLine}</p>
+        <p className="mt-1.5 text-[12px] text-[var(--fx-muted)]">{p.subLine}</p>
       </div>
 
       <ul className="mt-6 space-y-2.5">
@@ -238,13 +250,13 @@ export function EngagementPlans({
         </Band>
       )}
 
-      {/* Validating & launching */}
+      {/* Sites & campaigns */}
       <Band className="pb-8 pt-10">
         <BlurRise>
-          <Eyebrow>For validating and launching</Eyebrow>
+          <Eyebrow>Sites and campaigns</Eyebrow>
         </BlurRise>
         <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
-          {CARD_ORDER.individual.map((id, i) => (
+          {CARD_ORDER.sites.map((id, i) => (
             <BlurRise key={id} delay={i * 0.06}>
               <PlanCard id={id} lang={lang} />
             </BlurRise>
@@ -252,13 +264,13 @@ export function EngagementPlans({
         </div>
       </Band>
 
-      {/* Products & operations */}
+      {/* Applications & automation */}
       <Band className={SECTION_Y_TIGHT}>
         <BlurRise>
-          <Eyebrow>For scaling products and operations</Eyebrow>
+          <Eyebrow>Applications and automation</Eyebrow>
         </BlurRise>
         <div className="mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
-          {CARD_ORDER.team.map((id, i) => (
+          {CARD_ORDER.platforms.map((id, i) => (
             <BlurRise key={id} delay={i * 0.06}>
               <PlanCard id={id} lang={lang} />
             </BlurRise>

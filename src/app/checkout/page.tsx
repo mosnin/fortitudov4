@@ -97,7 +97,7 @@ function CheckoutContent() {
           </div>
 
           <Button
-            variant="glow"
+            
             size="lg"
             className="w-full"
             onClick={handlePayment}

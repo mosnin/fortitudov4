@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
  * - Ghost + outline share the sidebar's hover language (bg-foreground/[0.04]).
  * - Every size sits on `rounded-md`, the product's one control radius, so a
  *   button and the field beside it share a silhouette.
- * - `glow` is legacy marketing chrome — a gradient with a halo, which the
  *   product surface does not have. It survives for /checkout alone.
  */
 const buttonVariants = cva(
@@ -32,7 +31,6 @@ const buttonVariants = cva(
         ghost:
           "hover:bg-foreground/[0.04] hover:text-foreground dark:hover:bg-foreground/[0.06]",
         link: "text-primary underline-offset-4 hover:underline active:scale-100",
-        glow: "glow-button text-white font-semibold",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

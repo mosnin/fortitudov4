@@ -187,8 +187,8 @@ export default async function PaymentsPage() {
         ) : (
           <>
             {roster ? (
-              <StatStrip columns={4} ariaLabel="Plan and billing">
-                <StatCell label="Your plan">
+              <StatStrip columns={4} ariaLabel="Engagement and billing">
+                <StatCell label="Your engagement">
                   <Stat>{planLabel}</Stat>
                   <StatMeta>
                     Since{" "}

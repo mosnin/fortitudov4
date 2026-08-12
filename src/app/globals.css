@@ -265,20 +265,6 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* The `glow` Button variant (ui/button.tsx) — a marketing CTA, used on the
-   checkout page. */
-.glow-button {
-  position: relative;
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
-  transition: all 0.3s ease;
-}
-
-.glow-button:hover {
-  box-shadow: 0 0 30px rgba(249, 115, 22, 0.6);
-  transform: translateY(-1px);
-}
-
 /* The display voice, as a class. Resolves `--font-title` at use time, so it is
    Georgia in the product and the sans inside `[data-marketing-shell]`. This
    rule is unlayered on purpose: it out-ranks Tailwind's generated `font-title`

@@ -5,7 +5,13 @@
  *
  * Moved into the `(marketing)` group and rebuilt on the racing-yellow system;
  * it used to carry its own `<Header/>`/`<Footer/>` on the old orange template.
- * Every question and answer below is unchanged — only the chrome moved.
+ *
+ * The answers sell only what `src/lib/services.ts` lists: five offerings, no
+ * plan tiers. Answers that quoted Starter/Professional/Enterprise revision
+ * allowances, enterprise payment plans, funnel timelines and a 7–90 day support
+ * window were describing a product that does not exist — every number here is
+ * now traceable to `services.ts`, `crm.ts` or the terms of service, and the
+ * ones that were not have been replaced with what we actually commit to.
  */
 
 import { ChevronDown } from 'lucide-react';
@@ -24,7 +30,7 @@ const faqCategories = [
       },
       {
         q: "How long does a typical project take?",
-        a: "Timelines vary by service and complexity. Funnels and landing pages typically take 2-3 weeks. Web applications and ecommerce stores range from 3-6 weeks. Custom enterprise projects are scoped individually. You'll see your specific timeline during onboarding.",
+        a: "Timelines vary by service and by scope — a marketing site is not the same job as a custom application or an AI agent build. Your timeline is scoped alongside your fixed quote and agreed before kickoff, so you'll see your specific dates during onboarding.",
       },
       {
         q: "What information do I need to provide?",
@@ -32,7 +38,7 @@ const faqCategories = [
       },
       {
         q: "Can I start a project without knowing exactly what I need?",
-        a: "Absolutely. Our discovery phase is designed to help clarify your requirements. You can also book a free consultation through our contact page and we'll help you figure out the best approach.",
+        a: "Absolutely. Our discovery phase is designed to help clarify your requirements. You can also send us a message through our contact page and we'll help you figure out the best approach.",
       },
     ],
   },
@@ -49,11 +55,11 @@ const faqCategories = [
       },
       {
         q: "Do you offer refunds?",
-        a: "We offer a satisfaction guarantee through our revision process. If you're not happy with a deliverable, we'll work with you to make it right. Refund policies are outlined in our terms of service.",
+        a: "If you're not happy with a deliverable, we'll work with you through the revision process to make it right. Fees are non-refundable unless we've agreed otherwise in writing — the full policy is in our terms of service.",
       },
       {
         q: "Can I pay in installments?",
-        a: "For enterprise projects, we offer milestone-based payment plans. Contact us to discuss payment options for your specific project.",
+        a: "Payment is due before project work begins, as set out in our terms of service. If you need to discuss payment options for a larger build, contact us before you sign off on the quote.",
       },
     ],
   },
@@ -66,7 +72,7 @@ const faqCategories = [
       },
       {
         q: "How many revisions are included?",
-        a: "Revision rounds depend on your plan: Starter includes 1 round, Professional includes 3 rounds, and Enterprise includes unlimited revisions. You can request revisions directly through your project dashboard.",
+        a: "Revision rounds are part of the scope you approve before kickoff — your fixed quote spells out what's included, and revisions within that scope cost nothing extra. You can request them directly through your project dashboard.",
       },
       {
         q: "Can I upload files and assets?",
@@ -95,7 +101,7 @@ const faqCategories = [
       },
       {
         q: "What about ongoing maintenance?",
-        a: "All plans include post-launch support (7-90 days depending on your plan). For ongoing maintenance, we offer separate support agreements — contact us for details.",
+        a: "Every engagement includes 30 days of post-launch support. For maintenance beyond that, we offer separate support agreements — contact us for details.",
       },
     ],
   },

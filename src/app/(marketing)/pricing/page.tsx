@@ -8,10 +8,13 @@
 
 import { PricingContent } from '@/components/marketing/pages/pricing-content';
 
+/* The description enumerates the five offerings in `src/lib/services.ts` and
+   nothing else — it used to advertise funnels and "Open Claw deployments",
+   neither of which we sell, as the site's SEO and social preview text. */
 export const metadata = {
   title: 'Pricing · Fortitudo Agency',
   description:
-    'Fixed quotes for funnels, ecommerce, web applications, AI automation, and Open Claw deployments. The price you approve is the price you pay.',
+    'Fixed quotes for websites, software solutions, AI solutions, consultation, and digital marketing. The price you approve is the price you pay.',
 };
 
 export default function PricingPage() {

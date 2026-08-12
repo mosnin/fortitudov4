@@ -213,11 +213,24 @@ comes back.
 
 ## Auth + onboarding
 
-Both follow the logged-out system. The onboarding flow is the source repo's
-conversational onboarding, ported: intro cinematic → typed chat thread with
-inline answer stages (`StageWhoYouServe`, `StageVoice`, `StageSources`) → ready
-preloader. Its mechanics, timings, and markup are theirs; only the questions and
-the submit binding are ours.
+**Auth follows the logged-out system.** `AuthPageLayout` tags its tree
+`data-marketing-shell` and forces `dark`, so `/sign-in` and `/sign-up` are
+charcoal with the yellow accent, and the Clerk widget is pinned to its dark
+appearance rather than reading the theme — it renders transparent inside our
+chrome, so following a light preference would put near-black labels on a
+near-black panel.
+
+**Onboarding deliberately does not.** It sits *behind* sign-in, and its whole
+design intent is to look like the product the client is about to live in — so
+it renders on the product palette (`bg-background`, `--font-title` as Georgia)
+and that is correct, not drift. This paragraph exists because the doc used to
+claim the opposite, and a typography audit found the contradiction rather than
+the bug: the flow was right and the sentence was wrong.
+
+The flow itself is the source repo's conversational onboarding, ported: intro
+cinematic → typed chat thread with inline answer stages (`StageWhoYouServe`,
+`StageVoice`, `StageSources`) → ready preloader. Its mechanics, timings, and
+markup are theirs; only the questions and the submit binding are ours.
 
 ---
 

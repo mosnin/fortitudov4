@@ -1,7 +1,7 @@
 /**
  * Display-currency engine for the marketing site.
  *
- * The product's price points are set ONCE, in USD, in lib/plans.ts. Every
+ * The product's price points are set ONCE, in USD, in lib/services.ts. Every
  * other currency is that same USD price converted at a PINNED rate and
  * rounded to a clean, whole, human-looking number ($97 → AED 355, not
  * AED 356.23). No live FX at runtime: the rates below are a deliberate

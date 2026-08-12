@@ -151,7 +151,7 @@ const GUIDES: Guide[] = [
       },
       {
         heading: "4 · After launch",
-        body: "The first days are a watch window: analytics events start flowing to your Analytics page, and anything odd gets fixed fast. Post-launch issues go through the same revision queue — and if your plan includes ongoing work, your Weekly Reports pick up from launch week.",
+        body: "The first days are a watch window: analytics events start flowing to your Analytics page, and anything odd gets fixed fast. Post-launch issues go through the same revision queue — and if your engagement continues past launch, your Weekly Reports pick up from launch week.",
       },
     ],
   },

@@ -114,7 +114,7 @@ export default async function SettingsPage() {
                 page.
               </p>
               <p>
-                For billing questions, changes to your plan, or receipts,
+                For billing questions, changes to your engagement, or receipts,
                 message the team directly — we usually reply within one business
                 day.
               </p>

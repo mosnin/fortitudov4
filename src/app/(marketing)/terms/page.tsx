@@ -36,7 +36,12 @@ export default function TermsPage() {
                 <Serif as="h2" className={`${TITLE_S} text-[var(--fx-white)]`}>
                   1. Services
                 </Serif>
-                <p>Fortitudo Agency provides digital development services including web applications, ecommerce stores, sales funnels, AI automation, and Open Claw deployment. Services are defined during the onboarding process and confirmed upon payment.</p>
+                {/* The enumeration lists the five offerings in
+                    `src/lib/services.ts`. It previously named sales funnels
+                    and "Open Claw deployment", which we do not sell — a
+                    contract cannot promise services that do not exist. Only
+                    this sentence's service list changed. */}
+                <p>Fortitudo Agency provides digital development services including websites, software solutions, AI solutions, consultation, and digital marketing. Services are defined during the onboarding process and confirmed upon payment.</p>
               </div>
 
               <div>
@@ -64,7 +69,7 @@ export default function TermsPage() {
                 <Serif as="h2" className={`${TITLE_S} text-[var(--fx-white)]`}>
                   5. Revisions
                 </Serif>
-                <p>Each plan includes a specified number of revision rounds. Revisions beyond your plan&apos;s allocation may incur additional charges. Revision requests must be submitted through the project dashboard.</p>
+                <p>The scope you approve before kickoff sets the revision rounds included in your fixed quote. Revisions beyond that agreed scope may incur additional charges. Revision requests must be submitted through the project dashboard.</p>
               </div>
 
               <div>

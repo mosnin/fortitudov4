@@ -30,11 +30,20 @@ const SERVICE_STARTING_USD: Record<string, number> = {
   digital_marketing: 1200,
 };
 
-/** The engagement, by the numbers — figures match the plan cards above. */
-const ENGAGEMENT_FACTS = [
-  { id: 'delivery', label: 'Typical delivery', figure: '14–30', line: 'days from kickoff to launch' },
-  { id: 'revisions', label: 'Revisions', figure: '1–3', line: 'rounds included, by engagement' },
-  { id: 'support', label: 'Post-launch support', figure: '30', line: 'days included on Scale builds' },
+/**
+ * What every engagement commits to. This band used to read "The engagement, by
+ * the numbers" and present a 14–30 day delivery window and 1–3 revision rounds
+ * as measured facts; neither had a source anywhere in the codebase, and a
+ * measurement we have not taken is a fabrication. Each entry now traces to one:
+ * the phase count to `projectPhaseNames` in lib/services.ts (the same phases
+ * the dashboard tracker and the FAQ name), the support window to the
+ * always-included list on /services, and revisions to the approved scope the
+ * CRM checklist gates kickoff on (`Scope & fixed quote approved`, lib/crm.ts).
+ */
+const ENGAGEMENT_COMMITMENTS = [
+  { id: 'phases', label: 'Tracked live', figure: '6', line: 'phases, discovery to launch' },
+  { id: 'revisions', label: 'Revisions', figure: 'In scope', line: 'rounds set in the quote you approve' },
+  { id: 'support', label: 'Post-launch support', figure: '30', line: 'days included with every engagement' },
 ] as const;
 
 export function PricingContent({ lang }: { lang: Lang }) {
@@ -72,7 +81,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
         <CurrencyNote lang={lang} className="text-[12px] text-[var(--fx-muted)]" />
       </Band>
 
-      {/* Specialist engagements (Open Claw + retainer) */}
+      {/* Specialist engagements (consultation + retainer) */}
       <Band className={SECTION_Y_TIGHT}>
         <BlurRise className="max-w-3xl">
           <div>
@@ -117,8 +126,11 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 </Serif>
                 <span className="text-[13px] text-[var(--fx-muted)]"> / month, scoped to your build</span>
               </p>
+              {/* A custom retainer cannot promise fixed inclusions; scope is
+                  what it agrees. It used to advertise priority support and a
+                  dedicated point of contact, neither of which we define. */}
               <p className="mt-1 text-[12px] text-[var(--fx-muted)]">
-                + priority support & a dedicated point of contact
+                + scope and response times agreed up front
               </p>
             </div>
           </div>
@@ -158,10 +170,10 @@ export function PricingContent({ lang }: { lang: Lang }) {
           </ul>
 
           <p className="mt-10">
-            <Eyebrow>The engagement, by the numbers</Eyebrow>
+            <Eyebrow>What every engagement includes</Eyebrow>
           </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
-            {ENGAGEMENT_FACTS.map((fact) => (
+            {ENGAGEMENT_COMMITMENTS.map((fact) => (
               <div
                 key={fact.id}
                 className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-5"
@@ -188,6 +200,10 @@ export function PricingContent({ lang }: { lang: Lang }) {
             What people ask first.
           </Serif>
         </BlurRise>
+        {/* Price tokens are named for the offering they resolve to. They were
+            `validate` and `scale` — the source template's plan tiers, which we
+            do not sell and which leaked into the copy as "a Scale web
+            application". */}
         <ul className="mt-12 max-w-3xl divide-y divide-[var(--fx-hairline)]">
           {[
             {
@@ -195,16 +211,16 @@ export function PricingContent({ lang }: { lang: Lang }) {
               a: 'Yes. Every engagement starts with a scoped, written quote. Once you approve it, that is the price — scope changes are quoted separately and only happen with your sign-off. No hourly meters, no surprise invoices.',
             },
             {
-              q: 'What does "from {validate}" mean?',
-              a: 'The starting price for the simplest version of that engagement. Your exact quote depends on scope — pages, integrations, and features — and is fixed before kickoff. Most projects land at or near the starting price.',
+              q: 'What does "from {websites}" mean?',
+              a: 'The starting price for the simplest version of that engagement. Your exact quote depends on scope — pages, integrations, and features — and is fixed before kickoff.',
             },
             {
               q: 'What happens after launch?',
-              a: 'You own everything: full source code, design files, and infrastructure are handed over — no lock-in. Builds include post-launch support, and if you want us to stay on, an ongoing retainer is scoped to your build.',
+              a: 'You own everything: full source code, design files, and infrastructure are handed over — no lock-in. Every engagement includes 30 days of post-launch support, and if you want us to stay on, an ongoing retainer is scoped to your build.',
             },
             {
               q: 'How do payments work?',
-              a: 'You approve the fixed quote, pay to kick off, and track the build live through every phase — for example, a Scale web application starts at {scale}. Invoices itemize exactly what you approved, and revisions within scope are included.',
+              a: 'You approve the fixed quote, pay to kick off, and track the build live through every phase — a software solutions build, for example, starts at {software}. Invoices itemize exactly what you approved, and revisions within scope are included.',
             },
           ].map((item, i) => (
             <BlurRise key={item.q} delay={i * 0.04}>
@@ -212,7 +228,7 @@ export function PricingContent({ lang }: { lang: Lang }) {
                 <Serif as="p" className={`${TITLE_S} text-[var(--fx-white)]`}>
                   <PriceText
                     template={item.q}
-                    tokens={{ validate: SERVICE_STARTING_USD.websites }}
+                    tokens={{ websites: SERVICE_STARTING_USD.websites }}
                     lang={lang}
                   />
                 </Serif>
@@ -221,8 +237,8 @@ export function PricingContent({ lang }: { lang: Lang }) {
                   <PriceText
                     template={item.a}
                     tokens={{
-                      validate: SERVICE_STARTING_USD.websites,
-                      scale: SERVICE_STARTING_USD.software_solutions,
+                      websites: SERVICE_STARTING_USD.websites,
+                      software: SERVICE_STARTING_USD.software_solutions,
                     }}
                     lang={lang}
                   />
@@ -240,8 +256,8 @@ export function PricingContent({ lang }: { lang: Lang }) {
             Get a fixed quote for your build.
           </Serif>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-[var(--fx-muted)]">
-            Tell us what you are building and get a scoped quote — then watch our senior
-            builders take it from kickoff to launch.
+            Tell us what you are building and get a scoped quote — then watch it move from
+            kickoff to launch.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <PillPrimary href="/sign-up" withArrow>
