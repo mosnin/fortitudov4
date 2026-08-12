@@ -151,6 +151,20 @@ describe("getAccessibleProjectIds", () => {
     await expect(getAccessibleProjectIds(CLIENT, "client")).resolves.toEqual([]);
   });
 
+  it("gives a partner nothing, without querying anything", async () => {
+    // A partner has no projects. Left to the fall-through they would get the
+    // CLIENT rule — every project whose userId is theirs — which is the wrong
+    // rule rather than a harmlessly narrow one: a client account later
+    // switched to `partner` keeps everything it owned.
+    fake.rows.set(projects, [{ id: PROJECT }]);
+
+    const result = await getAccessibleProjectIds(CLIENT, "partner");
+
+    expect(result).toEqual([]);
+    expect(result).not.toBe("all");
+    expect(fake.calls).toHaveLength(0);
+  });
+
   it.each(["", "owner", "Admin", "superadmin"])(
     "treats the unrecognised role %o as least-privileged, not as staff",
     async (role) => {
@@ -245,6 +259,24 @@ describe("verifyProjectAccess", () => {
     expect(await statusOfRejection(verifyProjectAccess(PROJECT, CLIENT, "client"))).toBe(403);
   });
 
+  it("refuses a partner a project, including one whose userId is theirs", async () => {
+    const PARTNER_USER = "dddddddd-0000-4000-8000-000000000004";
+    fake.rows.set(projects, [{ ...project, userId: PARTNER_USER }]);
+    fake.rows.set(tasks, [{ id: "t-1" }]);
+
+    expect(
+      await statusOfRejection(verifyProjectAccess(PROJECT, PARTNER_USER, "partner"))
+    ).toBe(403);
+  });
+
+  it("refuses a partner a project they hold a task on", async () => {
+    // Neither the client rule nor the VA rule applies to a partner.
+    fake.rows.set(projects, [project]);
+    fake.rows.set(tasks, [{ id: "t-1" }]);
+
+    expect(await statusOfRejection(verifyProjectAccess(PROJECT, VA, "partner"))).toBe(403);
+  });
+
   it.each(["", "owner", "Admin", "va "])(
     "refuses the unrecognised role %o somebody else's project",
     async (role) => {
@@ -288,6 +320,12 @@ describe("requireStaff", () => {
     expect(await statusOfRejection(requireStaff())).toBe(403);
   });
 
+  it("refuses a partner with 403 — every staff API hangs off this", async () => {
+    signedInAs("partner");
+
+    expect(await statusOfRejection(requireStaff())).toBe(403);
+  });
+
   it("refuses an anonymous caller with 401 before looking at any role", async () => {
     expect(await statusOfRejection(requireStaff())).toBe(401);
   });
@@ -306,7 +344,7 @@ describe("requireAdmin — the guard on finance", () => {
     await expect(requireAdmin()).resolves.toMatchObject({ role: "admin" });
   });
 
-  it.each<UserRole>(["project_manager", "va", "client"])(
+  it.each<UserRole>(["project_manager", "va", "client", "partner"])(
     "refuses %s with 403",
     async (role) => {
       signedInAs(role);

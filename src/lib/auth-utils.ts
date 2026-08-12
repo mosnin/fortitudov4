@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/db";
 import { users, projects, tasks } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
-import { isStaff, canViewAllProjects } from "@/lib/permissions";
+import { isStaff, isPartner, canViewAllProjects } from "@/lib/permissions";
 
 export type DbUser = typeof users.$inferSelect;
 
@@ -50,6 +50,7 @@ export async function getAuthenticatedUser(): Promise<DbUser> {
  *   - admin / project_manager  → any project
  *   - va                       → only projects they're assigned a task on
  *   - client                   → only projects they own
+ *   - partner                  → never
  * Throws NextResponse on failure.
  */
 export async function verifyProjectAccess(projectId: string, userId: string, role: string) {
@@ -65,6 +66,15 @@ export async function verifyProjectAccess(projectId: string, userId: string, rol
   // Admins and project managers see everything.
   if (canViewAllProjects(role)) {
     return project;
+  }
+
+  // A partner has no projects at all. Named here rather than left to the
+  // ownership check below, which is the CLIENT rule: a client account later
+  // switched to `partner` would keep every project it still owns, and a
+  // partner request's projectId points at OUR delivery project for their end
+  // client, not at something the partner may open.
+  if (isPartner(role)) {
+    throw NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // VAs are scoped to projects they have an assigned task on.
@@ -87,13 +97,19 @@ export async function verifyProjectAccess(projectId: string, userId: string, rol
  * The set of projects a user may list/search.
  * Returns "all" for admins and project managers; otherwise an explicit array
  * of project ids: for VAs, the projects they're assigned a task on; for
- * clients, the projects they own.
+ * clients, the projects they own; for partners, none.
  */
 export async function getAccessibleProjectIds(
   userId: string,
   role: string
 ): Promise<"all" | string[]> {
   if (canViewAllProjects(role)) return "all";
+
+  // Empty without a query, and never "all". A partner's reach is their own
+  // partnerRequests, scoped by partnerId — see verifyProjectAccess for why the
+  // client fall-through below is the wrong rule for them rather than a
+  // harmless one.
+  if (isPartner(role)) return [];
 
   if (role === "va") {
     const rows = await db

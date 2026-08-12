@@ -24,6 +24,9 @@ import {
  * line here.
  *
  * When adding a public route, add the test with it.
+ *
+ * `/partner` is deliberately absent: the partner surface is authenticated like
+ * `/dashboard` and `/admin`, and absence from this list is what protects it.
  */
 export const PUBLIC_ROUTES = [
   "/",
@@ -79,6 +82,11 @@ const LANG_REDIRECTS_ENABLED: boolean = false;
  * cost of forgetting an entry HERE is only that a new marketing page does not
  * localize. Matched on the first segment so nested pages (`/services/websites`)
  * are covered without listing each one.
+ *
+ * The authenticated surfaces — `/dashboard`, `/admin`, `/partner` — are absent
+ * by construction: they are not marketing pages, they do not localize, and a
+ * language 302 fired at one of them would bounce a signed-in user out of the
+ * page they just loaded.
  */
 const MARKETING_ROOTS = new Set([
   "/",
@@ -92,7 +100,8 @@ const MARKETING_ROOTS = new Set([
   "/terms",
 ]);
 
-function isMarketingPath(basePath: string): boolean {
+/** Exported, like PUBLIC_ROUTES, so the allowlist can be asserted in a test. */
+export function isMarketingPath(basePath: string): boolean {
   const first = basePath.split("/")[1];
   return MARKETING_ROOTS.has(first ? `/${first}` : "/");
 }

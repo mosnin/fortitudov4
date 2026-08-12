@@ -20,7 +20,7 @@
 import { describe, expect, it } from "vitest";
 import { createRouteMatcher } from "@clerk/nextjs/server";
 import { NextRequest } from "next/server";
-import { PUBLIC_ROUTES } from "./proxy";
+import { PUBLIC_ROUTES, isMarketingPath } from "./proxy";
 
 const isPublicRoute = createRouteMatcher(PUBLIC_ROUTES);
 
@@ -47,6 +47,7 @@ const MUST_BE_PUBLIC = [
 const MUST_BE_PROTECTED = [
   "/dashboard",
   "/admin",
+  "/partner",
   "/analytics",
   "/guides",
   "/helix",
@@ -125,12 +126,79 @@ describe("the authenticated product", () => {
     }
   });
 
+  it("does not expose the partner API surface", () => {
+    // Someone else's budget, our quote against it, and the list of every job a
+    // partner has with us.
+    for (const path of [
+      "/api/partners",
+      "/api/partners/requests",
+      "/api/admin/partners",
+    ]) {
+      expect(isPublicRoute(req(path, "POST")), path).toBe(false);
+    }
+  });
+
   it("is not fooled by a public prefix on a protected path", () => {
     // `/api/leads(.*)` must not turn `/api/leadsecret` into a public route by
     // accident, and a protected route must not become public by being spelled
     // as a suffix of a public one.
     for (const path of ["/adminx", "/dashboardz", "/api/leadsomething/../admin"]) {
       expect(isPublicRoute(req(path)), path).toBe(false);
+    }
+  });
+});
+
+describe("the partner surface", () => {
+  // The fourth surface (plans/partners.md). It is authenticated like the other
+  // two, and it is not a marketing page — being absent from BOTH lists is what
+  // makes that true, so both absences are asserted rather than assumed.
+  it("requires a session", () => {
+    expect(isPublicRoute(req("/partner"))).toBe(false);
+  });
+
+  it("requires a session on every page under it", () => {
+    for (const path of [
+      "/partner/requests",
+      "/partner/requests/new",
+      "/partner/requests/8f2c/edit",
+      "/partner/settings",
+    ]) {
+      expect(isPublicRoute(req(path)), path).toBe(false);
+    }
+  });
+
+  it("is not public for any method", () => {
+    for (const method of ["GET", "POST", "PATCH", "DELETE"]) {
+      expect(isPublicRoute(req("/partner/requests", method)), method).toBe(false);
+    }
+  });
+
+  it("is not named in PUBLIC_ROUTES at all", () => {
+    // A regex added in a hurry ("/partners(.*)" for a marketing page about our
+    // partner programme) would make the whole surface anonymous.
+    for (const route of PUBLIC_ROUTES) {
+      expect(route.startsWith("/partner"), route).toBe(false);
+    }
+  });
+
+  it("is not treated as a marketing path, so no language 302 can bounce it", () => {
+    // Marketing roots are an allowlist on purpose; a signed-in partner
+    // redirected to /es/partner would land on a route that does not exist.
+    expect(isMarketingPath("/partner")).toBe(false);
+    expect(isMarketingPath("/partner/requests")).toBe(false);
+  });
+
+  it("does not localize, exactly as /dashboard and /admin do not", () => {
+    for (const path of ["/dashboard", "/admin", "/partner"]) {
+      expect(isMarketingPath(path), path).toBe(false);
+    }
+  });
+
+  it("still treats the real marketing pages as marketing", () => {
+    // Guards the assertion above against passing because isMarketingPath
+    // started answering false to everything.
+    for (const path of ["/", "/pricing", "/services/websites"]) {
+      expect(isMarketingPath(path), path).toBe(true);
     }
   });
 });

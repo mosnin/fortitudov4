@@ -13,8 +13,17 @@ import {
 
 // Enums
 
-// Staff roles (tiered access): admin > project_manager > va. Clients use "client".
-export const userRoles = ["client", "admin", "project_manager", "va"] as const;
+// Staff roles (tiered access): admin > project_manager > va. Clients use
+// "client". "partner" is a third party who brings work in (see the Partners
+// section below and plans/partners.md) — it is NOT staff, and isStaff() must
+// keep returning false for it or a partner lands in /admin.
+export const userRoles = [
+  "client",
+  "admin",
+  "project_manager",
+  "va",
+  "partner",
+] as const;
 export type UserRole = (typeof userRoles)[number];
 
 export const serviceTypeEnum = pgEnum("service_type", [
@@ -58,7 +67,8 @@ export const users = pgTable("users", {
   lastName: varchar("last_name", { length: 255 }),
   imageUrl: text("image_url"),
   bio: text("bio"),
-  // "client" | "admin" | "project_manager" | "va" — see lib/permissions.ts
+  // "client" | "admin" | "project_manager" | "va" | "partner"
+  // — see lib/permissions.ts
   role: varchar("role", { length: 50 }).notNull().default("client"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -531,6 +541,117 @@ export const clientPayments = pgTable("client_payments", {
   index("idx_client_payments_client_id").on(table.clientId),
 ]);
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Partners
+//
+// Third parties who bring work in: sometimes a referral, more often another
+// agency contracting us to build something their client will own. They get a
+// fourth surface at /partner — deliberately not a variant of the client portal,
+// because a partner sees a queue of jobs for THEIR clients rather than one
+// delivery pipeline of their own. See plans/partners.md.
+//
+// This is NOT the GoHighLevel partner ledger AGENTS.md banned. That was a
+// revenue-split accounting system that divided every payment on a fixed
+// percentage; it is gone and stays gone. This is an account type — a login, a
+// place to describe work, and a place for us to answer with a price. There is
+// no commission, payout, split or ledger column here and there must not be one:
+// `kind` is a label describing who someone is, not a mechanism that moves money.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// A label, not a behaviour. Nothing downstream may branch on it to move money.
+export const partnerKindEnum = pgEnum("partner_kind", ["affiliate", "agency"]);
+
+export const partnerStatusEnum = pgEnum("partner_status", [
+  "active",
+  "paused",
+  "archived",
+]);
+
+// draft → submitted → reviewing → quoted → accepted | declined → delivered.
+// A partner may only ever move their own draft to submitted; everything past
+// that is ours (see canPartnerEditRequest in lib/permissions.ts).
+export const partnerRequestStatusEnum = pgEnum("partner_request_status", [
+  "draft",
+  "submitted",
+  "reviewing",
+  "quoted",
+  "accepted",
+  "declined",
+  "delivered",
+]);
+
+// The partner organisation. Separate from portal logins, exactly as
+// agencyClients is: a partner may exist here before (or without) an account.
+export const partners = pgTable("partners", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  companyName: varchar("company_name", { length: 255 }).notNull(),
+  contactName: varchar("contact_name", { length: 255 }).notNull(),
+  // Contact / portal-invite address, kept even before the account exists.
+  email: varchar("email", { length: 255 }),
+  kind: partnerKindEnum("kind").notNull().default("agency"),
+  status: partnerStatusEnum("status").notNull().default("active"),
+  // Their portal login, nullable. "set null" and not "cascade": deleting a
+  // login must unlink the person, never delete the commercial relationship or
+  // the requests hanging off it.
+  userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
+  notes: text("notes"),
+  createdBy: uuid("created_by")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  // Every /partner read starts as "the partner row for this login".
+  index("idx_partners_user_id").on(table.userId),
+  index("idx_partners_status").on(table.status),
+]);
+
+// One job a partner wants built.
+export const partnerRequests = pgTable("partner_requests", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  // The owner. EVERY read is scoped by it — a partner reaching another
+  // partner's requests is the failure that ends the relationship.
+  partnerId: uuid("partner_id")
+    .references(() => partners.id, { onDelete: "cascade" })
+    .notNull(),
+  title: varchar("title", { length: 255 }).notNull(),
+  scope: text("scope"),
+  // One of the five offerings (lib/services.ts) — the same enum the rest of the
+  // system uses, never a free-text category.
+  serviceType: serviceTypeEnum("service_type").notNull(),
+  // Money in integer cents, as everywhere else.
+  //
+  // TWO columns on purpose, and they must not be collapsed into one `amount`:
+  // budgetCents is the PARTNER'S number and quotedCents is OURS. One shared
+  // column would let a partner edit the figure we are going to invoice
+  // against, which is the same class of mistake the Helix rules already
+  // forbid — "a client has no authority over their own delivery stage or
+  // fees". A partner has no authority over their own quote either. They state
+  // a budget, we answer with a price, the two are allowed to differ, and the
+  // gap between them is the negotiation.
+  budgetCents: integer("budget_cents"),
+  quotedCents: integer("quoted_cents"),
+  status: partnerRequestStatusEnum("status").notNull().default("draft"),
+  // When they need it.
+  targetDate: timestamp("target_date"),
+  // Set when an accepted request becomes real work. Never partner-writable.
+  projectId: uuid("project_id").references(() => projects.id, {
+    onDelete: "set null",
+  }),
+  // Which side authored it: a partner's own draft, or the shell WE opened for
+  // them to fill in scope and budget for something already discussed. One
+  // object, either author. Nullable + "set null" so a departed staff account
+  // does not take the request with it.
+  createdBy: uuid("created_by").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => [
+  index("idx_partner_requests_partner_id").on(table.partnerId),
+  index("idx_partner_requests_status").on(table.status),
+]);
+
 // Types
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -555,6 +676,10 @@ export type AgencyClient = typeof agencyClients.$inferSelect;
 export type NewAgencyClient = typeof agencyClients.$inferInsert;
 export type ClientPayment = typeof clientPayments.$inferSelect;
 export type NewClientPayment = typeof clientPayments.$inferInsert;
+export type Partner = typeof partners.$inferSelect;
+export type NewPartner = typeof partners.$inferInsert;
+export type PartnerRequest = typeof partnerRequests.$inferSelect;
+export type NewPartnerRequest = typeof partnerRequests.$inferInsert;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helix OS
