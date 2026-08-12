@@ -31,7 +31,7 @@ export default function PrivacyPage() {
         <section className={`bg-[var(--fx-charcoal)] ${SECTION_Y_TIGHT}`}>
           {/* No `prose`: it is a second type ladder, and it was quietly
               resizing these headings out of the site's scale. */}
-          <Band innerClassName="max-w-3xl">
+          <Band narrow="max-w-3xl">
             <div className={`space-y-8 text-[var(--fx-muted)] ${BODY}`}>
               <div className="space-y-3">
                 <Serif as="h2" className={`${TITLE_S} text-[var(--fx-white)]`}>

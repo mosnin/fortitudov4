@@ -259,21 +259,50 @@ export function BlurRise({
 
 /* ── Section shell ──────────────────────────────────────────────────────── */
 
-/** A standard near-black section band with consistent horizontal gutters. */
+/**
+ * A standard section band with consistent horizontal gutters.
+ *
+ * The inner element is `mx-auto max-w-[1728px]`, which centres the page's
+ * widest possible column on an ultra-wide screen. That is correct and is the
+ * only reason `mx-auto` is there.
+ *
+ * `narrow` — NOT `innerClassName` — is how you get a narrower column.
+ * `cn` is twMerge, so a `max-w-*` passed through `innerClassName` REPLACES the
+ * max-width and KEEPS the `mx-auto`: the caller asks for a narrower column and
+ * silently gets a centred one. That is how six sub-page headlines ended up
+ * indented 336px on a 1440px screen while every section beneath them sat at
+ * the 40px gutter, and design.md is explicit that this surface is left-aligned
+ * with exactly one exception (the homepage hero).
+ *
+ * So `narrow` drops the centring with the width. If you genuinely want a
+ * centred column, say `narrow="max-w-3xl mx-auto"` and mean it.
+ */
 export function Band({
   children,
   className,
   innerClassName,
+  narrow,
   id,
 }: {
   children: React.ReactNode;
   className?: string;
   innerClassName?: string;
+  /** A `max-w-*` for the reading column. Left-aligned unless you re-add mx-auto. */
+  narrow?: string;
   id?: string;
 }) {
   return (
     <section id={id} className={cn('px-5 sm:px-8 lg:px-10', className)}>
-      <div className={cn('mx-auto w-full max-w-[1728px]', innerClassName)}>{children}</div>
+      <div
+        className={cn(
+          'mx-auto w-full max-w-[1728px]',
+          innerClassName,
+          // Last, so it wins the twMerge conflict on both axes.
+          narrow && `${narrow} mx-0`,
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 }

@@ -214,7 +214,7 @@ export function Testimonials({ lang = 'en' }: { lang?: Lang }) {
     <section
       className={`border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}
     >
-      <Band innerClassName="max-w-6xl">
+      <Band narrow="max-w-6xl">
         {/* Meta row */}
         <BlurRise>
           <div

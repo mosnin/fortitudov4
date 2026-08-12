@@ -29,7 +29,7 @@ export default function TermsPage() {
         <PageHero eyebrow="Legal" title="Terms of Service" lead="Last updated: March 2026" seed={7} />
 
         <section className={`bg-[var(--fx-charcoal)] ${SECTION_Y_TIGHT}`}>
-          <Band innerClassName="max-w-3xl">
+          <Band narrow="max-w-3xl">
             <div className={`space-y-8 text-[var(--fx-muted)] ${BODY}`}>
               <div className="space-y-3">
                 <Serif as="h2" className={`${TITLE_S} text-[var(--fx-white)]`}>

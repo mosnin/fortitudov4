@@ -128,7 +128,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
       />
 
       <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
-        <Band innerClassName="max-w-6xl">
+        <Band narrow="max-w-6xl">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
             {/* Form */}
             <BlurRise className="lg:col-span-3">

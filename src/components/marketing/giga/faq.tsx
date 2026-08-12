@@ -60,7 +60,7 @@ export function Faq({ lang = 'en' }: { lang?: Lang }) {
       className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] text-[var(--fx-white)] ${SECTION_Y}`}
     >
       <Band>
-        <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_1.6fr]">
+        <div className="grid max-w-5xl gap-12 lg:grid-cols-[1fr_1.6fr]">
           <BlurRise>
             <Eyebrow>{t.eyebrow}</Eyebrow>
             <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>

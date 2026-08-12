@@ -92,7 +92,7 @@ export default function ServicesPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
                 transition={{ duration: 0.5 }}
-                className="mx-auto grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center"
+                className="grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center"
               >
                 <div className={isEven ? '' : 'lg:order-2'}>
                   {/* The band opens on its heading now. A chip above it used
@@ -174,7 +174,7 @@ export default function ServicesPage() {
       <ToneShift>
         {/* Bottom ask */}
         <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
-          <Band innerClassName="max-w-2xl">
+          <Band narrow="max-w-2xl">
             <BlurRise>
               <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                 {t.notSure.title}

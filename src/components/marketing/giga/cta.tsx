@@ -42,7 +42,7 @@ export function CtaSection({ lang = 'en' }: { lang?: Lang }) {
         aria-hidden
         className="absolute inset-0 -z-10 [background:radial-gradient(90%_70%_at_50%_110%,rgba(248,205,2,0.10),transparent_65%)]"
       />
-      <div className="mx-auto grid w-full max-w-6xl items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
+      <div className="grid w-full max-w-6xl items-start gap-10 lg:grid-cols-[1.15fr_0.85fr]">
         <motion.div {...reveal} transition={{ duration: 0.7, ease: EASE_OUT }}>
           {/* The kit's eyebrow, not a local copy of it: this section had its
               own hand-rolled version, which is how the dot and the tracking

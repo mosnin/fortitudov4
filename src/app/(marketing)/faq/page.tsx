@@ -66,7 +66,7 @@ export default function FAQPage({ lang = 'en' }: { lang?: Lang }) {
       <ToneShift>
         {/* Questions, by category */}
         <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
-          <Band innerClassName="max-w-3xl">
+          <Band narrow="max-w-3xl">
             <div className="space-y-16">
               {t.categories.map((category) => (
                 <BlurRise key={category.category}>
@@ -110,7 +110,7 @@ export default function FAQPage({ lang = 'en' }: { lang?: Lang }) {
           data-fx-surface="dark"
           className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] ${SECTION_Y}`}
         >
-          <Band innerClassName="max-w-2xl">
+          <Band narrow="max-w-2xl">
             <BlurRise>
               <Serif className={`${DISPLAY_S} text-[var(--fx-white)]`}>
                 {t.still.title}
