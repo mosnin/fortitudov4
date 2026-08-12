@@ -1,5 +1,5 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { Pool, neonConfig } from "@neondatabase/serverless";
 import * as schema from "./schema";
 
 const isPgUrl = (v: string | undefined): v is string =>
@@ -8,6 +8,12 @@ const isPgUrl = (v: string | undefined): v is string =>
 /**
  * Resolve the Postgres connection string.
  *
+ * Provider-agnostic on purpose, and it did not change when the app moved from
+ * Supabase to Neon: both are Postgres behind a Vercel integration that sets a
+ * handful of URLs at once, and the rule that matters — prefer the POOLED one —
+ * is the same either way. Neon names its direct connection
+ * `DATABASE_URL_UNPOOLED`, which `isDirect` already matched.
+ *
  * Two failure modes have to be avoided at once, and the obvious fix for each
  * causes the other:
  *
@@ -15,7 +21,8 @@ const isPgUrl = (v: string | undefined): v is string =>
  *    Vercel's integrations set several URLs at once, so the app could bind to
  *    the NON_POOLING direct connection — fine for migrations, wrong for
  *    serverless, where every lambda opens its own session and the connection
- *    limit is gone long before the traffic is.
+ *    limit is gone long before the traffic is. On Neon the pooled URL is the
+ *    one whose host carries `-pooler`; it terminates at their pgBouncer.
  *  - Hardcoding an exact list breaks the moment the integration prefixes its
  *    variables. This production deployment sets STORAGE_POSTGRES_URL,
  *    STORAGE_POSTGRES_PRISMA_URL and STORAGE_POSTGRES_URL_NON_POOLING and no
@@ -62,13 +69,33 @@ export function resolveConnectionString(): string {
 
 let _db: ReturnType<typeof createDb> | null = null;
 
+/**
+ * Neon over WebSockets, not HTTP — `drizzle-orm/neon-serverless`.
+ *
+ * `neon-http` is the faster of Neon's two drivers and would serve almost every
+ * query here in one round trip, but it cannot open a session, and therefore
+ * cannot run a transaction. Two flows in this app write several rows that only
+ * make sense together: creating a client seeds its delivery checklist
+ * (api/admin/clients), and onboarding writes a project, its submission and its
+ * six phases (api/onboarding). Neither is wrapped today — which is a gap, not a
+ * decision — and picking the HTTP driver would make wrapping them impossible
+ * rather than merely undone. The WebSocket driver costs a handshake and keeps
+ * the option.
+ *
+ * `Pool` rather than a single `Client`: route handlers run concurrently in one
+ * lambda, and a single connection serialises them.
+ */
 function createDb() {
-  // Supabase's transaction pooler (port 6543) doesn't support prepared
-  // statements. Disabling them is also safe on a direct connection — it costs
-  // a little planning time and nothing else — so this is set unconditionally
-  // rather than sniffed from the port.
-  const client = postgres(resolveConnectionString(), { prepare: false });
-  return drizzle(client, { schema });
+  /* Node 22 has a global WebSocket, which the driver uses when it finds one.
+     Setting it explicitly means this does not depend on the runtime happening
+     to expose it — on a runtime that does not, the driver's own error is a
+     confusing one about `ws` rather than about the environment. */
+  if (typeof globalThis.WebSocket !== "undefined") {
+    neonConfig.webSocketConstructor = globalThis.WebSocket;
+  }
+
+  const pool = new Pool({ connectionString: resolveConnectionString() });
+  return drizzle(pool, { schema });
 }
 
 /**

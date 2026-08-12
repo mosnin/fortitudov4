@@ -79,7 +79,7 @@ export function formatCompact(n: number): string {
 
 /**
  * Formats a date-only business value without letting the server and browser
- * time zones shift it to different calendar days. Supabase date columns arrive
+ * time zones shift it to different calendar days. Postgres date columns arrive
  * as ISO strings; rendering them in the runtime's local zone can make Vercel
  * (UTC) and a US browser disagree during hydration.
  */
