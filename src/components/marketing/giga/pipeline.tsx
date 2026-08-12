@@ -45,9 +45,28 @@ export function Pipeline({ lang = 'en' }: { lang?: Lang }) {
 
   return (
     <section
-      className={`relative border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] text-[var(--fx-white)] ${SECTION_Y}`}
+      className={`relative overflow-hidden border-t border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] text-[var(--fx-white)] ${SECTION_Y}`}
     >
-      <Band>
+      {/* Ruled ground — the idea taken from OriginKit features-04, not its
+          implementation. That drop draws graph paper as 43 absolutely
+          positioned spans at hardcoded Figma widths (872.99px, 1296px) with a
+          per-breakpoint pitch; two repeating gradients say the same thing,
+          scale to any width, and add nothing to the DOM.
+
+          It belongs on THIS section specifically. The page's language is
+          hairlines and squared edges, and the pipeline is the one section that
+          is literally a ruled list — the ground now agrees with it. Masked to
+          fade out before it reaches the copy, so it is texture rather than a
+          pattern competing with seven rows of type. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(120%_80%_at_50%_0%,black_0%,transparent_70%)]"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(to right, var(--fx-hairline) 0 1px, transparent 1px 52px), repeating-linear-gradient(to bottom, var(--fx-hairline) 0 1px, transparent 1px 52px)',
+        }}
+      />
+      <Band className="relative">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:gap-20">
           <div>
             <BlurRise>
