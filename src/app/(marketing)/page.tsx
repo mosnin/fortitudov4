@@ -34,9 +34,9 @@ import { Advantage } from '@/components/marketing/giga/advantage';
 import { GlobalReach } from '@/components/marketing/giga/global-reach';
 import { Testimonials } from '@/components/marketing/giga/testimonials';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
+import { PinboardCta } from '@/components/marketing/giga/pinboard-cta';
 import { Complexity } from '@/components/marketing/giga/complexity';
 import { Faq } from '@/components/marketing/giga/faq';
-import { CtaSection } from '@/components/marketing/giga/cta';
 
 export default async function MarketingHomePage() {
   const { userId } = await auth();
@@ -71,8 +71,21 @@ export default async function MarketingHomePage() {
         <Testimonials lang={lang} />
         <Complexity lang={lang} />
         <Faq lang={lang} />
-        <CtaSection lang={lang} />
       </ToneShift>
+
+      {/* The closing ask, and the page's third act: charcoal, yellow, charcoal.
+          It replaces CtaSection here rather than sitting beside it — both do the
+          same job (send you to /contact) and running both would put two yellow
+          calls to action on one screen.
+
+          OUTSIDE the ToneShift, deliberately. The pinboard paints its own
+          charcoal board with yellow paper on it, and every one of those colours
+          comes from a token that the `[data-fx-tone="light"]` scope inverts —
+          inside the flip the board would resolve to yellow and the notes would
+          be yellow paper on a yellow board. */}
+      <div className="bg-[var(--fx-charcoal)] text-white">
+        <PinboardCta lang={lang} />
+      </div>
     </>
   );
 }
