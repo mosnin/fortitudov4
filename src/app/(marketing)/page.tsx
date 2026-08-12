@@ -24,6 +24,7 @@ import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
 import { Advantage } from '@/components/marketing/giga/advantage';
 import { Testimonials } from '@/components/marketing/giga/testimonials';
+import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { Complexity } from '@/components/marketing/giga/complexity';
 import { Faq } from '@/components/marketing/giga/faq';
 import { CtaSection } from '@/components/marketing/giga/cta';
@@ -43,12 +44,20 @@ export default async function MarketingHomePage() {
         <Offerings />
         <Pipeline />
         <Advantage />
+      </div>
+
+      {/* Halfway down, the ground flips to racing yellow and the ink to black.
+          Everything below renders in the inverted scope — see the
+          `[data-fx-tone="light"]` block in globals.css. The split is here
+          because the top half is the pitch and the bottom half is the proof,
+          and the colour change marks the turn. */}
+      <ToneShift>
         {/* Proof follows the claim. Ships empty — the slots say what goes in them. */}
         <Testimonials />
         <Complexity />
         <Faq />
-      </div>
-      <CtaSection />
+        <CtaSection />
+      </ToneShift>
     </>
   );
 }

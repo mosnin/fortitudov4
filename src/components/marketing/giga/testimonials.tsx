@@ -119,6 +119,7 @@ function TestimonialCard({
 }) {
   return (
     <article
+      data-fx-surface="dark"
       className={`flex h-full flex-col p-7 ${
         highlight
           ? 'bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)]'
@@ -169,7 +170,7 @@ function TestimonialCard({
 
 function PlaceholderCard({ slot, index }: { slot: string; index: number }) {
   return (
-    <article className="flex h-full flex-col bg-[var(--fx-charcoal-deep)] p-7">
+    <article data-fx-surface="dark" className="flex h-full flex-col bg-[var(--fx-charcoal-deep)] p-7">
       <div className="flex h-full flex-col rounded-[4px] border border-dashed border-[var(--fx-hairline)] p-6">
         <div className="flex items-center justify-between">
           <QuoteMark className="text-[var(--fx-faint)]" />
@@ -246,6 +247,7 @@ export function Testimonials() {
             </p>
             <Link
               href="/contact"
+              data-fx-surface="dark"
               className="group mt-6 inline-flex items-center gap-3 rounded-[4px] border border-[var(--fx-faint)] bg-[var(--fx-charcoal-raised)] p-2 transition-colors duration-200 hover:border-[var(--fx-yellow)]"
             >
               <span className="inline-flex h-10 w-10 items-center justify-center rounded-[4px] bg-[var(--fx-yellow)] text-[var(--fx-on-yellow)]">
@@ -280,6 +282,7 @@ export function Testimonials() {
                 ? METRICS.map((metric) => (
                     <div
                       key={metric.label}
+                      data-fx-surface="dark"
                       className="bg-[var(--fx-charcoal-deep)] p-7"
                     >
                       <Serif
@@ -296,6 +299,7 @@ export function Testimonials() {
                 : METRIC_SLOTS.map((label, i) => (
                     <div
                       key={i}
+                      data-fx-surface="dark"
                       className="bg-[var(--fx-charcoal-deep)] p-7"
                     >
                       <div className="rounded-[4px] border border-dashed border-[var(--fx-hairline)] px-4 py-5">

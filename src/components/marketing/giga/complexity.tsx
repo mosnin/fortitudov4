@@ -53,7 +53,7 @@ export function Complexity() {
           {COLUMNS.map((c) => {
             const Icon = c.icon;
             return (
-              <div
+              <div data-fx-surface="dark"
                 key={c.title}
                 className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-8 backdrop-blur-sm transition-colors hover:border-[var(--fx-faint)]"
               >

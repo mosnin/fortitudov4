@@ -356,6 +356,7 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
   --fx-faint: rgba(255, 255, 255, 0.38);
   --fx-hairline: rgba(255, 255, 255, 0.12);
 
+
   /* The one hue on this surface that is not yellow, and it is semantic rather
      than brand: the "without us" side of a comparison, and a form that failed
      to send. It is deliberately NOT in the accent family — a failure state
@@ -371,6 +372,58 @@ input[type="datetime-local"]::-webkit-date-and-time-value {
    or forgets its inline `fontFamily` still lands on the right face. Semibold,
    not the old light serif: this face carries the headline on weight rather
    than on stroke contrast. */
+/* ── Tone inversion ─────────────────────────────────────────────────────────
+ *
+ * Halfway down a page the ground flips: charcoal becomes racing yellow, the
+ * text becomes black, and cards become black blocks sitting on the yellow.
+ * It is the one moment the site raises its voice, and it works because every
+ * section already draws its colour from these tokens and nothing hardcodes a
+ * hex — so the flip is a scope, not a rewrite.
+ *
+ * The roles are what invert, not the names. `--fx-charcoal` means "the ground"
+ * and `--fx-white` means "text on the ground"; in this scope the ground is
+ * yellow and that text is black. The names are now historical, which is the
+ * price of not renaming ten files.
+ *
+ * The accent inverts too. A yellow button on a yellow ground is invisible, so
+ * the primary action becomes black with yellow text — still the one thing on
+ * the screen that is neither ground nor ink.
+ */
+[data-marketing-shell] [data-fx-tone="light"] {
+  --fx-charcoal: #f8cd02;
+  /* Both inset surfaces are cards here, and both are black — the reason the
+     nested reset below has to exist. */
+  --fx-charcoal-deep: #0d0d0d;
+  --fx-charcoal-raised: #141416;
+
+  --fx-white: #0d0d0d;
+  --fx-muted: rgba(13, 13, 13, 0.68);
+  --fx-faint: rgba(13, 13, 13, 0.46);
+  --fx-hairline: rgba(13, 13, 13, 0.18);
+
+  --fx-yellow: #0d0d0d;
+  --fx-yellow-hover: #000000;
+  --fx-on-yellow: #f8cd02;
+
+  /* Alert has to survive on yellow, where the light pink reads as nothing. */
+  --fx-alert: #b4162f;
+  --fx-alert-text: #8c0f24;
+}
+
+/* A black card inside the yellow scope is a dark surface again, so its ink has
+   to flip back. Without this, `--fx-white` resolves to black inside a black
+   card and the card renders empty. Any element that paints itself
+   `--fx-charcoal-raised` in the light scope carries this attribute. */
+[data-marketing-shell] [data-fx-tone="light"] [data-fx-surface="dark"] {
+  --fx-white: #ffffff;
+  --fx-muted: rgba(255, 255, 255, 0.62);
+  --fx-faint: rgba(255, 255, 255, 0.40);
+  --fx-hairline: rgba(255, 255, 255, 0.14);
+  --fx-yellow: #f8cd02;
+  --fx-yellow-hover: #dcb602;
+  --fx-on-yellow: #0d0d0d;
+}
+
 [data-marketing-shell] h1,
 [data-marketing-shell] h2,
 [data-marketing-shell] h3,
