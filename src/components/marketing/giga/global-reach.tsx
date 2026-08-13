@@ -130,8 +130,18 @@ const RULED =
 /** The grid dissolves before it reaches the headline — structure under the
  *  visual, clean charcoal under the words. The `black` here is a MASK alpha,
  *  not a colour: nothing on this surface paints black, and nothing is painted
- *  by this value at all. */
-const GRID_FADE = 'linear-gradient(to bottom, transparent 0%, black 42%, black 100%)';
+ *  by this value at all.
+ *
+ *  Two fade depths, by breakpoint. 42% clears the copy on desktop, where the
+ *  headline is a third of the section; on a phone the same copy runs well
+ *  past half the section's height, and the rules were surfacing straight
+ *  through the lead — text riding gridlines. The mask lives in classes now
+ *  because inline `style` cannot change at a breakpoint. */
+const GRID_FADE_CLASSES =
+  '[mask-image:linear-gradient(to_bottom,transparent_0%,black_78%,black_100%)] ' +
+  '[-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_78%,black_100%)] ' +
+  'sm:[mask-image:linear-gradient(to_bottom,transparent_0%,black_42%,black_100%)] ' +
+  'sm:[-webkit-mask-image:linear-gradient(to_bottom,transparent_0%,black_42%,black_100%)]';
 
 /** Rail insets match `Band`'s gutters, so the two hairlines land on the edge of
  *  the copy rather than near it. */
@@ -144,12 +154,8 @@ function RuledSheet() {
       className={`pointer-events-none absolute inset-y-0 z-0 ${RAIL_INSET}`}
     >
       <div
-        className="absolute inset-0 opacity-60"
-        style={{
-          backgroundImage: RULED,
-          maskImage: GRID_FADE,
-          WebkitMaskImage: GRID_FADE,
-        }}
+        className={`absolute inset-0 opacity-60 ${GRID_FADE_CLASSES}`}
+        style={{ backgroundImage: RULED }}
       />
       <span className="absolute inset-y-0 left-0 w-px bg-[var(--fx-hairline)]" />
       <span className="absolute inset-y-0 right-0 w-px bg-[var(--fx-hairline)]" />

@@ -66,6 +66,11 @@ export function createInputController({
   let activePointerId: number | null = null;
   let enabled = true;
   let engaged = false;
+  // When the visitor last actually steered — pointer over the canvas, a
+  // captured touch drag, or an arrow key. The engine wanders on its own once
+  // this goes stale, so "no pointer" reads as a living piece rather than a
+  // drum rolling dead straight forever. -Infinity: idle from the first frame.
+  let lastSteerAt = Number.NEGATIVE_INFINITY;
 
   const updateSteering = (clientX: number, clientY: number) => {
     const rect = element.getBoundingClientRect();
@@ -81,6 +86,7 @@ export function createInputController({
     if (magnitude <= deadzonePixels) return;
     steeringScreenX = deltaX / magnitude;
     steeringScreenY = deltaY / magnitude;
+    lastSteerAt = performance.now();
   };
 
   const onPointerMove = (event: PointerEvent) => {
@@ -151,6 +157,7 @@ export function createInputController({
     const direction = directions[event.key];
     if (!direction) return;
     [steeringScreenX, steeringScreenY] = direction;
+    lastSteerAt = performance.now();
     event.preventDefault();
   };
 
@@ -200,6 +207,10 @@ export function createInputController({
     },
     isEngaged() {
       return engaged;
+    },
+    /** ms timestamp of the last real steering input; -Infinity if never. */
+    lastSteerAt() {
+      return lastSteerAt;
     },
     setEnabled(nextEnabled: boolean) {
       enabled = nextEnabled;

@@ -1,44 +1,46 @@
 'use client';
 
 /**
- * The homepage's creative-direction section: the film-roller piece with the
- * design pitch laid over it.
+ * The homepage's creative-direction section: the film-roller piece on a
+ * racing-yellow ground, with the design pitch above it.
  *
  * The scene is `components/filmroller/` — a vendored three.js engine with a
- * plain-factory contract (`createFilmRoller` returns a handle or `null`; see
- * that file for what the port keeps and drops). This component is only the
- * mounting: it owns the section box, reads the palette off its own computed
- * style, wires the status readouts, and never lets the copy depend on the
- * canvas.
+ * plain-factory contract (`createFilmRoller` returns a handle or `null`).
+ * This component is only the mounting: it owns the boxes, reads the palette
+ * off its own computed style, wires the readouts, and never lets the copy
+ * depend on the canvas.
  *
- * IT LIVES MID-PAGE, and two decisions exist only because of that:
+ * YELLOW VIA THE TONE SCOPE, NOT BY HAND. The section carries
+ * `data-fx-tone="light"`, the same inversion the testimonials below it live
+ * in — so `--fx-charcoal` resolves to yellow, ink and hairlines flip, and
+ * the engine's palette (read off this very element) inherits the flip for
+ * free: yellow floor, near-black film carrier, ink keylines. The one token
+ * that must NOT come from the scope is the frames' paper (`--fx-white` is
+ * ink here), so paper stays a literal white. The scope's own rule holds for
+ * the art too: the photographs in the frames are monochrome
+ * (`filmroller/frames.ts` explains), because no third hue joins yellow and
+ * ink on this surface.
  *
- *  - THE ENGINE LOADS ON APPROACH, not on page load. three.js is the
- *    heaviest thing on the homepage and most visitors may never scroll here,
- *    so the dynamic import fires from a one-shot IntersectionObserver with a
- *    600px lead — by the time the section is on screen the drum is rolling,
- *    and a visitor who never comes never downloads it. The import must stay
- *    dynamic and inside this observer: statically imported, three.js lands on
- *    the hydration path and every whileInView observer below registers late.
- *  - INTERACTION IS SPLIT so the section can never trap the page.
- *    Hover-steering is free; wheel zoom and the speed/steer keys engage only
- *    once the canvas is CLICKED, and Escape releases (`filmroller/input.ts`
- *    documents the model; a section that captures the wheel on arrival is a
- *    section the page cannot scroll past). Touch keeps `pan-y`. The overlays
- *    are `pointer-events-none` so every pointer move lands on the canvas.
+ * STACKED, NOT OVERLAID. The first cut floated the copy over the canvas and
+ * the drum rolled straight through the lead on phones — text riding the
+ * piece. Copy now sits in normal flow above its own canvas band; the only
+ * things inside the canvas are the piece's own readouts, pinned to its
+ * bottom corners. Nothing can collide with anything at any width.
  *
- * COPY FIRST. Eyebrow, headline and lead render server-side in the same tree
- * whether WebGL exists, failed, or has not mounted (the `page-hero.tsx`
- * rule). When the factory returns `null` this is copy on charcoal and loses
- * nothing but the toy. The caption band below the canvas says why the
- * frames are blank — that line and the blank frames ship together.
+ * MID-PAGE RULES (unchanged): the engine chunk dynamic-imports from a
+ * one-shot IntersectionObserver with a 600px lead, so three.js never sits on
+ * the hydration path and never downloads for a visitor who stops scrolling
+ * early. Hover (or touch-drag) steering is free; wheel zoom and keys engage
+ * only once the canvas is clicked, Escape releases, touch keeps `pan-y` —
+ * the section can never trap the page. When nobody steers for a beat, the
+ * drum wanders on its own (`create-film-roller.ts`), so the piece is alive
+ * before the first pointer arrives.
  *
  * REDUCED MOTION uses motion's own `useReducedMotion`, not the safe hook, on
  * purpose: the value is a CONSTRUCTOR argument (`still`) consumed inside an
  * effect, the same shape as `page-hero.tsx`'s dot-matrix — it never reaches
  * the SSR markup. The allowlist test in `use-reduced-motion-safe.test.ts`
- * names this file for that reason. Under the preference the engine lays a
- * pre-rolled arc, renders one frame, and takes no input at all.
+ * names this file for that reason.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -51,17 +53,28 @@ import { KineticText } from './motion-kit';
 import { Band, BlurRise, Eyebrow, Serif } from './primitives';
 import { BODY_S, DISPLAY_M, LEAD, MONO_STYLE } from './tokens';
 
+/** The four monochrome stock frames (`public/filmroller/`, sourced and
+ *  licensed per the note in `filmroller/frames.ts`). */
+const FRAME_ART = [
+  '/filmroller/frame-01.jpg',
+  '/filmroller/frame-02.jpg',
+  '/filmroller/frame-03.jpg',
+  '/filmroller/frame-04.jpg',
+] as const;
+
 /**
  * Token fallbacks for a render outside `[data-marketing-shell]` — these are
- * the token VALUES (globals.css), not a second palette. Change one there,
- * change it here.
+ * the LIGHT-scope token values from globals.css (this section lives inside
+ * `data-fx-tone="light"`), not a second palette. Change one there, change it
+ * here. `paper` is the exception documented above: a literal, never a token,
+ * because the scope maps `--fx-white` to ink.
  */
 const FALLBACKS: FilmRollerPalette = {
-  ground: '#0f0f12',
+  ground: '#f8cd02',
   raised: '#191a1d',
   paper: '#ffffff',
   ink: '#0f0f12',
-  yellow: '#f8cd02',
+  yellow: '#0f0f12',
 };
 
 function readPalette(element: HTMLElement): FilmRollerPalette {
@@ -69,10 +82,13 @@ function readPalette(element: HTMLElement): FilmRollerPalette {
   const read = (token: string, fallback: string) =>
     style.getPropertyValue(token).trim() || fallback;
   return {
+    // Inside the light scope these resolve inverted: charcoal IS the yellow.
     ground: read('--fx-charcoal', FALLBACKS.ground),
     raised: read('--fx-charcoal-raised', FALLBACKS.raised),
-    paper: read('--fx-white', FALLBACKS.paper),
-    ink: read('--fx-charcoal', FALLBACKS.ink),
+    paper: FALLBACKS.paper,
+    ink: read('--fx-white', FALLBACKS.ink),
+    // The scope maps the accent to ink — its "no third hue" rule, which the
+    // drum's index dot obeys like everything else.
     yellow: read('--fx-yellow', FALLBACKS.yellow),
   };
 }
@@ -80,6 +96,7 @@ function readPalette(element: HTMLElement): FilmRollerPalette {
 export function FilmRollerStage({ lang }: { lang: Lang }) {
   const t = HOME[lang].design;
   const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
   const [status, setStatus] = useState<FilmRollerStatus | null>(null);
@@ -98,8 +115,9 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
 
   useEffect(() => {
     const section = sectionRef.current;
+    const stage = stageRef.current;
     const canvas = canvasRef.current;
-    if (!section || !canvas) return;
+    if (!section || !stage || !canvas) return;
 
     let cancelled = false;
     let handle: FilmRollerHandle | null = null;
@@ -112,9 +130,10 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
           if (cancelled) return;
           handle = engine.createFilmRoller({
             canvas,
-            host: section,
+            host: stage,
             palette: readPalette(section),
             still: reduce === true,
+            frameArtUrls: FRAME_ART,
             onStatus: setStatus,
           });
         });
@@ -133,56 +152,51 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
   }, [reduce]);
 
   return (
-    <div className="border-y border-[var(--fx-hairline)]">
-      <section
-        ref={sectionRef}
-        className="relative isolate h-[86svh] min-h-[560px] overflow-hidden bg-[var(--fx-charcoal)]"
-      >
-        {/* The scene. Focusable on purpose — focus IS the engagement switch.
-            `pan-y` keeps a touch swipe scrolling the page. */}
+    <section
+      ref={sectionRef}
+      data-fx-tone="light"
+      className="border-y border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]"
+    >
+      {/* The pitch, in normal flow — nothing overlays the scene. Tokens here
+          are already inverted by the scope: white is ink, yellow is ink. */}
+      <Band className="pt-16 pb-10 sm:pt-20 sm:pb-12">
+        <BlurRise>
+          <Eyebrow>{t.eyebrow}</Eyebrow>
+        </BlurRise>
+        <Serif className={`mt-5 max-w-3xl ${DISPLAY_M} text-[var(--fx-white)]`}>
+          <KineticText lines={[t.titleLead]} />
+          <KineticText delay={0.18} lines={[t.titleAccent]} />
+        </Serif>
+        <BlurRise delay={0.25}>
+          <p className={`mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>{t.body}</p>
+          <p
+            style={MONO_STYLE}
+            className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[var(--fx-faint)]"
+          >
+            {t.instructions}
+          </p>
+        </BlurRise>
+      </Band>
+
+      {/* The scene's own band. Focusable on purpose — focus IS the engagement
+          switch; `pan-y` keeps a touch swipe scrolling the page. */}
+      <div ref={stageRef} className="relative isolate h-[56svh] min-h-[430px] overflow-hidden">
         <canvas
           ref={canvasRef}
           tabIndex={0}
           role="application"
           aria-label={t.canvasAria}
-          className="absolute inset-0 h-full w-full [touch-action:pan-y] focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--fx-yellow)]"
+          className="absolute inset-0 h-full w-full [touch-action:pan-y] focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--fx-white)]"
         />
 
-        {/* The pitch, over the scene, pointer-transparent so every move
-            still steers. Rendered whether or not the canvas draws. */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] px-5 pt-16 sm:px-8 sm:pt-20 lg:px-10">
-          <div className="mx-auto w-full max-w-7xl">
-            <BlurRise>
-              <Eyebrow>{t.eyebrow}</Eyebrow>
-            </BlurRise>
-            <Serif className={`mt-5 max-w-3xl ${DISPLAY_M} text-[var(--fx-white)]`}>
-              <KineticText lines={[t.titleLead]} />
-              <KineticText
-                delay={0.18}
-                lines={[t.titleAccent]}
-                className="text-[var(--fx-yellow)]"
-              />
-            </Serif>
-            <BlurRise delay={0.25}>
-              <p className={`mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>{t.body}</p>
-              <p
-                style={MONO_STYLE}
-                className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[var(--fx-faint)]"
-              >
-                {t.instructions}
-              </p>
-            </BlurRise>
-          </div>
-        </div>
-
-        {/* Readouts. Decoration in the piece's own voice — the copy above and
-            the aria-label carry the real information, so these stay hidden
-            from readers and from pointers alike. */}
+        {/* Readouts, pinned inside the scene band. Decoration in the piece's
+            own voice — the copy above and the aria-label carry the real
+            information, so these stay hidden from readers and pointers. */}
         {status ? (
           <div
             aria-hidden
             style={MONO_STYLE}
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-6 px-5 pb-6 text-[10px] uppercase tracking-[0.22em] text-[var(--fx-faint)] sm:px-8 lg:px-10"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-6 px-5 pb-5 text-[10px] uppercase tracking-[0.22em] text-[var(--fx-faint)] sm:px-8 lg:px-10"
           >
             {/* Frame and speed stay off small screens: speed cannot change
                 on touch anyway, and two wrapping mono lines are noise. */}
@@ -197,22 +211,15 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
             </span>
           </div>
         ) : null}
+      </div>
 
-        {/* Fold the scene's bottom edge back into the page ground so the next
-            block starts from charcoal, not from a lit floor cut mid-air. */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-b from-transparent to-[var(--fx-charcoal)]"
-        />
-      </section>
-
-      {/* The piece's caption: why the frames are empty. The same sentence of
-          honesty /portfolio leads with, kept touching the thing it explains. */}
+      {/* The piece's caption: what the frames hold and what they are not.
+          Same honesty /portfolio leads with, kept touching what it explains. */}
       <Band className="border-t border-[var(--fx-hairline)]">
         <BlurRise className="py-6">
           <p className={`max-w-2xl ${BODY_S} text-[var(--fx-muted)]`}>{t.framesNote}</p>
         </BlurRise>
       </Band>
-    </div>
+    </section>
   );
 }

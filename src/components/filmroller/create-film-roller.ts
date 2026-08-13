@@ -34,7 +34,7 @@
  */
 
 import { CONFIG, FLOOR_PITCH, ROLLER_RADIUS } from './config';
-import { FRAME_COUNT, createFrameAtlas, createFrameTextures } from './frames';
+import { FRAME_COUNT, createFrameAtlas, createFrameTextures, loadFrameArt } from './frames';
 import { FloorHistory } from './floor-history';
 import { createInputController } from './input';
 import { createRoller } from './roller';
@@ -70,6 +70,7 @@ export function createFilmRoller({
   host,
   palette,
   still = false,
+  frameArtUrls = [],
   onStatus = () => {},
 }: {
   canvas: HTMLCanvasElement;
@@ -78,6 +79,8 @@ export function createFilmRoller({
   palette: FilmRollerPalette;
   /** Reduced motion: lay a pre-rolled arc, render once, take no input. */
   still?: boolean;
+  /** Photograph URLs streamed in over the paper frames (`frames.ts`). */
+  frameArtUrls?: readonly string[];
   onStatus?: (status: FilmRollerStatus) => void;
 }): FilmRollerHandle | null {
   let sceneBundle: ReturnType<typeof createScene>;
@@ -90,6 +93,16 @@ export function createFilmRoller({
 
   const frameTextures = createFrameTextures(sceneBundle.renderer, palette);
   const atlas = createFrameAtlas(frameTextures, sceneBundle.renderer);
+  // Photographs stream in over the paper; in still mode each arrival
+  // repaints the one frame this page will ever render.
+  const cancelFrameArt = loadFrameArt({
+    frameTextures,
+    atlas,
+    urls: frameArtUrls,
+    onFrameLoaded: () => {
+      if (still && !destroyed) sceneBundle.render();
+    },
+  });
   const roller = createRoller(atlas, FRAME_COUNT, palette);
   sceneBundle.scene.add(roller.root);
   const floorHistory = new FloorHistory({
@@ -252,6 +265,16 @@ export function createFilmRoller({
   targetHeading = heading;
   floorHistory.seedInitialHalf({ contact: worldPosition, heading });
 
+  // The idle wander: two incommensurate sine waves over a random phase, read
+  // as a curvature. Nothing here is a path — it is a steering wheel being
+  // leaned left and right slowly, so the drum draws loops and S-curves that
+  // never repeat exactly and never exceed the same turn constraint a human
+  // hand gets. Randomised per mount so two visits never roll the same road.
+  const IDLE_AFTER_MS = 1800;
+  const wanderPhase1 = Math.random() * Math.PI * 2;
+  const wanderPhase2 = Math.random() * Math.PI * 2;
+  let wanderT = 0;
+
   const input = still
     ? null
     : createInputController({
@@ -288,29 +311,40 @@ export function createFilmRoller({
 
     if (input) {
       const control = input.update(dt, damp);
-      const targetDirection = sceneBundle.screenDirectionToWorld(
-        control.screenDirection.x,
-        control.screenDirection.y,
-      );
-      targetHeading = Math.atan2(targetDirection.z, targetDirection.x);
-      const nextHeading = dampAngle(
-        heading,
-        targetHeading,
-        CONFIG.input.directionLambda,
-        dt,
-      );
       const distanceDelta = control.speed * dt;
-      // The turn constraint: however hard the pointer swings, the drum
-      // cannot turn tighter than its minimum radius at this speed.
+      // The turn constraint: however hard the pointer (or the wander)
+      // swings, the drum cannot turn tighter than its minimum radius.
       const maximumHeadingDelta =
         Math.abs(distanceDelta) / CONFIG.roller.minimumTurnRadius;
-      const requestedHeadingDelta = shortestAngleDelta(heading, nextHeading);
-      const constrainedHeading =
-        heading +
-        Math.max(
-          -maximumHeadingDelta,
-          Math.min(maximumHeadingDelta, requestedHeadingDelta),
+
+      const idle = performance.now() - input.lastSteerAt() > IDLE_AFTER_MS;
+      let constrainedHeading: number;
+      if (idle) {
+        wanderT += dt;
+        const curvature =
+          0.62 * Math.sin(wanderT * 0.21 + wanderPhase1) +
+          0.38 * Math.sin(wanderT * 0.53 + wanderPhase2);
+        constrainedHeading = heading + curvature * maximumHeadingDelta * 0.85;
+      } else {
+        const targetDirection = sceneBundle.screenDirectionToWorld(
+          control.screenDirection.x,
+          control.screenDirection.y,
         );
+        targetHeading = Math.atan2(targetDirection.z, targetDirection.x);
+        const nextHeading = dampAngle(
+          heading,
+          targetHeading,
+          CONFIG.input.directionLambda,
+          dt,
+        );
+        const requestedHeadingDelta = shortestAngleDelta(heading, nextHeading);
+        constrainedHeading =
+          heading +
+          Math.max(
+            -maximumHeadingDelta,
+            Math.min(maximumHeadingDelta, requestedHeadingDelta),
+          );
+      }
       applyPathDelta(distanceDelta, heading, constrainedHeading);
     }
 
@@ -412,6 +446,7 @@ export function createFilmRoller({
       intersection.disconnect();
       document.removeEventListener('visibilitychange', onVisibilityChange);
       canvas.removeEventListener('webglcontextlost', onContextLost);
+      cancelFrameArt();
       input?.dispose();
       steeringCursor?.dispose();
       floorHistory.dispose();

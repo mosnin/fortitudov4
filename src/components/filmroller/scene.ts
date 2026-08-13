@@ -40,8 +40,14 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
     powerPreference: 'high-performance',
   });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.04;
+  // NO tone mapping, deliberately — this scene sits INSIDE a page whose
+  // ground it must match. ACES lifted the racing-yellow floor to cream
+  // (measured: token 248,205,2 rendered as 242,226,118), and no exposure
+  // value can undo a curve that desaturates by design. Linear→sRGB with the
+  // lights below summing to ≈1 on an upward face renders the floor at the
+  // token, and the monochrome frames lose nothing a film still ever had.
+  renderer.toneMapping = THREE.NoToneMapping;
+  renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -76,11 +82,13 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
   floor.receiveShadow = true;
   scene.add(floor);
 
-  // Sky white, bounce charcoal: light falls, the ground gives nothing back.
-  const hemisphere = new THREE.HemisphereLight(0xffffff, ground, 1.9);
+  // Budgeted, not dramatic: hemisphere ≈0.58 + key ≈0.5×cos(elevation)
+  // lands an upward-facing surface at ≈0.95 of its own albedo, so the floor
+  // IS the token and white paper stays just off clipping.
+  const hemisphere = new THREE.HemisphereLight(0xffffff, ground, 1.85);
   scene.add(hemisphere);
 
-  const key = new THREE.DirectionalLight(0xfff6e8, 3.6);
+  const key = new THREE.DirectionalLight(0xfff6e8, 1.55);
   key.position.set(-7, 13, 9);
   key.castShadow = true;
   // Full-resolution shadows only where there is screen to spend them on —
@@ -97,7 +105,7 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
   key.shadow.normalBias = 0.025;
   scene.add(key);
 
-  const rim = new THREE.DirectionalLight(0xdce6f2, 0.9);
+  const rim = new THREE.DirectionalLight(0xdce6f2, 0.4);
   rim.position.set(7, 5, -8);
   scene.add(rim);
 

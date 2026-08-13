@@ -223,12 +223,13 @@ const en = {
 
   /**
    * The creative-direction section — the interactive film roller
-   * (`film-roller-stage.tsx`) with the design pitch laid over it.
+   * (`film-roller-stage.tsx`) on its yellow ground, design pitch above it.
    *
-   * `framesNote` is load-bearing: the roller's frames are DELIBERATELY BLANK
-   * (`components/filmroller/frames.ts`) because nothing on this site is
-   * invented, and this line is where the page says so. Remove the blank
-   * frames and it goes with them; keep them and it stays.
+   * `framesNote` is load-bearing: the roller's frames carry monochrome STOCK
+   * photography (`components/filmroller/frames.ts` — sources and the
+   * no-third-hue reasoning live there), and this line is where the page says
+   * that is what it is: atmosphere, not client work. If the frames ever
+   * change to real projects, this line changes with them.
    */
   design: {
     eyebrow: 'Creative direction',
@@ -247,9 +248,9 @@ const en = {
     frameLabel: 'Frame',
     speedLabel: 'Speed',
     framesNote:
-      'The frames on this roller are blank on purpose. They hold room for client work we are allowed to show — real names, real screens, nothing staged.',
+      'The film in this roller is stock photography, standing in on purpose. Client work goes up here only with its name and its permission — real projects, nothing staged.',
     canvasAria:
-      'Decorative interactive scene: a film roller that prints blank frames onto the floor as it moves. Move the pointer to steer it. Click to enable zoom with the scroll wheel and speed with the plus and minus keys; press Escape to release.',
+      'Decorative interactive scene: a film roller that prints monochrome photographs onto the floor as it moves. Move the pointer or drag to steer it. Click to enable zoom with the scroll wheel and speed with the plus and minus keys; press Escape to release.',
   },
 
   cta: {
