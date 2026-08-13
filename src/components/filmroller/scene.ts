@@ -70,16 +70,19 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
   let zoomScale = CONFIG.camera.zoomInitial;
   let targetZoomScale = CONFIG.camera.zoomInitial;
 
-  const floorMaterial = new THREE.MeshStandardMaterial({
-    color: ground,
-    roughness: 0.94,
-    metalness: 0,
-  });
+  // UNLIT, deliberately — the floor must be EXACTLY the page's ground, and a
+  // lit material can never promise that: even at metalness 0 a standard
+  // material keeps a ~4% white specular floor, which measured as a +18 blue
+  // shift on the yellow (token 248,205,2 rendering 249,204,20) and read as a
+  // pale rectangle inside the section. Basic material = the token, verbatim,
+  // on every GPU. The cost is honest: the floor cannot receive the drum's
+  // cast shadow, so the painted contact ellipse in roller.ts is now the only
+  // grounding — which is enough, it is what reads at a glance.
+  const floorMaterial = new THREE.MeshBasicMaterial({ color: ground });
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(500, 260), floorMaterial);
-  floor.name = 'charcoal-floor';
+  floor.name = 'ground-floor';
   floor.rotation.x = -Math.PI * 0.5;
   floor.position.y = -0.005;
-  floor.receiveShadow = true;
   scene.add(floor);
 
   // Budgeted, not dramatic: hemisphere ≈0.58 + key ≈0.5×cos(elevation)

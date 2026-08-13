@@ -155,7 +155,11 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
     <section
       ref={sectionRef}
       data-fx-tone="light"
-      className="border-y border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]"
+      /* No borders and no rules anywhere in this section: the canvas floor is
+         painted with the exact ground token (scene.ts), so the scene and the
+         section are one unbroken yellow surface — a hairline would put a seam
+         back where one was deliberately removed. */
+      className="bg-[var(--fx-charcoal)]"
     >
       {/* The pitch, in normal flow — nothing overlays the scene. Tokens here
           are already inverted by the scope: white is ink, yellow is ink. */}
@@ -215,8 +219,8 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
 
       {/* The piece's caption: what the frames hold and what they are not.
           Same honesty /portfolio leads with, kept touching what it explains. */}
-      <Band className="border-t border-[var(--fx-hairline)]">
-        <BlurRise className="py-6">
+      <Band>
+        <BlurRise className="pb-10 pt-2">
           <p className={`max-w-2xl ${BODY_S} text-[var(--fx-muted)]`}>{t.framesNote}</p>
         </BlurRise>
       </Band>
