@@ -19,14 +19,16 @@
  *
  * English is the only shipped language: this file pins `lang` to 'en', and the
  * `[lang]` tree that will render the same sections in es/ru does not exist yet
- * (`plans/i18n.md`). The hero is imported from its leaf rather than through the
- * `hero-21` default wrapper so it can be handed the same prop as the rest.
+ * (`plans/i18n.md`). The hero is OriginKit `hero-23`, ported in
+ * `components/originkit/ui/hero-23/section-hero.tsx` — framed panel,
+ * starfield, half-globe — recoloured to the tokens and stripped of the drop's
+ * invented stats, logos and avatars.
  */
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import type { Lang } from '@/lib/i18n/markets';
-import { Section25Hero } from '@/components/originkit/ui/hero-21/section-25-hero';
+import { Hero23 } from '@/components/originkit/ui/hero-23/section-hero';
 import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
@@ -51,7 +53,7 @@ export default async function MarketingHomePage() {
     <>
       {/* The whole logged-out site is charcoal; the shell already forces it. */}
       <div className="bg-[var(--fx-charcoal)] text-white">
-        <Section25Hero lang={lang} />
+        <Hero23 lang={lang} />
         <Stats lang={lang} />
         <Offerings lang={lang} />
         <Pipeline lang={lang} />
@@ -61,11 +63,11 @@ export default async function MarketingHomePage() {
             the horizon now — both are charcoal, so the seam stays quiet. */}
         <GlobalReach lang={lang} />
         {/* The creative-direction piece, LAST in the charcoal half so it sits
-            directly above the client-proof section: an interactive film
-            roller printing deliberately blank frames — the same blank the
-            testimonial slots below it are, and for the same reason. Its
-            three.js engine lazy-loads on approach, and its wheel and keys
-            only engage on click, so mid-page it can never trap the scroll. */}
+            directly above the client-proof section: the film roller on its
+            yellow ground, printing monochrome stock film (the caption under
+            it says so). Its three.js engine lazy-loads on approach, and its
+            wheel and keys only engage on click — mid-page it can never trap
+            the scroll. */}
         <FilmRollerStage lang={lang} />
       </div>
 

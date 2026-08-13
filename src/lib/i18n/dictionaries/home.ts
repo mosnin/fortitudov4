@@ -2,7 +2,7 @@
  * Home page copy (`/`), every user-facing string on the logged-out homepage.
  *
  * One section per key, mirroring the components that render them: the hero
- * (`components/originkit/ui/hero-21/section-25-hero.tsx`) and the eight giga
+ * (`components/originkit/ui/hero-23/section-hero.tsx`) and the eight giga
  * sections the page composes below it.
  *
  * HOW TO EDIT.

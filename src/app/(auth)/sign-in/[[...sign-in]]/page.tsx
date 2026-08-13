@@ -1,4 +1,6 @@
+import { cookies } from 'next/headers';
 import { AuthPageLayout } from '@/components/auth/auth-page-layout';
+import { InviteGate } from '@/components/auth/invite-gate';
 import { ThemedSignIn } from '@/components/auth/clerk-sign-in';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -24,6 +26,18 @@ export default async function SignInPage({
   const signUpUrl = isSafeRedirect
     ? `/sign-up?redirect_url=${encodeURIComponent(redirect_url!)}`
     : '/sign-up';
+
+  // The invite gate. The COOKIE decides which side renders, and it is read
+  // here on the server, so the Clerk widget never even reaches a browser
+  // that has not presented a code (/api/invite sets it; InviteGate refreshes).
+  const invited = (await cookies()).get('invite_ok')?.value === '1';
+  if (!invited) {
+    return (
+      <AuthPageLayout heading="Invite code?">
+        <InviteGate />
+      </AuthPageLayout>
+    );
+  }
 
   return (
     <AuthPageLayout

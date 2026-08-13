@@ -1,4 +1,6 @@
+import { cookies } from 'next/headers';
 import { AuthPageLayout } from '@/components/auth/auth-page-layout';
+import { InviteGate } from '@/components/auth/invite-gate';
 import { ThemedSignUp } from '@/components/auth/clerk-sign-up';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -25,6 +27,16 @@ export default async function SignUpPage({
   const postSignUpUrl = isSafeRedirect
     ? redirect_url!
     : '/post-login';
+
+  // Same invite gate as /sign-in — see that page for the mechanism.
+  const invited = (await cookies()).get('invite_ok')?.value === '1';
+  if (!invited) {
+    return (
+      <AuthPageLayout heading="Invite code?">
+        <InviteGate />
+      </AuthPageLayout>
+    );
+  }
 
   return (
     <AuthPageLayout

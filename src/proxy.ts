@@ -41,6 +41,13 @@ export const PUBLIC_ROUTES = [
   // validates hard, caps every field and rate-limits by IP instead.
   "/api/leads(.*)",
   "/api/webhooks(.*)",
+  // The invite gate's code check — must run before there is a user.
+  "/api/invite(.*)",
+  // Vendored static assets under public/originkit — the matcher's extension
+  // bypass deliberately lets .json through to auth (API responses are JSON),
+  // which also catches the hero globe's land geometry. This carve-out serves
+  // the data file to the logged-out homepage where it is drawn.
+  "/originkit(.*)",
   "/api/db-check(.*)",
 ];
 

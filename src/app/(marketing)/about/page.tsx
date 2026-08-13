@@ -15,6 +15,7 @@
 import { CtaSection } from '@/components/marketing/giga/cta';
 import { PageHero } from '@/components/marketing/giga/page-hero';
 import { Band, BlurRise, Eyebrow, Serif } from '@/components/marketing/giga/primitives';
+import { ParticleMark } from '@/components/marketing/giga/particle-mark';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
 import { BODY, DISPLAY_S, LEAD, SECTION_Y, TITLE_S } from '@/components/marketing/giga/tokens';
 import { ABOUT } from '@/lib/i18n/dictionaries/about';
@@ -85,6 +86,18 @@ export default function AboutPage({ lang = 'en' }: { lang?: Lang }) {
             </BlurRise>
           </div>
         </Band>
+
+        {/* The mark, in particles — OriginKit's SVG-particle piece sampling
+            the brand mark from public/brand (same-origin, so the canvas can
+            read its pixels). It shies away from the cursor and settles back;
+            decorative, aria-hidden, and the closing image of the charcoal
+            act before the page turns yellow. Centered deliberately — the
+            only symmetric moment on a left-set page. */}
+        <BlurRise>
+          <div aria-hidden className="mx-auto h-[300px] w-full max-w-md sm:h-[360px]">
+            <ParticleMark />
+          </div>
+        </BlurRise>
       </div>
 
       {/* The tone shift. Everything below runs in the inverted scope — racing

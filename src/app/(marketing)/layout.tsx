@@ -28,6 +28,7 @@
 
 import { Cursor } from '@/components/marketing/giga/cursor';
 import { SiteHeader } from '@/components/marketing/giga/header';
+import { FlameOutro, OfferingsTicker } from '@/components/marketing/giga/marketing-flair';
 import { SiteFooter } from '@/components/marketing/giga/footer';
 import { FooterReveal } from '@/components/ui/footer-reveal';
 
@@ -63,9 +64,20 @@ export default function MarketingLayout({
       <FooterReveal
         className="flex flex-1 flex-col"
         contentClassName="flex flex-1 flex-col bg-[var(--fx-charcoal)]"
-        footer={<SiteFooter />}
+        footer={
+          <>
+            <SiteFooter />
+            {/* The site ends in embers — the ASCII flame under the footer,
+                on every logged-out page. Decorative, aria-hidden, one static
+                frame under reduced motion (marketing-flair.tsx). */}
+            <FlameOutro />
+          </>
+        }
       >
         <main className="flex-1">{children}</main>
+        {/* The offerings belt: the five things we sell, in LED dots, above
+            the footer on every logged-out page. */}
+        <OfferingsTicker />
       </FooterReveal>
     </div>
   );
