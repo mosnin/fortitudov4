@@ -274,7 +274,9 @@ export default function LEDTicker({
     let rowSource: number[] = [];
 
     function measure() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      // LOCAL ADDITION — 1.5 is plenty for glowing dots; the glow pass uses
+      // canvas shadowBlur, whose cost scales with pixels.
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const w = canvas.clientWidth || 600;
       const h = canvas.clientHeight || 600;
       canvas.width = Math.max(1, Math.round(w * dpr));
@@ -357,14 +359,42 @@ export default function LEDTicker({
       ctx.globalAlpha = 1;
     }
 
+    // LOCAL ADDITION — the belt parks when scrolled away or the tab hides,
+    // and restarts on re-entry; a marquee nobody can see costs frames the
+    // sections in view need.
+    let inView = true;
+
     function frame(time: number) {
       if (!alive) return;
+      if (!inView || document.hidden) {
+        raf = 0;
+        last = 0;
+        return;
+      }
       const dt = last ? Math.min((time - last) / 1000, 0.05) : 0;
       last = time;
       offset = (offset + speed * dt) % total;
       draw(time);
       raf = requestAnimationFrame(frame);
     }
+
+    const startFrames = () => {
+      if (raf === 0 && alive && inView && !document.hidden && (speed !== 0 || flickerStrength > 0)) {
+        raf = requestAnimationFrame(frame);
+      }
+    };
+    const visibility = new IntersectionObserver(
+      (entries) => {
+        inView = entries[0]?.isIntersecting ?? true;
+        if (inView) startFrames();
+      },
+      { threshold: 0.01 },
+    );
+    visibility.observe(canvas);
+    const onDocVisibility = () => {
+      if (!document.hidden) startFrames();
+    };
+    document.addEventListener('visibilitychange', onDocVisibility);
 
     measure();
     draw(0);
@@ -379,13 +409,13 @@ export default function LEDTicker({
     }
     // A board with no motion and no flicker is a static image — one draw is
     // the whole job, and scheduling frames for it would be pure battery.
-    if (speed !== 0 || flickerStrength > 0) {
-      raf = requestAnimationFrame(frame);
-    }
+    startFrames();
 
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
+      visibility.disconnect();
+      document.removeEventListener('visibilitychange', onDocVisibility);
       ro?.disconnect();
     };
   }, [

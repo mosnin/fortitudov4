@@ -462,7 +462,19 @@ export default function ParticleImage(__props) {
     let idata = null,
       bW = 0,
       bH = 0;
+    // LOCAL ADDITION — parks when scrolled away or the tab hides, restarts
+    // on re-entry; same discipline as every other decorative loop here.
+    let inView = true;
+    const startDraw = () => {
+      if (animRef.current == null && inView && !document.hidden) {
+        animRef.current = requestAnimationFrame(draw);
+      }
+    };
     const draw = () => {
+      if (!inView || document.hidden) {
+        animRef.current = null;
+        return;
+      }
       animRef.current = requestAnimationFrame(draw);
       const PW = canvas.width,
         PH = canvas.height;
@@ -709,9 +721,24 @@ export default function ParticleImage(__props) {
       }
       ctx.putImageData(idata, 0, 0);
     };
-    draw();
+    const visibility = new IntersectionObserver(
+      (entries) => {
+        inView = entries[0]?.isIntersecting ?? true;
+        if (inView) startDraw();
+      },
+      { threshold: 0.01 },
+    );
+    visibility.observe(canvas);
+    const onDocVisibility = () => {
+      if (!document.hidden) startDraw();
+    };
+    document.addEventListener('visibilitychange', onDocVisibility);
+    startDraw();
     return () => {
       if (animRef.current) cancelAnimationFrame(animRef.current);
+      animRef.current = null;
+      visibility.disconnect();
+      document.removeEventListener('visibilitychange', onDocVisibility);
     };
   }, []);
   const onMouseMove = (e) => {

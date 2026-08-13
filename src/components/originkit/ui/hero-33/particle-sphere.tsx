@@ -347,7 +347,11 @@ export default function ParticleSphereRefactor(
     // Renderer setup - canvas is larger than container to prevent clipping
     const renderer = new WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(canvasWidth, canvasHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // LOCAL ADDITION — phones cap at 1.25 device pixels; a dotted sphere is
+    // visually identical at arm's length and a fraction of the fill cost.
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, (container.clientWidth || 800) < 700 ? 1.25 : 2),
+    );
     renderer.outputColorSpace = "srgb";
     const canvas = renderer.domElement;
     canvas.style.position = "absolute";
@@ -519,8 +523,18 @@ export default function ParticleSphereRefactor(
     // Velocity decay for throw: higher smoothing = more momentum
     const velocityDecay = mapLinear(smoothingN, 0, 1, 0.7, 0.96);
 
+    // LOCAL ADDITION — park the loop when the globe leaves the viewport or
+    // the tab hides; the drop rendered 60fps forever, taxing every other
+    // section's scroll. Restarts on re-entry via the observer below.
+    let inViewNow = true;
+
     // Animation loop - uses cached isCanvas value for performance
     const animate = () => {
+      if (!inViewNow || document.hidden) {
+        animationFrameId = null;
+        animationFrameRef.current = null;
+        return;
+      }
       // Continue with animation (component should always render to show changes)
       animateCore();
     };
@@ -797,6 +811,20 @@ export default function ParticleSphereRefactor(
     // Always start animation to ensure component is visible and interactive
     // In canvas mode, rotation will be controlled by preview state
     startAnimation();
+
+    // LOCAL ADDITION — the visibility observer feeding the parked flag.
+    const visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        inViewNow = entries[0]?.isIntersecting ?? true;
+        if (inViewNow) startAnimation();
+      },
+      { threshold: 0.01 },
+    );
+    visibilityObserver.observe(container);
+    const handleDocVisibility = () => {
+      if (!document.hidden) startAnimation();
+    };
+    document.addEventListener("visibilitychange", handleDocVisibility);
 
     // Mouse interaction handlers (only if drag is enabled)
     const handleMouseDown = (event: MouseEvent) => {
@@ -1309,6 +1337,8 @@ export default function ParticleSphereRefactor(
 
     // Cleanup for preview/live mode
     return () => {
+      visibilityObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleDocVisibility);
       resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
       if (animationFrameId !== null) {

@@ -411,7 +411,17 @@ export default function AsciiFire(props: Props) {
       renderFire(output, heat, particles, columns, rows, charset, activePalette, activeSparkColor);
     };
 
+    // LOCAL ADDITION — the fire parks when scrolled away or the tab hides:
+    // it rewrites hundreds of DOM nodes 30 times a second, which is main
+    // thread the visible sections need. Restarts on re-entry.
+    let inView = true;
+
     const drawFrame = (timestamp: number): void => {
+      if (!inView || document.hidden) {
+        animationFrameId = 0;
+        previousFrameTime = 0;
+        return;
+      }
       const frameInterval = 1000 / FPS;
       const elapsedSinceFrame = timestamp - previousFrameTime;
 
@@ -445,6 +455,25 @@ export default function AsciiFire(props: Props) {
       animationFrameId = window.requestAnimationFrame(drawFrame);
     };
 
+    const startFire = () => {
+      if (animationFrameId === 0 && inView && !document.hidden) {
+        startTime = performance.now();
+        animationFrameId = window.requestAnimationFrame(drawFrame);
+      }
+    };
+    const visibility = new IntersectionObserver(
+      (entries) => {
+        inView = entries[0]?.isIntersecting ?? true;
+        if (inView) startFire();
+      },
+      { threshold: 0.01 },
+    );
+    visibility.observe(container);
+    const onDocVisibility = () => {
+      if (!document.hidden) startFire();
+    };
+    document.addEventListener('visibilitychange', onDocVisibility);
+
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(container);
     handleResize();
@@ -457,6 +486,8 @@ export default function AsciiFire(props: Props) {
     return () => {
       isActive = false;
       window.cancelAnimationFrame(animationFrameId);
+      visibility.disconnect();
+      document.removeEventListener('visibilitychange', onDocVisibility);
       resizeObserver.disconnect();
       reducedMotionQuery.removeEventListener('change', handleMotionPreferenceChange);
     };
