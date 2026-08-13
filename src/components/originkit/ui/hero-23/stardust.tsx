@@ -238,14 +238,46 @@ export default function Sparkles({
 
             drawParticles(width, height);
 
-            animationRef.current = requestAnimationFrame(animate);
+            animationRef.current = requestAnimationFrame(gate);
         };
-        animate();
+
+        // LOCAL ADDITION — same off-screen/hidden pause as the globe: an
+        // ambient starfield has no business drawing while scrolled away or
+        // while the tab is in the background.
+        let inView = true;
+        const startLoop = () => {
+            if (animationRef.current == null && inView && !document.hidden) {
+                animationRef.current = requestAnimationFrame(gate);
+            }
+        };
+        const gate = () => {
+            if (!inView || document.hidden) {
+                animationRef.current = null;
+                return;
+            }
+            animate();
+        };
+        const visibility = new IntersectionObserver(
+            (entries) => {
+                inView = entries[0]?.isIntersecting ?? true;
+                if (inView) startLoop();
+            },
+            { threshold: 0.01 }
+        );
+        if (canvasRef.current) visibility.observe(canvasRef.current);
+        const onVisibilityChange = () => {
+            if (!document.hidden) startLoop();
+        };
+        document.addEventListener("visibilitychange", onVisibilityChange);
+        startLoop();
 
         window.addEventListener("resize", resize);
 
         return () => {
             if (animationRef.current) cancelAnimationFrame(animationRef.current);
+            animationRef.current = null;
+            visibility.disconnect();
+            document.removeEventListener("visibilitychange", onVisibilityChange);
             window.removeEventListener("resize", resize);
         };
     }, [

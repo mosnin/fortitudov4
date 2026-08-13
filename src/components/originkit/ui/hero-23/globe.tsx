@@ -259,7 +259,13 @@ export default function Globe({
 
         const renderer = new WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(containerWidth, containerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        // LOCAL ADDITION — phones cap at 1.25 device pixels. A 550px globe at
+        // DPR 3 is a ~1700px framebuffer redrawn 60×/s for an ambient spin;
+        // that alone froze the hero on mobile. At 1.25 the dotted sphere is
+        // visually identical at arm's length and a quarter of the fill cost.
+        renderer.setPixelRatio(
+            Math.min(window.devicePixelRatio, containerWidth < 700 ? 1.25 : 2)
+        );
         renderer.outputColorSpace = "srgb";
         const canvas = renderer.domElement;
         canvas.style.position = "absolute";
@@ -764,6 +770,7 @@ export default function Globe({
         };
         const velocity = { x: 0, y: 0 };
         let isDragging = false;
+        let inView = true;
         let isHovering = false;
         let lastMouseX = 0;
         let lastMouseY = 0;
@@ -784,6 +791,10 @@ export default function Globe({
         markerMeshes.forEach((mesh) => globeGroup.add(mesh));
 
         const animate = () => {
+            if (!inView || document.hidden) {
+                animationFrameId = null;
+                return;
+            }
             let needsRender = false;
             const threshold = 0.01;
             if (
@@ -847,13 +858,30 @@ export default function Globe({
         };
 
         const startAnimation = () => {
-            if (animationFrameId === null) {
+            if (animationFrameId === null && inView && !document.hidden) {
                 animationFrameId = requestAnimationFrame(animate);
             }
         };
         if (rotationSpeed !== 0) {
             startAnimation();
         }
+
+        // LOCAL ADDITION — the drop rendered 60fps forever, even scrolled off
+        // screen, which on a phone taxes every OTHER section's scroll. The
+        // loop parks when the globe leaves the viewport or the tab hides
+        // (animate() bails without rescheduling), and restarts on re-entry.
+        const visibility = new IntersectionObserver(
+            (entries) => {
+                inView = entries[0]?.isIntersecting ?? true;
+                if (inView) startAnimation();
+            },
+            { threshold: 0.01 }
+        );
+        visibility.observe(container);
+        const handleVisibilityChange = () => {
+            if (!document.hidden) startAnimation();
+        };
+        document.addEventListener("visibilitychange", handleVisibilityChange);
 
         const handleMouseDown = (event: MouseEvent) => {
             isDragging = true;
@@ -922,6 +950,8 @@ export default function Globe({
                 cancelAnimationFrame(animationFrameId);
             canvas.removeEventListener("mousedown", handleMouseDown);
             canvas.removeEventListener("mousemove", handleMouseMove);
+            visibility.disconnect();
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
             resizeObserver.disconnect();
             renderer.dispose();
             container.removeChild(canvas);
