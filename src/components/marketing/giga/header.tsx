@@ -35,6 +35,7 @@ import {
   Blocks,
   Compass,
   Microscope,
+  PenTool,
   Sprout,
   LifeBuoy,
 } from 'lucide-react';
@@ -88,6 +89,7 @@ const MENUS: Record<MenuKey, MenuConfig> = {
     featuredHref: '/about',
     items: [
       { icon: Compass, key: 'about', href: '/about' },
+      { icon: PenTool, key: 'design', href: '/design' },
       { icon: Microscope, key: 'portfolio', href: '/portfolio' },
       { icon: LifeBuoy, key: 'faq', href: '/faq' },
       { icon: Sprout, key: 'contact', href: '/contact' },

@@ -43,6 +43,7 @@ const EXPLORE: { key: keyof ChromeDict['footer']['explore']; href: string }[] = 
   { key: 'services', href: '/services' },
   { key: 'pricing', href: '/pricing' },
   { key: 'about', href: '/about' },
+  { key: 'design', href: '/design' },
   { key: 'faq', href: '/faq' },
   { key: 'signIn', href: '/sign-in' },
 ];

@@ -20,7 +20,7 @@ import { join } from 'node:path';
  * an effect or an event handler where it never reaches the SSR markup.
  * Everything else uses `useReducedMotionSafe`.
  *
- * The list is two three.js canvases and nothing else, deliberately. Several
+ * The list is three three.js canvases and nothing else, deliberately. Several
  * other files read the preference for something harmless — a transition
  * duration, a `whileTap` — and those were moved to the safe hook anyway rather
  * than listed here, because a file allowed to call motion's hook for a harmless
@@ -38,6 +38,8 @@ import { join } from 'node:path';
 const EFFECT_ONLY_CALLERS: Record<string, string> = {
   'src/components/marketing/giga/page-hero.tsx':
     'Passed as the `still` flag to the three.js dot-matrix inside an effect.',
+  'src/components/marketing/giga/film-roller-stage.tsx':
+    'Passed as the `still` flag to the film-roller factory inside an effect.',
   'src/components/marketing/giga/pipeline.tsx':
     'Read inside the effect that drives the ruled ground; an early return, not a prop.',
 };
