@@ -352,7 +352,21 @@ export function createFilmRoller({
     update(0);
     sceneBundle.render();
   } else {
-    animationFrame = requestAnimationFrame(renderFrame);
+    // Compile the materials BEFORE the first visible frame. Left to the
+    // first render() they compile synchronously in one main-thread stall —
+    // the single biggest hitch this scene can cause mid-page.
+    // `compileAsync` uses KHR_parallel_shader_compile where the GPU offers
+    // it and falls back to a plain compile where it does not; either way the
+    // loop only starts once the cost is paid. If it rejects (context loss
+    // during compile), start anyway — the loop's own render will surface it.
+    void sceneBundle.renderer
+      .compileAsync(sceneBundle.scene, sceneBundle.camera)
+      .catch(() => {})
+      .then(() => {
+        if (destroyed) return;
+        lastFrameTime = performance.now();
+        animationFrame = requestAnimationFrame(renderFrame);
+      });
   }
 
   // Park the loop when the section is off-screen or the tab is hidden.

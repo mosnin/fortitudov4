@@ -221,6 +221,34 @@ const en = {
     ],
   },
 
+  /**
+   * The creative-direction section — the interactive film roller
+   * (`film-roller-stage.tsx`) with the design pitch laid over it.
+   *
+   * `framesNote` is load-bearing: the roller's frames are DELIBERATELY BLANK
+   * (`components/filmroller/frames.ts`) because nothing on this site is
+   * invented, and this line is where the page says so. Remove the blank
+   * frames and it goes with them; keep them and it stays.
+   */
+  design: {
+    eyebrow: 'Creative direction',
+    /** Two headline lines; the accent line renders yellow. */
+    titleLead: 'We design how it works.',
+    titleAccent: 'Then how it looks.',
+    body: 'Every screen you get from us was decided on purpose — what it does, what you click, how it reads. UX and UI are part of every build, not an extra on the invoice.',
+    /** Mono line under the lead: what the piece under the pointer does. */
+    instructions: 'Move the pointer to steer the roller',
+    /** Bottom-right hint, swapped when the canvas takes the wheel. */
+    hintIdle: 'Click the floor to take the wheel',
+    hintEngaged: 'Scroll zooms · + / − speed · arrows steer · Esc lets go',
+    frameLabel: 'Frame',
+    speedLabel: 'Speed',
+    framesNote:
+      'The frames on this roller are blank on purpose. They hold room for client work we are allowed to show — real names, real screens, nothing staged.',
+    canvasAria:
+      'Decorative interactive scene: a film roller that prints blank frames onto the floor as it moves. Move the pointer to steer it. Click to enable zoom with the scroll wheel and speed with the plus and minus keys; press Escape to release.',
+  },
+
   cta: {
     eyebrow: 'Get a price',
     /** The fixed first line. */

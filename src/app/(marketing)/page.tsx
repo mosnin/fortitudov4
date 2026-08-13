@@ -31,6 +31,7 @@ import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
 import { Advantage } from '@/components/marketing/giga/advantage';
+import { FilmRollerStage } from '@/components/marketing/giga/film-roller-stage';
 import { GlobalReach } from '@/components/marketing/giga/global-reach';
 import { Testimonials } from '@/components/marketing/giga/testimonials';
 import { ToneShift } from '@/components/marketing/giga/tone-shift';
@@ -55,6 +56,12 @@ export default async function MarketingHomePage() {
         <Offerings lang={lang} />
         <Pipeline lang={lang} />
         <Advantage lang={lang} />
+        {/* The creative-direction piece: an interactive film roller printing
+            deliberately blank frames. After the why-us argument, before the
+            globe — its three.js engine lazy-loads on approach, and its wheel
+            and keys only engage on click, so mid-page it can never trap the
+            scroll. */}
+        <FilmRollerStage lang={lang} />
         {/* Last section of the charcoal half. The globe is cut off by its own
             section's bottom edge, so that edge has to be the page's turn to
             yellow — the horizon lands exactly on the tone shift below. */}

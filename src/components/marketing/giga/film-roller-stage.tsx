@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * The `/design` hero: the film-roller piece with the page's opening copy
- * laid over it.
+ * The homepage's creative-direction section: the film-roller piece with the
+ * design pitch laid over it.
  *
  * The scene is `components/filmroller/` — a vendored three.js engine with a
  * plain-factory contract (`createFilmRoller` returns a handle or `null`; see
@@ -11,17 +11,27 @@
  * style, wires the status readouts, and never lets the copy depend on the
  * canvas.
  *
- * INTERACTION SPLIT (the part a maintainer must not "fix"): hover-steering is
- * free, but wheel zoom and the keys only work after the visitor clicks the
- * canvas. `filmroller/input.ts` documents why — a section that captures the
- * wheel on arrival is a section the page cannot scroll past. The overlays are
- * `pointer-events-none` to a fault so every pointer move lands on the canvas
- * underneath; only the CTA link below the lead takes clicks back.
+ * IT LIVES MID-PAGE, and two decisions exist only because of that:
  *
- * COPY FIRST. The eyebrow, headline, lead and CTAs render server-side in the
- * same tree whether WebGL exists, failed, or has not mounted — the exact
- * `page-hero.tsx` rule. When `createFilmRoller` returns `null` the section is
- * copy on charcoal and loses nothing but the toy.
+ *  - THE ENGINE LOADS ON APPROACH, not on page load. three.js is the
+ *    heaviest thing on the homepage and most visitors may never scroll here,
+ *    so the dynamic import fires from a one-shot IntersectionObserver with a
+ *    600px lead — by the time the section is on screen the drum is rolling,
+ *    and a visitor who never comes never downloads it. The import must stay
+ *    dynamic and inside this observer: statically imported, three.js lands on
+ *    the hydration path and every whileInView observer below registers late.
+ *  - INTERACTION IS SPLIT so the section can never trap the page.
+ *    Hover-steering is free; wheel zoom and the speed/steer keys engage only
+ *    once the canvas is CLICKED, and Escape releases (`filmroller/input.ts`
+ *    documents the model; a section that captures the wheel on arrival is a
+ *    section the page cannot scroll past). Touch keeps `pan-y`. The overlays
+ *    are `pointer-events-none` so every pointer move lands on the canvas.
+ *
+ * COPY FIRST. Eyebrow, headline and lead render server-side in the same tree
+ * whether WebGL exists, failed, or has not mounted (the `page-hero.tsx`
+ * rule). When the factory returns `null` this is copy on charcoal and loses
+ * nothing but the toy. The caption band below the canvas says why the
+ * frames are blank — that line and the blank frames ship together.
  *
  * REDUCED MOTION uses motion's own `useReducedMotion`, not the safe hook, on
  * purpose: the value is a CONSTRUCTOR argument (`still`) consumed inside an
@@ -34,12 +44,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 import type { Lang } from '@/lib/i18n/markets';
-import { DESIGN_PAGE } from '@/lib/i18n/dictionaries/design-page';
+import { HOME } from '@/lib/i18n/dictionaries/home';
 import type { FilmRollerHandle, FilmRollerStatus } from '@/components/filmroller/create-film-roller';
 import type { FilmRollerPalette } from '@/components/filmroller/palette';
 import { KineticText } from './motion-kit';
-import { BlurRise, Eyebrow, Serif } from './primitives';
-import { DISPLAY_L, LEAD, MONO_STYLE } from './tokens';
+import { Band, BlurRise, Eyebrow, Serif } from './primitives';
+import { BODY_S, DISPLAY_M, LEAD, MONO_STYLE } from './tokens';
 
 /**
  * Token fallbacks for a render outside `[data-marketing-shell]` — these are
@@ -68,7 +78,7 @@ function readPalette(element: HTMLElement): FilmRollerPalette {
 }
 
 export function FilmRollerStage({ lang }: { lang: Lang }) {
-  const t = DESIGN_PAGE[lang].hero;
+  const t = HOME[lang].design;
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
@@ -79,105 +89,116 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
     const canvas = canvasRef.current;
     if (!section || !canvas) return;
 
-    // The engine is imported HERE, dynamically, and nowhere else — that is
-    // load-bearing, not style. A static import would put three.js (by far
-    // the heaviest thing on this route) on the hydration path: the main
-    // thread parses it before React can commit, every other component's
-    // effects — including the IntersectionObservers that drive the
-    // whileInView entrances further down the page — register late, and a
-    // visitor who lands and scrolls immediately walks past sections whose
-    // observers do not exist yet. Imported inside the effect, hydration
-    // commits with the copy already interactive and the engine streams in
-    // behind it; the canvas simply starts drawing a beat later, which the
-    // page is already designed to tolerate (the copy never depends on it).
     let cancelled = false;
     let handle: FilmRollerHandle | null = null;
-    void import('@/components/filmroller/create-film-roller').then((engine) => {
-      if (cancelled) return;
-      handle = engine.createFilmRoller({
-        canvas,
-        host: section,
-        palette: readPalette(section),
-        still: reduce === true,
-        onStatus: setStatus,
-      });
-    });
+
+    const approach = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        approach.disconnect();
+        void import('@/components/filmroller/create-film-roller').then((engine) => {
+          if (cancelled) return;
+          handle = engine.createFilmRoller({
+            canvas,
+            host: section,
+            palette: readPalette(section),
+            still: reduce === true,
+            onStatus: setStatus,
+          });
+        });
+      },
+      // A 600px lead: the chunk downloads and the scene builds while the
+      // visitor is still a section away, so arrival never shows a blank floor.
+      { rootMargin: '600px 0px' },
+    );
+    approach.observe(section);
+
     return () => {
       cancelled = true;
+      approach.disconnect();
       handle?.destroy();
     };
   }, [reduce]);
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative isolate h-[92svh] min-h-[600px] overflow-hidden bg-[var(--fx-charcoal)]"
-    >
-      {/* The scene. Focusable on purpose — focus IS the engagement switch.
-          `pan-y` keeps a touch swipe scrolling the page. */}
-      <canvas
-        ref={canvasRef}
-        tabIndex={0}
-        role="application"
-        aria-label={t.canvasAria}
-        className="absolute inset-0 h-full w-full [touch-action:pan-y] focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--fx-yellow)]"
-      />
+    <div className="border-y border-[var(--fx-hairline)]">
+      <section
+        ref={sectionRef}
+        className="relative isolate h-[86svh] min-h-[560px] overflow-hidden bg-[var(--fx-charcoal)]"
+      >
+        {/* The scene. Focusable on purpose — focus IS the engagement switch.
+            `pan-y` keeps a touch swipe scrolling the page. */}
+        <canvas
+          ref={canvasRef}
+          tabIndex={0}
+          role="application"
+          aria-label={t.canvasAria}
+          className="absolute inset-0 h-full w-full [touch-action:pan-y] focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--fx-yellow)]"
+        />
 
-      {/* Opening copy, over the scene, pointer-transparent so every move
-          still steers. Rendered whether or not the canvas draws. */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] px-5 pt-28 sm:px-8 sm:pt-32 lg:px-10">
-        <div className="mx-auto w-full max-w-7xl">
-          <BlurRise trigger="load">
-            <Eyebrow>{t.eyebrow}</Eyebrow>
-          </BlurRise>
-          <Serif as="h1" className={`mt-5 max-w-3xl ${DISPLAY_L} text-[var(--fx-white)]`}>
-            <KineticText trigger="load" delay={0.12} lines={[t.titleLead]} />
-            <KineticText
-              trigger="load"
-              delay={0.3}
-              lines={[t.titleAccent]}
-              className="text-[var(--fx-yellow)]"
-            />
-          </Serif>
-          <BlurRise trigger="load" delay={0.5}>
-            <p className={`mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>{t.body}</p>
-            <p
-              style={MONO_STYLE}
-              className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[var(--fx-faint)]"
-            >
-              {t.instructions}
-            </p>
-          </BlurRise>
+        {/* The pitch, over the scene, pointer-transparent so every move
+            still steers. Rendered whether or not the canvas draws. */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] px-5 pt-16 sm:px-8 sm:pt-20 lg:px-10">
+          <div className="mx-auto w-full max-w-7xl">
+            <BlurRise>
+              <Eyebrow>{t.eyebrow}</Eyebrow>
+            </BlurRise>
+            <Serif className={`mt-5 max-w-3xl ${DISPLAY_M} text-[var(--fx-white)]`}>
+              <KineticText lines={[t.titleLead]} />
+              <KineticText
+                delay={0.18}
+                lines={[t.titleAccent]}
+                className="text-[var(--fx-yellow)]"
+              />
+            </Serif>
+            <BlurRise delay={0.25}>
+              <p className={`mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>{t.body}</p>
+              <p
+                style={MONO_STYLE}
+                className="mt-6 text-[11px] uppercase tracking-[0.22em] text-[var(--fx-faint)]"
+              >
+                {t.instructions}
+              </p>
+            </BlurRise>
+          </div>
         </div>
-      </div>
 
-      {/* Readouts. Decoration in the piece's own voice — the copy above and
-          the aria-label carry the real information, so these stay hidden from
-          readers and from pointers alike. */}
-      {status ? (
+        {/* Readouts. Decoration in the piece's own voice — the copy above and
+            the aria-label carry the real information, so these stay hidden
+            from readers and from pointers alike. */}
+        {status ? (
+          <div
+            aria-hidden
+            style={MONO_STYLE}
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between px-5 pb-6 text-[10px] uppercase tracking-[0.22em] text-[var(--fx-faint)] sm:px-8 lg:px-10"
+          >
+            <span>
+              {t.frameLabel} {String(status.frameIndex + 1).padStart(2, '0')} /{' '}
+              {String(status.frameCount).padStart(2, '0')}
+              <span className="mx-3 opacity-50">·</span>
+              {t.speedLabel} {status.speed.toFixed(0)}
+            </span>
+            <span className={status.engaged ? 'text-[var(--fx-muted)]' : undefined}>
+              {status.engaged ? t.hintEngaged : t.hintIdle}
+            </span>
+          </div>
+        ) : null}
+
+        {/* Fold the scene's bottom edge back into the page ground so the next
+            block starts from charcoal, not from a lit floor cut mid-air. */}
         <div
           aria-hidden
-          style={MONO_STYLE}
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between px-5 pb-6 text-[10px] uppercase tracking-[0.22em] text-[var(--fx-faint)] sm:px-8 lg:px-10"
-        >
-          <span>
-            {t.frameLabel} {String(status.frameIndex + 1).padStart(2, '0')} /{' '}
-            {String(status.frameCount).padStart(2, '0')}
-            <span className="mx-3 opacity-50">·</span>
-            {t.speedLabel} {status.speed.toFixed(0)}
-          </span>
-          <span className={status.engaged ? 'text-[var(--fx-muted)]' : undefined}>
-            {status.engaged ? t.hintEngaged : t.hintIdle}
-          </span>
-        </div>
-      ) : null}
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-24 bg-gradient-to-b from-transparent to-[var(--fx-charcoal)]"
+        />
+      </section>
 
-      {/* Fold the scene's bottom edge back into the page ground so the next
-          section starts from charcoal, not from a lit floor cut mid-air. */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-[1] h-28 bg-gradient-to-b from-transparent to-[var(--fx-charcoal)]"
-      />
-    </section>
+      {/* The piece's caption: why the frames are empty. The same sentence of
+          honesty /portfolio leads with, kept touching the thing it explains. */}
+      <Band className="border-t border-[var(--fx-hairline)]">
+        <BlurRise className="py-6">
+          <p className={`max-w-2xl ${BODY_S} text-[var(--fx-muted)]`}>{t.framesNote}</p>
+        </BlurRise>
+      </Band>
+    </div>
   );
 }

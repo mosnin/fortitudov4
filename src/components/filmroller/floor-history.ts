@@ -283,7 +283,26 @@ export class FloorHistory {
     this.filmColor = new THREE.Color(palette.raised);
     this.filmPatternTexture = createFilmPatternTexture();
 
-    for (let index = 0; index < CONFIG.floor.maxActive + 1; index += 1) {
+    // A HANDFUL up front, the rest drip-fed from update(). Upstream built
+    // the whole pool (maxActive + 1 items, each two ribbon geometries with
+    // half a megabyte of typed arrays) in the constructor — one synchronous
+    // burst that visibly stalls the main thread on weak machines, right as
+    // the section scrolls into view. Eight covers the first seconds of
+    // rolling (a new imprint begins roughly every 0.6s at default speed);
+    // `acquire()` already builds on demand if the drip ever falls behind.
+    for (let index = 0; index < 8; index += 1) {
+      this.pool.push(this.createPooledItem());
+    }
+  }
+
+  /** Called once per frame: grow the pool toward full, two items a frame. */
+  private topUpPool() {
+    const target = CONFIG.floor.maxActive + 1;
+    for (
+      let built = 0;
+      built < 2 && this.pool.length + this.activeCount() < target;
+      built += 1
+    ) {
       this.pool.push(this.createPooledItem());
     }
   }
@@ -565,6 +584,7 @@ export class FloorHistory {
   }
 
   update(deltaTime: number, renderOrigin: { x: number; z: number }) {
+    this.topUpPool();
     this.syncLayerOrder();
     for (const item of this.active) {
       item.root.position.x = item.worldX - renderOrigin.x;
