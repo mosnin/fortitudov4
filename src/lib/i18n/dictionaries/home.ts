@@ -236,11 +236,14 @@ const en = {
     titleLead: 'We design how it works.',
     titleAccent: 'Then how it looks.',
     body: 'Every screen you get from us was decided on purpose — what it does, what you click, how it reads. UX and UI are part of every build, not an extra on the invoice.',
-    /** Mono line under the lead: what the piece under the pointer does. */
-    instructions: 'Move the pointer to steer the roller',
-    /** Bottom-right hint, swapped when the canvas takes the wheel. */
+    /** Mono line under the lead. Neutral about input device on purpose —
+     *  it renders server-side, where nothing may depend on the pointer. */
+    instructions: 'Point or drag to steer the roller',
+    /** Bottom hint, fine pointers: swapped when the canvas takes the wheel. */
     hintIdle: 'Click the floor to take the wheel',
     hintEngaged: 'Scroll zooms · + / − speed · arrows steer · Esc lets go',
+    /** Bottom hint, touch: the whole story — wheel and keys do not exist. */
+    hintTouch: 'Drag to steer',
     frameLabel: 'Frame',
     speedLabel: 'Speed',
     framesNote:

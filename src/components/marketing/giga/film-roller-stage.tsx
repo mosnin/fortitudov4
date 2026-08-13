@@ -83,6 +83,18 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const reduce = useReducedMotion();
   const [status, setStatus] = useState<FilmRollerStatus | null>(null);
+  // Touch gets its own hint — "click the floor" and "scroll zooms" describe
+  // controls a phone does not have. Read post-mount and used only inside the
+  // status-gated readout bar, which never server-renders, so the media query
+  // can never disagree with SSR markup (the use-reduced-motion-safe lesson).
+  const [coarse, setCoarse] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia('(hover: none), (pointer: coarse)');
+    const sync = () => setCoarse(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -170,16 +182,18 @@ export function FilmRollerStage({ lang }: { lang: Lang }) {
           <div
             aria-hidden
             style={MONO_STYLE}
-            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between px-5 pb-6 text-[10px] uppercase tracking-[0.22em] text-[var(--fx-faint)] sm:px-8 lg:px-10"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex items-end justify-between gap-6 px-5 pb-6 text-[10px] uppercase tracking-[0.22em] text-[var(--fx-faint)] sm:px-8 lg:px-10"
           >
-            <span>
+            {/* Frame and speed stay off small screens: speed cannot change
+                on touch anyway, and two wrapping mono lines are noise. */}
+            <span className="hidden whitespace-nowrap sm:inline">
               {t.frameLabel} {String(status.frameIndex + 1).padStart(2, '0')} /{' '}
               {String(status.frameCount).padStart(2, '0')}
               <span className="mx-3 opacity-50">·</span>
               {t.speedLabel} {status.speed.toFixed(0)}
             </span>
-            <span className={status.engaged ? 'text-[var(--fx-muted)]' : undefined}>
-              {status.engaged ? t.hintEngaged : t.hintIdle}
+            <span className={status.engaged && !coarse ? 'text-[var(--fx-muted)]' : undefined}>
+              {coarse ? t.hintTouch : status.engaged ? t.hintEngaged : t.hintIdle}
             </span>
           </div>
         ) : null}

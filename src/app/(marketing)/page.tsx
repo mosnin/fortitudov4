@@ -56,16 +56,17 @@ export default async function MarketingHomePage() {
         <Offerings lang={lang} />
         <Pipeline lang={lang} />
         <Advantage lang={lang} />
-        {/* The creative-direction piece: an interactive film roller printing
-            deliberately blank frames. After the why-us argument, before the
-            globe — its three.js engine lazy-loads on approach, and its wheel
-            and keys only engage on click, so mid-page it can never trap the
-            scroll. */}
-        <FilmRollerStage lang={lang} />
-        {/* Last section of the charcoal half. The globe is cut off by its own
-            section's bottom edge, so that edge has to be the page's turn to
-            yellow — the horizon lands exactly on the tone shift below. */}
+        {/* The globe is cut off by its own section's bottom edge; that edge
+            used to be the page's turn to yellow. The roller below inherits
+            the horizon now — both are charcoal, so the seam stays quiet. */}
         <GlobalReach lang={lang} />
+        {/* The creative-direction piece, LAST in the charcoal half so it sits
+            directly above the client-proof section: an interactive film
+            roller printing deliberately blank frames — the same blank the
+            testimonial slots below it are, and for the same reason. Its
+            three.js engine lazy-loads on approach, and its wheel and keys
+            only engage on click, so mid-page it can never trap the scroll. */}
+        <FilmRollerStage lang={lang} />
       </div>
 
       {/* Halfway down, the ground flips to racing yellow and the ink to black.

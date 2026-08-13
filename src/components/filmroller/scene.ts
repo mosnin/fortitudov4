@@ -52,6 +52,11 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
     CONFIG.camera.far,
   );
   const lookAt = new THREE.Vector3(...CONFIG.camera.lookAt);
+  const lookAtDesktop = new THREE.Vector3(...CONFIG.camera.lookAt);
+  // Narrow canvases aim the camera HIGHER, which pushes the drum into the
+  // lower half of the frame — the top half belongs to the overlaid copy on
+  // phones, and a drum framed centre-screen rolls straight through the lead.
+  const lookAtMobile = new THREE.Vector3(0, 2.7, 0);
   const baseCameraPosition = new THREE.Vector3();
   const groundForward = new THREE.Vector3();
   const groundRight = new THREE.Vector3();
@@ -78,7 +83,10 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
   const key = new THREE.DirectionalLight(0xfff6e8, 3.6);
   key.position.set(-7, 13, 9);
   key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048);
+  // Full-resolution shadows only where there is screen to spend them on —
+  // a phone GPU pays the same fill cost for detail it cannot show.
+  const shadowSize = (window.innerWidth || 1024) < 760 ? 1024 : 2048;
+  key.shadow.mapSize.set(shadowSize, shadowSize);
   key.shadow.camera.left = -15;
   key.shadow.camera.right = 15;
   key.shadow.camera.top = 14;
@@ -119,6 +127,7 @@ export function createScene(canvas: HTMLCanvasElement, palette: FilmRollerPalett
     const desktop = new THREE.Vector3(...CONFIG.camera.desktopPosition);
     const mobile = new THREE.Vector3(...CONFIG.camera.mobilePosition);
     baseCameraPosition.lerpVectors(desktop, mobile, mobileMix);
+    lookAt.lerpVectors(lookAtDesktop, lookAtMobile, mobileMix);
     applyCamera();
   };
 

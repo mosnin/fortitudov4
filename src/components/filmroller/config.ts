@@ -49,7 +49,7 @@ export const CONFIG = Object.freeze({
     near: 0.05,
     far: 250,
     desktopPosition: [6.2, 8.9, 11.8] as const,
-    mobilePosition: [7.6, 11.8, 17.8] as const,
+    mobilePosition: [8.2, 13.2, 20.4] as const,
     lookAt: [0, 0.3, 0] as const,
     followLambda: 4.8,
     zoomInitial: 1.12,
