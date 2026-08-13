@@ -1,6 +1,7 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { CrmPageHeader, RowPill } from "@/components/crm";
+import { KeyboardShortcuts } from "@/components/dashboard/keyboard-shortcuts";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -120,6 +121,13 @@ export default async function SettingsPage() {
               </p>
             </div>
           </section>
+        </div>
+
+        {/* Below the two-column block, full width: the board needs the room,
+            and shortcuts are a different kind of fact from account and billing
+            details — nothing here is about this reader's account. */}
+        <div className="border-b border-border">
+          <KeyboardShortcuts />
         </div>
       </div>
     </div>
