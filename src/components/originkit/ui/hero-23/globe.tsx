@@ -334,11 +334,15 @@ export default function Globe({
                 });
                 const curve = new CatmullRomCurve3(outlinePoints);
                 const radius = (outlineWidth / 10) * 0.01;
+                // LOCAL ADDITION — path segments 1× (was 2×) and 4 radial
+                // sides (was 8): at hairline radius the difference cannot be
+                // seen, and coastline tubes were a quarter of the globe's
+                // triangle budget.
                 const tubeGeometry = new TubeGeometry(
                     curve,
-                    outlinePoints.length * 2,
+                    outlinePoints.length,
                     radius,
-                    8,
+                    4,
                     false
                 );
                 globeOutlineMesh = new Mesh(tubeGeometry, outlineMaterial);
@@ -385,11 +389,12 @@ export default function Globe({
                     if (points.length >= 2) {
                         const curve = new CatmullRomCurve3(points);
                         const radius = (gridWidth / 10) * 0.01;
+                        // LOCAL ADDITION — same trim as the coastline tubes.
                         const tubeGeometry = new TubeGeometry(
                             curve,
-                            points.length * 2,
+                            points.length,
                             radius,
-                            8,
+                            4,
                             false
                         );
                         const tubeMesh = new Mesh(
@@ -427,11 +432,12 @@ export default function Globe({
                     if (points.length >= 2) {
                         const curve = new CatmullRomCurve3(points);
                         const radius = (gridWidth / 10) * 0.01;
+                        // LOCAL ADDITION — same trim as the coastline tubes.
                         const tubeGeometry = new TubeGeometry(
                             curve,
-                            points.length * 2,
+                            points.length,
                             radius,
-                            8,
+                            4,
                             false
                         );
                         const tubeMesh = new Mesh(
@@ -663,7 +669,12 @@ export default function Globe({
                     globeGroup.add(dotInstances);
                 } else {
                     const dotCoordinates: number[][] = [];
-                    const baseStep = dotSpacing * 0.08;
+                    // LOCAL ADDITION — on narrow canvases, widen the spacing
+                    // 1.4×: the sphere is roughly half the desktop size, so
+                    // APPARENT density on screen stays the same while the
+                    // instanced-dot count roughly halves.
+                    const spacingScale = containerWidth < 700 ? 1.4 : 1;
+                    const baseStep = dotSpacing * spacingScale * 0.08;
                     for (let lat = -90; lat <= 90; lat += baseStep) {
                         const latRad = (Math.abs(lat) * Math.PI) / 180;
                         const cosLat = Math.cos(latRad);
@@ -771,6 +782,7 @@ export default function Globe({
         const velocity = { x: 0, y: 0 };
         let isDragging = false;
         let inView = true;
+        let frameParity = false;
         let isHovering = false;
         let lastMouseX = 0;
         let lastMouseY = 0;
@@ -795,6 +807,12 @@ export default function Globe({
                 animationFrameId = null;
                 return;
             }
+            // LOCAL ADDITION — phones paint every other frame. The rotation
+            // maths below still runs per rAF, so the spin covers the same
+            // arc per second; a slow ambient turn at 30fps reads as smooth,
+            // and it halves the heaviest cost this component has.
+            frameParity = !frameParity;
+            const skipPaint = containerWidth < 700 && frameParity;
             let needsRender = false;
             const threshold = 0.01;
             if (
@@ -838,7 +856,7 @@ export default function Globe({
                 );
                 needsRender = true;
             }
-            if (needsRender || rotationSpeed !== 0 || isDragging) {
+            if ((needsRender || rotationSpeed !== 0 || isDragging) && !skipPaint) {
                 globeGroup.rotation.y = rotation.x;
                 globeGroup.rotation.x = rotation.y;
                 renderer.render(scene, camera);
