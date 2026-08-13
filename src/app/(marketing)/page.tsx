@@ -19,15 +19,14 @@
  *
  * English is the only shipped language: this file pins `lang` to 'en', and the
  * `[lang]` tree that will render the same sections in es/ru does not exist yet
- * (`plans/i18n.md`). The hero is a giga section like every other block here;
- * the three.js corridor behind it is the only thing left of the OriginKit drop
- * it came from (`components/originkit/ui/hero-03/perspective-tunnel`).
+ * (`plans/i18n.md`). The hero is imported from its leaf rather than through the
+ * `hero-21` default wrapper so it can be handed the same prop as the rest.
  */
 
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import type { Lang } from '@/lib/i18n/markets';
-import { HomeHero } from '@/components/marketing/giga/home-hero';
+import { Section25Hero } from '@/components/originkit/ui/hero-21/section-25-hero';
 import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
@@ -51,7 +50,7 @@ export default async function MarketingHomePage() {
     <>
       {/* The whole logged-out site is charcoal; the shell already forces it. */}
       <div className="bg-[var(--fx-charcoal)] text-white">
-        <HomeHero lang={lang} />
+        <Section25Hero lang={lang} />
         <Stats lang={lang} />
         <Offerings lang={lang} />
         <Pipeline lang={lang} />
