@@ -27,6 +27,7 @@
  */
 
 import { Cursor } from '@/components/marketing/giga/cursor';
+import { TextRevealInit } from '@/components/marketing/giga/text-reveal-init';
 import { SiteHeader } from '@/components/marketing/giga/header';
 import { FlameOutro, OfferingsTicker } from '@/components/marketing/giga/marketing-flair';
 import { SiteFooter } from '@/components/marketing/giga/footer';
@@ -56,6 +57,9 @@ export default function MarketingLayout({
           of the site with nothing referencing it. */}
       {/* Pointer devices only, never on touch, off under reduced motion. */}
       <Cursor />
+      {/* Text Reveal 03: arms the pre-paint hidden state and drives the
+          character colour-wave on every [data-reveal-03] element. */}
+      <TextRevealInit />
       <SiteHeader />
       {/* FooterReveal: the footer stays pinned under the page and is uncovered
           as the content slides up on the last stretch of scroll. The content

@@ -509,3 +509,13 @@ body:has([data-marketing-shell]) {
 [data-marketing-shell] .font-mono-display {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
 }
+
+/* ── Text Reveal 03 (src/lib/text-reveal-03.ts) ─────────────────────────────
+ * Opted-in copy hides until GSAP splits it and plays the colour wave. The rule
+ * is gated on `html[data-tr03]`, set by an inline pre-hydration script in
+ * `text-reveal-init.tsx` — and NOT set for no-JS visitors or under
+ * prefers-reduced-motion, so in both of those worlds this rule never matches
+ * and the copy is simply visible. Do not widen this to an ungated rule. */
+html[data-tr03] [data-reveal-03] {
+  visibility: hidden;
+}

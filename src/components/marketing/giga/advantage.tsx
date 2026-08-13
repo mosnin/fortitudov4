@@ -133,13 +133,14 @@ export function Advantage({ lang = 'en' }: { lang?: Lang }) {
           <Serif className={`mt-5 ${DISPLAY_M} text-[var(--fx-white)]`}>
             <KineticText lines={t.headingLines} />
           </Serif>
-          <BlurRise delay={0.28}>
-            {/* 14.5px sat exactly between two tokens, so the role decides:
-                the one paragraph under a section headline is LEAD. */}
-            <p className={`mt-5 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>
-              {t.lead}
-            </p>
-          </BlurRise>
+          {/* 14.5px sat exactly between two tokens, so the role decides:
+              the one paragraph under a section headline is LEAD.
+
+              Text Reveal 03 (scroll mode) is this paragraph's one entrance —
+              the BlurRise wrapper went with it, one arrival per element. */}
+          <p data-reveal-03 data-scroll className={`mt-5 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>
+            {t.lead}
+          </p>
         </div>
 
         <div className="mt-14 grid max-w-6xl gap-6 lg:grid-cols-2">
