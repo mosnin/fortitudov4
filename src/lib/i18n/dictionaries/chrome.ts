@@ -96,6 +96,14 @@ const en = {
     /** The plain link beside the two dropdowns, desktop and mobile. */
     pricing: 'Pricing',
 
+    /** The navigation drawer (the mobile menu): the toggle pill's visible
+     *  word and the panel's eyebrow heading. */
+    drawer: {
+      label: 'Menu',
+      eyebrow: 'Navigation',
+      home: 'Home',
+    },
+
     /** The right-hand cluster: the quiet link and the one yellow surface. */
     signIn: 'Sign in',
     getPrice: 'Get a price',
