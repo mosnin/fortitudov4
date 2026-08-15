@@ -692,6 +692,7 @@ html.is-rendering .transition-shutter__panel {
   position: relative;
   z-index: 1;
   line-height: 1.2;
+  white-space: nowrap;
   transition: transform var(--motion-time) var(--motion-curve);
 }
 
@@ -1061,6 +1062,7 @@ html[data-hero01] [data-hero-01-underlay] {
   padding: 4px 10px;
   color: rgba(255, 255, 255, 0.62);
   font-size: 14px;
+  white-space: nowrap;
   transition: color 0.2s ease-out;
 }
 
@@ -1070,7 +1072,10 @@ html[data-hero01] [data-hero-01-underlay] {
 
 .navigation-01-header .header-shell {
   --header-shell-expanded-max: 1024px;
-  --header-shell-scrolled-max: 720px;
+  /* 900px, not the demo's 720px: this header carries a wordmark, three nav
+     items, a sign-in link AND the glass CTA — at 720px the two right-side
+     labels wrapped to two lines in the scrolled state. */
+  --header-shell-scrolled-max: 900px;
 
   position: relative;
   width: 100%;
@@ -1722,7 +1727,10 @@ html[data-hero01] [data-hero-01-underlay] {
   flex-direction: column;
 }
 
-.link-row {
+/* Prefixed with the drawer scope: the resource's own `button { font: inherit }`
+   reset (0,1,1) out-specified the bare `.link-row` (0,1,0), collapsing the
+   services row to body size. Two classes outrank the reset. */
+.navigation-drawer .link-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1897,7 +1905,9 @@ html[data-hero01] [data-hero-01-underlay] {
   display: block;
 }
 
-.button-02 {
+/* Same specificity story as .link-row: `a { color: inherit }` beat the bare
+   .button-02 colour, leaving the CTA label ink-on-ink. */
+.navigation-drawer .button-02 {
   position: relative;
   display: flex;
   align-items: center;
@@ -2104,7 +2114,7 @@ html[data-hero01] [data-hero-01-underlay] {
     padding: 100px 16px 20px;
   }
 
-  .link-row {
+  .navigation-drawer .link-row {
     font-size: 40px;
   }
 
