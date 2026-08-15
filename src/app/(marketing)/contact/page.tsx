@@ -22,6 +22,7 @@
 import { useState } from 'react';
 import { CheckCircle, Loader2, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { services } from '@/lib/services';
+import { AuraBorder } from '@/components/marketing/giga/aura-border';
 import { Band, BlurRise, PillGhost, Serif } from '@/components/marketing/giga/primitives';
 import { ALERT_TEXT, BODY, BODY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 import { PageHero } from '@/components/marketing/giga/page-hero';
@@ -74,6 +75,8 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
   const [error, setError] = useState<string | null>(null);
+  // One Aurora Glow ripple per submitted request — the resource's rhythm.
+  const [pulseSignal, setPulseSignal] = useState(0);
 
   const details = [
     { icon: DETAIL_ICONS[0], title: t.details.emailTitle, body: CONTACT_EMAIL },
@@ -88,6 +91,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
     event.preventDefault();
     setStatus('sending');
     setError(null);
+    setPulseSignal((n) => n + 1);
     try {
       const response = await fetch('/api/leads', {
         method: 'POST',
@@ -130,9 +134,15 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
       <section className={`border-b border-[var(--fx-hairline)] bg-[var(--fx-charcoal)] ${SECTION_Y}`}>
         <Band narrow="max-w-6xl">
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-5">
-            {/* Form */}
+            {/* Form — framed by the Aurora Glow: a "get started" click lands
+                here, the glow wakes as the card enters view, and the ripple
+                radiates from the submit button. The canvas paints the card's
+                own charcoal, so with the glow idle the card looks unchanged. */}
             <BlurRise className="lg:col-span-3">
-              <div className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6 sm:p-8">
+              <AuraBorder
+                pulseSignal={pulseSignal}
+                className="rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)] p-6 sm:p-8"
+              >
                 {status === 'sent' ? (
                   <div className="py-10">
                     <CheckCircle className="mb-4 h-10 w-10 text-[var(--fx-yellow)]" />
@@ -250,6 +260,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
 
                     <button
                       type="submit"
+                      data-aura-origin
                       disabled={status === 'sending'}
                       className="inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)] disabled:cursor-not-allowed disabled:opacity-60"
                     >
@@ -269,7 +280,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
                     </p>
                   </form>
                 )}
-              </div>
+              </AuraBorder>
             </BlurRise>
 
             {/* Details */}
