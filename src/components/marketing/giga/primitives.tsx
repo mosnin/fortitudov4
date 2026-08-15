@@ -33,11 +33,9 @@ import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { EASE_OUT } from '@/lib/motion';
 import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
-import { useMagnetic } from './motion-kit';
 import { EYEBROW_TEXT, MONO_STYLE } from './tokens';
 
 /** `PillPrimary` is the one magnetic control on the surface — see below. */
-const MotionLink = motion.create(Link);
 
 /* ── Serif display headline ─────────────────────────────────────────────── */
 
@@ -147,43 +145,31 @@ type PillProps = {
 };
 
 /**
- * The primary CTA: a racing-yellow block, black text, 4px corners.
+ * The primary CTA — now the Arrow Shift Button (`button-05` in globals.css):
+ * a translucent glass pill whose generated right arrow exits through the
+ * clipped edge while a second arrow enters from the left and the label shifts
+ * right; only the blurred glass layer scales on hover/press.
  *
- * `bg-[var(--fx-yellow)]` rather than the literal so the palette stays one
- * place to change. The token is defined on `[data-marketing-shell]`, which
- * wraps every logged-out route; outside that tree it would resolve to nothing,
- * and this component is not for the product.
+ * The interaction is CSS-only by contract, so the magnetic pull and the
+ * `whileTap` spring the old yellow block carried are gone rather than layered
+ * on top — the resource forbids extra motion machinery, and glass that leans
+ * AND squashes is two ideas fighting over one pill. `withArrow` survives in
+ * the type for its call sites, but the arrows are pseudo-elements now and
+ * every glass CTA has them.
  *
- * It is also the only thing on the surface that leans toward the cursor
- * (`useMagnetic`). That is deliberate and it is why the pull is scoped to this
- * component rather than offered as a class: the system already says there is
- * one primary action per screen, so there is one magnetic element per screen.
- * `PillGhost` stays still — a secondary action that reaches for you is a
- * secondary action pretending.
- *
- * The transform now belongs to motion, so the press is `whileTap` rather than
- * `active:scale-*`, and the class list transitions colour only. A CSS
- * `transition-all` here would smear every spring frame through a 200ms curve.
+ * The element relationships (`.glass` absolute child, `.content` clipping
+ * wrapper, `.copy` label) are the spec's non-negotiables — do not flatten
+ * them. Per its adaptation note the glass reads best over layered surfaces
+ * (the hero canvases, imagery), which is where the primary CTA lives.
  */
-export function PillPrimary({ href, children, className, withArrow }: PillProps) {
-  const reduce = useReducedMotionSafe();
-  const magnetic = useMagnetic<HTMLAnchorElement>();
+export function PillPrimary({ href, children, className }: PillProps) {
   return (
-    <MotionLink
-      href={href}
-      {...magnetic}
-      whileTap={reduce ? undefined : { scale: 0.98 }}
-      transition={{ duration: 0.12, ease: EASE_OUT }}
-      className={cn(
-        'group inline-flex h-11 items-center justify-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)]',
-        className,
-      )}
-    >
-      {children}
-      {withArrow ? (
-        <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-      ) : null}
-    </MotionLink>
+    <Link href={href} className={cn('button-05', className)}>
+      <span className="glass" aria-hidden="true" />
+      <span className="content">
+        <span className="copy">{children}</span>
+      </span>
+    </Link>
   );
 }
 

@@ -590,3 +590,154 @@ html.is-animating .transition-shutter__panel {
 html.is-rendering .transition-shutter__panel {
   transform: translate3d(var(--shutter-exit-x), 0, 0);
 }
+
+/* ── Arrow Shift Button (button-05) — the glass pill CTA ────────────────────
+ * The resource CSS, verbatim, with three documented adaptations:
+ *  - no @font-face: the site already self-hosts Inter Tight, so the family
+ *    resolves through --font-sans (the spec's own "reuse it" note);
+ *  - `color` resolves through --fx-white instead of literal #fff, so inside
+ *    the [data-fx-tone="light"] yellow bands the label flips to ink — white
+ *    text on translucent glass over racing yellow would be unreadable;
+ *  - a `--sm` size modifier for chrome contexts (the header CTA), touching
+ *    only type size and block padding — never the interaction contract.
+ * Everything the spec marks non-negotiable is untouched: fills, blur, the
+ * pseudo-element arrows and their travel/delays, the glass-only scaleY, the
+ * :active nudge, hover left available to all pointer types, and no border,
+ * no box shadow, no reduced-motion override on this component. */
+.button-05,
+.button-05 * {
+  box-sizing: border-box;
+}
+
+.button-05 {
+  --motion-curve: cubic-bezier(0.2, 1, 0.25, 1);
+  --motion-time: 620ms;
+  --arrow-lag: 80ms;
+  --edge-space: 20px;
+  --arrow-width: 16px;
+  --arrow-gap: 12px;
+  --arrow-bleed: 4px;
+  --copy-travel: calc(var(--arrow-width) + var(--arrow-gap));
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  corner-shape: superellipse(1.2);
+  color: var(--fx-white, #fff);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 450;
+  line-height: 1.5;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.button-05 .glass {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  corner-shape: inherit;
+  background-color: hsla(240, 6%, 32%, 0.383);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    background-color var(--motion-time) var(--motion-curve),
+    transform var(--motion-time) var(--motion-curve);
+}
+
+.button-05 .content {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  overflow: hidden;
+  padding:
+    12px
+    calc(var(--edge-space) + var(--arrow-width) + var(--arrow-gap))
+    12px var(--edge-space);
+  transition: transform 210ms var(--motion-curve);
+}
+
+.button-05 .content::before,
+.button-05 .content::after {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  width: var(--arrow-width);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.2;
+  transform: translate3d(0, -50%, 0);
+  transition: transform var(--motion-time) var(--motion-curve);
+}
+
+.button-05 .content::before {
+  left: var(--edge-space);
+  transform: translate3d(
+    calc(-100% - var(--edge-space) - var(--arrow-bleed)),
+    -50%,
+    0
+  );
+  transition-delay: 0s;
+}
+
+.button-05 .content::after {
+  right: var(--edge-space);
+  transition-delay: var(--arrow-lag);
+}
+
+.button-05 .copy {
+  position: relative;
+  z-index: 1;
+  line-height: 1.2;
+  transition: transform var(--motion-time) var(--motion-curve);
+}
+
+.button-05:hover .glass {
+  background-color: hsla(240, 25%, 5%, 0.36);
+  transform: scaleY(0.955);
+}
+
+.button-05:hover .content::before {
+  transform: translate3d(0, -50%, 0);
+  transition-delay: var(--arrow-lag);
+}
+
+.button-05:hover .content::after {
+  transform: translate3d(
+    calc(100% + var(--edge-space)),
+    -50%,
+    0
+  );
+  transition-delay: 0s;
+}
+
+.button-05:hover .copy {
+  transform: translate3d(var(--copy-travel), 0, 0);
+}
+
+.button-05:active .glass {
+  transform: scaleY(0.93);
+  transition: transform 210ms var(--motion-curve);
+}
+
+.button-05:active .content {
+  transform: translate3d(2px, 0, 0);
+}
+
+/* Size lever only — the interaction above is shared. */
+.button-05.button-05--sm {
+  font-size: 15px;
+}
+
+.button-05.button-05--sm .content {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.button-05.button-05--sm .content::before,
+.button-05.button-05--sm .content::after {
+  font-size: 15px;
+}
