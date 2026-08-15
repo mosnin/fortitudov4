@@ -28,6 +28,7 @@
 
 import { Cursor } from '@/components/marketing/giga/cursor';
 import { PageShutter } from '@/components/marketing/giga/page-shutter';
+import { ProgressiveBlur } from '@/components/marketing/giga/progressive-blur';
 import { TextRevealInit } from '@/components/marketing/giga/text-reveal-init';
 import { SiteHeader } from '@/components/marketing/giga/header';
 import { FlameOutro, OfferingsTicker } from '@/components/marketing/giga/marketing-flair';
@@ -88,6 +89,9 @@ export default function MarketingLayout({
             the footer on every logged-out page. */}
         <OfferingsTicker />
       </FooterReveal>
+      {/* Progressive blur along both viewport edges — fixed, so it sits
+          OUTSIDE FooterReveal: a transformed ancestor would re-anchor it. */}
+      <ProgressiveBlur />
     </div>
   );
 }
