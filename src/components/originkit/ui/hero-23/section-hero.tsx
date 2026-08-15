@@ -31,14 +31,31 @@
  * `KineticText`/`BlurRise` carry their own reduced-motion fallbacks.
  */
 
+import { Fragment, useEffect, useRef } from 'react';
 import type { Lang } from '@/lib/i18n/markets';
 import { HOME } from '@/lib/i18n/dictionaries/home';
 import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
-import { KineticText } from '@/components/marketing/giga/motion-kit';
-import { BlurRise, PillGhost, PillPrimary, Serif } from '@/components/marketing/giga/primitives';
+import { BlurRise, PillGhost, PillPrimary } from '@/components/marketing/giga/primitives';
 import { DISPLAY_XL, LEAD, MONO_STYLE } from '@/components/marketing/giga/tokens';
 import Globe from './globe';
 import Stardust from './stardust';
+
+/**
+ * Hero 01 first-load reveal — arming script. Streams with the SSR HTML and
+ * runs on parse, BEFORE the hero paints: it sets `html[data-hero01]`, whose
+ * CSS (globals.css) clips the panel to the narrow starting window, shows the
+ * yellow underlay and hides the `[data-reveal-01]` copy. It refuses to arm
+ * under prefers-reduced-motion and after the intro has already played once
+ * this JS lifetime — in every unarmed world the hero simply renders whole.
+ */
+const HERO01_ARM =
+  "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!window.__fxHero01Played){document.documentElement.setAttribute('data-hero01','')}}catch(e){}";
+
+/** Expansion lands at 1.4 − 0.1 + 1.65s on the resource timeline; the yellow
+ *  field folds away right behind it. */
+const UNDERLAY_FADE_AT = 2.95;
+/** The resource's load delay for Text Reveal 01, verbatim. */
+const TEXT_REVEAL_DELAY = 2.24;
 
 /** The drop's corner brackets, inlined as SVG — four rotations of one
  *  10×10 path, stroke in the hairline-strength white the frame uses. */
@@ -69,11 +86,78 @@ function Corners() {
 export function Hero23({ lang }: { lang: Lang }) {
   const t = HOME[lang].hero;
   const reduce = useReducedMotionSafe();
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Hero 01: the media reveal (clip window on the yellow field) + Text
+  // Reveal 01 at the resource's 2.24s. Plays only when the arming script
+  // armed this load; reduced motion never reaches this effect.
+  useEffect(() => {
+    if (reduce) return;
+    const section = sectionRef.current;
+    if (!section || !document.documentElement.hasAttribute('data-hero01')) return;
+
+    let cancelled = false;
+    let revert: (() => void) | null = null;
+
+    Promise.all([
+      import('gsap'),
+      import('@/lib/hero-01'),
+      import('@/lib/text-reveal-01'),
+      document.fonts.ready,
+    ]).then(([{ default: gsap }, { hero01 }, { textReveal01 }]) => {
+      if (cancelled) return;
+      (window as Window & { __fxHero01Played?: boolean }).__fxHero01Played = true;
+      const underlay = section.querySelector('[data-hero-01-underlay]');
+      const ctx = gsap.context(() => {
+        hero01(section);
+        textReveal01(section, TEXT_REVEAL_DELAY);
+        if (underlay) {
+          // The yellow field around the window — the user's swap for the
+          // demo's white page ground. It holds through both expansions and
+          // folds away the moment the panel reaches full size.
+          gsap.set(underlay, { autoAlpha: 1 });
+          gsap.to(underlay, {
+            autoAlpha: 0,
+            duration: 0.6,
+            delay: UNDERLAY_FADE_AT,
+            ease: 'power2.out',
+          });
+        }
+      });
+      // Every intro state is now pinned inline by GSAP; the pre-hydration
+      // gate has done its job and can go.
+      document.documentElement.removeAttribute('data-hero01');
+      revert = () => ctx.revert();
+    });
+
+    return () => {
+      cancelled = true;
+      revert?.();
+    };
+  }, [reduce]);
 
   return (
-    <section className="px-4 pt-4 sm:px-6 sm:pt-6">
-      {/* The framed panel — the drop's signature chrome. */}
-      <div className="relative overflow-hidden border border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]">
+    <section ref={sectionRef} className="relative px-4 pt-4 sm:px-6 sm:pt-6">
+      <script dangerouslySetInnerHTML={{ __html: HERO01_ARM }} />
+      {/* The yellow field the clip window opens onto. Visibility is gated on
+          html[data-hero01] in globals.css, so it exists only while the intro
+          owns the frame. */}
+      <div
+        aria-hidden
+        data-hero-01-underlay
+        className="absolute inset-0 bg-[var(--fx-yellow)]"
+      />
+      {/* The framed panel — the drop's signature chrome, and the intro's
+          media layer: html[data-hero01] pre-clips it to the narrow window,
+          then hero-01.ts drives the expansion. */}
+      <div
+        data-hero-01-media
+        className="relative z-[1] overflow-hidden border border-[var(--fx-hairline)] bg-[var(--fx-charcoal)]"
+      >
+        {/* `.hero-01__image` — the resource's scaling layer. Everything in the
+            panel (canvases and copy alike) breathes 1 → 0.86 → 1 inside the
+            clip window as one surface, the way the demo's photograph did. */}
+        <div className="hero-01__image relative">
         {/* Starfield. Transparent background: the panel paints the ground. */}
         {reduce ? null : (
           <div aria-hidden className="pointer-events-none absolute inset-0">
@@ -107,12 +191,33 @@ export function Hero23({ lang }: { lang: Lang }) {
             </span>
           </BlurRise>
 
-          <Serif as="h1" className={`mt-7 max-w-4xl ${DISPLAY_XL} text-[var(--fx-white)]`}>
-            <KineticText trigger="load" delay={0.12} lines={t.headlineLines} />
-          </Serif>
+          {/* Text Reveal 01 owns the headline and lead now — masked lines
+              sliding up 2.24s in, after the media expansion (the resource's
+              own choreography). The KineticText/BlurRise entrances they used
+              to carry are gone: one arrival per element. A bare h1 rather
+              than <Serif>, because the reveal attribute must sit on the
+              element SplitText owns and the shell's heading rule already
+              sets the display face. */}
+          <h1
+            data-reveal-01="lines"
+            className={`mt-7 max-w-4xl ${DISPLAY_XL} text-[var(--fx-white)]`}
+          >
+            {t.headlineLines.map((line, i) => (
+              <Fragment key={line}>
+                {i > 0 ? <br /> : null}
+                {line}
+              </Fragment>
+            ))}
+          </h1>
+
+          <p
+            data-reveal-01="lines"
+            className={`mx-auto mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}
+          >
+            {t.lead}
+          </p>
 
           <BlurRise trigger="load" delay={0.4}>
-            <p className={`mx-auto mt-6 max-w-xl ${LEAD} text-[var(--fx-muted)]`}>{t.lead}</p>
             <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
               <PillPrimary href="/contact" withArrow>
                 {t.ctaPrimary}
@@ -149,6 +254,18 @@ export function Hero23({ lang }: { lang: Lang }) {
         )}
 
         <Corners />
+        </div>
+        {/* `[data-hero-01-overlay]` — same node, timing and autoAlpha as the
+            resource, adapted fill: the demo's flat 40% black exists to make
+            white text read over a photograph, and on this already-dark canvas
+            it would only dim the artwork, so the overlay carries the panel's
+            own grounding gradient instead. `opacity-0` at rest: it appears
+            only when the intro's timeline fades it in. */}
+        <div
+          aria-hidden
+          data-hero-01-overlay
+          className="pointer-events-none absolute inset-0 z-[2] bg-gradient-to-b from-transparent via-transparent to-black/50 opacity-0"
+        />
       </div>
     </section>
   );

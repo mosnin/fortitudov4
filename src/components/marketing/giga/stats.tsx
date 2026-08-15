@@ -55,14 +55,17 @@ export function Stats({ lang = 'en' }: { lang?: Lang }) {
             a character wave is two arrivals for one sentence. Static
             dictionary text that never re-renders, which is the precondition
             for letting SplitText own its DOM. */}
-        <Serif
-          as="p"
+        <p
           data-reveal-03
           data-scroll="scrub"
-          className={`max-w-lg ${DISPLAY_XS} text-[var(--fx-white)]`}
+          // A plain <p> rather than <Serif as="p">: the reveal attributes must
+          // land on the element SplitText owns, and Serif does not spread
+          // props. The style/class pair below is exactly what Serif renders.
+          style={{ fontFamily: 'var(--font-serif-display), ui-sans-serif, system-ui, sans-serif' }}
+          className={`max-w-lg font-medium tracking-[-0.03em] ${DISPLAY_XS} text-[var(--fx-white)]`}
         >
           {t.statement}
-        </Serif>
+        </p>
 
         {/* The numbers ARE this band's motion: they roll up once, on entry.
             Nothing else here animates — a count-up underneath a blur-rise

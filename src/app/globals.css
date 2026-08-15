@@ -921,3 +921,59 @@ html.is-rendering .transition-shutter__panel {
     height: 160px;
   }
 }
+
+/* ── Hero 01 first-load reveal + Text Reveal 01 (hero-01.ts / text-reveal-01.ts)
+ * Part B of the resource ("without this block, text flashes before SplitText
+ * and masks break"), verbatim except for two gates: the hidden state and the
+ * initial clip only apply under `html[data-hero01]`, which the hero's inline
+ * pre-hydration script sets ONLY on a motion-tolerant, JS-running first load
+ * — no JS or reduced motion and nothing is ever hidden or clipped. The mask
+ * selectors are prefixed with the shell scope so the generic class names
+ * stay off the product surface. */
+:root {
+  --reveal-descender: 0.18em;
+  --reveal-clip-margin: 0.06em;
+}
+
+html[data-hero01] [data-reveal-01] {
+  visibility: hidden;
+}
+
+[data-marketing-shell] [data-reveal-01] > * {
+  margin-bottom: calc(-1 * var(--reveal-descender));
+}
+
+[data-marketing-shell] .word-mask,
+[data-marketing-shell] .char-mask {
+  vertical-align: top;
+}
+
+[data-marketing-shell] .line-mask,
+[data-marketing-shell] .word-mask,
+[data-marketing-shell] .char-mask {
+  overflow: clip;
+  overflow-clip-margin: var(--reveal-clip-margin);
+}
+
+[data-marketing-shell] .line-mask > *,
+[data-marketing-shell] .word-mask > *,
+[data-marketing-shell] .char-mask > * {
+  padding-bottom: var(--reveal-descender);
+  will-change: transform;
+}
+
+/* Pre-JS state for the hero's media reveal: the first paint already shows the
+ * narrow clip window on the yellow field, so GSAP's identical gsap.set never
+ * causes a full-panel flash. The underlay is invisible in every world where
+ * the intro will not play. */
+html[data-hero01] [data-hero-01-media] {
+  clip-path: polygon(50% 20%, 50% 20%, 50% 80%, 50% 80%);
+}
+
+[data-hero-01-underlay] {
+  visibility: hidden;
+}
+
+html[data-hero01] [data-hero-01-underlay] {
+  visibility: visible;
+}
