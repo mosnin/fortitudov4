@@ -27,6 +27,7 @@
  */
 
 import { Cursor } from '@/components/marketing/giga/cursor';
+import { PageShutter } from '@/components/marketing/giga/page-shutter';
 import { TextRevealInit } from '@/components/marketing/giga/text-reveal-init';
 import { SiteHeader } from '@/components/marketing/giga/header';
 import { FlameOutro, OfferingsTicker } from '@/components/marketing/giga/marketing-flair';
@@ -60,6 +61,10 @@ export default function MarketingLayout({
       {/* Text Reveal 03: arms the pre-paint hidden state and drives the
           character colour-wave on every [data-reveal-03] element. */}
       <TextRevealInit />
+      {/* The yellow shutter that covers every internal navigation — including
+          sign-in/sign-up, whose (auth) layout mounts the same component so the
+          reveal completes on the far side. */}
+      <PageShutter />
       <SiteHeader />
       {/* FooterReveal: the footer stays pinned under the page and is uncovered
           as the content slides up on the last stretch of scroll. The content
