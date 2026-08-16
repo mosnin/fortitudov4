@@ -23,6 +23,7 @@ import { useState } from 'react';
 import { CheckCircle, Loader2, Mail, MapPin, Clock, Send } from 'lucide-react';
 import { services } from '@/lib/services';
 import { AuraBorder } from '@/components/marketing/giga/aura-border';
+import { sfx } from '@/lib/sound/sfx';
 import { Band, BlurRise, PillGhost, Serif } from '@/components/marketing/giga/primitives';
 import { ALERT_TEXT, BODY, BODY_S, EYEBROW_TEXT, MONO_STYLE, SECTION_Y, TITLE_L } from '@/components/marketing/giga/tokens';
 import { PageHero } from '@/components/marketing/giga/page-hero';
@@ -92,6 +93,7 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
     setStatus('sending');
     setError(null);
     setPulseSignal((n) => n + 1);
+    sfx('send');
     try {
       const response = await fetch('/api/leads', {
         method: 'POST',
@@ -106,12 +108,15 @@ export default function ContactPage({ lang = 'en' }: { lang?: Lang }) {
           payload.error ?? fill(t.form.errorSend, { email: CONTACT_EMAIL })
         );
         setStatus('idle');
+        sfx('error');
         return;
       }
       setStatus('sent');
+      sfx('success');
     } catch {
       setError(fill(t.form.errorNetwork, { email: CONTACT_EMAIL }));
       setStatus('idle');
+      sfx('error');
     }
   }
 

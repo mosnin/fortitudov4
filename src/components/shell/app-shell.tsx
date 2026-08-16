@@ -9,6 +9,8 @@ import { Logo } from "@/components/ui/logo";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { SoundLayer } from "@/components/sound/sound-layer";
+import { SoundToggle } from "@/components/sound/sound-toggle";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { CommandPalette } from "./command-palette";
@@ -259,6 +261,9 @@ export function AppShell({
     <div className="flex min-h-screen bg-background">
       {/* ⌘K from anywhere in the product. Mounted once, at the shell, over the
           same nav this surface is already showing. */}
+      {/* Interface sounds — taps, checks, switches. No hover voice in the
+          product: it speaks only when something changes state. */}
+      <SoundLayer hover={false} />
       {palette && (
         <CommandPalette destinations={navItems} staffCommands={staffCommands} />
       )}
@@ -386,6 +391,10 @@ export function AppShell({
             <div className="flex items-center gap-1">
               {search && <GlobalSearch />}
               {notifications && <NotificationBell />}
+              {/* The interface-sound mute, beside the theme toggle — the two
+                  "how the workspace behaves" controls live together. Icon
+                  only at this density. */}
+              <SoundToggle className="h-8 w-8 justify-center rounded-md text-muted-foreground hover:text-foreground [&>span]:sr-only" />
               <ThemeToggle />
               <span className="ml-0.5 flex items-center">
                 <UserButton />

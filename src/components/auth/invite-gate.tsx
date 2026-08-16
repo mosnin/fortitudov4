@@ -16,6 +16,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BODY_MUTED } from '@/lib/typography';
+import { sfx } from '@/lib/sound/sfx';
 import { cn } from '@/lib/utils';
 
 export function InviteGate() {
@@ -37,12 +38,15 @@ export function InviteGate() {
       });
       const data = (await response.json()) as { ok: boolean; error?: string };
       if (data.ok) {
+        sfx('success'); // the door opens
         router.refresh();
         return;
       }
       setError(data.error ?? 'That code did not match.');
+      sfx('error');
     } catch {
       setError('Could not check the code. Try again.');
+      sfx('error');
     } finally {
       setBusy(false);
     }

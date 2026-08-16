@@ -28,6 +28,8 @@
  * container's CSS existed to guarantee.
  */
 
+import { sfx } from './sound/sfx';
+
 const DIRECTIONS = new Set([
   'left-to-right',
   'left-to-left',
@@ -93,6 +95,7 @@ export function isShutterActive(): boolean {
 export function coverPage(): Promise<void> {
   const html = document.documentElement;
   covering = true;
+  sfx('pageExit'); // the page turn has a voice (lib/sound; throttled + mutable)
   if (revealTimer) {
     clearTimeout(revealTimer);
     revealTimer = null;
@@ -113,6 +116,7 @@ export function revealPage(): void {
   const html = document.documentElement;
   if (!html.classList.contains('is-changing')) return;
   covering = false;
+  sfx('pageEnter');
   html.classList.remove('is-animating');
   html.classList.add('is-rendering');
   revealTimer = setTimeout(() => {

@@ -27,6 +27,7 @@
  */
 
 import { Cursor } from '@/components/marketing/giga/cursor';
+import { SoundLayer } from '@/components/sound/sound-layer';
 import { PageShutter } from '@/components/marketing/giga/page-shutter';
 import { ProgressiveBlur } from '@/components/marketing/giga/progressive-blur';
 import { TextRevealInit } from '@/components/marketing/giga/text-reveal-init';
@@ -62,6 +63,9 @@ export default function MarketingLayout({
       {/* Text Reveal 03: arms the pre-paint hidden state and drives the
           character colour-wave on every [data-reveal-03] element. */}
       <TextRevealInit />
+      {/* Interface sounds (lib/sound): taps, hovers on the nav/CTA family,
+          the drawer pair, page turns. One mute in the footer governs all. */}
+      <SoundLayer />
       {/* The yellow shutter that covers every internal navigation — including
           sign-in/sign-up, whose (auth) layout mounts the same component so the
           reveal completes on the far side. */}

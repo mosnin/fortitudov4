@@ -30,6 +30,7 @@ import { BrandMark } from '@/components/brand-mark';
 import { Serif } from './primitives';
 import { BODY_S, DISPLAY_XL, EYEBROW_TEXT, MONO_STYLE } from './tokens';
 import type { Lang } from '@/lib/i18n/markets';
+import { SoundToggle } from '@/components/sound/sound-toggle';
 import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
 
 /**
@@ -251,7 +252,13 @@ export function SiteFooter({ lang = 'en' }: { lang?: Lang }) {
                   Fortitudo
                 </span>
               </span>
-              <p className={`${BODY_S} text-[var(--fx-muted)]`}>{copyright}</p>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <p className={`${BODY_S} text-[var(--fx-muted)]`}>{copyright}</p>
+                {/* The interface-sound mute — the site speaks (lib/sound),
+                    so the site carries the off switch where the fine print
+                    lives. */}
+                <SoundToggle className="text-[var(--fx-muted)] hover:text-[var(--fx-white)]" />
+              </div>
             </div>
           </div>
         </div>

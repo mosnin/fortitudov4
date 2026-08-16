@@ -8,11 +8,14 @@
  */
 
 import { PageShutter } from '@/components/marketing/giga/page-shutter';
+import { SoundLayer } from '@/components/sound/sound-layer';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <PageShutter />
+      {/* Taps and form feedback only — no hover voice on the auth pages. */}
+      <SoundLayer hover={false} />
       {children}
     </>
   );

@@ -39,6 +39,7 @@ import { createMeta } from "./ring/meta";
 import { createSplitText } from "./ring/splitText";
 import { createTag, TAG_W, TAG_H } from "./ring/tag";
 import { defaultParams } from "./ring/params";
+import { sfx } from "@/lib/sound/sfx";
 import { IMAGE_FILES, PROJECTS } from "./ring/projects";
 import {
   TAU,
@@ -359,6 +360,10 @@ export default function Carousel({ onOpen, onFallback }) {
     // above is suspended entirely, so the two cannot both drive spin.
     let picking = false;
 
+    // ADAPTED (lib/sound): true while the ring is actually moving, so the
+    // park below can speak once on arrival instead of every settled frame.
+    let wasTurning = false;
+
     let pointerTravel = 0; // tells a click from a drag
     let travelX = 0;
     let travelY = 0;
@@ -391,6 +396,7 @@ export default function Carousel({ onOpen, onFallback }) {
       // Already there — so the click means "open it". Same cell arithmetic
       // the layout deals art with, so the page opened is the art shown.
       if (slots < 0.01) {
+        sfx("tap"); // ADAPTED: opening the case page has a press
         if (imageCount > 0) {
           const off = Math.round(params.imageOffset);
           const cell =
@@ -403,6 +409,7 @@ export default function Carousel({ onOpen, onFallback }) {
       spinVel = 0;
       settling = false;
       picking = true;
+      sfx("tick"); // ADAPTED: the ring answers a pick (lib/sound; mutable)
       gsap.killTweensOf(state);
       gsap.to(state, {
         spin: target,
@@ -1268,8 +1275,16 @@ export default function Carousel({ onOpen, onFallback }) {
         // Parked. Left running, the last hundredth of a degree creeps on for
         // ever, so put it down exactly on the slot.
         if (Math.abs(spinVel) < 0.0015 && Math.abs(off) < 0.0008) {
+          // ADAPTED: the detent has a voice — but only on the frame the ring
+          // actually comes to rest after moving, not on every parked frame.
+          if (wasTurning) {
+            wasTurning = false;
+            sfx("scrollSnap");
+          }
           spinVel = 0;
           state.spin += off;
+        } else if (Math.abs(spinVel) > 0.05) {
+          wasTurning = true;
         }
       }
 
