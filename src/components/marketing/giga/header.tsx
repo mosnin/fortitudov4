@@ -57,14 +57,14 @@ const SERVICE_ITEMS: { key: NavItemKey; href: string; preview: string }[] = [
 
 const COMPANY_ITEMS: { key: NavItemKey; href: string }[] = [
   { key: 'about', href: '/about' },
-  { key: 'portfolio', href: '/portfolio' },
+  { key: 'portfolio', href: '/work' },
   { key: 'faq', href: '/faq' },
   { key: 'contact', href: '/contact' },
 ];
 
 /** The drawer's flat rows (the services submenu nests under its own block). */
 const DRAWER_LINKS: { key: NavItemKey; href: string }[] = [
-  { key: 'portfolio', href: '/portfolio' },
+  { key: 'portfolio', href: '/work' },
   { key: 'about', href: '/about' },
   { key: 'faq', href: '/faq' },
   { key: 'contact', href: '/contact' },

@@ -39,7 +39,7 @@ import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
  * cannot compile. Order is layout and stays here.
  */
 const EXPLORE: { key: keyof ChromeDict['footer']['explore']; href: string }[] = [
-  { key: 'work', href: '/portfolio' },
+  { key: 'work', href: '/work' },
   { key: 'services', href: '/services' },
   { key: 'pricing', href: '/pricing' },
   { key: 'about', href: '/about' },

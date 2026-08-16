@@ -222,7 +222,7 @@ export function Hero23({ lang }: { lang: Lang }) {
               <PillPrimary href="/contact" withArrow>
                 {t.ctaPrimary}
               </PillPrimary>
-              <PillGhost href="/portfolio">{t.ctaSecondary}</PillGhost>
+              <PillGhost href="/work">{t.ctaSecondary}</PillGhost>
             </div>
           </BlurRise>
         </div>
