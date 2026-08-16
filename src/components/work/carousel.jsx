@@ -130,13 +130,28 @@ export default function Carousel({ onOpen, onFallback }) {
     // happen: the context is released explicitly rather than left to GC.
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      // ADAPTED (mobile perf): antialias OFF, deliberately. MSAA smooths
+      // geometry edges only — and this scene has none to smooth: the ring is
+      // one fullscreen quad whose edges are drawn by the SDF shader's own
+      // smoothstep, and the heading glyphs get their edges from texture
+      // alpha. On phones MSAA multiplied fill cost for zero visible change.
+      renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
     } catch (err) {
       console.error("[ring] could not create a WebGL context:", err);
       onFallbackRef.current?.(); // the host swaps in the static grid
       return;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // ADAPTED (mobile perf): the shader's cost is per-pixel, so resolution
+    // IS the quality dial. Coarse-pointer devices start capped at 1.5 (the
+    // goo aesthetic hides resolution far better than it hides dropped
+    // frames), and a frame-time governor in the loop steps the ratio down
+    // toward 1.0 while sustained frames run slow — and back up when there is
+    // headroom. Nothing else about the effect changes.
+    const coarseDevice =
+      window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 900;
+    const dprCap = Math.min(window.devicePixelRatio || 1, coarseDevice ? 1.5 : 2);
+    let dprNow = dprCap;
+    renderer.setPixelRatio(dprNow);
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -1211,12 +1226,36 @@ export default function Carousel({ onOpen, onFallback }) {
     const start = performance.now();
     let prevT = start;
 
+    // ADAPTED (mobile perf): frame-time governor state. The EMA reads the
+    // raw frame gap (not the clamped dt) and the ratio moves in 0.25 steps,
+    // no more than once per 1.5 SECONDS — elapsed time, not a frame count,
+    // because a frame count is slowest to react exactly when frames are
+    // slowest, which is the one condition the governor exists for.
+    let frameEma = 16;
+    let govLastAt = 0;
+    let renderParity = 0;
+
     renderer.setAnimationLoop(() => {
       const now = performance.now();
       // Clamped, so a backgrounded tab does not resume with one huge step.
       const dt = Math.min(0.05, (now - prevT) / 1000);
+      const rawMs = now - prevT;
       prevT = now;
       uniforms.uTime.value = (now - start) * 0.001;
+
+      frameEma += (Math.min(rawMs, 200) - frameEma) * 0.08;
+      if (now - govLastAt >= 1500) {
+        govLastAt = now;
+        if (frameEma > 24 && dprNow > 1.0) {
+          dprNow = Math.max(1.0, dprNow - 0.25);
+          renderer.setPixelRatio(dprNow);
+          resize();
+        } else if (frameEma < 14 && dprNow < dprCap) {
+          dprNow = Math.min(dprCap, dprNow + 0.25);
+          renderer.setPixelRatio(dprNow);
+          resize();
+        }
+      }
 
       if (interactive && !dragging && !picking) {
         state.spin += spinVel * dt;
@@ -1307,7 +1346,23 @@ export default function Carousel({ onOpen, onFallback }) {
         meta.show(shown);
       }
 
-      renderer.render(scene, camera);
+      // ADAPTED (mobile perf): a parked ring on a touch device paints at
+      // half rate — with no cursor there is no melt, no tag and no lean, so
+      // the only motion is the glass lips' slow ripple, which 30fps carries
+      // fine. Any input (drag, flick, pick, entry) restores full rate on the
+      // next frame.
+      const parked =
+        coarseDevice &&
+        interactive &&
+        !dragging &&
+        !picking &&
+        !settling &&
+        spinVel === 0 &&
+        cursor.amt < 0.01;
+      renderParity ^= 1;
+      if (!parked || renderParity === 0) {
+        renderer.render(scene, camera);
+      }
     });
 
     return () => {
