@@ -28,7 +28,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import type { Lang } from '@/lib/i18n/markets';
-import { Hero23 } from '@/components/originkit/ui/hero-23/section-hero';
+import { Hero19 } from '@/components/originkit/ui/hero-19/section-hero';
 import { Stats } from '@/components/marketing/giga/stats';
 import { Offerings } from '@/components/marketing/giga/offerings';
 import { Pipeline } from '@/components/marketing/giga/pipeline';
@@ -53,7 +53,7 @@ export default async function MarketingHomePage() {
     <>
       {/* The whole logged-out site is charcoal; the shell already forces it. */}
       <div className="bg-[var(--fx-charcoal)] text-white">
-        <Hero23 lang={lang} />
+        <Hero19 lang={lang} />
         <Stats lang={lang} />
         <Offerings lang={lang} />
         <Pipeline lang={lang} />

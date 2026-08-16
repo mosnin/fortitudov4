@@ -201,6 +201,12 @@
      self-hosts. The kit's markup uses `font-sans` / `font-mono` instead.) */
   --breakpoint-ipad: 48rem;
   --breakpoint-desktop-sm: 64rem;
+  /* hero-19 / footer-02 (OriginKit) address three wider stops. Values are
+     the conventional screens they name; each only re-tunes decorative
+     scaling, so a rename-safe approximation is all they need. */
+  --breakpoint-wide-lg: 80rem;
+  --breakpoint-full-hd: 120rem;
+  --breakpoint-ultrawide: 160rem;
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);

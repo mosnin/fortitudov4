@@ -1,43 +1,47 @@
 'use client';
 
 /**
- * SiteFooter — the closing panel.
+ * SiteFooter — OriginKit `footer-02` ("Notrix" tetris footer), ported per
+ * the owner's instruction: same shell (full-height section, soft wash, one
+ * dark rounded card, link columns beside the brand block, and the tetromino
+ * stack playing itself along the card's bottom edge), tailored to this
+ * site's tokens, fonts and real links.
  *
- * A single inset card on the charcoal ground: an oversized display headline,
- * three real actions, then the link grid and the legal line. Adapted from a
- * reference layout, with three things deliberately not carried over:
- *
- *  - A follower count ("2,843"). We do not have one to show.
- *  - Five social links pointing at `#`. The previous footer shipped two of
- *    these aimed at /contact, and they were removed for naming a destination
- *    the link did not go to. Re-adding them with no destination at all would
- *    be the same bug wearing a bigger row. `SOCIALS` is empty and the column
- *    it feeds does not render until it isn't.
- *  - A city. We are remote-first; inventing a head office to sound established
- *    is the cheapest kind of lie and the easiest to catch.
- *
- * The reference's 40px radius is squared to the system's 6px. Everything else
- * on this surface is drawn with hairlines and square corners, and one pill-card
- * at the bottom of every page would read as an import rather than a flourish.
- *
- * Also gone: the "Access / Audit / Privacy" badges that sat under a green dot
- * labelled "Security controls". Circular badges under a status light read as
- * attestations, and we have no audit to link.
+ * WHAT CHANGED IN THE PORT, AND WHY:
+ *  - Palette: the cream ground becomes the charcoal; the #212121 card
+ *    becomes the raised charcoal with a hairline edge and this surface's
+ *    6px corners; the drop's rainbow gradient-shapes wash becomes a single
+ *    racing-yellow glow with the same geometry, mask and blur — one accent,
+ *    not five.
+ *  - The tetris keeps the drop's high-contrast play — cream on near-black
+ *    there, racing yellow on the card here (yellow is a surface). It is
+ *    vendored with the site's frame-budget rule added: parked off-screen
+ *    and under reduced motion (`ui/footer-02/tetris.tsx`).
+ *  - Copy and links are this site's real ones, matched by dictionary key:
+ *    the old footer's display headline moves into the brand block, the
+ *    columns are Explore / Get started / Fine print, and every href is a
+ *    route that exists. The socials row is omitted — there are no real
+ *    handles, and nothing on this site is invented.
+ *  - `footer-02.css` is not carried: it held a Google-Fonts import (banned
+ *    — every face is self-hosted) for a serif this surface does not use,
+ *    and the slide-up animation of the socials that no longer exist.
+ *  - The bottom bar (brand mark, copyright, the interface-sound mute) is
+ *    this site's required chrome and carries over from the old footer.
  */
 
 import Link from 'next/link';
 import { BrandMark } from '@/components/brand-mark';
-import { Serif } from './primitives';
-import { BODY_S, DISPLAY_XL, EYEBROW_TEXT, MONO_STYLE } from './tokens';
-import type { Lang } from '@/lib/i18n/markets';
+import Tetris from '@/components/originkit/ui/footer-02/tetris';
 import { SoundToggle } from '@/components/sound/sound-toggle';
+import { Serif } from './primitives';
+import { BODY_S, DISPLAY_S, EYEBROW_TEXT, MONO_STYLE } from './tokens';
+import type { Lang } from '@/lib/i18n/markets';
 import { CHROME, type ChromeDict } from '@/lib/i18n/dictionaries/chrome';
 
 /**
  * Where the nav actually goes. Every href here is a route that exists. The
- * label text lives in `lib/i18n/dictionaries/chrome.ts` and is matched BY KEY
- * — `key` is typed against the dictionary, so a link with no copy behind it
- * cannot compile. Order is layout and stays here.
+ * label text lives in `lib/i18n/dictionaries/chrome.ts` and is matched BY
+ * KEY, so a link with no copy behind it cannot compile.
  */
 const EXPLORE: { key: keyof ChromeDict['footer']['explore']; href: string }[] = [
   { key: 'work', href: '/work' },
@@ -54,212 +58,155 @@ const FINE_PRINT: { key: keyof ChromeDict['footer']['finePrint']; href: string }
   { key: 'contact', href: '/contact' },
 ];
 
-/**
- * Real handles only. Add `{ label, href }` entries and the "Follow along"
- * column appears on its own; leave it empty and the row stays a two-up.
- */
-const SOCIALS: { label: string; href: string }[] = [];
-
 /** An address, not copy: it reads the same in every language. */
 const EMAIL = 'hello@fortitudo.agency';
+
+const LINK_CLASS =
+  'relative inline-flex items-center text-[15px] leading-normal text-[var(--fx-muted)] transition-colors duration-200 before:absolute before:-inset-x-1 before:-inset-y-2 before:content-[""] hover:text-[var(--fx-white)] desktop-sm:text-[14px]';
+
+const COLUMN_TITLE = `${EYEBROW_TEXT}`;
 
 export function SiteFooter({ lang = 'en' }: { lang?: Lang }) {
   const t = CHROME[lang].footer;
   // Computed at render, never frozen into the dictionary — see chrome.ts.
   const copyright = t.copyright.replace('{year}', String(new Date().getFullYear()));
 
+  // The third column: the old footer's three actions, as links. Real routes.
+  const startLinks = [
+    { label: EMAIL, href: `mailto:${EMAIL}` },
+    { label: t.project.cta, href: '/onboarding' },
+    { label: t.call.cta, href: '/contact' },
+  ];
+
   return (
-    /* `Band`'s geometry, written out: this is a `<footer>`, and `Band` renders
-       a `<section>`. The gutters and the max-width must stay equal to it. They
-       were `px-4 sm:px-6` over `max-w-7xl`, which is a different gutter AND a
-       different column, so the card's edge lined up with nothing on the page —
-       at 1440 it sat 80px in while every section above it sat at 40. */
-    <footer className="bg-[var(--fx-charcoal)] px-5 pb-16 sm:px-8 lg:px-10">
-      <div className="mx-auto mt-8 w-full max-w-[1728px] sm:mt-10">
-        <div className="relative overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-deep)] p-6 text-[var(--fx-white)] shadow-[0_8px_30px_rgba(0,0,0,0.18)] sm:p-8">
-          {/* Texture: two soft corner lifts and a fine dot grid. Kept white
-              rather than yellow — the accent is for what you press, and a
-              yellow wash this large would make the one CTA below compete with
-              its own background. */}
-          <div aria-hidden className="pointer-events-none absolute inset-0">
-            <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_20%_-20%,rgba(255,255,255,0.06),transparent_60%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_80%_120%,rgba(255,255,255,0.05),transparent_60%)]" />
-            <div className="absolute inset-0 bg-[radial-gradient(#ffffff0d_1px,transparent_1px)] opacity-[0.15] [background-size:20px_20px]" />
-          </div>
+    <footer
+      aria-label="Fortitudo footer"
+      className="relative isolate flex min-h-svh w-full flex-col items-center justify-end overflow-hidden bg-[var(--fx-charcoal)] px-4 pb-8 pt-12 ipad:px-10 ipad:pt-16 desktop-sm:px-12 desktop-sm:pt-24"
+    >
+      {/* The drop's soft wash behind the card — same geometry, mask and
+          blur; the artwork is a single racing-yellow glow instead of the
+          rainbow svg. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 flex h-[55%] min-h-[280px] w-full justify-center overflow-hidden ipad:h-[60%] desktop-sm:h-[70%] desktop-sm:min-h-[320px]"
+        style={{
+          maskImage: 'linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, #000 0%, #000 35%, transparent 100%)',
+        }}
+      >
+        <div
+          className="absolute top-[-30%] left-1/2 h-[545px] w-[280%] max-w-none -translate-x-1/2 scale-110 opacity-60 blur-[40px] ipad:top-[-40%] ipad:w-[220%] ipad:blur-[60px] desktop-sm:top-[-55%] desktop-sm:w-[200%] desktop-sm:scale-125 desktop-sm:blur-[80px] full-hd:w-[240%] full-hd:scale-150 full-hd:blur-[90px] ultrawide:top-[-60%] ultrawide:w-[280%] ultrawide:scale-[1.75] ultrawide:blur-[100px]"
+          style={{
+            background:
+              'radial-gradient(50% 60% at 50% 30%, rgba(248,205,2,0.20) 0%, rgba(248,205,2,0.06) 55%, transparent 100%)',
+          }}
+        />
+      </div>
 
-          <div className="relative">
-            {/* The kit's largest display step. It is clamped rather than a
-                bare vw: at 9vw an ultrawide monitor puts this past 200px and
-                the second line stops fitting. */}
-            <Serif className={DISPLAY_XL}>
-              <span className="block">{t.headline.line1}</span>
-              <span className="block text-[var(--fx-muted)]">{t.headline.line2}</span>
-            </Serif>
-
-            {/* Three actions, all of which do something. */}
-            <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-              <div>
-                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  {t.email.eyebrow}
-                </p>
-                <a
-                  href={`mailto:${EMAIL}`}
-                  className="mt-3 inline-flex items-center gap-3 text-xl font-medium tracking-tight text-[var(--fx-white)] transition-colors hover:text-[var(--fx-yellow)] sm:text-2xl"
-                >
-                  <svg
-                    aria-hidden
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-5 w-5 flex-shrink-0"
-                  >
-                    <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" />
-                    <rect x="2" y="4" width="20" height="16" rx="2" />
-                  </svg>
-                  <span className="break-all">{EMAIL}</span>
-                </a>
-              </div>
-
-              <div>
-                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                  {t.call.eyebrow}
-                </p>
-                {/* The one yellow thing in the footer. */}
-                <Link
-                  href="/contact"
-                  className="mt-3 inline-flex items-center gap-2 rounded-[4px] bg-[var(--fx-yellow)] px-5 py-3 text-sm font-medium tracking-tight text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)]"
-                >
-                  <svg
-                    aria-hidden
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M8 2v4" />
-                    <path d="M16 2v4" />
-                    <rect width="18" height="18" x="3" y="4" rx="2" />
-                    <path d="M3 10h18" />
-                  </svg>
-                  {t.call.cta}
-                </Link>
-              </div>
-
-              {SOCIALS.length > 0 ? (
-                <div>
-                  <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                    {t.social.eyebrow}
-                  </p>
-                  <div className="mt-3 flex flex-wrap items-center gap-3">
-                    {SOCIALS.map((social) => (
-                      <a
-                        key={social.href}
-                        href={social.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center rounded-[4px] border border-[var(--fx-faint)] px-4 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
-                      >
-                        {social.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <p style={MONO_STYLE} className={EYEBROW_TEXT}>
-                    {t.project.eyebrow}
-                  </p>
-                  <Link
-                    href="/onboarding"
-                    className="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-[var(--fx-faint)] px-5 py-3 text-sm font-medium tracking-tight text-[var(--fx-white)] transition-colors duration-200 hover:border-[var(--fx-yellow)] hover:text-[var(--fx-yellow)]"
-                  >
-                    {t.project.cta}
-                    <svg
-                      aria-hidden
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="m12 5 7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
+      <div className="relative z-10 mx-auto w-full max-w-[95dvw] wide-lg:max-w-[1440px]">
+        <div className="relative isolate mx-auto min-h-[778px] w-full overflow-hidden rounded-[6px] border border-[var(--fx-hairline)] bg-[var(--fx-charcoal-raised)]">
+          <div className="relative z-10 flex flex-col gap-10 px-5 pt-10 pb-[300px] ipad:gap-12 ipad:px-12 ipad:pt-12 ipad:pb-[320px] desktop-sm:flex-row desktop-sm:items-start desktop-sm:justify-between desktop-sm:gap-10 desktop-sm:px-14 desktop-sm:pt-[72px] desktop-sm:pb-[300px]">
+            {/* Brand block — the old footer's display headline lives on
+                here: the ask, then the dimmed answer. */}
+            <div className="flex w-full max-w-xl flex-col gap-6 desktop-sm:shrink">
+              <Serif as="p" className={`${DISPLAY_S} text-[var(--fx-white)]`}>
+                {t.headline.line1}
+                <br />
+                <span className="text-[var(--fx-muted)]">{t.headline.line2}</span>
+              </Serif>
             </div>
 
-            <div className="mt-10 border-t border-[var(--fx-hairline)]" />
-
-            <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
+            {/* Link columns. */}
+            <nav
+              aria-label="Footer"
+              className="grid w-full grid-cols-2 gap-x-8 gap-y-10 ipad:grid-cols-3 ipad:gap-8 desktop-sm:flex desktop-sm:w-[560px] desktop-sm:shrink-0 desktop-sm:gap-14"
+            >
+              <div className="flex min-w-0 flex-col gap-4 desktop-sm:flex-1">
+                <p style={MONO_STYLE} className={COLUMN_TITLE}>
                   {t.exploreEyebrow}
                 </p>
-                <div className="mt-4 grid grid-cols-2 gap-2.5 text-sm">
+                <ul className="flex flex-col gap-3.5">
                   {EXPLORE.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="font-medium tracking-tight text-[var(--fx-white)] transition-colors hover:text-[var(--fx-yellow)]"
-                    >
-                      {t.explore[link.key]}
-                    </Link>
+                    <li key={link.href}>
+                      <Link href={link.href} className={LINK_CLASS}>
+                        {t.explore[link.key]}
+                      </Link>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
 
-              <div>
-                <p style={MONO_STYLE} className={EYEBROW_TEXT}>
+              <div className="flex min-w-0 flex-col gap-4 desktop-sm:flex-1">
+                <p style={MONO_STYLE} className={COLUMN_TITLE}>
+                  {t.email.eyebrow}
+                </p>
+                <ul className="flex flex-col gap-3.5">
+                  {startLinks.map((link) =>
+                    link.href.startsWith('mailto:') ? (
+                      <li key={link.href}>
+                        <a href={link.href} className={LINK_CLASS}>
+                          {link.label}
+                        </a>
+                      </li>
+                    ) : (
+                      <li key={link.href}>
+                        <Link href={link.href} className={LINK_CLASS}>
+                          {link.label}
+                        </Link>
+                      </li>
+                    ),
+                  )}
+                </ul>
+              </div>
+
+              <div className="flex min-w-0 flex-col gap-4 desktop-sm:flex-1">
+                <p style={MONO_STYLE} className={COLUMN_TITLE}>
                   {t.finePrintEyebrow}
                 </p>
-                <div className="mt-4 grid grid-cols-1 gap-2.5 text-sm">
+                <ul className="flex flex-col gap-3.5">
                   {FINE_PRINT.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="font-medium tracking-tight text-[var(--fx-white)] transition-colors hover:text-[var(--fx-yellow)]"
-                    >
-                      {t.finePrint[link.key]}
-                    </Link>
+                    <li key={link.href}>
+                      <Link href={link.href} className={LINK_CLASS}>
+                        {t.finePrint[link.key]}
+                      </Link>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-            </div>
+            </nav>
+          </div>
 
-            <div className="mt-10 flex flex-col items-center gap-3 border-t border-[var(--fx-hairline)] pt-6 sm:flex-row sm:justify-between">
-              <span className="flex items-center">
-                {/* Empty alt: the wordmark beside it already says "Fortitudo",
-                    and naming the mark too makes a screen reader say it twice. */}
-                <BrandMark className="h-5 text-[var(--fx-yellow)]" />
-                <span className="ml-2 text-sm font-medium tracking-tight text-[var(--fx-white)]">
-                  Fortitudo
-                </span>
+          {/* Bottom bar — the site's required chrome, floating above the
+              tetris strip: mark, legal line, and the sound mute. */}
+          <div className="absolute inset-x-0 bottom-[268px] z-10 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-[var(--fx-hairline)] px-5 py-4 ipad:px-12 desktop-sm:px-14">
+            <span className="flex items-center">
+              <BrandMark className="h-4 text-[var(--fx-yellow)]" />
+              <span className="ml-2 text-sm font-medium tracking-tight text-[var(--fx-white)]">
+                Fortitudo
               </span>
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                <p className={`${BODY_S} text-[var(--fx-muted)]`}>{copyright}</p>
-                {/* The interface-sound mute — the site speaks (lib/sound),
-                    so the site carries the off switch where the fine print
-                    lives. */}
-                <SoundToggle className="text-[var(--fx-muted)] hover:text-[var(--fx-white)]" />
-              </div>
-            </div>
+            </span>
+            <p className={`${BODY_S} text-[var(--fx-muted)]`}>{copyright}</p>
+            <SoundToggle className="text-[var(--fx-muted)] hover:text-[var(--fx-white)]" />
+          </div>
+
+          {/* Tetris board — decorative stack along the bottom (drop,
+              verbatim geometry; the site's colours, and parked when unseen
+              or under reduced motion — see the vendored file). */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[268px] overflow-hidden"
+          >
+            <Tetris
+              boardColor="#191a1d"
+              colors={['#f8cd02']}
+              cellSize={20}
+              gap={0}
+              rounded={20}
+              dropSpeed={1}
+              movement={2}
+              startFilled={true}
+            />
           </div>
         </div>
       </div>
