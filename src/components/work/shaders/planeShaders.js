@@ -28,8 +28,12 @@ export const fragmentShader = /* glsl */ `
 
   // per-plane state, driven from JS
   uniform float uCount;
-  uniform vec2  uPos[MAX_PLANES];    // centre in px, origin at screen centre
-  uniform float uRot[MAX_PLANES];    // radians
+  // xy = centre in px (origin at screen centre), zw = cos/sin of the plane's
+  // rotation. ADAPTED (mobile perf): the trig is hoisted to the CPU — it is
+  // per plane per frame there and it was per plane per PIXEL here — and it
+  // rides in the rows uPos already paid for (every uniform array element
+  // costs a full vec4 row), which also frees uRot's 32 rows outright.
+  uniform vec4  uPos[MAX_PLANES];
   // xy = 0..1 per axis, z = brightness (1 = lit, 0 = black), w = which atlas
   // cell this plane wears. All three ride in here rather than in arrays of
   // their own because GLSL ES gives every element of a uniform array a full
@@ -270,7 +274,7 @@ export const fragmentShader = /* glsl */ `
       float grown = max(sc.x, sc.y);
       if (grown <= 0.0001) continue;
 
-      vec2 q = p - uPos[i];
+      vec2 q = p - uPos[i].xy;
       // Anything further out than this cannot affect the surface, so it can be
       // skipped outright — this is what keeps 32 planes affordable. Scaled by
       // the plane rather than fixed, because a plane swollen under the cursor
@@ -278,9 +282,8 @@ export const fragmentShader = /* glsl */ `
       float cull = halfSpan * grown + k + uWobble + 8.0;
       if (dot(q, q) > cull * cull) continue;
 
-      // into the plane's local frame
-      float a  = uRot[i];
-      float ca = cos(a), sa = sin(a);
+      // into the plane's local frame (cos/sin precomputed on the CPU)
+      float ca = uPos[i].z, sa = uPos[i].w;
       q = vec2(q.x * ca + q.y * sa, -q.x * sa + q.y * ca);
 
       vec2 halfSize = max(uSize * 0.5 * sc, vec2(0.0001));

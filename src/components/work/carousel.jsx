@@ -135,21 +135,32 @@ export default function Carousel({ onOpen, onFallback }) {
       // one fullscreen quad whose edges are drawn by the SDF shader's own
       // smoothstep, and the heading glyphs get their edges from texture
       // alpha. On phones MSAA multiplied fill cost for zero visible change.
-      renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+      // preserveDrawingBuffer: the rest-state repaint below redraws only the
+      // two glass strips and keeps last frame's middle, which needs the
+      // buffer to survive the present. Costs one blit; buys back ~84% of
+      // every resting frame at FULL resolution.
+      renderer = new THREE.WebGLRenderer({
+        antialias: false,
+        alpha: true,
+        preserveDrawingBuffer: true,
+      });
     } catch (err) {
       console.error("[ring] could not create a WebGL context:", err);
       onFallbackRef.current?.(); // the host swaps in the static grid
       return;
     }
-    // ADAPTED (mobile perf): the shader's cost is per-pixel, so resolution
-    // IS the quality dial. Coarse-pointer devices start capped at 1.5 (the
-    // goo aesthetic hides resolution far better than it hides dropped
-    // frames), and a frame-time governor in the loop steps the ratio down
-    // toward 1.0 while sustained frames run slow — and back up when there is
-    // headroom. Nothing else about the effect changes.
+    // ADAPTED (mobile perf, crispness-first): the ring renders at the full
+    // native cap — upstream's min(devicePixelRatio, 2) — at ANY moment it
+    // can actually be looked at: at rest, during the seed's birth, under a
+    // hover. The ratio drops (one step, floor 1.25/1.0) ONLY on touch
+    // devices and ONLY while the ring is genuinely turning — a drag, a
+    // flick, a pick, the entry's unfurl — where motion masks resolution
+    // completely, and it snaps back to full cap on the first still frame.
+    // The aesthetic is never traded; only pixels nobody can resolve are.
     const coarseDevice =
       window.matchMedia("(pointer: coarse)").matches || window.innerWidth <= 900;
-    const dprCap = Math.min(window.devicePixelRatio || 1, coarseDevice ? 1.5 : 2);
+    const dprCap = Math.min(window.devicePixelRatio || 1, 2);
+    const dprMotion = coarseDevice ? Math.max(1.0, dprCap - 0.75) : dprCap;
     let dprNow = dprCap;
     renderer.setPixelRatio(dprNow);
     container.appendChild(renderer.domElement);
@@ -162,10 +173,10 @@ export default function Carousel({ onOpen, onFallback }) {
       uSize: { value: new THREE.Vector2(150, 100) },
       uRadius: { value: params.radius },
       uCount: { value: params.count },
+      // xy = position, zw = cos/sin of rotation — see the shader's note.
       uPos: {
-        value: Array.from({ length: MAX_PLANES }, () => new THREE.Vector2()),
+        value: Array.from({ length: MAX_PLANES }, () => new THREE.Vector4()),
       },
-      uRot: { value: new Float32Array(MAX_PLANES) },
       // xy = birth scale, z = brightness, w = atlas cell. Packed because a
       // uniform array costs a full vec4 row per element either way.
       uScale: {
@@ -348,6 +359,7 @@ export default function Carousel({ onOpen, onFallback }) {
     const onResize = () => {
       resize();
       styleMeta();
+      needFull = true;
     };
 
     resize();
@@ -635,6 +647,8 @@ export default function Carousel({ onOpen, onFallback }) {
     /* ------------------------------------------------------- the carousel */
     const travel = new Float32Array(MAX_PLANES);
     const cum = new Float32Array(MAX_PLANES);
+    // Rotation kept CPU-side for the hit test; the shader gets cos/sin.
+    const rotOf = new Float32Array(MAX_PLANES);
     const order = [];
     // Where each plane would sit with no cursor near it. The honey is measured
     // off these, so hovering cannot feed back into the unfurl's geometry.
@@ -860,12 +874,14 @@ export default function Carousel({ onOpen, onFallback }) {
           }
         }
 
+        const rotNow = (params.radial ? angle : angle + HALF_PI) * launch;
+        rotOf[i] = rotNow;
         uniforms.uPos.value[i].set(
           px + leanX[i] + pushX,
           py + leanY[i] + pushY,
+          Math.cos(rotNow),
+          Math.sin(rotNow),
         );
-        uniforms.uRot.value[i] =
-          (params.radial ? angle : angle + HALF_PI) * launch;
 
         // The seed grows over its whole birth. The others are already there,
         // merged inside their parent, so they reach full size early and spend
@@ -892,7 +908,7 @@ export default function Carousel({ onOpen, onFallback }) {
         // answers for the card as it actually is: turned, leaned and swollen.
         // Cards never overlap once formed, so the first hit is the only hit.
         if (probe && overI < 0) {
-          const rot = uniforms.uRot.value[i];
+          const rot = rotOf[i];
           const qx = cursor.x - (px + leanX[i] + pushX);
           const qy = cursor.y - (py + leanY[i] + pushY);
           const cr = Math.cos(rot);
@@ -1226,35 +1242,49 @@ export default function Carousel({ onOpen, onFallback }) {
     const start = performance.now();
     let prevT = start;
 
-    // ADAPTED (mobile perf): frame-time governor state. The EMA reads the
-    // raw frame gap (not the clamped dt) and the ratio moves in 0.25 steps,
-    // no more than once per 1.5 SECONDS — elapsed time, not a frame count,
-    // because a frame count is slowest to react exactly when frames are
-    // slowest, which is the one condition the governor exists for.
-    let frameEma = 16;
-    let govLastAt = 0;
+    // ADAPTED (mobile perf): scheduling state. `needFull` forces the next
+    // frame to be a complete full-viewport repaint — set by anything that
+    // can change pixels outside the glass strips while the ring rests.
     let renderParity = 0;
+    let quietSince = 0;
+    let needFull = true;
+    const wantFull = () => {
+      needFull = true;
+    };
+    atlas.first.then(wantFull);
+    atlas.ready.then(wantFull);
 
     renderer.setAnimationLoop(() => {
       const now = performance.now();
       // Clamped, so a backgrounded tab does not resume with one huge step.
       const dt = Math.min(0.05, (now - prevT) / 1000);
-      const rawMs = now - prevT;
       prevT = now;
       uniforms.uTime.value = (now - start) * 0.001;
 
-      frameEma += (Math.min(rawMs, 200) - frameEma) * 0.08;
-      if (now - govLastAt >= 1500) {
-        govLastAt = now;
-        if (frameEma > 24 && dprNow > 1.0) {
-          dprNow = Math.max(1.0, dprNow - 0.25);
-          renderer.setPixelRatio(dprNow);
-          resize();
-        } else if (frameEma < 14 && dprNow < dprCap) {
-          dprNow = Math.min(dprCap, dprNow + 0.25);
-          renderer.setPixelRatio(dprNow);
-          resize();
-        }
+      // Is the ring genuinely turning? (The entry's unfurl counts; the
+      // seed's near-still birth and hold do not.)
+      const turning =
+        dragging ||
+        picking ||
+        settling ||
+        Math.abs(spinVel) > 0.25 ||
+        (!interactive && state.launch > 0.001 && state.shift < 0.999);
+      if (turning) quietSince = 0;
+      else if (quietSince === 0) quietSince = now;
+
+      // Motion-gated resolution, touch only, with a beat of hysteresis so a
+      // detent wobble cannot flicker the ratio.
+      const wantDpr =
+        coarseDevice && turning
+          ? dprMotion
+          : quietSince && now - quietSince < 150 && coarseDevice
+            ? dprNow // hold one beat before stepping back up
+            : dprCap;
+      if (wantDpr !== dprNow) {
+        dprNow = wantDpr;
+        renderer.setPixelRatio(dprNow);
+        resize();
+        needFull = true;
       }
 
       if (interactive && !dragging && !picking) {
@@ -1346,23 +1376,42 @@ export default function Carousel({ onOpen, onFallback }) {
         meta.show(shown);
       }
 
-      // ADAPTED (mobile perf): a parked ring on a touch device paints at
-      // half rate — with no cursor there is no melt, no tag and no lean, so
-      // the only motion is the glass lips' slow ripple, which 30fps carries
-      // fine. Any input (drag, flick, pick, entry) restores full rate on the
-      // next frame.
-      const parked =
-        coarseDevice &&
+      // ADAPTED (mobile perf): the rest-state repaint. A parked ring with no
+      // pointer near it has exactly one thing still moving — the glass lips'
+      // slow ripple — so after one full-resolution frame is banked
+      // (preserveDrawingBuffer), only the two band strips are re-rendered,
+      // at half rate. That is ~16% of the pixels, at FULL crispness, for the
+      // state the page spends most of its life in. Anything that could touch
+      // the middle flips `resting` off (input, spin, hover, tag) or raises
+      // `needFull` (resize, ratio change, art arriving), and the next frame
+      // is a complete repaint again.
+      const resting =
         interactive &&
         !dragging &&
         !picking &&
         !settling &&
         spinVel === 0 &&
-        cursor.amt < 0.01;
+        cursor.amt < 0.005;
+
+      const bandPx =
+        params.glass
+          ? Math.ceil(viewH * Math.max(params.bandTop, params.bandBottom)) + 2
+          : 0;
+
       renderParity ^= 1;
-      if (!parked || renderParity === 0) {
+      if (!resting || needFull) {
+        renderer.setScissorTest(false);
         renderer.render(scene, camera);
+        needFull = false;
+      } else if (bandPx > 0 && renderParity === 0) {
+        renderer.setScissorTest(true);
+        renderer.setScissor(0, 0, viewW, bandPx);
+        renderer.render(scene, camera);
+        renderer.setScissor(0, viewH - bandPx, viewW, bandPx);
+        renderer.render(scene, camera);
+        renderer.setScissorTest(false);
       }
+      // params.glass off + resting: nothing moves at all — nothing to paint.
     });
 
     return () => {
