@@ -1,29 +1,27 @@
-/**
- * `/pricing` — how Fortitudo prices, on the dark cinematic redesign system.
- * The page body lives in components/marketing/pages/pricing-content.tsx
- * (ported from the giga marketing kit; English is the only shipped language).
- *
- * The page advertises NO figures. It kept its route and its nav entry and now
- * explains how a price is arrived at — one fixed price, agreed before work
- * starts — ending at the contact form. The amounts the product invoices from
- * are in `src/lib/pricing.ts` and are not read here.
- */
+import type { Metadata } from "next";
+import { PageHero } from "@/components/shader/page-hero";
+import { Pricing } from "@/components/shader/pricing";
+import { CtaBand, SectionIntro } from "@/components/shader/page-sections";
 
-import { DEFAULT_LANG } from '@/lib/i18n/markets';
-import { PRICING_PAGE } from '@/lib/i18n/dictionaries/pricing-page';
-import { PricingContent } from '@/components/marketing/pages/pricing-content';
+export const metadata: Metadata = { title: "How pricing works — Fortitudo Agency", description: "One fixed price agreed before work starts. No hourly billing and no surprise invoices." };
 
-/* The description says how we price and promises nothing we do not do. It
-   used to advertise funnels and "Open Claw deployments", neither of which we
-   sell; after that it enumerated the five offerings and quoted fixed quotes
-   with figures behind them. Both strings live in the page dictionary: a title
-   and a description are read by a visitor in a search result, so they
-   translate with the page. */
-export const metadata = {
-  title: PRICING_PAGE[DEFAULT_LANG].meta.title,
-  description: PRICING_PAGE[DEFAULT_LANG].meta.description,
-};
+const steps = [
+  ["You tell us what you need", "A short conversation about what you want built, who it is for, and what it needs to do."],
+  ["We scope it properly", "We write down the pages, features, integrations, handover, and what is outside the project."],
+  ["You approve one price", "Nothing starts until you approve the scope and total. That number holds unless you request new work."],
+] as const;
 
 export default function PricingPage() {
-  return <PricingContent lang="en" />;
+  return (
+    <>
+      <PageHero eyebrow="Pricing" title={<>Fixed prices. <span className="text-[#f8cd02]">No surprises.</span></>} lead="Your project gets a real scope and a real price—not a number guessed for a pricing table." cta={{ label: "Get a fixed price", href: "/contact" }} secondaryCta={{ label: "Explore services", href: "/services" }} />
+      <Pricing />
+      <section className="bg-[#0a0a0c] px-6 py-24 text-foreground sm:px-10 lg:py-32">
+        <div className="mx-auto max-w-[1680px]"><SectionIntro eyebrow="How it works" title="Three steps from idea to an approved scope." body="You get enough detail to make a decision before money changes hands." />
+          <div className="mt-16 grid gap-4 lg:grid-cols-3">{steps.map(([title, body], index) => <article key={title} className={`${index === 1 ? "bg-accent text-accent-foreground" : "bg-foreground/[0.05] text-foreground"} min-h-[300px] rounded-2xl p-8 flex flex-col justify-between`}><span className="font-mono text-xs tracking-[0.2em] opacity-45">0{index + 1}</span><div><h2 className="text-2xl font-medium tracking-tight">{title}</h2><p className="mt-3 text-sm leading-relaxed opacity-60">{body}</p></div></article>)}</div>
+        </div>
+      </section>
+      <CtaBand title="Get a price for the actual thing you need." />
+    </>
+  );
 }
