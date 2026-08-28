@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/brand-mark";
 import type { ReactNode } from "react";
 import { ArrowChip } from "@/components/shader/arrow-chip";
 
@@ -33,7 +34,7 @@ export function Footer(): ReactNode {
       </div>
       <div className="mx-auto mt-24 grid w-full max-w-[1680px] grid-cols-2 gap-10 px-6 py-16 lg:mt-32 lg:grid-cols-12 lg:gap-8 lg:px-10 lg:py-20">
         <div className="col-span-2 lg:col-span-4">
-          <Link href="/" className="inline-flex items-center gap-3 text-xl font-medium tracking-tight"><span aria-hidden className="grid h-8 w-8 place-items-center rounded-full border-2 border-foreground/70"><span className="h-2.5 w-2.5 rounded-full bg-accent" /></span>Fortitudo</Link>
+          <Link href="/" className="inline-flex items-center gap-3 text-xl font-medium tracking-tight"><BrandMark className="h-8 w-8 text-accent" />Fortitudo</Link>
           <p className="mt-4 max-w-xs leading-relaxed text-foreground/55">Websites, software, AI, consultation, and marketing—built by senior people and handed over completely.</p>
         </div>
         <FooterColumn title="Services" links={SERVICE_LINKS} />

@@ -111,15 +111,23 @@ export function ShaderCanvas({ className }: Props): ReactNode {
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const renderer = new Renderer({
-      alpha: false,
-      antialias: false,
-      depth: false,
-      stencil: false,
-      premultipliedAlpha: false,
-      powerPreference: "high-performance",
-      dpr: 1,
-    });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        alpha: false,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        premultipliedAlpha: false,
+        powerPreference: "high-performance",
+        dpr: 1,
+      });
+    } catch {
+      // A solid yellow hero remains usable on devices that cannot create a
+      // WebGL context. The content is deliberately independent of the canvas.
+      host.replaceChildren();
+      return;
+    }
     const gl = renderer.gl;
 
     const canvas = gl.canvas;
@@ -128,6 +136,7 @@ export function ShaderCanvas({ className }: Props): ReactNode {
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.display = "block";
+    canvas.style.opacity = "0";
     host.appendChild(canvas);
 
     const geometry = new Triangle(gl);
@@ -179,6 +188,7 @@ export function ShaderCanvas({ className }: Props): ReactNode {
       program.uniforms.r.value[0] = gl.canvas.width;
       program.uniforms.r.value[1] = gl.canvas.height;
       renderer.render({ scene: mesh });
+      canvas.style.opacity = "1";
     };
     const queueResize = () => {
       if (resizePending) return;

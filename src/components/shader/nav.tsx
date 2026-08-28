@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { ArrowUpRight, ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type ReactNode } from "react";
+import { BrandMark } from "@/components/brand-mark";
 
 const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 
@@ -79,16 +80,14 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
               paddingTop: scrolled ? 8 : 0,
               paddingBottom: scrolled ? 8 : 0,
               backgroundColor: scrolled ? "rgba(255,255,255,1)" : "rgba(255,255,255,0)",
-              color: scrolled ? "#0f0f12" : "#ffffff",
+              color: "#0f0f12",
               borderColor: scrolled ? "rgba(15,15,18,0.08)" : "rgba(255,255,255,0)",
             }}
             transition={{ duration: 0.45, ease: easeOutExpo }}
             className="rounded-lg border"
           >
             <Link href="/" onClick={closeMenus} className="inline-flex items-center gap-3 text-xl font-medium tracking-tight">
-              <span aria-hidden className="grid h-8 w-8 place-items-center rounded-full border-2 border-current/70">
-                <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-accent)]" />
-              </span>
+              <BrandMark className="h-8 w-8" />
               <span>Fortitudo</span>
             </Link>
           </motion.div>
@@ -99,27 +98,27 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
           variants={{ hidden: { opacity: 0, y: -12 }, visible: { opacity: 1, y: 0 } }}
           transition={{ duration: 0.7, ease: easeOutExpo }}
         >
-          <div className="flex items-center gap-1 rounded-lg border border-neutral-900/[0.08] bg-white p-1.5 text-xs font-medium uppercase tracking-widest text-neutral-700 shadow-[0_12px_45px_rgba(0,0,0,0.12)]">
+          <div className="flex items-center gap-1 rounded-lg border border-black bg-[#0f0f12] p-1.5 text-xs font-medium uppercase tracking-widest text-[#f8cd02] shadow-[0_12px_45px_rgba(0,0,0,0.22)]">
             <button
               type="button"
               aria-expanded={megaOpen}
               aria-controls="fortitudo-mega-menu"
               onClick={() => setMegaOpen((open) => !open)}
-              className="hidden items-center gap-1.5 rounded-md px-4 py-2.5 transition-colors hover:bg-neutral-100 hover:text-neutral-900 min-[850px]:inline-flex"
+              className="hidden items-center gap-1.5 rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex"
             >
               Explore
               <ChevronDown size={13} className={`transition-transform ${megaOpen ? "rotate-180" : ""}`} />
             </button>
-            <Link href="/work" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-neutral-100 hover:text-neutral-900 min-[850px]:inline-flex">Work</Link>
-            <Link href="/pricing" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-neutral-100 hover:text-neutral-900 min-[850px]:inline-flex">Pricing</Link>
-            <Link href="/contact" onClick={closeMenus} className="inline-flex items-center rounded-md bg-neutral-900 px-4 py-2.5 text-white transition-colors hover:bg-neutral-800">Get a price</Link>
+            <Link href="/work" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex">Work</Link>
+            <Link href="/pricing" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex">Pricing</Link>
+            <Link href="/contact" onClick={closeMenus} className="inline-flex items-center rounded-md bg-[#f8cd02] px-4 py-2.5 text-[#0f0f12] transition-colors hover:bg-white">Get a price</Link>
             <button
               type="button"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               aria-controls="fortitudo-mobile-menu"
               onClick={() => setMenuOpen((open) => !open)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-neutral-900 transition-colors hover:bg-neutral-100 min-[850px]:hidden"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-[#f8cd02] transition-colors hover:bg-white/10 min-[850px]:hidden"
             >
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
