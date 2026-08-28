@@ -10,13 +10,11 @@
  */
 
 import { motion } from 'motion/react';
-import { useReducedMotionSafe } from '@/hooks/use-reduced-motion-safe';
 
 export default function MarketingTemplate({ children }: { children: React.ReactNode }) {
-  const reduce = useReducedMotionSafe();
   return (
     <motion.div
-      initial={reduce ? false : { opacity: 0, filter: 'blur(8px)' }}
+      initial={false}
       animate={{ opacity: 1, filter: 'blur(0px)' }}
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], opacity: { duration: 0.45, ease: 'easeOut' } }}
       style={{ willChange: 'filter, opacity' }}
