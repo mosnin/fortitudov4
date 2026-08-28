@@ -197,7 +197,7 @@ describe("the partner surface", () => {
   it("still treats the real marketing pages as marketing", () => {
     // Guards the assertion above against passing because isMarketingPath
     // started answering false to everything.
-    for (const path of ["/", "/pricing", "/services/websites"]) {
+    for (const path of ["/", "/pricing", "/services/websites", "/work/stored"]) {
       expect(isMarketingPath(path), path).toBe(true);
     }
   });

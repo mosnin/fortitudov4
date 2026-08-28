@@ -1,140 +1,169 @@
 /**
- * The client projects behind /work — the ring carousel's deal AND the
- * `/work/[slug]` pages read from this one list, so the ring, the meta lockups,
- * the column and the case pages can never disagree.
- *
- * HONESTY RULES (same contract as the rest of the logged-out site):
- *  - Every project here was named by the owner, with its live domain where
- *    one exists. Nothing is a portfolio filler.
- *  - `blurb` describes what the client's own site says it is (pulled from
- *    their live meta descriptions) — never our claims about outcomes, and
- *    never a number they haven't agreed to.
- *  - `service` is which of the five offerings the engagement was, supplied as
- *    placeholders to be confirmed by the owner; they are labels from
- *    src/lib/services.ts vocabulary, not invented scope.
- *  - `art` is a typographic placeholder tile (public/work/*.webp) until the
- *    owner supplies real project imagery — the tiles carry only the name and
- *    domain, so nothing in them can be mistaken for product fact. Live-site
- *    screenshots were not possible from this environment (browser egress is
- *    blocked at the proxy); swap these files 1:1 when imagery arrives.
- *
- * Ring order matters: art is dealt straight down this list (see
- * `components/work/ring/projects.js`), so entry n sits one slot along from
- * n−1 and the column counts 01..10 as the carousel turns.
+ * Public case-study copy is deliberately limited to facts visible on each
+ * client's own website. The project pages make no performance or outcome
+ * claims that the client has not published.
  */
 
 export interface WorkProject {
   slug: string;
   name: string;
-  /** One of the five offerings (label form). Placeholder until confirmed. */
-  service: string;
-  /** The live site, when there is one. */
-  url?: string;
-  /** Short host shown in the meta lockup and on the case page. */
-  domain?: string;
-  /** Where there is no domain: the line the lockup shows instead. */
-  locale?: string;
-  /** What the client is, in their own site's words (or the owner's). */
+  service: 'Websites' | 'Software Solutions' | 'AI Solutions';
+  url: string;
+  domain: string;
   blurb: string;
-  /** Atlas cell / case-page art. Placeholder tiles for now. */
+  details: readonly string[];
+  /** Back-compat for the retired ring view, which still compiles with the app. */
   art: string;
+  image: string;
+  imageAlt: string;
+  imageLabel: string;
+  imageNote?: string;
 }
 
 export const WORK_PROJECTS: WorkProject[] = [
   {
-    slug: 'chippi',
-    name: 'Chippi',
-    service: 'AI Solutions',
-    url: 'https://usechippi.com',
-    domain: 'usechippi.com',
-    blurb:
-      'An agentic OS for real-estate agents and brokerages — an AI agent that runs the agent workspace: qualifying leads, drafting follow-ups, scheduling tours and keeping the pipeline current.',
-    art: '/work/chippi.webp',
-  },
-  {
-    slug: 'hannah-joy',
-    name: 'Hannah Joy',
-    service: 'Websites',
-    url: 'https://hannahjoyy.com',
-    domain: 'hannahjoyy.com',
-    blurb:
-      'Painted by Hannah Joy — the makeup academy taught by a working artist with major brand campaigns, offering structured courses with certificates and real on-set breakdowns.',
-    art: '/work/hannah-joy.webp',
-  },
-  {
     slug: 'stored',
     name: 'Stored',
     service: 'AI Solutions',
-    url: 'https://stored.to',
+    url: 'https://www.stored.to/',
     domain: 'stored.to',
     blurb:
-      'Shared memory for AI agents: teach it once and every agent draws from the same context, across every tool and the whole team, over MCP or API.',
-    art: '/work/stored.webp',
+      'A shared memory layer for AI agents, built so context can follow a team across tools instead of living in one isolated conversation.',
+    details: [
+      'One memory layer shared across AI agents',
+      'Connects through MCP or API',
+    ],
+    art: '/work/case-studies/stored.png',
+    image: '/work/case-studies/stored.png',
+    imageAlt: 'Stored homepage showing its shared-memory product introduction',
+    imageLabel: 'Live homepage capture',
   },
   {
-    slug: 'platinum-bio-labs',
-    name: 'Platinum Bio Labs',
+    slug: 'chippi',
+    name: 'Chippi',
+    service: 'AI Solutions',
+    url: 'https://www.usechippi.com/',
+    domain: 'usechippi.com',
+    blurb:
+      'A real-estate inquiry workspace that reads and ranks leads, drafts responses in the agent’s voice, books tours and keeps the CRM current.',
+    details: [
+      'Turns real-estate inquiries into ranked leads',
+      'Supports drafted follow-up and tour booking',
+    ],
+    art: '/work/case-studies/chippi.png',
+    image: '/work/case-studies/chippi.png',
+    imageAlt: 'Chippi homepage introducing its lead-to-tour workflow',
+    imageLabel: 'Live homepage capture',
+  },
+  {
+    slug: 'never-age',
+    name: 'NeverAge',
     service: 'Websites',
-    url: 'https://platbiolabs.com',
-    domain: 'platbiolabs.com',
-    blurb: 'Platinum Bio Labs — a laboratory brand with its storefront on the web.',
-    art: '/work/platinum-bio-labs.webp',
+    url: 'https://neverage.co/',
+    domain: 'neverage.co',
+    blurb:
+      'A longevity brand whose public storefront is currently marked as opening soon.',
+    details: [
+      'Longevity-focused brand',
+      'Public storefront currently opening soon',
+    ],
+    art: '/work/never-age.webp',
+    image: '/work/never-age.webp',
+    imageAlt:
+      'Typographic project artwork for NeverAge; its live storefront is currently password protected',
+    imageLabel: 'Project artwork',
+    imageNote:
+      'The live storefront is currently password protected, so the supplied project artwork is shown instead of a homepage capture.',
+  },
+  {
+    slug: 'two-cookies',
+    name: 'Two Cookies NYC',
+    service: 'Websites',
+    url: 'https://twocookiesnyc.com/',
+    domain: 'twocookiesnyc.com',
+    blurb:
+      'A New York City cookie shop with a current public presence on Instagram.',
+    details: [
+      'Fresh-baked cookies',
+      'Based in New York City',
+    ],
+    art: '/work/two-cookies.webp',
+    image: '/work/two-cookies.webp',
+    imageAlt:
+      'Typographic project artwork for Two Cookies NYC; a current live-site capture was unavailable',
+    imageLabel: 'Project artwork',
+    imageNote:
+      'A reliable live-site capture was unavailable during research, so the supplied project artwork is shown instead.',
   },
   {
     slug: 'nourish-reserve',
     name: 'Nourish Reserve',
     service: 'Websites',
-    url: 'https://shopnourishreserve.com',
+    url: 'https://www.shopnourishreserve.com/',
     domain: 'shopnourishreserve.com',
     blurb:
-      'Science-backed wellness for modern living: clinically aligned supplements made in the USA under FDA-compliant, GMP-certified standards.',
-    art: '/work/nourish-reserve.webp',
+      'A wellness storefront for clinically aligned supplements made in the USA under FDA-compliant, GMP-certified standards.',
+    details: [
+      'Science-backed wellness positioning',
+      'Supplements made in the USA',
+    ],
+    art: '/work/case-studies/nourish-reserve.png',
+    image: '/work/case-studies/nourish-reserve.png',
+    imageAlt: 'Nourish Reserve homepage presenting its wellness products',
+    imageLabel: 'Live homepage capture',
   },
   {
-    slug: 'never-age',
-    name: 'Never Age',
+    slug: 'hannah-joy',
+    name: 'Hannah Joy',
     service: 'Websites',
-    url: 'https://neverage.co',
-    domain: 'neverage.co',
-    blurb: 'NeverAge — a longevity brand, online at neverage.co.',
-    art: '/work/never-age.webp',
-  },
-  {
-    slug: 'glove',
-    name: 'Glove',
-    service: 'AI Solutions',
-    url: 'https://glove.so',
-    domain: 'glove.so',
+    url: 'https://www.hannahjoyy.com/',
+    domain: 'hannahjoyy.com',
     blurb:
-      'AI agents that run live product demos: answering buyer questions, driving a safe browser through the real product, recording every session and sending tailored follow-ups.',
-    art: '/work/glove.webp',
-  },
-  {
-    slug: 'two-cookies',
-    name: 'Two Cookies',
-    service: 'Websites',
-    locale: 'New York',
-    blurb: 'A New York City cookie shop.',
-    art: '/work/two-cookies.webp',
-  },
-  {
-    slug: 'michael-berg',
-    name: 'Michael Berg',
-    service: 'Websites',
-    blurb: 'A personal brand engagement.',
-    art: '/work/michael-berg.webp',
+      'A makeup academy led by a working artist, with practical courses, certificates and on-set breakdowns.',
+    details: [
+      'Makeup education from a working artist',
+      'Courses include certificates',
+    ],
+    art: '/work/case-studies/hannah-joy.png',
+    image: '/work/case-studies/hannah-joy.png',
+    imageAlt: 'Painted by Hannah Joy homepage introducing its makeup academy',
+    imageLabel: 'Live homepage capture',
   },
   {
     slug: 'govern',
     name: 'Govern',
     service: 'Software Solutions',
-    url: 'https://govern.sh',
+    url: 'https://www.govern.sh/',
     domain: 'govern.sh',
     blurb:
-      'Identity, permissions and audit logs for AI agents: verified identity, scoped permissions, spending limits and signed action receipts — the trust layer for autonomous software.',
-    art: '/work/govern.webp',
+      'A trust layer for autonomous software, giving AI agents verified identities, scoped permissions, spending limits and signed action receipts.',
+    details: [
+      'Identity and scoped permissions for AI agents',
+      'Signed action receipts and spending limits',
+    ],
+    art: '/work/case-studies/govern.png',
+    image: '/work/case-studies/govern.png',
+    imageAlt: 'Govern homepage presenting identity and permissions for AI agents',
+    imageLabel: 'Live homepage capture',
+  },
+  {
+    slug: 'tellme',
+    name: 'Tellme',
+    service: 'Software Solutions',
+    url: 'https://www.tellme.sh/',
+    domain: 'tellme.sh',
+    blurb:
+      'An alternative to static forms that interviews people and turns their answers into a complete, structured record.',
+    details: [
+      'Conversational interviews instead of static forms',
+      'Answers become structured records',
+    ],
+    art: '/work/case-studies/tellme.png',
+    image: '/work/case-studies/tellme.png',
+    imageAlt: 'Tellme homepage introducing its conversational form product',
+    imageLabel: 'Live homepage capture',
   },
 ];
 
 export const workProject = (slug: string) =>
-  WORK_PROJECTS.find((p) => p.slug === slug);
+  WORK_PROJECTS.find((project) => project.slug === slug);

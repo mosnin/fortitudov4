@@ -25,6 +25,9 @@ const cspHeader = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // The in-app acceptance browser reaches the local dev server by IP. Next
+  // blocks its client/HMR resources unless that origin is explicitly allowed.
+  allowedDevOrigins: ["127.0.0.1"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "img.clerk.com" },

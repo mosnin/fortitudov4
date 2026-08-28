@@ -103,6 +103,7 @@ const MARKETING_ROOTS = new Set([
   "/privacy",
   "/services",
   "/terms",
+  "/work",
 ]);
 
 /** Exported, like PUBLIC_ROUTES, so the allowlist can be asserted in a test. */
