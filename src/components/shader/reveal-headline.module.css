@@ -1,0 +1,28 @@
+.cover {
+  pointer-events: none;
+  visibility: hidden;
+  transform: translateY(110%);
+}
+
+.cover[data-running="true"] {
+  visibility: visible;
+  /* This deadline runs independently of Motion's requestAnimationFrame loop. */
+  animation: release-cover 1ms step-end var(--reveal-timeout, 1s) both;
+}
+
+@keyframes release-cover {
+  from {
+    visibility: visible;
+  }
+  to {
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cover {
+    animation: none !important;
+    visibility: hidden !important;
+    transform: translateY(110%) !important;
+  }
+}

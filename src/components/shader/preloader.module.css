@@ -1,0 +1,113 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  overflow: hidden;
+  color: #0f0f12;
+  background: #f8cd02;
+  pointer-events: none;
+  /* CSS independently releases the cover even if a JS callback is delayed. */
+  animation: expire 0s 2050ms forwards;
+}
+
+.artwork {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.headline,
+.progress {
+  position: absolute;
+  margin: 0;
+  font-size: clamp(88px, 15vw, 200px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.headline {
+  top: max(24px, env(safe-area-inset-top));
+  left: 24px;
+}
+
+.progress {
+  right: 24px;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  font-variant-numeric: tabular-nums;
+}
+
+.stack {
+  position: relative;
+  width: clamp(120px, 14vw, 170px);
+  aspect-ratio: 3 / 4;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgb(15 15 18 / 30%);
+  border-radius: 16px;
+  background: #0f0f12;
+  color: #f8cd02;
+}
+
+.cardMark { width: 60%; opacity: 0.12; }
+.image { object-fit: contain; }
+
+.brand {
+  position: absolute;
+  bottom: max(30px, env(safe-area-inset-bottom));
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: -0.055em;
+}
+
+.mark { width: 30px; }
+
+.skip {
+  position: absolute;
+  top: max(24px, env(safe-area-inset-top));
+  right: 24px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid rgb(15 15 18 / 35%);
+  border-radius: 6px;
+  background: #f8cd02;
+  font-size: 12px;
+  font-weight: 500;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.skip:hover { color: #f8cd02; background: #0f0f12; }
+.skip:focus-visible { outline: 2px solid #0f0f12; outline-offset: 4px; }
+
+@media (min-width: 640px) {
+  .headline { top: 40px; left: 40px; }
+  .progress { right: 40px; bottom: 40px; }
+  .brand { left: 40px; bottom: 46px; }
+  .skip { top: 40px; right: 40px; }
+}
+
+@media (max-width: 639px) {
+  .headline { top: max(82px, calc(env(safe-area-inset-top) + 60px)); }
+  .brand { font-size: 20px; }
+  .mark { width: 25px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay { display: none; }
+}
+
+@keyframes expire {
+  to { visibility: hidden; pointer-events: none; }
+}

@@ -23,39 +23,52 @@ export function SmoothScroll({ children }: { children: ReactNode }): ReactNode {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
-    if (prefersReducedMotion) return;
+    const usesTouchScrolling = window.matchMedia("(pointer: coarse)").matches;
+    if (prefersReducedMotion || usesTouchScrolling) return;
 
     const lenis = new Lenis(LENIS_OPTIONS);
 
     const MAX_DT = 50;
     let synthTime = 0;
     let lastReal = performance.now();
+    let frame = 0;
+    let active = true;
 
     function raf(time: number): void {
+      if (!active) return;
       const dt = time - lastReal;
       lastReal = time;
 
       synthTime += Math.max(0, Math.min(dt, MAX_DT));
       lenis.raf(synthTime);
-      requestAnimationFrame(raf);
+      frame = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    frame = requestAnimationFrame(raf);
 
     function handleAnchorClick(event: MouseEvent): void {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
       const target = event.target;
       if (!(target instanceof Element)) return;
       const anchor = target.closest('a[href^="#"]');
-      if (!anchor) return;
+      if (!(anchor instanceof HTMLAnchorElement) || anchor.target || anchor.hasAttribute("download")) return;
       const href = anchor.getAttribute("href");
       if (!href || href === "#") return;
-      const element = document.querySelector(href);
-      if (!element || !(element instanceof HTMLElement)) return;
+      let id: string;
+      try {
+        id = decodeURIComponent(href.slice(1));
+      } catch {
+        return;
+      }
+      const element = document.getElementById(id);
+      if (!element) return;
       event.preventDefault();
       lenis.scrollTo(element, { offset: ANCHOR_OFFSET });
     }
 
     document.addEventListener("click", handleAnchorClick);
     return () => {
+      active = false;
+      cancelAnimationFrame(frame);
       document.removeEventListener("click", handleAnchorClick);
       lenis.destroy();
     };

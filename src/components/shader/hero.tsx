@@ -1,15 +1,18 @@
 "use client";
 
 import {
+  animate,
   motion,
+  useMotionValue,
   useScroll,
   useSpring,
   useTransform,
 } from "motion/react";
-import type { ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowChip } from "@/components/shader/arrow-chip";
 import { ShaderCanvas } from "@/components/shader/shader-canvas";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 
 const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 
@@ -18,7 +21,10 @@ const FRAME_INSET = 10;
 
 const SCROLL_RANGE = 80;
 
-export function Hero(): ReactNode {
+export function Hero({ entranceReady = true }: { entranceReady?: boolean }): ReactNode {
+  const sectionRef = useRef<HTMLElement>(null);
+  const progress = useMotionValue(1);
+  const reduceMotion = useReducedMotionSafe();
   const { scrollY } = useScroll();
   const rawExit = useTransform(scrollY, [0, SCROLL_RANGE], [0, 1], {
     clamp: true,
@@ -32,17 +38,52 @@ export function Hero(): ReactNode {
 
   const padding = useTransform(exit, [0, 1], [FRAME_INSET, 0]);
 
-  const borderRadius = useTransform(exit, [0, 1], [FINAL_RADIUS, 0]);
+  // Original shader.zip 110×60 pill-to-viewport entrance, progressively
+  // enabled after the optional intro. SSR always has the full-size surface.
+  const width = useTransform(progress, p => `calc(110px + (100% - 110px) * ${p})`);
+  const height = useTransform(progress, p => `calc(60px + (100% - 60px) * ${p})`);
+  const borderRadius = useTransform([progress, exit], latest => {
+    const [p, e] = latest as [number, number];
+    const viewportH = typeof window !== "undefined" ? window.innerHeight - 20 : 800;
+    const pillRadius = (60 + (viewportH - 60) * p) / 2;
+    const t = Math.max(0, (p - 0.4) / 0.6);
+    const eased = t * t * (3 - 2 * t);
+    return (pillRadius * (1 - eased) + FINAL_RADIUS * eased) * (1 - e);
+  });
+  useEffect(() => {
+    if (!entranceReady || reduceMotion || window.scrollY > 32) return;
+    const section = sectionRef.current;
+    if (!section) return;
+    section.dataset.shaderEntrance = "running";
+    progress.set(0);
+    const controls = animate(progress, 1, { duration: 1.8, ease: easeOutExpo });
+    const finish = () => {
+      controls.stop();
+      progress.set(1);
+      delete section.dataset.shaderEntrance;
+    };
+    const watchdog = window.setTimeout(finish, 3250);
+    window.addEventListener("touchstart", finish, { once: true, passive: true });
+    window.addEventListener("wheel", finish, { once: true, passive: true });
+    return () => {
+      window.clearTimeout(watchdog);
+      window.removeEventListener("touchstart", finish);
+      window.removeEventListener("wheel", finish);
+      finish();
+    };
+  }, [entranceReady, progress, reduceMotion]);
 
   return (
     <motion.section
+      ref={sectionRef}
       className="relative h-[100svh] min-h-[42rem] w-full max-[850px]:min-h-[38rem]"
       style={{ padding }}
     >
       <div className="relative w-full h-full flex items-center justify-center">
         <motion.div
+          data-shader-hero-surface
           className="relative h-full w-full overflow-hidden bg-[#f8cd02]"
-          style={{ borderRadius }}
+          style={{ width, height, borderRadius }}
         >
           <div aria-hidden="true" className="absolute inset-0 w-full h-full">
             <ShaderCanvas />
@@ -90,8 +131,8 @@ export function Hero(): ReactNode {
                 }}
                 transition={{ duration: 0.8, ease: easeOutExpo }}
               >
-                Websites, apps, AI tools, and marketing. A fixed price before
-                we start, a clear view of the work, and every file at launch.
+                More customers. Less busywork. Room to grow. We build the
+                websites, software, and systems that help your business get there.
               </motion.p>
 
               <motion.div
@@ -106,7 +147,7 @@ export function Hero(): ReactNode {
               >
                 <Link href="/contact" className="inline-flex items-stretch gap-1">
                   <span className="px-5 py-3 rounded-md bg-[#0f0f12] text-[#f8cd02] text-xs font-medium tracking-widest uppercase border border-[#0f0f12]">
-                    Start a project
+                    Talk through your project
                   </span>
                   <ArrowChip className="bg-[#0f0f12] text-[#f8cd02]" />
                 </Link>

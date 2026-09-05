@@ -139,35 +139,44 @@ export function ShaderCanvas({ className }: Props): ReactNode {
     canvas.style.opacity = "0";
     host.appendChild(canvas);
 
-    const geometry = new Triangle(gl);
-
-    const v0 = variantRef.current;
-    const program = new Program(gl, {
-      vertex: VERT,
-      fragment: FRAG,
-      depthTest: false,
-      depthWrite: false,
-      cullFace: false,
-      uniforms: {
-        t: { value: 0 },
-        r: { value: [1, 1] },
-        c: { value: [0, 0] },
-        ci: { value: 0 },
-        u_pal_base: { value: [...v0.hero.base] },
-        u_pal_warm: { value: [...v0.hero.warm] },
-        u_pal_mid: { value: [...v0.hero.mid] },
-        u_pal_cool: { value: [...v0.hero.cool] },
-        u_pal_cursor: { value: [...v0.hero.cursor] },
-        u_pal_rgScale: { value: [...v0.hero.rgScale] },
-        u_brightness: { value: v0.hero.brightness },
-      },
-    });
+    let initialized: { program: Program; mesh: Mesh };
+    try {
+      const geometry = new Triangle(gl);
+      const v0 = variantRef.current;
+      const program = new Program(gl, {
+        vertex: VERT,
+        fragment: FRAG,
+        depthTest: false,
+        depthWrite: false,
+        cullFace: false,
+        uniforms: {
+          t: { value: 0 },
+          r: { value: [1, 1] },
+          c: { value: [0, 0] },
+          ci: { value: 0 },
+          u_pal_base: { value: [...v0.hero.base] },
+          u_pal_warm: { value: [...v0.hero.warm] },
+          u_pal_mid: { value: [...v0.hero.mid] },
+          u_pal_cool: { value: [...v0.hero.cool] },
+          u_pal_cursor: { value: [...v0.hero.cursor] },
+          u_pal_rgScale: { value: [...v0.hero.rgScale] },
+          u_brightness: { value: v0.hero.brightness },
+        },
+      });
+      if (!gl.getProgramParameter(program.program, gl.LINK_STATUS)) {
+        throw new Error("Shader program could not be linked");
+      }
+      initialized = { program, mesh: new Mesh(gl, { geometry, program }) };
+    } catch {
+      canvas.remove();
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return;
+    }
+    const { program, mesh } = initialized;
     uniformsRef.current = program.uniforms as Record<
       string,
       { value: unknown }
     >;
-    const mesh = new Mesh(gl, { geometry, program });
-
     const dpr = Math.min(
       typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1,
       DPR_CAP,
@@ -175,20 +184,49 @@ export function ShaderCanvas({ className }: Props): ReactNode {
     renderer.dpr = dpr;
 
     let resizePending = 0;
+    let raf = 0;
+    let failed = false;
+    const showFallback = () => {
+      failed = true;
+      cancelAnimationFrame(raf);
+      cancelAnimationFrame(resizePending);
+      raf = 0;
+      resizePending = 0;
+      canvas.style.opacity = "0";
+      uniformsRef.current = null;
+    };
+    const renderFrame = () => {
+      if (failed) return;
+      if (gl.isContextLost()) {
+        showFallback();
+        return;
+      }
+      try {
+        renderer.render({ scene: mesh });
+        canvas.style.opacity = "1";
+      } catch {
+        showFallback();
+      }
+    };
+    canvas.addEventListener("webglcontextlost", showFallback);
     let lastW = 0;
     let lastH = 0;
     const resize = () => {
+      if (failed) return;
       const rect = host.getBoundingClientRect();
       const w = Math.max(1, Math.round(rect.width));
       const h = Math.max(1, Math.round(rect.height));
       if (w === lastW && h === lastH) return;
       lastW = w;
       lastH = h;
-      renderer.setSize(w, h);
-      program.uniforms.r.value[0] = gl.canvas.width;
-      program.uniforms.r.value[1] = gl.canvas.height;
-      renderer.render({ scene: mesh });
-      canvas.style.opacity = "1";
+      try {
+        renderer.setSize(w, h);
+        program.uniforms.r.value[0] = gl.canvas.width;
+        program.uniforms.r.value[1] = gl.canvas.height;
+        renderFrame();
+      } catch {
+        showFallback();
+      }
     };
     const queueResize = () => {
       if (resizePending) return;
@@ -234,7 +272,7 @@ export function ShaderCanvas({ className }: Props): ReactNode {
     const io = new IntersectionObserver(
       (entries) => {
         visible = entries[0]?.isIntersecting ?? true;
-        if (visible && !raf && !reduceMotion) {
+        if (visible && !document.hidden && !raf && !reduceMotion && !failed) {
           last = performance.now();
           loop();
         }
@@ -243,12 +281,12 @@ export function ShaderCanvas({ className }: Props): ReactNode {
     );
     io.observe(host);
 
-    let raf = 0;
     const start = performance.now();
     let last = start;
     const FRAME_MS = 1000 / 60;
 
     const loop = () => {
+      if (failed || document.hidden) return;
       raf = requestAnimationFrame(loop);
       if (!visible) {
         cancelAnimationFrame(raf);
@@ -271,12 +309,12 @@ export function ShaderCanvas({ className }: Props): ReactNode {
       program.uniforms.c.value[0] = current[0];
       program.uniforms.c.value[1] = current[1];
       program.uniforms.ci.value = currentCi;
-      renderer.render({ scene: mesh });
+      renderFrame();
     };
 
     if (reduceMotion) {
       program.uniforms.t.value = 0;
-      renderer.render({ scene: mesh });
+      renderFrame();
     } else {
       loop();
     }
@@ -285,7 +323,7 @@ export function ShaderCanvas({ className }: Props): ReactNode {
       if (document.hidden) {
         cancelAnimationFrame(raf);
         raf = 0;
-      } else if (visible && !raf && !reduceMotion) {
+      } else if (visible && !raf && !reduceMotion && !failed) {
         last = performance.now();
         loop();
       }
@@ -300,7 +338,9 @@ export function ShaderCanvas({ className }: Props): ReactNode {
       window.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("blur", onLeave);
       document.removeEventListener("visibilitychange", onVis);
+      canvas.removeEventListener("webglcontextlost", showFallback);
       io.disconnect();
+      uniformsRef.current = null;
       canvas.remove();
       const ext = gl.getExtension("WEBGL_lose_context");
       ext?.loseContext();
@@ -324,6 +364,7 @@ export function ShaderCanvas({ className }: Props): ReactNode {
   return (
     <div
       ref={hostRef}
+      aria-hidden="true"
       className={className}
       style={{
         position: "absolute",

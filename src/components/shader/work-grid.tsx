@@ -55,7 +55,7 @@ export function WorkGrid({
               </h2>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-[#0f0f12]/65">
-              Eight live brands and products spanning websites, software and AI.
+              A selection of the brands and products we’ve built, from online stores to complex software.
             </p>
           </div>
         ) : null}
@@ -92,8 +92,8 @@ export function WorkGrid({
                     src={project.image}
                     alt={project.imageAlt}
                     fill
-                    priority={index < 2}
-                    sizes="(min-width: 1024px) 58vw, (min-width: 768px) 50vw, 100vw"
+                    priority={!compact && index < 2}
+                    sizes={compact ? "(min-width: 1280px) 24vw, (min-width: 768px) 46vw, 100vw" : "(min-width: 1024px) 58vw, (min-width: 768px) 50vw, 100vw"}
                     className="object-cover object-top transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.025]"
                   />
                   <div
@@ -123,7 +123,7 @@ export function WorkGrid({
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                      <h2
+                      <h3
                         className={
                           compact
                             ? 'text-xl font-medium leading-none tracking-[-0.04em]'
@@ -131,7 +131,7 @@ export function WorkGrid({
                         }
                       >
                         {project.name}
-                      </h2>
+                      </h3>
                       <span
                         className={
                           compact

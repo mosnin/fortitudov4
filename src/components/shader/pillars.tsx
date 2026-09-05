@@ -17,21 +17,21 @@ interface Pillar {
 
 const PILLARS: Pillar[] = [
   {
-    tag: "01 — fixed",
-    title: "One price up front",
-    body: "The scope and price are written down before work starts. It only changes when you ask for something new.",
+    tag: "01 — Get clear",
+    title: "Start with what matters.",
+    body: "We look at how customers buy, where your team loses time, and what you want to launch. Then we agree on the work that matters, a written scope, and one fixed price.",
     icon: Compass,
   },
   {
-    tag: "02 — senior",
-    title: "Builders in the room",
-    body: "You talk to the people doing the work. There is no account-manager layer between your question and the answer.",
+    tag: "02 — Build it",
+    title: "Build it with the right team.",
+    body: "Designers and senior engineers work together from the start. You see the product take shape, give feedback, and speak directly with the people making it happen.",
     icon: Layers,
   },
   {
-    tag: "03 — yours",
-    title: "Everything handed over",
-    body: "Code, design files, domains, campaigns, and logins are transferred at launch. The finished work belongs to you.",
+    tag: "03 — Put it to work",
+    title: "Launch it. Put it to work.",
+    body: "We test the details, connect your tools, and help your team take over. Your customers can use it, your team knows how to run it, and the finished work belongs to you.",
     icon: Zap,
   },
 ];
@@ -51,13 +51,13 @@ export function Pillars(): ReactNode {
         <div className="grid grid-cols-12 gap-x-10 gap-y-6 max-[850px]:grid-cols-1">
           <div className="col-span-3 max-[1100px]:col-span-12 max-[850px]:col-span-1 pt-2">
             <motion.span
-              initial={{ opacity: 0, y: 8 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 8 }}
               transition={{ duration: 0.6, ease: easeOutExpo }}
 
               className="inline-flex items-center rounded-md border border-foreground/[0.08] px-3.5 py-1.5 font-mono text-xs uppercase tracking-widest text-foreground/70"
             >
-              Why Fortitudo
+              How we work
             </motion.span>
           </div>
 
@@ -67,16 +67,16 @@ export function Pillars(): ReactNode {
               delay={0.05}
               className="text-balance text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[0.85] tracking-tight"
             >
-              A clearer way to get serious digital work built.
+              From “we should” to “it’s live.”
             </RevealHeadline>
             <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 8 }}
               transition={{ duration: 0.7, ease: easeOutExpo, delay: 0.18 }}
               className="mt-6 max-w-[60ch] text-balance text-xl max-[850px]:text-lg font-light leading-snug text-foreground/60"
             >
-              Less theatre around the work. More visibility, experienced judgment,
-              and a clean handover when it is done.
+              You have a business to run. We turn the project you keep putting off
+              into a clear plan, then take responsibility for getting it built.
             </motion.p>
           </div>
         </div>
@@ -87,8 +87,8 @@ export function Pillars(): ReactNode {
             return (
               <motion.article
                 key={pillar.tag}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                initial={false}
+                animate={{ y: inView ? 0 : 20 }}
                 transition={{
                   duration: 0.8,
                   ease: easeOutExpo,

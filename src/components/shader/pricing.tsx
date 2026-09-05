@@ -25,28 +25,28 @@ interface Tier {
 
 const TIERS: Tier[] = [
   {
-    name: "Fixed project",
+    name: "Get it built",
     price: null,
-    body: "For a defined website, software, AI, or marketing build. You approve one written scope and one price before work begins.",
-    cta: { label: "Get a fixed price", href: "/contact" },
+    body: "For the launch, rebuild, or business problem you are ready to tackle. We agree on what needs to happen and what it costs before we start.",
+    cta: { label: "Talk through your project", href: "/contact" },
     features: [
-      "Scope written before kickoff",
-      "Senior builders on the work",
-      "A project page you can follow",
-      "Review and launch included",
-      "Complete handover at launch",
+      "A written scope and agreed milestones",
+      "Direct access to the people building it",
+      "Progress, decisions, and files in one place",
+      "Review, testing, and launch",
+      "Your code, assets, and accounts handed over",
     ],
   },
   {
-    name: "Ongoing support",
+    name: "Keep it moving",
     price: null,
-    body: "For continued improvements, campaigns, and help after the initial build. The work and response rhythm are agreed up front.",
-    cta: { label: "Talk to us", href: "/contact" },
+    body: "For improvements after launch: a better customer journey, reliable business systems, and marketing that keeps working. We agree on the monthly scope and response expectations together.",
+    cta: { label: "Talk about support", href: "/contact" },
     features: [
       "A clear monthly scope",
-      "Prioritized improvements",
+      "Improvements tied to your business priorities",
       "Maintenance and monitoring",
-      "Marketing iteration when needed",
+      "Website and campaign improvements as agreed",
       "The same visible project workflow",
     ],
   },
@@ -68,8 +68,8 @@ export function Pricing(): ReactNode {
         <div className="grid grid-cols-12 gap-x-10 gap-y-6 max-[850px]:grid-cols-1">
           <div className="col-span-3 max-[1100px]:col-span-12 max-[850px]:col-span-1 pt-2">
             <motion.span
-              initial={{ opacity: 0, y: 8 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 8 }}
               transition={{ duration: 0.6, ease: easeOutExpo }}
               className="inline-flex items-center rounded-md border border-foreground/[0.08] px-3.5 py-1.5 font-mono text-xs uppercase tracking-widest text-foreground/70"
             >
@@ -83,16 +83,17 @@ export function Pricing(): ReactNode {
               delay={0.05}
               className="text-balance text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[0.85] tracking-tight"
             >
-              A clear price before the work. No public guesswork.
+              Know what you’re getting. Know what it costs.
             </RevealHeadline>
             <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 8 }}
               transition={{ duration: 0.7, ease: easeOutExpo, delay: 0.18 }}
               className="mt-6 max-w-[60ch] text-balance text-xl max-[850px]:text-lg font-light leading-snug text-foreground/60"
             >
-              Every build is different, so we price the actual scope. You see
-              the total before you approve it and it stays fixed unless the scope changes.
+              We price the work around your actual needs, with the scope, cost, and
+              next steps in front of you. Your project price stays fixed unless
+              we agree on a change together.
             </motion.p>
           </div>
         </div>
@@ -101,8 +102,8 @@ export function Pricing(): ReactNode {
           {TIERS.map((tier, i) => (
             <motion.article
               key={tier.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 20 }}
               transition={{
                 duration: 0.8,
                 ease: easeOutExpo,

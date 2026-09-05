@@ -9,11 +9,11 @@ import { BrandMark } from "@/components/brand-mark";
 const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 
 const serviceLinks = [
-  { label: "Websites", href: "/services#websites", note: "Sites and shops built to be found." },
-  { label: "Software Solutions", href: "/services#software-solutions", note: "Apps, portals and internal tools." },
-  { label: "AI Solutions", href: "/services#ai-solutions", note: "Useful automation for repeated work." },
-  { label: "Consultation", href: "/services#consultation", note: "A senior plan before you spend." },
-  { label: "Digital Marketing", href: "/services#digital-marketing", note: "Pages, campaigns and follow-up." },
+  { label: "Websites", href: "/services/websites", note: "Sites and shops built to be found." },
+  { label: "Software Solutions", href: "/services/software-solutions", note: "Apps, portals and internal tools." },
+  { label: "AI Solutions", href: "/services/ai-solutions", note: "Useful automation for repeated work." },
+  { label: "Consultation", href: "/services/consultation", note: "A senior plan before you spend." },
+  { label: "Digital Marketing", href: "/services/digital-marketing", note: "Pages, campaigns and follow-up." },
 ] as const;
 
 const pageLinks = [
@@ -62,7 +62,7 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
     <motion.nav
       aria-label="Primary navigation"
       className="pointer-events-none fixed inset-x-0 top-0 z-50"
-      initial="hidden"
+      initial={false}
       animate="visible"
       transition={{ staggerChildren: 0.08, delayChildren: delay }}
     >
@@ -79,7 +79,7 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
               paddingRight: scrolled ? 12 : 0,
               paddingTop: scrolled ? 8 : 0,
               paddingBottom: scrolled ? 8 : 0,
-              backgroundColor: scrolled ? "rgba(255,255,255,1)" : "rgba(255,255,255,0)",
+              backgroundColor: "#f8cd02",
               color: "#0f0f12",
               borderColor: scrolled ? "rgba(15,15,18,0.08)" : "rgba(255,255,255,0)",
             }}
@@ -111,7 +111,7 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
             </button>
             <Link href="/work" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex">Work</Link>
             <Link href="/pricing" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex">Pricing</Link>
-            <Link href="/contact" onClick={closeMenus} className="inline-flex items-center rounded-md bg-[#f8cd02] px-4 py-2.5 text-[#0f0f12] transition-colors hover:bg-white">Get a price</Link>
+            <Link href="/contact" onClick={closeMenus} className="inline-flex items-center rounded-md bg-[#f8cd02] px-4 py-2.5 text-[#0f0f12] transition-colors hover:bg-white">Let’s talk</Link>
             <button
               type="button"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -200,7 +200,7 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
             </ul>
             <p className="mt-9 font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">Pages</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
-              {[...pageLinks, { label: "Contact", href: "/contact", note: "Tell us what you need." }].map((item) => (
+              {[...pageLinks, { label: "Contact", href: "/contact", note: "Tell us what you need." }, { label: "Client sign in", href: "/sign-in", note: "Open your workspace." }].map((item) => (
                 <Link key={item.href} href={item.href} onClick={closeMenus} className="rounded-xl border border-white/10 bg-white/[0.035] p-4 text-base font-medium tracking-tight">{item.label}</Link>
               ))}
             </div>
