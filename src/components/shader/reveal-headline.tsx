@@ -1,7 +1,9 @@
 "use client";
 
 import { motion, useInView, type Transition } from "motion/react";
-import { useRef, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
+import styles from "./reveal-headline.module.css";
 
 interface RevealHeadlineProps {
 
@@ -35,6 +37,8 @@ export function RevealHeadline({
   const ref = useRef<HTMLHeadingElement>(null);
 
   const inView = useInView(ref, { once: true, amount });
+  const reduceMotion = useReducedMotionSafe();
+  const running = inView && !reduceMotion;
 
   const words = children.split(/(\s+)/);
 
@@ -67,7 +71,7 @@ export function RevealHeadline({
             <span
               className={[
                 "relative",
-                isMuted ? "text-foreground/35" : "",
+                isMuted ? "text-foreground/65" : "",
               ].join(" ")}
             >
               {token}
@@ -75,10 +79,13 @@ export function RevealHeadline({
 
             <motion.span
               aria-hidden
-              initial={{ y: "0%" }}
-              animate={inView ? { y: "110%" } : { y: "0%" }}
+              data-reveal-cover=""
+              data-running={running ? "true" : undefined}
+              initial={false}
+              animate={running ? { y: ["0%", "110%"] } : { y: "110%" }}
               transition={{ ...blockTransition, delay: wordDelay }}
-              className="absolute inset-x-0 -top-[0.05em] -bottom-[0.2em] bg-foreground will-change-transform"
+              style={{ "--reveal-timeout": `${Math.max(0, wordDelay) + 1}s` } as CSSProperties}
+              className={`absolute inset-x-0 -top-[0.05em] -bottom-[0.2em] bg-foreground will-change-transform ${styles.cover}`}
             />
           </span>
         );

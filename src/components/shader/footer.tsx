@@ -4,11 +4,11 @@ import type { ReactNode } from "react";
 import { ArrowChip } from "@/components/shader/arrow-chip";
 
 const SERVICE_LINKS = [
-  { label: "Websites", href: "/services#websites" },
-  { label: "Software", href: "/services#software-solutions" },
-  { label: "AI solutions", href: "/services#ai-solutions" },
-  { label: "Consultation", href: "/services#consultation" },
-  { label: "Marketing", href: "/services#digital-marketing" },
+  { label: "Websites", href: "/services/websites" },
+  { label: "Software", href: "/services/software-solutions" },
+  { label: "AI solutions", href: "/services/ai-solutions" },
+  { label: "Consultation", href: "/services/consultation" },
+  { label: "Marketing", href: "/services/digital-marketing" },
 ] as const;
 
 const PAGE_LINKS = [
@@ -25,8 +25,8 @@ export function Footer(): ReactNode {
       <div className="mx-auto w-full max-w-[1680px] px-6 pt-24 lg:px-10 lg:pt-32">
         <span className="inline-flex rounded-md border border-foreground/[0.08] px-3.5 py-1.5 font-mono text-xs uppercase tracking-widest text-foreground/70">Get in touch</span>
         <div className="mt-6 max-w-5xl text-4xl font-medium leading-[0.95] tracking-tighter sm:text-6xl lg:text-7xl xl:text-8xl">
-          <p>Tell us what you need.</p>
-          <p className="text-foreground/55">We&rsquo;ll price it clearly.</p>
+          <p>Big plans?</p>
+          <p className="text-foreground/70">Let&rsquo;s make them happen.</p>
         </div>
         <div className="mt-12">
           <Link href="mailto:hello@fortitudo.agency" className="group inline-flex items-stretch gap-1"><span className="rounded-md bg-foreground px-5 py-3 text-xs font-medium uppercase tracking-widest text-background">hello@fortitudo.agency</span><ArrowChip className="bg-foreground text-background" /></Link>

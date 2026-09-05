@@ -236,16 +236,20 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    const renderer = new Renderer({
-      alpha: false,
-      antialias: false,
-      depth: false,
-      stencil: false,
-      premultipliedAlpha: false,
-      powerPreference: "high-performance",
-
-      dpr: 0.75,
-    });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        alpha: false,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        premultipliedAlpha: false,
+        powerPreference: "low-power",
+        dpr: 0.75,
+      });
+    } catch {
+      return;
+    }
     const gl = renderer.gl;
 
     const canvas = gl.canvas;
@@ -254,48 +258,89 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
     canvas.style.width = "100%";
     canvas.style.height = "100%";
     canvas.style.display = "block";
+    canvas.style.opacity = "0";
     host.appendChild(canvas);
 
-    const geometry = new Triangle(gl);
-    const v0 = variantRef.current;
-    const program = new Program(gl, {
-      vertex: VERT,
-      fragment: FRAG,
-      depthTest: false,
-      depthWrite: false,
-      cullFace: false,
-      uniforms: {
-        t: { value: 0 },
-        r: { value: [1, 1] },
-        u_amp: { value: paramsRef.current.amp },
-        u_freq: { value: paramsRef.current.freq },
-        u_complex: { value: paramsRef.current.complexity },
-        u_speed: { value: paramsRef.current.speed },
-        u_thick: { value: paramsRef.current.thickness },
-        u_hue: { value: paramsRef.current.hue },
-        u_curve: { value: paramsRef.current.curve },
-        u_warp: { value: paramsRef.current.warp },
-        u_chroma: { value: paramsRef.current.chroma },
-        u_bias: { value: paramsRef.current.bias },
-        u_dark: { value: darkRef.current ? 1 : 0 },
-
-        u_c0: { value: [...v0.wave[0]] },
-        u_c1: { value: [...v0.wave[1]] },
-        u_c2: { value: [...v0.wave[2]] },
-        u_c3: { value: [...v0.wave[3]] },
-        u_c4: { value: [...v0.wave[4]] },
-      },
-    });
+    let initialized: { program: Program; mesh: Mesh };
+    try {
+      const geometry = new Triangle(gl);
+      const v0 = variantRef.current;
+      const program = new Program(gl, {
+        vertex: VERT,
+        fragment: FRAG,
+        depthTest: false,
+        depthWrite: false,
+        cullFace: false,
+        uniforms: {
+          t: { value: 0 },
+          r: { value: [1, 1] },
+          u_amp: { value: paramsRef.current.amp },
+          u_freq: { value: paramsRef.current.freq },
+          u_complex: { value: paramsRef.current.complexity },
+          u_speed: { value: paramsRef.current.speed },
+          u_thick: { value: paramsRef.current.thickness },
+          u_hue: { value: paramsRef.current.hue },
+          u_curve: { value: paramsRef.current.curve },
+          u_warp: { value: paramsRef.current.warp },
+          u_chroma: { value: paramsRef.current.chroma },
+          u_bias: { value: paramsRef.current.bias },
+          u_dark: { value: darkRef.current ? 1 : 0 },
+          u_c0: { value: [...v0.wave[0]] },
+          u_c1: { value: [...v0.wave[1]] },
+          u_c2: { value: [...v0.wave[2]] },
+          u_c3: { value: [...v0.wave[3]] },
+          u_c4: { value: [...v0.wave[4]] },
+        },
+      });
+      if (!gl.getProgramParameter(program.program, gl.LINK_STATUS)) {
+        throw new Error("Wave program could not be linked");
+      }
+      initialized = { program, mesh: new Mesh(gl, { geometry, program }) };
+    } catch {
+      canvas.remove();
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return;
+    }
+    const { program, mesh } = initialized;
     uniformsRef.current = program.uniforms as Record<string, { value: unknown }>;
-    const mesh = new Mesh(gl, { geometry, program });
-
     let resizePending = 0;
+    let raf = 0;
+    let failed = false;
+    const showFallback = () => {
+      failed = true;
+      cancelAnimationFrame(raf);
+      cancelAnimationFrame(resizePending);
+      raf = 0;
+      resizePending = 0;
+      canvas.style.opacity = "0";
+      uniformsRef.current = null;
+    };
+    const renderFrame = () => {
+      if (failed) return;
+      if (gl.isContextLost()) {
+        showFallback();
+        return;
+      }
+      try {
+        renderer.render({ scene: mesh });
+        canvas.style.opacity = "1";
+      } catch {
+        showFallback();
+      }
+    };
+    canvas.addEventListener("webglcontextlost", showFallback);
     const resize = () => {
+      if (failed) return;
       const w = host.clientWidth || 1;
       const h = host.clientHeight || 1;
-      renderer.setSize(w, h);
-      program.uniforms.r.value[0] = gl.canvas.width;
-      program.uniforms.r.value[1] = gl.canvas.height;
+      try {
+        renderer.setSize(w, h);
+        program.uniforms.r.value[0] = gl.canvas.width;
+        program.uniforms.r.value[1] = gl.canvas.height;
+        renderFrame();
+      } catch {
+        showFallback();
+      }
     };
     const queueResize = () => {
       if (resizePending) return;
@@ -316,13 +361,11 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
         visible = entries[0]?.isIntersecting ?? true;
 
         if (visible && !wasVisible) last = performance.now();
-        if (visible && !raf && !reduceMotion) loop();
+        if (visible && !document.hidden && !raf && !reduceMotion && !failed) loop();
       },
       { threshold: 0 },
     );
     io.observe(host);
-
-    let raf = 0;
 
     let tAccum = 0;
     let last = performance.now();
@@ -331,6 +374,7 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
     const MAX_DT_MS = 50;
 
     const loop = () => {
+      if (failed || document.hidden) return;
       raf = requestAnimationFrame(loop);
       if (!visible) {
         cancelAnimationFrame(raf);
@@ -359,7 +403,7 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
       program.uniforms.u_bias.value = p.bias;
       program.uniforms.u_dark.value = darkRef.current ? 1 : 0;
 
-      renderer.render({ scene: mesh });
+      renderFrame();
     };
     if (reduceMotion) {
       const p = paramsRef.current;
@@ -375,7 +419,7 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
       program.uniforms.u_chroma.value = p.chroma;
       program.uniforms.u_bias.value = p.bias;
       program.uniforms.u_dark.value = darkRef.current ? 1 : 0;
-      renderer.render({ scene: mesh });
+      renderFrame();
     } else {
       loop();
     }
@@ -384,7 +428,7 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
       if (document.hidden) {
         cancelAnimationFrame(raf);
         raf = 0;
-      } else if (visible && !raf && !reduceMotion) {
+      } else if (visible && !raf && !reduceMotion && !failed) {
 
         last = performance.now();
         loop();
@@ -398,6 +442,8 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
       ro.disconnect();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVis);
+      canvas.removeEventListener("webglcontextlost", showFallback);
+      uniformsRef.current = null;
       canvas.remove();
       const ext = gl.getExtension("WEBGL_lose_context");
       ext?.loseContext();
@@ -418,6 +464,7 @@ export function WaveShader({ className, initialParams, dark, ref }: Props): Reac
   return (
     <div
       ref={hostRef}
+      aria-hidden="true"
       className={className}
       style={{
         position: "absolute",

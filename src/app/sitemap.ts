@@ -23,7 +23,7 @@ const ORIGIN = "https://fortitudo.agency";
  * catches you doing that, which costs you the signal on the pages where it
  * would have been true. Bump this when the copy actually changes.
  */
-const CONTENT_UPDATED = "2026-08-12";
+const CONTENT_UPDATED = "2026-09-05";
 
 /**
  * Cross-language `hreflang` is withheld for the same reason `src/proxy.ts`
@@ -44,6 +44,11 @@ const LANG_ALTERNATES_ENABLED: boolean = false;
 const PAGES = [
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
   { path: "/services", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/services/websites", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/services/software-solutions", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/services/ai-solutions", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/services/consultation", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/services/digital-marketing", priority: 0.8, changeFrequency: "monthly" },
   { path: "/pricing", priority: 0.8, changeFrequency: "monthly" },
   { path: "/work", priority: 0.8, changeFrequency: "monthly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },

@@ -21,8 +21,8 @@ interface RowProps {
 function Row({ item, index, open, onToggle, inView }: RowProps): ReactNode {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+      initial={false}
+      animate={{ y: inView ? 0 : 16 }}
       transition={{
         duration: 0.7,
         ease: easeOutExpo,
@@ -93,8 +93,8 @@ function Row({ item, index, open, onToggle, inView }: RowProps): ReactNode {
 
 export function Faq({
   items = FAQ_ITEMS,
-  heading = "Questions, answered.",
-  lead = "Straight answers about price, process, ownership, and how the work gets done.",
+  heading = "A few things you might be wondering.",
+  lead = "About the investment, the team, and what happens once we get started.",
 }: {
   items?: FaqItem[];
   heading?: string;
@@ -115,8 +115,8 @@ export function Faq({
         <div className="grid grid-cols-12 gap-x-10 gap-y-6 max-[850px]:grid-cols-1">
           <div className="col-span-3 max-[1100px]:col-span-12 max-[850px]:col-span-1 pt-2">
             <motion.span
-              initial={{ opacity: 0, y: 8 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 8 }}
               transition={{ duration: 0.6, ease: easeOutExpo }}
               className="inline-flex items-center rounded-md border border-foreground/[0.08] px-3.5 py-1.5 font-mono text-xs uppercase tracking-widest text-foreground/70"
             >
@@ -133,8 +133,8 @@ export function Faq({
               {heading}
             </RevealHeadline>
             <motion.p
-              initial={{ opacity: 0, y: 8 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+              initial={false}
+              animate={{ y: inView ? 0 : 8 }}
               transition={{ duration: 0.7, ease: easeOutExpo, delay: 0.18 }}
               className="mt-6 max-w-[60ch] text-balance text-xl max-[850px]:text-lg font-light leading-snug text-foreground/60"
             >

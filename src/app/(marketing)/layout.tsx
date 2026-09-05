@@ -3,11 +3,12 @@ import { Footer } from "@/components/shader/footer";
 import { Nav } from "@/components/shader/nav";
 import { Providers } from "@/components/shader/providers";
 import { SkipToContent } from "@/components/shader/skip-to-content";
+import { GeistSans } from "geist/font/sans";
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
     <Providers>
-      <div data-shader-site className="dark min-h-screen bg-background text-foreground antialiased">
+      <div data-shader-site className={`dark min-h-screen bg-background text-foreground antialiased ${GeistSans.variable}`}>
         <SkipToContent />
         <Nav />
         <main id="main-content" className="relative z-10 min-h-screen bg-background">{children}</main>

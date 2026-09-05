@@ -25,32 +25,32 @@ const en = {
   /** Rendered by `contact/layout.tsx`, which exists because a Client Component
    *  cannot export `metadata`. Translated with the page, not after it. */
   meta: {
-    title: 'Talk to us · Fortitudo Agency',
+    title: 'Talk through your project · Fortitudo Agency',
     description:
-      'Tell us what you want built and what it should do for you. We answer within 24 hours on working days.',
+      'Tell us what your business is ready for. We will help you work out what to build, what comes first, and what it will take.',
   },
 
   hero: {
-    eyebrow: 'Contact',
+    eyebrow: 'Let’s get it moving',
     /** The headline's last two words sit in a yellow span, so the line is two
      *  strings. Translations may need the accent to fall elsewhere in the
      *  sentence; move the words between the two keys rather than adding markup. */
-    titleLead: "Let's talk about",
-    titleAccent: 'your project.',
-    body: 'Tell us what you want built. We answer within 24 hours.',
+    titleLead: 'What would make a difference to',
+    titleAccent: 'your business?',
+    body: 'More customers finding you. A product ready to launch. Hours back in your week. Tell us what you want to change, and we will help you work out the next step.',
   },
 
   form: {
     nameLabel: 'Name',
     emailLabel: 'Email',
     companyLabel: 'Company',
-    serviceLabel: 'What you need',
+    serviceLabel: 'Where do you need help?',
     /** The empty option, selected until they pick one of the five offerings. */
     serviceUnset: 'Not sure yet',
-    messageLabel: 'Message',
-    messagePlaceholder: 'What do you want built, and what should it do for you?',
-    submit: 'Send message',
-    privacyNote: 'No spam. We answer within 24 hours.',
+    messageLabel: 'What are you trying to make happen?',
+    messagePlaceholder: 'Tell us a little about your business, what is getting in the way, and what a good outcome would look like. Include a link or a target launch date if you have one.',
+    submit: 'Talk through my project',
+    privacyNote: 'A conversation comes first. No account or technical brief needed.',
     /** The two failure notices. The form is not cleared when either shows, so
      *  these have to give the visitor somewhere to go with what they wrote.
      *  {email} = the address, filled in the page — never hardcode it here. */
@@ -62,7 +62,7 @@ const en = {
    *  claims a reply inside 24 hours, so it must not appear on a failed POST. */
   sent: {
     title: 'Message received.',
-    body: 'We have it. You will hear from us within 24 hours.',
+    body: 'Thanks for telling us about your business. We will read through your message and get back to you within 24 hours on working days to talk about the next step.',
     again: 'Send another',
   },
 
@@ -76,12 +76,11 @@ const en = {
     locationBody: 'We work remotely, with clients anywhere.',
   },
 
-  /** The dashed card under the details: the same questions as the form, asked
-   *  as the onboarding chat behind sign-up. */
+  /** Reassurance beside the form. The enquiry does not require an account. */
   start: {
-    title: 'Rather just start?',
-    body: 'Skip the form and start your project here instead. Same questions, asked as a chat.',
-    cta: 'Create an account',
+    title: 'You do not need to have it all figured out.',
+    body: 'An idea, a problem, or a link to what you have today is enough. We can work through the rest together.',
+    cta: 'Email us directly',
   },
 };
 
