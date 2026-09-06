@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { BODY_MUTED, QUIET_LINK } from '@/lib/typography';
 import { cn } from '@/lib/utils';
+import { postLoginUrl, safeAuthDestination } from '@/lib/auth-redirect';
 
 export const metadata: Metadata = { title: 'Sign Up — Fortitudo' };
 
@@ -15,18 +16,12 @@ export default async function SignUpPage({
   searchParams: Promise<{ redirect_url?: string }>;
 }) {
   const { redirect_url } = await searchParams;
-  // Validate redirect_url: allow safe internal paths, block path traversal.
-  const SAFE_PREFIXES = ['/dashboard', '/admin', '/onboarding', '/checkout', '/projects', '/messages', '/payments', '/settings', '/post-login'];
-  const isSafeRedirect = redirect_url
-    && SAFE_PREFIXES.some(p => redirect_url.startsWith(p))
-    && !redirect_url.includes('..');
-  const signInUrl = isSafeRedirect
-    ? `/sign-in?redirect_url=${encodeURIComponent(redirect_url!)}`
+  const destination = safeAuthDestination(redirect_url);
+  const signInUrl = destination
+    ? `/sign-in?redirect_url=${encodeURIComponent(destination)}`
     : '/sign-in';
 
-  const postSignUpUrl = isSafeRedirect
-    ? redirect_url!
-    : '/post-login';
+  const postSignUpUrl = postLoginUrl(redirect_url);
 
   // Account creation remains invite-only. Existing users can sign in without
   // an invitation cookie; the provider still verifies their credentials.

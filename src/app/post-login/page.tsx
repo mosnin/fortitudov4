@@ -5,6 +5,7 @@ import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { isPartner, isStaff } from "@/lib/permissions";
 import { provisionSignedInUser } from "@/lib/provision-user";
+import { safeAuthDestination } from "@/lib/auth-redirect";
 
 /**
  * Post-login router. Clerk redirects here after sign-in; we resolve the user's
@@ -19,7 +20,9 @@ import { provisionSignedInUser } from "@/lib/provision-user";
  * default is /dashboard, and a partner sent there lands in the client portal —
  * a delivery-stage tracker for a project they do not own.
  */
-export default async function PostLoginPage() {
+export default async function PostLoginPage({ searchParams }: {
+  searchParams: Promise<{ redirect_url?: string }>;
+}) {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
 
@@ -33,6 +36,11 @@ export default async function PostLoginPage() {
     // Do not bypass role routing if a webhook won the provisioning race.
     if (user.role === "client") redirect("/onboarding");
   }
+
+  const destination = safeAuthDestination((await searchParams).redirect_url);
+  // Account setup must finish first. The destination retains its own role and
+  // record-level authorization; a redirect never grants access.
+  if (destination) redirect(destination);
 
   if (isStaff(user.role)) {
     redirect("/admin");

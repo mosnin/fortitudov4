@@ -2,11 +2,13 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { claimStaffInvitation } from "@/lib/claim-staff-invitation";
 
 /**
  * Complete the Clerk-to-app handoff without depending on webhook delivery.
  * Identity comes only from the verified server session, never a form/email
- * lookup. Existing rows (including staff/partner roles) are never modified.
+ * lookup. Linked accounts are never modified; verified staff can claim only
+ * their exact, previously authorized invitation placeholder.
  */
 export async function provisionSignedInUser() {
   const { userId } = await auth();
@@ -26,6 +28,9 @@ export async function provisionSignedInUser() {
   if (!email || email.verification?.status !== "verified") {
     throw new Error("Verify your primary email before opening your workspace.");
   }
+
+  const invited = await claimStaffInvitation(userId, email.emailAddress);
+  if (invited) return invited;
 
   await db.insert(users).values({
     clerkId: userId,

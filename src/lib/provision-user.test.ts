@@ -7,10 +7,12 @@ const fake = vi.hoisted(() => ({
   insert: vi.fn(),
   values: vi.fn(),
   onConflictDoNothing: vi.fn(),
+  claimStaffInvitation: vi.fn(),
 }));
 
 vi.mock("@clerk/nextjs/server", () => ({ auth: fake.auth, currentUser: fake.currentUser }));
 vi.mock("@/db", () => ({ db: { select: fake.select, insert: fake.insert } }));
+vi.mock("@/lib/claim-staff-invitation", () => ({ claimStaffInvitation: fake.claimStaffInvitation }));
 
 const { provisionSignedInUser } = await import("./provision-user");
 const profile = {
@@ -49,6 +51,7 @@ describe("verified sign-in provisioning", () => {
     await expect(provisionSignedInUser()).rejects.toThrow("Sign in");
     expect(fake.select).not.toHaveBeenCalled();
     expect(fake.insert).not.toHaveBeenCalled();
+    expect(fake.claimStaffInvitation).not.toHaveBeenCalled();
   });
 
   it.each(["client", "admin", "project_manager", "va", "partner"])(
@@ -58,6 +61,7 @@ describe("verified sign-in provisioning", () => {
       await expect(provisionSignedInUser()).resolves.toMatchObject({ role });
       expect(fake.currentUser).not.toHaveBeenCalled();
       expect(fake.insert).not.toHaveBeenCalled();
+      expect(fake.claimStaffInvitation).not.toHaveBeenCalled();
     }
   );
 
@@ -91,6 +95,16 @@ describe("verified sign-in provisioning", () => {
       { id: "email_primary", emailAddress: "client@example.com", verification: { status: "unverified" } },
     ] });
     await expect(provisionSignedInUser()).rejects.toThrow("Verify your primary email");
+    expect(fake.insert).not.toHaveBeenCalled();
+    expect(fake.claimStaffInvitation).not.toHaveBeenCalled();
+  });
+
+  it.each(["admin", "project_manager", "va"])("retains the UUID and %s role from an authorized invitation", async role => {
+    rows([]);
+    const invited = { ...client, id: "original_invitation_uuid", role };
+    fake.claimStaffInvitation.mockResolvedValue(invited);
+    await expect(provisionSignedInUser()).resolves.toEqual(invited);
+    expect(fake.claimStaffInvitation).toHaveBeenCalledWith(profile.id, "client@example.com");
     expect(fake.insert).not.toHaveBeenCalled();
   });
 

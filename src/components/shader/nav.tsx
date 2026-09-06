@@ -52,7 +52,11 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
     return () => {
       document.body.style.overflow = previous;
       desktop.removeEventListener("change", onDesktop);
-      previouslyFocused?.focus();
+      if (desktop.matches) {
+        document.querySelector<HTMLAnchorElement>("[data-nav-brand] a")?.focus();
+      } else {
+        previouslyFocused?.focus();
+      }
     };
   }, [menuOpen]);
 
