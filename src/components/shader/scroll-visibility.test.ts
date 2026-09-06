@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { RevealHeadline } from "./reveal-headline";
-import { ValueProp } from "./value-prop";
+import { ValueProp, VALUE_PROP_ANIMATION } from "./value-prop";
 import { Providers } from "./providers";
 
 function textContent(markup: string): string {
@@ -20,7 +20,9 @@ function expectVisibleFirstPaint(markup: string): void {
   expect(markup).not.toMatch(/visibility:\s*hidden|display:\s*none|opacity:\s*0(?:[;"\s]|$)/);
   expect(markup).not.toMatch(/\s(?:hidden|inert)(?:[\s=>])/);
   for (const classes of classLists(markup)) {
-    expect(classes).not.toEqual(
+    // A secondary CTA follows the theme's desktop-only treatment. Responsive
+    // visibility is not a hydration gate; unconditional hidden content is.
+    expect(classes.filter((name) => !/^max-\[850px\]:/.test(name))).not.toEqual(
       expect.arrayContaining([expect.stringMatching(/(?:^|:)(?:hidden|invisible|opacity-0)$/)]),
     );
   }
@@ -37,15 +39,13 @@ describe("below-hero content without browser animation", () => {
   it("includes every outcome and its explanation in the server HTML", () => {
     const content = textContent(markup);
     for (const copy of [
-      "Your business is ready for more. Your systems should be, too.",
-      "A great product can still get lost in a confusing website.",
-      "A busy team can still lose hours to disconnected tools.",
-      "Turn interest into action.",
-      "Give people a clear reason to buy, book, or get in touch—and an easy way to do it.",
-      "Get your time back.",
-      "Connect the tools, handoffs, and repetitive work that keep pulling you away from the business.",
-      "Build what comes next.",
-      "Launch the store, app, or platform you have been putting off with a team that can handle the hard parts.",
+      "Websites, software, and AI, built around your business.",
+      "Websites and ecommerce",
+      "Help customers find the right product, understand the details, and complete a purchase or enquiry on any screen.",
+      "Software and AI",
+      "Connect customer records, requests, and approvals in software your team can use, with clear limits on what AI can do.",
+      "Marketing and consultation",
+      "Plan the campaign, build its landing page, and check the path from the first click to an enquiry, booking, or sale.",
     ]) {
       expect(content).toContain(copy);
     }
@@ -56,11 +56,11 @@ describe("below-hero content without browser animation", () => {
   it("offers a real contact link before client JavaScript runs", () => {
     const contactLink = markup.match(/<a\b[^>]*href="\/contact"[^>]*>[\s\S]*?<\/a>/)?.[0];
     expect(contactLink).toBeDefined();
-    expect(textContent(contactLink!)).toBe("Talk through your project");
+    expect(textContent(contactLink!)).toBe("Discuss a project");
     expectVisibleFirstPaint(contactLink!);
   });
 
-  it("keeps all panels readable until desktop animation successfully enhances them", () => {
+  it("keeps all panels readable until animation successfully enhances them", () => {
     expect(markup).not.toContain('data-enhanced="true"');
     expect(markup).not.toContain("pin-spacer");
     const panels = [...markup.matchAll(/<div\b[^>]*data-value-prop-panel=""[^>]*>/g)];
@@ -68,7 +68,7 @@ describe("below-hero content without browser animation", () => {
     for (const [panel] of panels) {
       expectVisibleFirstPaint(panel);
       // Positions prefixed by group-data-[enhanced=true] belong to the paid
-      // desktop animation. They are inactive in mobile and server HTML.
+      // animation. They are inactive in server HTML and reduced motion.
       const defaultClasses = classLists(panel).flat().filter((className) => !className.includes(":"));
       expect(defaultClasses).toContain("relative");
       expect(defaultClasses).not.toEqual(expect.arrayContaining([
@@ -92,10 +92,19 @@ describe("below-hero content without browser animation", () => {
     const props = { children: createElement(ValueProp) };
     const integratedMarkup = renderToStaticMarkup(createElement(Providers, props));
     expectVisibleFirstPaint(integratedMarkup);
-    expect(textContent(integratedMarkup)).toContain("Turn interest into action.");
+    expect(textContent(integratedMarkup)).toContain("Websites and ecommerce");
     expect(integratedMarkup).toContain('data-value-prop-wave=""');
     expect([...integratedMarkup.matchAll(/data-value-prop-panel=""/g)]).toHaveLength(3);
     expect(integratedMarkup).not.toContain('data-enhanced="true"');
+  });
+
+  it("does not exclude mobile widths or coarse pointers from the original sequence", () => {
+    expect(VALUE_PROP_ANIMATION).not.toMatch(/min-width|pointer/);
+    expect(VALUE_PROP_ANIMATION).toContain("prefers-reduced-motion: no-preference");
+    const source = readFileSync("src/components/shader/value-prop.tsx", "utf8");
+    expect(source).toContain("autoAlpha: 0, duration: 0.15");
+    expect(source).toContain("autoAlpha: 1, duration: 0.15");
+    expect(source).not.toContain("Math.floor(self.progress");
   });
 });
 

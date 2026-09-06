@@ -13,7 +13,6 @@ import { ArrowChip } from "./arrow-chip";
 import { WorkGrid } from "./work-grid";
 import { Faq } from "./faq";
 import { FinalCta } from "./final-cta";
-import { FloatingArtwork } from "./floating-artwork";
 
 const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 const OUTCOME_ICONS = [Compass, Layers, Zap];
@@ -57,12 +56,6 @@ export function ServiceDetail({ service, projects }: { service: ServicePage; pro
       <section className="relative w-full bg-background text-foreground" aria-labelledby="service-story-heading">
         <div className="mx-auto max-w-[1680px] px-10 py-32 max-[850px]:px-6 max-[850px]:py-24">
           <DetailIntro id="service-story-heading" eyebrow={service.narrative.eyebrow} title={service.narrative.title} body={service.narrative.body} />
-          <InViewBlock delay={0.12} className="mt-20 max-[850px]:mt-12">
-            <figure>
-              <FloatingArtwork src={service.image} alt={service.imageAlt} variant={service.artworkVariant} sizes="(max-width: 850px) calc(100vw - 48px), 800px" className="mx-auto max-w-[800px]" />
-              <figcaption className="mt-4 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-foreground/65">Original Fortitudo editorial concept · Not a client project</figcaption>
-            </figure>
-          </InViewBlock>
           <InViewBlock className="mt-10">
             <p className="max-w-[85ch] border-t border-foreground/15 pt-7 text-lg leading-relaxed text-foreground/80">{service.narrative.costOfWaiting}</p>
           </InViewBlock>
@@ -72,14 +65,6 @@ export function ServiceDetail({ service, projects }: { service: ServicePage; pro
       <section className="relative w-full bg-background text-foreground" aria-labelledby="service-outcomes-heading">
         <div className="mx-auto max-w-[1680px] px-10 py-32 max-[850px]:px-6 max-[850px]:py-24">
           <DetailIntro id="service-outcomes-heading" eyebrow="What changes for you" title={service.outcomesHeading} body={service.outcomesLead} />
-          <figure className="mt-16" data-service-deliverable={service.slug}>
-            <FloatingArtwork src={service.delivery.image} alt="" decorative variant={service.artworkVariant} sizes="(max-width: 850px) calc(100vw - 48px), 800px" className="mx-auto max-w-[800px]" />
-            <figcaption className="mx-auto mt-6 max-w-[68ch]">
-              <p className="text-sm leading-relaxed text-foreground/65">Illustrative concept and interface · Not a client project</p>
-              <h3 className="mt-4 text-2xl font-medium leading-tight tracking-tight sm:text-3xl">{service.delivery.title}</h3>
-              <p className="mt-4 text-base leading-relaxed text-foreground/75 sm:text-lg">{service.delivery.body}</p>
-            </figcaption>
-          </figure>
           <div className="mt-20 grid grid-cols-3 gap-5 max-[1100px]:grid-cols-1 max-[1100px]:gap-4 max-[850px]:mt-12">
             {service.outcomes.map((outcome, index) => {
               const Icon = OUTCOME_ICONS[index % OUTCOME_ICONS.length];

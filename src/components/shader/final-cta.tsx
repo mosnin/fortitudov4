@@ -8,7 +8,7 @@ import { ShaderCanvas } from "@/components/shader/shader-canvas";
 
 const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 
-const HEADLINE_LINES = ["What is your", "business ready for?"] as const;
+const HEADLINE_LINES = ["Get a proposal", "for your project."] as const;
 
 export function FinalCta(): ReactNode {
   const sectionRef = useRef<HTMLElement>(null);
@@ -68,9 +68,9 @@ export function FinalCta(): ReactNode {
                 animate={{ y: inView ? 0 : 16 }}
                 transition={{ duration: 0.8, ease: easeOutExpo, delay: 0.6 }}
               >
-                The launch you keep pushing back. The website customers struggle
-                with. The hours your team loses to work that should be simpler.
-                Let’s figure out what to fix first, and what it will take.
+                Send us your current site or product, what needs to change,
+                and your target launch date. We’ll review the requirements
+                and put the scope, milestones, and price in writing.
               </motion.p>
 
               <motion.div
@@ -82,7 +82,7 @@ export function FinalCta(): ReactNode {
                 whileTap={{ scale: 0.98 }}
               >
                 <Link href="/contact" className="inline-flex items-stretch gap-1">
-                  <span className="px-5 py-3 rounded-md bg-[#0f0f12] text-[#f8cd02] text-xs font-medium tracking-widest uppercase border border-neutral-900/[0.08]">Talk through your project</span>
+                  <span className="px-5 py-3 rounded-md bg-[#0f0f12] text-[#f8cd02] text-xs font-medium tracking-widest uppercase border border-neutral-900/[0.08]">Request a proposal</span>
                   <ArrowChip className="bg-[#0f0f12] text-[#f8cd02]" />
                 </Link>
               </motion.div>

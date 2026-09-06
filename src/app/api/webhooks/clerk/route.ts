@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { claimStaffInvitation } from "@/lib/claim-staff-invitation";
 
 export async function POST(req: Request) {
   try {
@@ -64,13 +65,20 @@ export async function POST(req: Request) {
 
     if (type === "user.created") {
       // The webhook is a best-effort sync — on-demand provisioning in
-      // auth-utils may have already created this row. Upsert so a duplicate
+      // provision-user may have already created this row. Upsert so a duplicate
       // delivery (or a row provisioned first by a request) never 500s and
       // triggers endless Clerk retries.
-      const email =
-        (
-          data.email_addresses as Array<{ email_address: string }>
-        )?.[0]?.email_address ?? "";
+      const primary = (data.email_addresses as Array<{
+        id: string; email_address: string; verification?: { status?: string };
+      }> | undefined)?.find(address => address.id === data.primary_email_address_id);
+      // A signed event proves delivery, not ownership of an unverified email.
+      // Leave incomplete identities to the verified post-login handoff.
+      if (!primary || primary.verification?.status !== "verified" || typeof data.id !== "string") {
+        return NextResponse.json({ received: true });
+      }
+      const email = primary.email_address;
+      const [linked] = await db.select({ id: users.id }).from(users).where(eq(users.clerkId, data.id));
+      if (!linked) await claimStaffInvitation(data.id, email);
       await db
         .insert(users)
         .values({

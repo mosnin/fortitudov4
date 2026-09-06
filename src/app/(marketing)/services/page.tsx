@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <PageHero eyebrow="Services" title={<>What is your business <span className="text-[#f8cd02]">ready for?</span></>} lead="A website that does the business justice. Software that takes the work off your plate. A clear plan for what comes next. Explore how we can help." cta={{ label: "Talk through your project", href: "/contact" }} secondaryCta={{ label: "See our work", href: "/work" }} />
+      <PageHero eyebrow="Agency services" title="Websites, software, AI, and marketing." lead="Design and development for a new website, ecommerce store, or software product. Consultation when you need to define the scope before commissioning a build." cta={{ label: "Get a project proposal", href: "/contact" }} secondaryCta={{ label: "See our work", href: "/work" }} />
       <section className="bg-background px-6 py-24 text-foreground sm:px-10 lg:py-32">
-        <div className="mx-auto max-w-[1680px]"><SectionIntro eyebrow="How we help" title="Find the work that moves your business forward." body="Each service has a different job to do. Explore the approach, what we can take care of, and related work before we talk through your project." /></div>
+        <div className="mx-auto max-w-[1680px]"><SectionIntro eyebrow="Scope and deliverables" title="Choose the service that fits your project." body="Each page sets out the deliverables, review process, and related work. We confirm the scope and price in a written proposal." /></div>
         <div className="mx-auto mt-20 max-w-[1680px] space-y-5">
           {services.map((service, index) => {
             const Icon = service.icon;
@@ -40,6 +40,7 @@ export default function ServicesPage() {
                     <div className="mt-10 flex flex-wrap gap-2">
                       <Link href={SERVICE_PAGE_HREFS[service.id]} className="inline-flex items-stretch gap-1"><span className={`rounded-md px-5 py-3 text-xs font-medium uppercase tracking-widest ${index === 0 ? "bg-accent-foreground text-accent" : "bg-foreground text-background"}`}>Explore {service.name}</span><ArrowChip className={index === 0 ? "bg-accent-foreground text-accent" : "bg-foreground text-background"} /></Link>
                       <Link href="/contact" className={`inline-flex min-h-11 items-center rounded-md border px-5 text-xs font-medium uppercase tracking-widest ${index === 0 ? "border-accent-foreground/20" : "border-foreground/15"}`}>Ask a question</Link>
+                      {service.id === "websites" ? <Link href="/services/ecommerce" className="inline-flex min-h-11 items-center rounded-md border border-accent-foreground/20 px-5 text-xs font-medium uppercase tracking-widest">Explore ecommerce</Link> : null}
                     </div>
                   </div>
                 </div>
@@ -48,7 +49,7 @@ export default function ServicesPage() {
           })}
         </div>
       </section>
-      <CtaBand title="Let’s work out what comes first." body="Tell us what you are trying to change. We will help you choose the right starting point and put a clear scope and price around it." />
+      <CtaBand title="Get a scope and price for your project." body="Send your current site or product, the work you need, and your target launch date. We will review the requirements and explain the proposed scope." />
     </>
   );
 }

@@ -6,7 +6,8 @@ export type ServiceSlug =
   | "software-solutions"
   | "ai-solutions"
   | "consultation"
-  | "digital-marketing";
+  | "digital-marketing"
+  | "ecommerce";
 
 export interface ServicePage {
   slug: ServiceSlug;
@@ -18,8 +19,6 @@ export interface ServicePage {
   directoryLead: string;
   image: string;
   imageAlt: string;
-  artworkVariant: "software" | "ai" | "creative" | "strategy" | "websites";
-  delivery: { image: string; title: string; body: string };
   narrative: { eyebrow: string; title: string; body: string; costOfWaiting: string };
   outcomesHeading: string;
   outcomesLead: string;
@@ -36,17 +35,11 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     serviceId: "websites",
     name: "Websites",
     description: "Websites and online stores that help people understand your business, trust what you offer, and take the next step.",
-    title: "Give people a reason to choose you.",
+    title: "Websites built for enquiries, bookings, and sales.",
     lead: "Your product deserves more than a place to sit online. We build websites and stores that make it easy to understand what you sell, feel good about choosing it, and buy.",
     directoryLead: "Turn a good first impression into an enquiry, a booking, or a sale.",
-    image: "/brand-stories/creative-presence.webp",
-    imageAlt: "Original Fortitudo editorial: a fisheye camera portrait with yellow digital folders, connecting a business's visual identity to its online presence.",
-    artworkVariant: "websites",
-    delivery: {
-      image: "/brand-stories/storefront-to-sale.webp",
-      title: "A brand people can actually shop.",
-      body: "The campaign earns attention. The store carries that same identity into product discovery and checkout. This fictional LUMA concept shows the connection; your build is shaped around your own products and customers.",
-    },
+    image: "/work/case-studies/nourish-reserve.png",
+    imageAlt: "Nourish Reserve website from Fortitudo's published work",
     narrative: {
       eyebrow: "Your business, brought to life",
       title: "You have worked hard on the business. Your website should show it.",
@@ -83,17 +76,11 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     serviceId: "software_solutions",
     name: "Software Solutions",
     description: "Custom software, customer portals, and internal tools built around your business, with a clear scope and experienced engineering.",
-    title: "Build the way your business should work.",
+    title: "Custom software for your customers and your team.",
     lead: "Give your customers a better experience and your team a system they can rely on. We turn the workarounds, spreadsheets, and product ideas into software built for the job.",
     directoryLead: "Replace daily workarounds with an app, portal, or platform that fits.",
-    image: "/brand-stories/too-many-tools.webp",
-    imageAlt: "Original Fortitudo editorial: an operator dwarfed by a wall of yellow-and-black campaign screens, illustrating the work of managing disconnected tools.",
-    artworkVariant: "software",
-    delivery: {
-      image: "/brand-stories/connected-workspace.webp",
-      title: "The project, its files, and its people. Together.",
-      body: "A customer portal or internal workspace brings the next action into one place. This fictional ORBIT concept makes the handoff visible: scattered files become organized work with a clear owner.",
-    },
+    image: "/work/case-studies/govern.png",
+    imageAlt: "Govern website from Fortitudo's published software work",
     narrative: {
       eyebrow: "From workaround to working product",
       title: "Your team should not have to hold the system together.",
@@ -114,7 +101,7 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     },
     approach: {
       title: "Resolve the difficult decisions early.",
-      body: "With 10+ years of experience and hundreds of complex builds behind us, we know that the details between the screens matter as much as the screens themselves.",
+      body: "Permissions, data flows, integrations, and recovery paths are part of the build. We review them alongside the interface, not after the first release.",
       steps: ["Map the people, data, and decisions involved", "Prioritize the workflows the first release needs", "Review working software throughout the build", "Test the real journey and plan the handover"],
     },
     proof: { title: "Software with a job to do.", body: "Explore our published work on agent permissions and conversational information collection.", slugs: ["govern", "tellme"] },
@@ -130,17 +117,11 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     serviceId: "ai_solutions",
     name: "AI Solutions",
     description: "Practical AI tools and automations that handle repetitive work, connect to your business systems, and keep people in control.",
-    title: "Give your people their time back.",
+    title: "AI agents that handle defined work, with human oversight.",
     lead: "The copying, sorting, chasing, and rewriting adds up. We find the repetitive work AI can handle, connect it to your business, and keep your team in charge of the decisions that matter.",
     directoryLead: "Make the repetitive work lighter, with useful AI and clear human control.",
-    image: "/brand-stories/customer-conversations.webp",
-    imageAlt: "Original Fortitudo editorial: a headset-wearing woman beside a giant yellow phone showing a fictional RELAY communication campaign.",
-    artworkVariant: "ai",
-    delivery: {
-      image: "/brand-stories/enquiry-to-booking.webp",
-      title: "From an incoming enquiry to a reviewed next step.",
-      body: "An AI workflow can organize an enquiry and prepare the next action. Your team checks it before anything important happens. The inbox, review button, and calendar illustrate that sequence—not an unattended promise to handle every customer.",
-    },
+    image: "/work/case-studies/chippi.png",
+    imageAlt: "Chippi website from Fortitudo's published AI work",
     narrative: {
       eyebrow: "A useful job for AI",
       title: "Start with the work you wish your team did less of.",
@@ -177,17 +158,11 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     serviceId: "consultation",
     name: "Consultation",
     description: "An experienced second opinion on your technology, product, or build plans, with practical priorities and a written way forward.",
-    title: "Make the next big decision with a clear head.",
+    title: "Technical consultation before you commit to a build.",
     lead: "Before you commit to a platform, a rebuild, or a new product, get an experienced view of the options. We help you decide what is worth doing, what comes first, and what can wait.",
     directoryLead: "Get a practical plan before a big technology decision or investment.",
-    image: "/brand-stories/next-chapter.webp",
-    imageAlt: "Original Fortitudo editorial: a woman working among floating yellow desktop folders, illustrating the choice of what to build next.",
-    artworkVariant: "strategy",
-    delivery: {
-      image: "/brand-stories/idea-to-roadmap.webp",
-      title: "A plan that says what happens now, next, and later.",
-      body: "The output is something your team can use: priorities, dependencies, and a written recommendation. This roadmap concept shows how we turn a pile of possible projects into an order of work you can make decisions around.",
-    },
+    image: "/work/case-studies/govern.png",
+    imageAlt: "Govern, one of the software projects behind Fortitudo's technical work",
     narrative: {
       eyebrow: "Clarity before commitment",
       title: "Too many options can keep a good business standing still.",
@@ -195,7 +170,7 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
       costOfWaiting: "An unresolved decision can hold up a launch or keep a broken process in place. A rushed one can commit the business to work it does not need. A focused review helps you move with a reason.",
     },
     outcomesHeading: "Leave with something you can act on.",
-    outcomesLead: "Our advice comes from 10+ years of experience and hundreds of complex builds, with the detail your next decision deserves.",
+    outcomesLead: "A written assessment of your current system, realistic options, and the recommended order of work—not just a call with more ideas.",
     outcomes: [
       { tag: "01 — Understand it", title: "Get a clear view of where you are.", body: "Review the tools, product, or process you have today. Understand what is working, what is getting in the way, and what deserves closer attention." },
       { tag: "02 — Weigh it up", title: "See the tradeoffs before you commit.", body: "Compare realistic options in plain language, including the effort, dependencies, and ongoing responsibilities that come with each." },
@@ -224,17 +199,11 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     serviceId: "digital_marketing",
     name: "Digital Marketing",
     description: "Connected campaigns, landing pages, and follow-up that help turn attention into a clear next step for your customers.",
-    title: "Give attention somewhere worth going.",
+    title: "Campaigns, landing pages, and follow-up built together.",
     lead: "The ad earns a click. The page makes the case. The follow-up keeps the conversation moving. We bring them together around what you sell and the customers you want to reach.",
     directoryLead: "Connect the campaign, the page, and the follow-up into one customer journey.",
-    image: "/brand-stories/creative-presence.webp",
-    imageAlt: "Original Fortitudo editorial: an expressive creator photographed from above with a camera, illustrating distinctive creative work that earns attention.",
-    artworkVariant: "creative",
-    delivery: {
-      image: "/brand-stories/campaign-in-the-world.webp",
-      title: "One campaign. Recognizable wherever it appears.",
-      body: "The same fictional LUMA identity carries across mobile, print, and an outdoor placement here. For your engagement, we select the relevant channels, create the agreed assets, and connect the campaign to a landing page and a way to measure response.",
-    },
+    image: "/work/case-studies/nourish-reserve.png",
+    imageAlt: "Nourish Reserve storefront from Fortitudo's published website work",
     narrative: {
       eyebrow: "From first impression to next step",
       title: "Good attention is expensive to waste.",
@@ -268,8 +237,53 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
   },
 ];
 
+// Ecommerce is a Websites specialization, not a sixth product/database type.
+export const ECOMMERCE_PAGE: ServicePage = {
+  slug: "ecommerce",
+  serviceId: "websites",
+  name: "Ecommerce",
+  description: "Ecommerce store design and development: product catalogs, mobile product pages, checkout, integrations, and store-team handover.",
+  title: "An online store customers can buy from—and your team can run.",
+  lead: "We design and build ecommerce stores around your catalog, buying journey, and order process. Product pages, checkout, payments, and operations are scoped together before development starts.",
+  directoryLead: "Product discovery, checkout, and the tools that keep orders moving.",
+  image: "/work/case-studies/nourish-reserve.png",
+  imageAlt: "Nourish Reserve ecommerce website from Fortitudo's published work",
+  narrative: {
+    eyebrow: "Ecommerce development",
+    title: "Help customers choose the right product and complete the order.",
+    body: "Customers need clear product details, the right variant, and accurate delivery information before they pay. We design that journey across collections, product pages, the cart, and checkout, including the mobile experience.",
+    costOfWaiting: "A storefront also has to work after a sale. We review how orders reach your team, where stock is managed, and which systems need to stay in sync.",
+  },
+  outcomesHeading: "A complete buying journey, not just a new storefront.",
+  outcomesLead: "The scope covers what the shopper sees and what your team needs to manage products and orders.",
+  outcomes: [
+    { tag: "01 — Product discovery", title: "Make the catalog easy to shop.", body: "Collections, navigation, product information, variants, and photography requirements organized around how customers choose." },
+    { tag: "02 — Checkout", title: "Test the path from cart to confirmation.", body: "Payment, shipping, discounts, order confirmation, and failure states tested against agreed scenarios before launch." },
+    { tag: "03 — Store operations", title: "Give your team a store it can maintain.", body: "Product-management access, agreed integrations, analytics, and a practical handover for the people running the store." },
+  ],
+  scope: {
+    title: "Scope the store around your catalog.",
+    body: "Product count, variants, markets, shipping, and existing systems determine the work. Platform fees, apps, and payment charges are identified separately from our project price.",
+    deliverables: ["Catalog and customer-journey planning", "Responsive collection and product-page design", "Storefront development and content setup", "Cart, checkout, payments, and shipping configuration", "Agreed stock, fulfilment, or email integrations", "Test orders, analytics, launch, and team handover"],
+  },
+  approach: {
+    title: "Review the buying journey before launch.",
+    body: "We agree on representative products and order scenarios early, then use them to test the store with your team.",
+    steps: ["Review the catalog, platform, and operational requirements", "Approve product and collection page designs", "Build and test successful and failed order paths", "Launch with documented access and store-management training"],
+  },
+  proof: { title: "Nourish Reserve: published storefront work.", body: "See the wellness storefront in our portfolio, including the public site and its product presentation.", slugs: ["nourish-reserve"] },
+  faq: [
+    { q: "Can you improve our existing store?", a: "Yes. We review the current platform and buying journey before proposing changes. A focused product-page or checkout improvement may be more appropriate than a rebuild." },
+    { q: "Do you choose the ecommerce platform?", a: "We recommend an approach after reviewing the catalog, integrations, markets, and your team's requirements. Platform and app costs are made explicit in the proposal." },
+    { q: "What do we need to provide?", a: "Product data, prices, delivery and returns policies, and any existing brand assets are useful starting points. We agree on copy and photography responsibilities before the build." },
+    { q: "Is a new store guaranteed to increase sales?", a: "No. Demand, pricing, traffic, and fulfilment all affect sales. We commit to the agreed design, functionality, testing, and measurement, not an invented revenue forecast." },
+  ],
+};
+
+export const PUBLIC_SERVICE_PAGES: readonly ServicePage[] = [...SERVICE_PAGES, ECOMMERCE_PAGE];
+
 export function getServicePage(slug: string): ServicePage | undefined {
-  return SERVICE_PAGES.find((service) => service.slug === slug);
+  return PUBLIC_SERVICE_PAGES.find((service) => service.slug === slug);
 }
 
 export function getServicePageById(id: ServiceType): ServicePage | undefined {

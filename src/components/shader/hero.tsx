@@ -3,6 +3,7 @@
 import {
   animate,
   motion,
+  useAnimationControls,
   useMotionValue,
   useScroll,
   useSpring,
@@ -24,6 +25,8 @@ const SCROLL_RANGE = 80;
 export function Hero({ entranceReady = true }: { entranceReady?: boolean }): ReactNode {
   const sectionRef = useRef<HTMLElement>(null);
   const progress = useMotionValue(1);
+  const copyVisibility = useMotionValue(1);
+  const copyControls = useAnimationControls();
   const reduceMotion = useReducedMotionSafe();
   const { scrollY } = useScroll();
   const rawExit = useTransform(scrollY, [0, SCROLL_RANGE], [0, 1], {
@@ -38,8 +41,8 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
 
   const padding = useTransform(exit, [0, 1], [FRAME_INSET, 0]);
 
-  // Original shader.zip 110×60 pill-to-viewport entrance, progressively
-  // enabled after the optional intro. SSR always has the full-size surface.
+  // Original shader.zip 110×60 pill-to-viewport entrance.
+  // SSR always has the full-size surface and readable content.
   const width = useTransform(progress, p => `calc(110px + (100% - 110px) * ${p})`);
   const height = useTransform(progress, p => `calc(60px + (100% - 60px) * ${p})`);
   const borderRadius = useTransform([progress, exit], latest => {
@@ -51,15 +54,29 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
     return (pillRadius * (1 - eased) + FINAL_RADIUS * eased) * (1 - e);
   });
   useEffect(() => {
-    if (!entranceReady || reduceMotion || window.scrollY > 32) return;
+    if (!entranceReady || reduceMotion || window.scrollY > 32) {
+      progress.set(1);
+      copyVisibility.set(1);
+      copyControls.set("visible");
+      return;
+    }
     const section = sectionRef.current;
     if (!section) return;
     section.dataset.shaderEntrance = "running";
+    copyVisibility.set(0);
+    copyControls.set("hidden");
     progress.set(0);
     const controls = animate(progress, 1, { duration: 1.8, ease: easeOutExpo });
+    const copyTimer = window.setTimeout(() => {
+      copyVisibility.set(1);
+      void copyControls.start("visible");
+    }, 1400);
     const finish = () => {
+      window.clearTimeout(copyTimer);
       controls.stop();
       progress.set(1);
+      copyVisibility.set(1);
+      copyControls.set("visible");
       delete section.dataset.shaderEntrance;
     };
     const watchdog = window.setTimeout(finish, 3250);
@@ -67,16 +84,20 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
     window.addEventListener("wheel", finish, { once: true, passive: true });
     return () => {
       window.clearTimeout(watchdog);
+      window.clearTimeout(copyTimer);
       window.removeEventListener("touchstart", finish);
       window.removeEventListener("wheel", finish);
-      finish();
+      controls.stop();
+      // Motion unmounts its controls before this effect's cleanup. Calling
+      // copyControls.set here throws during route changes and Strict Mode.
+      delete section.dataset.shaderEntrance;
     };
-  }, [entranceReady, progress, reduceMotion]);
+  }, [copyControls, copyVisibility, entranceReady, progress, reduceMotion]);
 
   return (
     <motion.section
       ref={sectionRef}
-      className="relative h-[100svh] min-h-[42rem] w-full max-[850px]:min-h-[38rem]"
+      className="relative h-[100svh] min-h-[42rem] w-full bg-[#f8cd02] max-[850px]:min-h-[38rem]"
       style={{ padding }}
     >
       <div className="relative w-full h-full flex items-center justify-center">
@@ -92,8 +113,9 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
           <motion.div
             className="absolute inset-0 flex flex-col justify-between p-10 pt-40 max-[850px]:p-6 max-[850px]:pt-32 text-[#0f0f12] pointer-events-none max-w-[1680px] mx-auto"
             initial={false}
-            animate="visible"
-            transition={{ staggerChildren: 0.12, delayChildren: 1.4 }}
+            animate={copyControls}
+            style={{ opacity: copyVisibility }}
+            transition={{ staggerChildren: 0.12 }}
           >
             <motion.h1
               className="max-w-[18ch] text-[clamp(2.75rem,7.75vw,7.75rem)] font-medium leading-[0.95] tracking-tight"
@@ -103,7 +125,7 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
               }}
               transition={{ staggerChildren: 0.12 }}
             >
-              {["We build it.", "You own it."].map((line) => (
+              {["Websites. Software.", "AI agents."].map((line) => (
                 <span
                   key={line}
                   className="block overflow-hidden pb-[0.05em]"
@@ -131,8 +153,9 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
                 }}
                 transition={{ duration: 0.8, ease: easeOutExpo }}
               >
-                More customers. Less busywork. Room to grow. We build the
-                websites, software, and systems that help your business get there.
+                Fortitudo is a digital agency for websites, ecommerce stores,
+                custom software, consultation, and AI agents. Get a defined
+                scope, a fixed project price, and a team to take it through launch.
               </motion.p>
 
               <motion.div
@@ -147,7 +170,7 @@ export function Hero({ entranceReady = true }: { entranceReady?: boolean }): Rea
               >
                 <Link href="/contact" className="inline-flex items-stretch gap-1">
                   <span className="px-5 py-3 rounded-md bg-[#0f0f12] text-[#f8cd02] text-xs font-medium tracking-widest uppercase border border-[#0f0f12]">
-                    Talk through your project
+                    Get a project proposal
                   </span>
                   <ArrowChip className="bg-[#0f0f12] text-[#f8cd02]" />
                 </Link>

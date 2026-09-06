@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ServiceDetail } from "@/components/shader/service-detail";
-import { getServicePage, SERVICE_PAGES } from "@/lib/service-pages";
+import { getServicePage, PUBLIC_SERVICE_PAGES } from "@/lib/service-pages";
 import { WORK_PROJECTS } from "@/lib/work-projects";
 
 export function generateStaticParams() {
-  return SERVICE_PAGES.map((service) => ({ slug: service.slug }));
+  return PUBLIC_SERVICE_PAGES.map((service) => ({ slug: service.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
