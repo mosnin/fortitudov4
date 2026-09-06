@@ -58,6 +58,10 @@ const clerkHandler = clerkMiddleware(async (auth, req) => {
   if (!isPublicRoute(req)) {
     await auth.protect();
   }
+}, {
+  // Use our verified provisioning handoff, not the provider-hosted default.
+  signInUrl: "/sign-in",
+  signUpUrl: "/sign-up",
 });
 
 /**
