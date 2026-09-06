@@ -1,4 +1,45 @@
-# Database migrations & runbook
+# Current database release checks
+
+`src/db/schema.ts` is the current schema. The application uses Neon Postgres,
+not the Supabase setup described in the archived notes below. A successful
+Next.js build does not check the database: its connection is deliberately lazy.
+
+On 2026-09-06 UTC, the current schema was installed in Neon project
+`sparkling-term-17704790`, branch `br-super-term-avgn3m7u` (`main`), database
+`neondb`, after matching its endpoint to the live Fortitudo deployment. The
+public schema contained zero tables and zero enums. The guarded, atomic install
+created 29 tables and 28 enums, and left the separate `neon_auth` schema alone.
+No users, roles, client records or projects were seeded.
+
+The reviewed SQL was exported from the current source:
+
+```sh
+npx drizzle-kit export --dialect postgresql --schema ./src/db/schema.ts
+```
+
+**Do not replay `0000_studio_core.sql` / `0001_business_profiles.sql` as a
+current setup.** They describe retired offerings and omit current CRM, partner
+and Helix tables. The commands, driver details and table counts in the archived
+notes below are historical, not deployment instructions.
+
+For future changes, verify the exact database target, inspect the proposed SQL,
+back up populated data and validate on an isolated branch. Use the same
+database's direct URL for schema operations and pooled URL for runtime. Never
+approve destructive `drizzle-kit push` changes automatically. Preview currently
+shares the integration with production, so its form submissions are real writes.
+
+Verify the live tables and exercise the affected flow after deployment.
+`/api/db-check` returning `ok: true` only means its query completed; inspect its
+table-existence fields as well. Builds and fixtures do not prove real sign-in
+or enquiry persistence.
+
+Clerk remains the auth provider. `/post-login` now provisions missing records
+from the verified server identity, always as a client, without waiting for a
+webhook. Existing roles are preserved. `CLERK_WEBHOOK_SECRET` is still needed
+for asynchronous profile update/deletion events; its absence must not be
+reported as a fully configured webhook integration.
+
+## Archived migration notes (superseded; do not execute)
 
 The source of truth for the database is **`src/db/schema.ts`** (Drizzle). The SQL
 files in this folder are generated from it via `drizzle-kit`. All application

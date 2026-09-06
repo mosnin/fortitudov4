@@ -64,7 +64,7 @@ export async function POST(req: Request) {
 
     if (type === "user.created") {
       // The webhook is a best-effort sync — on-demand provisioning in
-      // auth-utils may have already created this row. Upsert so a duplicate
+      // provision-user may have already created this row. Upsert so a duplicate
       // delivery (or a row provisioned first by a request) never 500s and
       // triggers endless Clerk retries.
       const email =
