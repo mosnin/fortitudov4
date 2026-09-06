@@ -1,8 +1,8 @@
 'use client';
 
 /**
- * The invite prompt that stands in front of the Clerk widgets on `/sign-in`
- * and `/sign-up` until this browser has presented a valid code
+ * The invite prompt that stands in front of account creation on `/sign-up`
+ * until this browser has presented a valid code
  * (`/api/invite` sets the `invite_ok` cookie; the SERVER page reads it and
  * decides which side renders, so the gate cannot be skipped by editing the
  * client). `router.refresh()` after success re-runs that server decision in

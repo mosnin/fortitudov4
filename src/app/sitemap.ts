@@ -45,6 +45,7 @@ const PAGES = [
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
   { path: "/services", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/websites", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/services/ecommerce", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/software-solutions", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/ai-solutions", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/consultation", priority: 0.8, changeFrequency: "monthly" },

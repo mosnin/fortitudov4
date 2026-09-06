@@ -10,6 +10,7 @@ const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 
 const serviceLinks = [
   { label: "Websites", href: "/services/websites", note: "Sites and shops built to be found." },
+  { label: "Ecommerce", href: "/services/ecommerce", note: "Product pages, checkout, and store operations." },
   { label: "Software Solutions", href: "/services/software-solutions", note: "Apps, portals and internal tools." },
   { label: "AI Solutions", href: "/services/ai-solutions", note: "Useful automation for repeated work." },
   { label: "Consultation", href: "/services/consultation", note: "A senior plan before you spend." },
@@ -42,8 +43,17 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
   useEffect(() => {
     if (!menuOpen) return;
     const previous = document.body.style.overflow;
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const desktop = window.matchMedia("(min-width: 850px)");
+    const onDesktop = () => { if (desktop.matches) setMenuOpen(false); };
     document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = previous; };
+    document.querySelector<HTMLButtonElement>("#fortitudo-mobile-menu button")?.focus();
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      document.body.style.overflow = previous;
+      desktop.removeEventListener("change", onDesktop);
+      previouslyFocused?.focus();
+    };
   }, [menuOpen]);
 
   useEffect(() => {
@@ -52,6 +62,13 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
       if (event.key === "Escape") {
         setMenuOpen(false);
         setMegaOpen(false);
+      }
+      if (menuOpen && event.key === "Tab") {
+        const controls = Array.from(document.querySelectorAll<HTMLElement>("#fortitudo-mobile-menu a[href], #fortitudo-mobile-menu button"));
+        const first = controls[0];
+        const last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -75,19 +92,16 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
           <motion.div
             initial={false}
             animate={{
-              paddingLeft: scrolled ? 12 : 0,
-              paddingRight: scrolled ? 12 : 0,
-              paddingTop: scrolled ? 8 : 0,
-              paddingBottom: scrolled ? 8 : 0,
-              backgroundColor: "#f8cd02",
-              color: "#0f0f12",
-              borderColor: scrolled ? "rgba(15,15,18,0.08)" : "rgba(255,255,255,0)",
+              backgroundColor: scrolled ? "#0f0f12" : "rgba(15,15,18,0)",
+              color: scrolled ? "#f8cd02" : "#0f0f12",
+              borderColor: "rgba(15,15,18,0)",
             }}
             transition={{ duration: 0.45, ease: easeOutExpo }}
-            className="rounded-lg border"
+            data-nav-brand
+            className="flex h-14 items-center rounded-lg border px-3 max-[850px]:h-[54px] max-[850px]:px-2"
           >
-            <Link href="/" onClick={closeMenus} className="inline-flex items-center gap-3 text-xl font-medium tracking-tight">
-              <BrandMark className="h-8 w-8" />
+            <Link href="/" onClick={closeMenus} className="inline-flex min-h-11 items-center gap-3 text-xl font-medium tracking-tight focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current max-[850px]:gap-2 max-[850px]:text-lg">
+              <BrandMark className="h-8 w-8 max-[850px]:h-7 max-[850px]:w-7" />
               <span>Fortitudo</span>
             </Link>
           </motion.div>
@@ -98,7 +112,7 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
           variants={{ hidden: { opacity: 0, y: -12 }, visible: { opacity: 1, y: 0 } }}
           transition={{ duration: 0.7, ease: easeOutExpo }}
         >
-          <div className="flex items-center gap-1 rounded-lg border border-black bg-[#0f0f12] p-1.5 text-xs font-medium uppercase tracking-widest text-[#f8cd02] shadow-[0_12px_45px_rgba(0,0,0,0.22)]">
+          <motion.div data-nav-controls initial={false} animate={{ backgroundColor: scrolled ? "#0f0f12" : "rgba(15,15,18,0)", color: scrolled ? "#f8cd02" : "#0f0f12" }} transition={{ duration: 0.45, ease: easeOutExpo }} className="flex h-14 items-center gap-1 rounded-lg border border-transparent p-1.5 text-xs font-medium uppercase tracking-widest max-[850px]:h-[54px]">
             <button
               type="button"
               aria-expanded={megaOpen}
@@ -111,18 +125,19 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
             </button>
             <Link href="/work" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex">Work</Link>
             <Link href="/pricing" onClick={closeMenus} className="hidden rounded-md px-4 py-2.5 transition-colors hover:bg-[#f8cd02] hover:text-[#0f0f12] min-[850px]:inline-flex">Pricing</Link>
-            <Link href="/contact" onClick={closeMenus} className="inline-flex items-center rounded-md bg-[#f8cd02] px-4 py-2.5 text-[#0f0f12] transition-colors hover:bg-white">Let’s talk</Link>
+            <Link href="/sign-in" onClick={closeMenus} className="inline-flex min-h-11 items-center rounded-md px-3 py-2.5 normal-case tracking-normal transition-colors hover:bg-current/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current">Sign in</Link>
+            <Link href="/contact" onClick={closeMenus} className={`hidden min-h-11 items-center rounded-md px-4 py-2.5 transition-colors min-[850px]:inline-flex ${scrolled ? "bg-[#f8cd02] text-[#0f0f12] hover:bg-white" : "bg-[#0f0f12] text-[#f8cd02] hover:bg-black"}`}>Get a proposal</Link>
             <button
               type="button"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
               aria-expanded={menuOpen}
               aria-controls="fortitudo-mobile-menu"
               onClick={() => setMenuOpen((open) => !open)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md text-[#f8cd02] transition-colors hover:bg-white/10 min-[850px]:hidden"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-md transition-colors hover:bg-current/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current min-[850px]:hidden"
             >
               {menuOpen ? <X size={18} /> : <Menu size={18} />}
             </button>
-          </div>
+          </motion.div>
         </motion.div>
 
         <AnimatePresence>
@@ -182,12 +197,15 @@ export function Nav({ delay = 0.2 }: { delay?: number }): ReactNode {
         {menuOpen ? (
           <motion.div
             id="fortitudo-mobile-menu"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="fortitudo-mobile-menu-heading"
             className="pointer-events-auto fixed inset-0 z-40 overflow-y-auto bg-[#0f0f12] px-6 pb-10 pt-24 text-white min-[850px]:hidden"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.25, ease: easeOutExpo }}
           >
             <div className="flex items-center justify-between border-b border-white/10 pb-5">
-              <p className="font-mono text-xs uppercase tracking-[0.2em] text-white/45">Menu</p>
+              <p id="fortitudo-mobile-menu-heading" className="font-mono text-xs uppercase tracking-[0.2em] text-white/70">Menu</p>
               <button type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)} className="grid h-10 w-10 place-items-center rounded-md border border-white/12"><X size={19} /></button>
             </div>
             <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.2em] text-white/40">What we build</p>

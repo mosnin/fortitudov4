@@ -5,6 +5,7 @@ import { ArrowChip } from "@/components/shader/arrow-chip";
 
 const SERVICE_LINKS = [
   { label: "Websites", href: "/services/websites" },
+  { label: "Ecommerce", href: "/services/ecommerce" },
   { label: "Software", href: "/services/software-solutions" },
   { label: "AI solutions", href: "/services/ai-solutions" },
   { label: "Consultation", href: "/services/consultation" },
@@ -25,8 +26,8 @@ export function Footer(): ReactNode {
       <div className="mx-auto w-full max-w-[1680px] px-6 pt-24 lg:px-10 lg:pt-32">
         <span className="inline-flex rounded-md border border-foreground/[0.08] px-3.5 py-1.5 font-mono text-xs uppercase tracking-widest text-foreground/70">Get in touch</span>
         <div className="mt-6 max-w-5xl text-4xl font-medium leading-[0.95] tracking-tighter sm:text-6xl lg:text-7xl xl:text-8xl">
-          <p>Big plans?</p>
-          <p className="text-foreground/70">Let&rsquo;s make them happen.</p>
+          <p>Have a project brief?</p>
+          <p className="text-foreground/70">Send it to the team.</p>
         </div>
         <div className="mt-12">
           <Link href="mailto:hello@fortitudo.agency" className="group inline-flex items-stretch gap-1"><span className="rounded-md bg-foreground px-5 py-3 text-xs font-medium uppercase tracking-widest text-background">hello@fortitudo.agency</span><ArrowChip className="bg-foreground text-background" /></Link>
@@ -35,7 +36,7 @@ export function Footer(): ReactNode {
       <div className="mx-auto mt-24 grid w-full max-w-[1680px] grid-cols-2 gap-10 px-6 py-16 lg:mt-32 lg:grid-cols-12 lg:gap-8 lg:px-10 lg:py-20">
         <div className="col-span-2 lg:col-span-4">
           <Link href="/" className="inline-flex items-center gap-3 text-xl font-medium tracking-tight"><BrandMark className="h-8 w-8 text-accent" />Fortitudo</Link>
-          <p className="mt-4 max-w-xs leading-relaxed text-foreground/55">Websites, software, AI, consultation, and marketing—built by senior people and handed over completely.</p>
+          <p className="mt-4 max-w-xs leading-relaxed text-foreground/70">Digital agency for websites, ecommerce, custom software, AI agents, consultation, and marketing.</p>
         </div>
         <FooterColumn title="Services" links={SERVICE_LINKS} />
         <FooterColumn title="Company" links={PAGE_LINKS} />

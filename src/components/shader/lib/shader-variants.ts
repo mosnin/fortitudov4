@@ -49,11 +49,14 @@ export const SHADER_VARIANTS: readonly ShaderVariant[] = [
       brightness: 2.2,
     },
     wave: [
-      rgb(0.025, 0.025, 0.030),
-      rgb(0.180, 0.150, 0.018),
-      rgb(0.430, 0.345, 0.008),
-      rgb(0.720, 0.570, 0.006),
+      // The original ribbon cycles through all five colors over time. Dark
+      // ground colors here made it disappear mid-scroll. Keep every stop in
+      // the visible yellow range; the shader supplies the charcoal background.
+      rgb(0.720, 0.540, 0.004),
+      rgb(0.840, 0.660, 0.006),
       rgb(0.973, 0.804, 0.008),
+      rgb(1.000, 0.870, 0.120),
+      rgb(1.000, 0.930, 0.400),
     ],
   },
   {

@@ -11,11 +11,11 @@ import { RevealHeadline } from "./reveal-headline";
 const easeOutExpo = [0.33, 1, 0.68, 1] as const;
 
 const OUTCOMES = [
-  { title: "A website that earns its place.", body: "Make it easier for the right people to find you, understand what makes you different, and take the next step." },
-  { title: "Software that fits how you work.", body: "Give your customers a better experience and your team a system that keeps up. Portals, apps, and platforms built around your business." },
-  { title: "Less busywork. More breathing room.", body: "Put the repetitive jobs on autopilot, with people in control of the decisions that matter. We find where AI is useful, then make it work." },
-  { title: "A clear plan before a big investment.", body: "Get an experienced second opinion on what to build, what to fix, and what can wait. Leave with a practical way forward." },
-  { title: "Give attention somewhere to go.", body: "Bring your ads, landing pages, and follow-up together. Make the journey from first impression to becoming a customer feel like one conversation." },
+  { title: "Brand sites and ecommerce stores.", body: "Page planning, responsive design, development, content management, and checkout or enquiry integrations." },
+  { title: "Apps, customer portals, and internal tools.", body: "Product requirements, interface design, databases, access controls, and integrations built around your workflow." },
+  { title: "AI agents for defined business tasks.", body: "Enquiry handling, information retrieval, and draft preparation, with permissions, evaluation, and human review." },
+  { title: "A technical review and written plan.", body: "Assess an existing system, compare platforms, or scope a first release before committing to development." },
+  { title: "Campaigns and the pages behind them.", body: "Audience and offer planning, creative direction, landing pages, follow-up flows, and measurement." },
 ] as const;
 
 export function Product(): ReactNode {
@@ -33,10 +33,10 @@ export function Product(): ReactNode {
           </div>
           <div className="col-span-7 col-start-6 max-[1100px]:col-span-12 max-[1100px]:col-start-1 max-[850px]:col-span-1">
             <RevealHeadline id="product-heading" delay={0.05} mutedFrom={5} className="text-balance text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[0.9] tracking-tight">
-              One team for the things holding you back.
+              Design, development, and technical advice in one agency.
             </RevealHeadline>
             <motion.p initial={false} animate={{ y: settled ? 0 : 8 }} transition={{ duration: reduceMotion ? 0 : 0.7, ease: easeOutExpo, delay: reduceMotion ? 0 : 0.18 }} className="mt-8 max-w-[60ch] text-base leading-relaxed text-foreground/75">
-              You shouldn’t have to coordinate a designer, a developer, and three other agencies just to move forward. We bring the thinking and the building together.
+              Hire us for a defined build, improvements to an existing product, or a technical consultation. Every proposal sets out the deliverables, milestones, and price.
             </motion.p>
             <motion.div initial={false} animate={{ y: settled ? 0 : 8 }} transition={{ duration: reduceMotion ? 0 : 0.7, ease: easeOutExpo, delay: reduceMotion ? 0 : 0.28 }} className="mt-10">
               <Link href="/services" className="group inline-flex items-stretch gap-1"><span className="rounded-md bg-foreground px-5 py-3 text-xs font-medium uppercase tracking-widest text-background">Explore services</span><ArrowChip className="bg-foreground text-background" /></Link>

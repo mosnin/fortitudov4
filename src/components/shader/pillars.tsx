@@ -18,19 +18,19 @@ interface Pillar {
 const PILLARS: Pillar[] = [
   {
     tag: "01 — Get clear",
-    title: "Start with what matters.",
+    title: "Approve the scope and price.",
     body: "We look at how customers buy, where your team loses time, and what you want to launch. Then we agree on the work that matters, a written scope, and one fixed price.",
     icon: Compass,
   },
   {
     tag: "02 — Build it",
-    title: "Build it with the right team.",
+    title: "Review the design and working build.",
     body: "Designers and senior engineers work together from the start. You see the product take shape, give feedback, and speak directly with the people making it happen.",
     icon: Layers,
   },
   {
     tag: "03 — Put it to work",
-    title: "Launch it. Put it to work.",
+    title: "Test, launch, and train your team.",
     body: "We test the details, connect your tools, and help your team take over. Your customers can use it, your team knows how to run it, and the finished work belongs to you.",
     icon: Zap,
   },
@@ -67,7 +67,7 @@ export function Pillars(): ReactNode {
               delay={0.05}
               className="text-balance text-[clamp(2rem,4.2vw,4rem)] font-medium leading-[0.85] tracking-tight"
             >
-              From “we should” to “it’s live.”
+              A written scope. Scheduled reviews. A tested launch.
             </RevealHeadline>
             <motion.p
               initial={false}
@@ -75,8 +75,8 @@ export function Pillars(): ReactNode {
               transition={{ duration: 0.7, ease: easeOutExpo, delay: 0.18 }}
               className="mt-6 max-w-[60ch] text-balance text-xl max-[850px]:text-lg font-light leading-snug text-foreground/60"
             >
-              You have a business to run. We turn the project you keep putting off
-              into a clear plan, then take responsibility for getting it built.
+              You approve the requirements before development, review progress
+              at agreed milestones, and test the finished work with us before launch.
             </motion.p>
           </div>
         </div>

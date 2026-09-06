@@ -9,16 +9,16 @@ import { WaveShader, type WaveParams, type WaveShaderHandle } from "./wave-shade
 
 const STEPS = [
   {
-    eyebrow: "Turn interest into action.",
-    body: "Give people a clear reason to buy, book, or get in touch—and an easy way to do it.",
+    eyebrow: "Websites and ecommerce",
+    body: "Help customers find the right product, understand the details, and complete a purchase or enquiry on any screen.",
   },
   {
-    eyebrow: "Get your time back.",
-    body: "Connect the tools, handoffs, and repetitive work that keep pulling you away from the business.",
+    eyebrow: "Software and AI",
+    body: "Connect customer records, requests, and approvals in software your team can use, with clear limits on what AI can do.",
   },
   {
-    eyebrow: "Build what comes next.",
-    body: "Launch the store, app, or platform you have been putting off with a team that can handle the hard parts.",
+    eyebrow: "Marketing and consultation",
+    body: "Plan the campaign, build its landing page, and check the path from the first click to an enquiry, booking, or sale.",
   },
 ];
 
@@ -33,7 +33,9 @@ const STEP_PRESETS: WaveParams[] = [
   { amp: 0.10, freq: 0.32, complexity: 0.20, speed: 0.22, thickness: 0.16, hue: 0.65, curve: 0.05, warp: 0.0, chroma: 0.95, bias: 0.0 },
 ];
 
-const DESKTOP_ANIMATION = "(min-width: 851px) and (min-height: 700px) and (pointer: fine) and (prefers-reduced-motion: no-preference)";
+// The purchased sequence is for touch screens too. Only short landscape
+// viewports and reduced motion use the fully readable, unpinned fallback.
+export const VALUE_PROP_ANIMATION = "(min-height: 650px) and (prefers-reduced-motion: no-preference)";
 
 export function ValueProp(): ReactNode {
   const sectionRef = useRef<HTMLElement>(null);
@@ -49,7 +51,7 @@ export function ValueProp(): ReactNode {
     const bar = progressBarRef.current;
     if (!section || !pin || !bar) return;
 
-    const media = window.matchMedia(DESKTOP_ANIMATION);
+    const media = window.matchMedia(VALUE_PROP_ANIMATION);
     let restore: (() => void) | undefined;
 
     const updatePresentation = () => {
@@ -96,9 +98,8 @@ export function ValueProp(): ReactNode {
           section.dataset.enhanced = "true";
           gsap.set(bar, { scaleX: 0, transformOrigin: "0 0" });
           panels.forEach((panel, index) => gsap.set(panel, { autoAlpha: index === 0 ? 1 : 0 }));
-          wordRefs.current.forEach((words) => gsap.set(words, { color: "rgba(250,250,250,0.65)" }));
+          wordRefs.current.forEach((words) => gsap.set(words, { color: "rgba(250,250,250,0.18)" }));
 
-          let activeStep = 0;
           timeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
@@ -111,12 +112,6 @@ export function ValueProp(): ReactNode {
               invalidateOnRefresh: true,
               onUpdate: (self) => {
                 gsap.set(bar, { scaleX: self.progress });
-                const nextStep = Math.min(STEPS.length - 1, Math.floor(self.progress * STEPS.length));
-                if (nextStep !== activeStep) {
-                  activeStep = nextStep;
-                  // Keep one complete panel visible even during a fast scroll.
-                  panels.forEach((panel, index) => gsap.set(panel, { autoAlpha: index === activeStep ? 1 : 0 }));
-                }
               },
             },
           });
@@ -125,6 +120,10 @@ export function ValueProp(): ReactNode {
           STEPS.forEach((_, index) => {
             const start = index * STEP_DURATION;
             if (index > 0) {
+              // Original theme timing: crossfade before the next word reveal,
+              // while the ribbon continuously morphs between its three shapes.
+              timeline!.to(panels[index - 1]!, { autoAlpha: 0, duration: 0.15, ease: "none" }, start - 0.15);
+              timeline!.to(panels[index]!, { autoAlpha: 1, duration: 0.15, ease: "none" }, start - 0.15);
               timeline!.to(waveShape, {
                 ...STEP_PRESETS[index]!,
                 duration: STEP_DURATION,
@@ -163,19 +162,14 @@ export function ValueProp(): ReactNode {
           <div ref={progressBarRef} className="h-full w-full bg-accent" style={{ transform: "scaleX(0)", transformOrigin: "0 0" }} />
         </div>
 
-        <div className="relative z-10 mx-auto flex max-w-[1680px] items-end justify-between gap-10 px-10 pt-28 max-[850px]:flex-col max-[850px]:items-start max-[850px]:gap-6 max-[850px]:px-6 max-[850px]:pt-16">
-          <h2 id="business-outcomes-heading" className="max-w-[22ch] text-[clamp(1.75rem,2.4vw,2.25rem)] font-medium leading-[1.15] tracking-tight text-foreground/90">
-            Your business is ready for more. Your systems should be, too.
+        <div className="relative z-10 mx-auto flex max-w-[1680px] items-end justify-between gap-8 px-10 pt-28 max-[850px]:px-6 max-[850px]:pt-24">
+          <h2 id="business-outcomes-heading" className="max-w-[22ch] text-[clamp(1.5rem,2.4vw,2.25rem)] font-medium leading-[1.15] tracking-tight text-foreground/90">
+            Websites, software, and AI, built around your business.
           </h2>
-          <div className="max-w-[45ch]">
-            <p className="text-base leading-relaxed text-foreground/75">
-              A great product can still get lost in a confusing website. A busy team can still lose hours to disconnected tools. We fix the parts that get between you and your next customer.
-            </p>
-            <Link href="/contact" className="group mt-5 inline-flex items-center gap-3 rounded-md border border-foreground/20 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent">
-              Talk through your project
-              <RollingArrow iconSize={16} />
-            </Link>
-          </div>
+          <Link href="/contact" className="group inline-flex shrink-0 items-center gap-3 rounded-md border border-foreground/20 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:border-foreground/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent max-[850px]:hidden">
+            Discuss a project
+            <RollingArrow iconSize={16} />
+          </Link>
         </div>
 
         <div data-value-prop-wave="" className="pointer-events-none relative z-0 mt-5 h-44 w-full group-data-[enhanced=true]/value-prop:absolute group-data-[enhanced=true]/value-prop:inset-x-0 group-data-[enhanced=true]/value-prop:bottom-0 group-data-[enhanced=true]/value-prop:mt-0 group-data-[enhanced=true]/value-prop:h-[58%]" aria-hidden="true">
@@ -187,7 +181,7 @@ export function ValueProp(): ReactNode {
             key={step.eyebrow}
             data-value-prop-panel=""
             ref={(element) => { stepRefs.current[index] = element; }}
-            className="relative z-10 px-10 py-10 max-[850px]:px-6 group-data-[enhanced=true]/value-prop:absolute group-data-[enhanced=true]/value-prop:inset-0 group-data-[enhanced=true]/value-prop:pointer-events-none group-data-[enhanced=true]/value-prop:pt-80"
+            className="relative z-10 px-10 py-10 max-[850px]:px-6 group-data-[enhanced=true]/value-prop:absolute group-data-[enhanced=true]/value-prop:inset-0 group-data-[enhanced=true]/value-prop:pointer-events-none group-data-[enhanced=true]/value-prop:pt-72 group-data-[enhanced=true]/value-prop:max-[850px]:pt-60"
           >
             <div className="mx-auto grid max-w-[1600px] grid-cols-12 gap-8 max-[850px]:grid-cols-1 max-[850px]:gap-6">
               <div className="col-span-3 max-[850px]:col-span-1">

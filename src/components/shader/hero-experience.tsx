@@ -1,11 +1,9 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import { Hero } from "./hero";
-import { Preloader } from "./preloader";
 
 export function HeroExperience() {
-  const [ready, setReady] = useState(false);
-  const revealHero = useCallback(() => setReady(true), []);
-  return <><Preloader onReveal={revealHero} /><Hero entranceReady={ready} /></>;
+  // Shader's own pill-to-viewport entrance needs no loading overlay or asset
+  // gate. Navigation and the server-rendered page remain available immediately.
+  return <Hero />;
 }

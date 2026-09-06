@@ -28,7 +28,8 @@ export default async function SignUpPage({
     ? redirect_url!
     : '/post-login';
 
-  // Same invite gate as /sign-in — see that page for the mechanism.
+  // Account creation remains invite-only. Existing users can sign in without
+  // an invitation cookie; the provider still verifies their credentials.
   const invited = (await cookies()).get('invite_ok')?.value === '1';
   if (!invited) {
     return (

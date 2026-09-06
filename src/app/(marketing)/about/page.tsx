@@ -2,10 +2,11 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/shader/page-hero";
 import { SectionIntro } from "@/components/shader/page-sections";
 import { FinalCta } from "@/components/shader/final-cta";
+import { WORK_PROJECTS } from "@/lib/work-projects";
 
 export const metadata: Metadata = {
   title: "About — Fortitudo Agency",
-  description: "10+ years. Hundreds of complex builds. Fortitudo brings the design and engineering experience to turn your next business move into a working product.",
+  description: "Fortitudo is a digital agency delivering websites, ecommerce stores, custom software, AI agents, and technical consultation. Explore the work and delivery process.",
 };
 
 const beliefs = [
@@ -19,8 +20,8 @@ export default function AboutPage() {
     <>
       <PageHero
         eyebrow="About Fortitudo"
-        title={<>There is a lot riding on <span className="text-[#f8cd02]">your next build.</span></>}
-        lead="Your customers will use it. Your team will depend on it. Your business needs it to work. We bring 10+ years of experience and hundreds of complex builds to the table."
+        title="A digital agency for design and development."
+        lead="We scope, design, build, and launch websites, ecommerce stores, custom software, and AI agents. Technical consultation is available before a build or as a separate engagement."
         cta={{ label: "Talk through your project", href: "/contact" }}
         secondaryCta={{ label: "See our work", href: "/work" }}
       />
@@ -28,13 +29,13 @@ export default function AboutPage() {
         <div className="mx-auto max-w-[1680px]">
           <SectionIntro
             eyebrow="The team behind the work"
-            title="Big ambitions need people who know how to deliver."
-            body="A new storefront. A software product. A better way for your team to work. Whatever you are building, the hard part is getting every detail to work together. That is the work we have spent more than a decade doing."
+            title="Evaluate the work before choosing the agency."
+            body="Our published projects include Nourish Reserve's storefront, Stored's shared-memory product, and Govern's agent-permissions software. Open the project pages to see their purpose and public sites."
           />
           <div className="mt-16 grid grid-cols-12 gap-8 border-y border-foreground/15 py-10 max-[850px]:grid-cols-1">
-            <div className="col-span-4 max-[850px]:col-span-1"><p className="text-6xl font-medium tracking-tight">10+ years</p><p className="mt-3 text-base text-foreground/75">Of turning business problems into working products.</p></div>
-            <div className="col-span-4 max-[850px]:col-span-1"><p className="text-6xl font-medium tracking-tight">Hundreds</p><p className="mt-3 text-base text-foreground/75">Of complex builds across brands, software, and business systems.</p></div>
-            <p className="col-span-4 self-center text-lg leading-relaxed text-foreground/75 max-[850px]:col-span-1">That experience matters when a project gets complicated. We know how to ask the right questions, make the tradeoffs, and keep the work moving toward launch.</p>
+            <div className="col-span-4 max-[850px]:col-span-1"><p className="text-6xl font-medium tracking-tight">{WORK_PROJECTS.length} projects</p><p className="mt-3 text-base text-foreground/75">In our published portfolio.</p></div>
+            <div className="col-span-4 max-[850px]:col-span-1"><p className="text-6xl font-medium tracking-tight">Design + build</p><p className="mt-3 text-base text-foreground/75">From page structure and interface design to integrations and launch.</p></div>
+            <p className="col-span-4 self-center text-lg leading-relaxed text-foreground/75 max-[850px]:col-span-1">A proposal defines the deliverables, technical dependencies, review milestones, and price. Changes are discussed before they become extra work.</p>
           </div>
           <div className="mt-20 grid gap-5 lg:grid-cols-3">
             {beliefs.map(([title, body], index) => (
@@ -50,8 +51,8 @@ export default function AboutPage() {
         <div className="mx-auto grid max-w-[1680px] grid-cols-12 gap-8 max-[850px]:grid-cols-1">
           <p className="col-span-4 font-mono text-xs uppercase tracking-[0.2em] text-foreground/70 max-[850px]:col-span-1">What you leave with</p>
           <div className="col-span-8 max-[850px]:col-span-1">
-            <p className="text-[clamp(2.4rem,5vw,5.5rem)] font-medium leading-[0.95] tracking-tight">Something your business can <span className="text-accent">move forward with.</span></p>
-            <p className="mt-7 max-w-2xl text-lg leading-relaxed text-foreground/75">A customer journey that makes sense. Tools your team can rely on. A launch you can stand behind. We build around what changes for your business when the work goes live.</p>
+            <p className="text-[clamp(2.4rem,5vw,5.5rem)] font-medium leading-[0.95] tracking-tight">A tested build and a documented handover.</p>
+            <p className="mt-7 max-w-2xl text-lg leading-relaxed text-foreground/75">The agreed code, design files, account access, and operating documentation. We identify third-party licenses and ongoing platform costs in the scope.</p>
           </div>
         </div>
       </section>

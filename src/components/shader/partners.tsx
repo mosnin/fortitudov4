@@ -68,7 +68,7 @@ export function Partners(): ReactNode {
         >
           <div className="col-span-7 flex flex-col p-7 max-[1100px]:col-span-12 max-[850px]:p-4">
             <h3 className="text-[clamp(1.75rem,3vw,2.5rem)] font-medium leading-[1.05] tracking-tight">{FEATURED.name}</h3>
-            <p className="mt-6 max-w-[42ch] text-balance text-base leading-relaxed text-foreground/75 max-[850px]:text-sm">10+ years. Hundreds of complex builds. That experience shows up in the details of products like this one.</p>
+            <p className="mt-6 max-w-[42ch] text-balance text-base leading-relaxed text-foreground/75 max-[850px]:text-sm">Explore the published product, its purpose, and the live site. The projects below cover storefronts, software, and AI.</p>
             <p className="mt-4 max-w-[42ch] text-balance text-base leading-relaxed text-foreground/75 max-[850px]:text-sm">{FEATURED.blurb}</p>
             <Link href={`/work/${FEATURED.slug}`} className="group mt-auto inline-flex items-center gap-3 self-start pt-12 font-mono text-xs uppercase tracking-[0.2em] text-foreground/80 transition-colors duration-200 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent max-[850px]:pt-8">
               Explore the project
