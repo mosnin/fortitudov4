@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image";
 
 import { LogoMark } from "@/components/imageworks/logo";
 import { softEase, useReducedMotion } from "@/components/imageworks/lib/motion";
@@ -75,9 +74,7 @@ function Newsletter(): ReactNode {
       >
         hello@fortitudo.agency <ArrowRight className="size-4" aria-hidden />
       </Link>
-      <div className="relative mt-8 aspect-square w-48 sm:w-56">
-        <Image src="/brand/fortitudo-glass.webp" alt="Fortitudo’s circular wave mark rendered in smoked glass." fill sizes="224px" className="object-contain" />
-      </div>
+
     </div>
   );
 }
@@ -208,7 +205,7 @@ export function Footer(): ReactNode {
     <footer
       ref={ref}
       aria-labelledby="footer-heading"
-      className="relative overflow-hidden bg-background text-foreground"
+      className="relative z-20 isolate overflow-hidden bg-background text-foreground"
     >
       <h2 id="footer-heading" className="sr-only">
         Footer

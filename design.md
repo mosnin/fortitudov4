@@ -110,3 +110,9 @@ The owner explicitly chose the supplied cinematic hero, drawer, NumberFlow, stac
 React owns mount and teardown of the source helpers. Keep the existing single Lenis/window scroller, persistent Fortitudo header and router. Adapt fade/blur to Next navigation rather than inserting Swup into Next's DOM. Contact navigation waits 2.5 seconds behind the canonical opaque Aurora canvas, then fades into the destination. Query strings and standard modified-link behavior are preserved. NumberFlow animates only existing numeric progress; no fabricated statistics or pricing.
 
 Local self-review: desktop thumbnail selection and outgoing-video pause, phone fixed hero and opaque section handoff, readable mobile drawer/focus/Escape, contact form destination, work navigation and browser back. TypeScript and focused ESLint pass. These checks establish implementation behavior, not owner visual acceptance.
+
+
+### Editorial correction and footer restoration — 21 September 2026
+The owner rejected the new generated interface sculptures as sci-fi and inappropriate for corporate clients. They are not website assets and must not ship. Future imagery must use grounded photographic storytelling about people, places and business activity; no generated UI panels, fictional hardware or agency-branded consumer products. No replacement image batch is approved.
+
+Restore the original centered closing CTA, dotted field and solid paired buttons with Fortitudo copy. Do not restore the rejected repeated campaign-image helix while its imagery is unresolved. Preserve the purchased footer wordmark and rounded navigation panel, remove the added glass-mark image, and give the opaque footer its own layer above the mobile hero. Hide the fixed hero once the following section reaches the viewport top. Render real portfolio screenshots with object-contain, with no hover zoom that cuts off their edges.

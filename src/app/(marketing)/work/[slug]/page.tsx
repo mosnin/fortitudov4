@@ -55,7 +55,7 @@ export default async function Page({
                 fill
                 priority
                 sizes="100vw"
-                className="object-cover object-top"
+                className="object-contain object-center"
               />
             </div>
             <figcaption className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">

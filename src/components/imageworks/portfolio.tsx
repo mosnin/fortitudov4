@@ -9,7 +9,7 @@ const FRAMES = WORK_PROJECTS.map((p) => ({
   ...p,
   ratio: p.service,
   grow: "",
-  aspect: "aspect-[4/3]",
+  aspect: "aspect-[16/10]",
   position: "object-top",
 }));
 
@@ -40,7 +40,7 @@ export function Portfolio(): ReactNode {
                         alt={f.imageAlt}
                         fill
                         sizes="(min-width: 1024px) 40vw, 100vw"
-                        className={`object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.03] ${f.position}`}
+                        className={`object-contain object-center`}
                       />
                     </div>
                     <figcaption className="mt-4 flex items-baseline justify-between text-[15px]">

@@ -27,8 +27,8 @@ export function OurWork(): ReactNode {
             {SELECTED_WORK.map((project) => (
               <li key={project.slug}>
                 <Link href={`/work/${project.slug}`} className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
-                    <Image src={project.image} alt={project.imageAlt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-top transition-transform duration-700 group-hover:scale-[1.03] motion-reduce:transition-none" />
+                  <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
+                    <Image src={project.image} alt={project.imageAlt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-contain object-center" />
                   </div>
                   <div className="mt-5 flex items-baseline justify-between gap-4">
                     <h3 className="text-xl font-medium">{project.name}</h3>

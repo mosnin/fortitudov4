@@ -102,6 +102,7 @@ export function cinematicMediaHero(
   let heroVisible = next.getBoundingClientRect().top > 0;
 
   const syncVideoPlayback = () => {
+    root.dataset.heroVisible = String(heroVisible);
     videos.forEach(({ index, video: itemVideo }) => {
       const shouldPlay =
         heroVisible && !document.hidden && root.dataset.motionPaused !== "true" && index === activeIndex;
