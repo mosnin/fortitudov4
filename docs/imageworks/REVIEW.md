@@ -3,7 +3,7 @@
 Preview: https://fortitudov4-fz6r5wtmq-mosnins-projects.vercel.app
 Deployment: dpl_AEzhsxvv972gs2BRcKtZYDfowCMq, READY, preview environment. Production domain not promoted. Remote Turbopack build and local Webpack production build both passed.
 
-All 24 public routes respond with the Imageworks layout locally and in preview. Original page paths remain. All eight case-study records are byte-identical to baseline. Protected application and API source is unchanged. No marketing page imports Shader UI.
+All 24 public routes respond with the Imageworks layout locally and through authenticated Vercel curl in preview. Hosted homepage was visually verified in the authenticated browser. Preview protection remains enabled. Original page paths remain. All eight case-study records are byte-identical to baseline. Protected application and API source is unchanged. No marketing page imports Shader UI.
 
 Validation: 1,047 tests across 30 files passed; scoped ESLint passed; production build type check passed; git diff whitespace check passed. Desktop original-theme/adaptation comparison, mobile menu and route change, mobile paused hero (390px, no overflow), pricing cards, service scope, desktop case detail and loaded image, FAQ expansion, selected Chippi tab, contact consultation preselection and required-field blocking inspected. Hosted desktop homepage rendered with actual project arc; captured browser error log was empty. No real lead submitted; full email/CRM delivery and private authenticated journeys were not retested by this UI change.
 
