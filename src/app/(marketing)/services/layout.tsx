@@ -16,7 +16,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "What we build · Fortitudo Agency",
   description:
-    "Websites, software, AI tools, consultation, and digital marketing. Five things, each with a fixed price before we start.",
+    "Websites, ecommerce, complete software builds, custom agents, teams, harnesses, Jev, context systems, MCP and APIs, creative workflows, brand implementation and consultation.",
 };
 
 export default function ServicesLayout({

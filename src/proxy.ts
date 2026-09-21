@@ -33,6 +33,8 @@ export const PUBLIC_ROUTES = [
   "/pricing(.*)",
   "/portfolio(.*)",
   "/work(.*)",
+  "/resources",
+  "/resources/(.*)",
   "/about(.*)",
   "/contact(.*)",
   "/faq(.*)",
@@ -108,6 +110,7 @@ const MARKETING_ROOTS = new Set([
   "/services",
   "/terms",
   "/work",
+  "/resources",
 ]);
 
 /** Exported, like PUBLIC_ROUTES, so the allowlist can be asserted in a test. */

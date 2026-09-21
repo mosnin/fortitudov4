@@ -13,7 +13,7 @@ import Image from "next/image";
 import { useEffect, useRef, type ReactNode } from "react";
 
 const BRIEF =
-  "A useful product starts with a clear brief. We define what needs to work, design the experience, and build it through to launch.";
+  "Your customer sees one business. The brand, the website and the product should feel like they belong together. We design and build the complete experience.";
 const WORDS = BRIEF.split(" ");
 const PHOTO = PHOTOS[3];
 const SRC = photoSrc(PHOTO, 2400, 1500);
@@ -50,7 +50,7 @@ function Word({
   const b = Math.min(WORDS_END, ((index + 3) / n) * WORDS_END);
   const opacity = useTransform(
     progress,
-    (v) => DIM + (1 - DIM) * span(v, [a, b]),
+    (v) => DIM + (1 - DIM) * span(v, [a, b])
   );
   return (
     <motion.span style={{ opacity }} className="inline-block">
@@ -71,9 +71,9 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
           0.6,
           Math.max(
             0.1,
-            Math.min(SEED_W / el.offsetWidth, SEED_H / el.offsetHeight),
-          ),
-        ),
+            Math.min(SEED_W / el.offsetWidth, SEED_H / el.offsetHeight)
+          )
+        )
       );
     fit();
     const ro = new ResizeObserver(fit);
@@ -84,7 +84,7 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
   const grow = useTransform(progress, (v) => easeInOut(span(v, GROW)));
   const scale = useTransform(
     [grow, seed],
-    ([g, s]) => (s as number) + (1 - (s as number)) * (g as number),
+    ([g, s]) => (s as number) + (1 - (s as number)) * (g as number)
   );
 
   const radius = useTransform(scale, (s) => RADIUS / s);
@@ -100,10 +100,10 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
     >
       <Image
         src={SRC}
-        alt="Softly lit glass form from the Imageworks theme."
+        alt="Abstract forms in the original Imageworks photographic series."
         fill
         sizes="100vw"
-        className="object-cover object-top"
+        className="object-cover"
       />
 
       <motion.span
@@ -116,7 +116,7 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
         className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10"
       >
         <p className="max-w-md font-sans text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-balance sm:text-[2rem]">
-          From the brief to the final detail.
+          A considered direction, from the first brief.
         </p>
       </motion.div>
     </motion.div>
@@ -132,7 +132,7 @@ export function Brief(): ReactNode {
   });
   const textOpacity = useTransform(
     scrollYProgress,
-    (v) => 1 - span(v, TEXT_OUT),
+    (v) => 1 - span(v, TEXT_OUT)
   );
 
   const textClass =
@@ -146,10 +146,10 @@ export function Brief(): ReactNode {
           <div className="relative mt-12 aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
             <Image
               src={SRC}
-              alt="Softly lit glass form from the Imageworks theme."
+              alt="Abstract forms in the original Imageworks photographic series."
               fill
               sizes="100vw"
-              className="object-cover object-top"
+              className="object-cover"
             />
             <span
               aria-hidden="true"
@@ -157,7 +157,7 @@ export function Brief(): ReactNode {
             />
             <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10">
               <p className="max-w-md font-sans text-[1.5rem] leading-[1.15] sm:text-[2rem]">
-                From the brief to the final detail.
+                A considered direction, from the first brief.
               </p>
             </div>
           </div>

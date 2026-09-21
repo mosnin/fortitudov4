@@ -5,7 +5,20 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 const PUBLIC_PAGES = new Set([
-  "", "about", "contact", "faq", "portfolio", "pricing", "privacy", "terms", "services", "work",
+  "",
+  "about",
+  "sign-in",
+  "sign-up",
+  "forgot-password",
+  "contact",
+  "faq",
+  "portfolio",
+  "pricing",
+  "privacy",
+  "terms",
+  "services",
+  "work",
+  "resources",
 ]);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

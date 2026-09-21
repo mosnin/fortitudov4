@@ -2,18 +2,22 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageIntro } from "@/components/imageworks/page-intro";
-import { services } from "@/lib/services";
+import { SERVICE_CATALOG, serviceOffer } from "@/lib/service-catalog";
 const EMPTY = { name: "", email: "", company: "", service: "", message: "" };
 const FIELD =
   "mt-2 min-h-13 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
 export default function Contact() {
   const [form, setForm] = useState(EMPTY);
+  const [interest, setInterest] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const chosen = new URLSearchParams(window.location.search).get("service");
-    if (services.some((s) => s.id === chosen))
-      setForm((f) => ({ ...f, service: chosen! }));
+    const params = new URLSearchParams(window.location.search);
+    const selected = SERVICE_CATALOG.find(s => s.slug === params.get("offer")) ?? SERVICE_CATALOG.find(s => s.serviceId === params.get("service"));
+    if (selected) {
+      setInterest(selected.slug);
+      setForm(f => ({ ...f, service: selected.serviceId }));
+    }
   }, []);
   const update = (key: keyof typeof EMPTY, value: string) =>
     setForm((f) => ({ ...f, [key]: value }));
@@ -26,7 +30,7 @@ export default function Contact() {
       const res = await fetch("/api/leads", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, message: interest ? `Enquiry: ${serviceOffer(SERVICE_CATALOG.find(s => s.slug === interest)!).name}\n\n${form.message}` : form.message }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -56,7 +60,7 @@ export default function Contact() {
       <section className="py-20 sm:py-28">
         <div className="mx-auto grid max-w-[1440px] gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-20">
           <aside>
-            <h2 className="font-serif text-4xl leading-tight">
+            <h2 className="font-sans text-4xl leading-tight">
               A useful first conversation.
             </h2>
             <p className="mt-6 max-w-md text-[15px] leading-7 text-muted-foreground">
@@ -101,7 +105,7 @@ export default function Contact() {
           <div className="rounded-2xl border border-border bg-muted p-6 sm:p-10">
             {status === "sent" ? (
               <div role="status" aria-live="polite" className="py-20">
-                <h2 className="font-serif text-4xl">We have your brief.</h2>
+                <h2 className="font-sans text-4xl">We have your brief.</h2>
                 <p className="mt-5 text-base leading-7 text-muted-foreground">
                   The team will review it and follow up using the email address
                   you provided.
@@ -110,6 +114,7 @@ export default function Contact() {
                   className="mt-8 min-h-12 rounded-xl border border-border px-5"
                   onClick={() => {
                     setForm(EMPTY);
+                    setInterest("");
                     setStatus("idle");
                   }}
                 >
@@ -181,12 +186,12 @@ export default function Contact() {
                       id="service"
                       name="service"
                       className={FIELD}
-                      value={form.service}
-                      onChange={(e) => update("service", e.target.value)}
+                      value={interest}
+                      onChange={(e) => { setInterest(e.target.value); update("service", SERVICE_CATALOG.find(s => s.slug === e.target.value)?.serviceId ?? ""); }}
                     >
                       <option value="">Help me work it out</option>
-                      {services.map((s) => (
-                        <option key={s.id} value={s.id}>
+                      {SERVICE_CATALOG.map((s) => (
+                        <option key={s.slug} value={s.slug}>
                           {s.name}
                         </option>
                       ))}
@@ -202,7 +207,7 @@ export default function Contact() {
                       name="message"
                       required
                       minLength={10}
-                      maxLength={5000}
+                      maxLength={4800}
                       rows={6}
                       className={FIELD}
                       placeholder="What do you have now, what needs to change, and when would you like to launch?"

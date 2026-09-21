@@ -1,260 +1,74 @@
-# Fortitudo Design System
+# Fortitudo website design
 
-Adopted wholesale from the **realestatecrm** repository. That codebase — not a
-description of it — is the source of truth. Where this file and the ported code
-disagree, the code wins; where our code and *that repo* disagree, that repo wins.
+Revision: 21 September 2026. Mode: product refinement and full public website replacement. Design authority: the user's purchased Imageworks theme, not the former yellow marketing site.
 
-Two systems live here, exactly as they do in the source:
+## Sources and boundaries
 
-| Surface | System | Where |
+- Purchased source: `/Users/preston/Downloads/imageworks.zip`; untouched extracted reference: `../fortitudo-theme-reference/imageworks`.
+- Brand: Fortitudo name and ribbon-globe identity. Preserve the established user overrides: upright Geist Sans and dark default. Imageworks owns all other visual decisions.
+- Content: Notion **Fortitudo — Offer Library**, edited 21 September 2026, plus its 14 complete offer documents. Snapshot: `docs/imageworks/notion-offers-2026-09-21.json`. These are owner-specified offers, not independently proven customer results.
+- Deployment: Vercel `mosnins-projects/fortitudov4`, project `prj_SP1Ar0bDBfyj7o9F4I0dBrmitGar`; GitHub `mosnin/fortitudov4`, production branch `main`.
+- The public website is replaced. Authenticated client, partner and admin systems, data, billing and their permissions are separate operational surfaces, not disposable theme content.
+- A complete pre-change file checkpoint exists outside the repository in `../fortitudo-checkpoints/`. It is not shipped.
+- The user's specific instruction to preserve the paid theme overrides Component OS substitutions, generic menu recipes, mandatory logo walls and new graphic generation. No alternate design system may replace Imageworks components.
+
+## Product architecture and UX
+
+The visitor needs to understand what Fortitudo can build, choose a relevant engagement, understand deliverables and ownership, and send a project brief. Existing clients can reach sign-in directly.
+
+| Surface | Purpose | Primary next step |
 | --- | --- | --- |
-| **Product** — client portal + admin | Premium, Apple-calm. Quiet, monochrome, text-first. | `src/app/(dashboard)`, `src/app/(admin)` |
-| **Logged-out** — marketing, auth, onboarding | Dark, cinematic, photography-led. | `src/app/(marketing)`, `src/app/(auth)`, `src/app/onboarding` |
+| `/` | Imageworks visual introduction and overview | Explore services or discuss a project |
+| `/services` | Full offer directory | Select a service |
+| `/services/[slug]` | Outcome, deliverables, scope, process, review, handover | Service-specific enquiry |
+| `/resources` and `/resources/[slug]` | Read and download complete service pitches | Download or discuss the offer |
+| `/work` and `/work/[slug]` | Inspect real published projects | Open the actual product or enquire |
+| `/about` | Understand the agency's working approach | Discuss a project |
+| `/pricing` | Explain project quotes, consultation and optional support | Request a scoped quote |
+| `/faq` | Resolve practical buying questions | Contact |
+| `/contact` | Collect the brief, preserve selected service | Submit or use direct email fallback |
+| `/privacy`, `/terms` | Existing business policies in the new shell | Return to the site |
 
-They never mix. Product chrome carries none of the marketing atmosphere, and the
-marketing shell carries none of the product's density.
+Services cover websites, ecommerce, complete software, brand, Unslop, consultation, custom agents, agent teams, harnesses, Jev, context/memory, MCP/APIs, creative workflows and AI setup. Consultation crosses all offers. Provider access is scoped; no universal availability, fabricated pricing, invented endorsements or performance figures.
 
----
+Journey: home → service directory → detail → pitch or enquiry → acknowledged submission. Alternate entry: resource → service → enquiry. Recovery: browser Back, clear navigation, retained enquiry fields, actionable error and direct email. Auth retains safe return destinations.
 
-# Part 1 — The product (the Clients/Projects reference)
+## Frozen visual plan before implementation
 
-The **Clients** and **Projects** pages are canonical. Every other logged-in
-surface matches them. Goal: **the eye lands on content, not chrome.**
+### Hierarchy
 
-## Compose from the kit — don't hand-roll
+Home: the concise Fortitudo headline first, the original animated photography arc second, the supporting sentence and primary action third. Keep navigation quiet. Subsequent sections alternate deliberate immersive image sequences with readable explanations. Service pages lead with the outcome, then the engagement and deliverables, then detailed scope. Do not turn the homepage into a dense offer table.
 
-`src/components/crm/` is the component kit, lifted from the source repo's
-canonical People/Deals surfaces. Build pages by composing it. If a page needs
-something the kit lacks, port that component from the source repo and add it to
-the kit — never approximate it inline.
+### Composition
 
-| Component | Use |
-| --- | --- |
-| `CrmPageHeader` | Every page header. Three lines: muted section word *with its period* ("Operations."), serif-Times `H1` revealed word-by-word, one sentence of **status** — not a description of the page. |
-| `StatStrip` · `StatCell` · `Stat` · `StatEmpty` · `StatMeta` | The metric band: a `rounded-xl border` card, cells split by `gap-px` over `bg-border/60`. Focal number is serif Times + `tabular-nums`. With no data, `StatEmpty` states a calm fact — never a misleading `0`. |
-| `TabStrip` | The page's spine, directly under the title: underline text tabs with count chips and a 2px foreground rail on the active one. **Not** a segmented pill control. |
-| `Toolbar` · `ToolbarSearch` · `ToolbarActions` · `FilterSelect` | **One** filter row: search left, everything else pushed right. Triggers are bordered `h-9 rounded-md` buttons reading `Label: Value`. |
-| `RecordList` · `RecordRow` · `RowPill` · `RowAction` · `RowSelect` · `RecordListSkeleton` | The default for **any** list of records: `divide-y`, `py-3` rows, name + status pill, one truncating secondary line, right-hand metadata, action icons that fade in on hover. |
-| `SectionHead` | A heading over a hairline rule. Text only. |
+Restore the Imageworks order: Hero, Brief, Variations, capability content in the Benchmarks slot, Formats, service selector using the Testimonials composition, Pricing, FAQ, Final CTA, Footer. Keep original section widths, scroll distances, aspect ratios, spacing, sticky scenes, image arc/helix and footer reveal. Adapt template data to agency services. Benchmark performance graphs and invented testimonials cannot become Fortitudo claims; their positions receive truthful service content using the theme's section and surface primitives.
 
-Motion: `src/components/motion/` (`Reveal`, `StaggerReveal`, `SplitReveal`,
-`AnimatedNumber`, `StaggerList`, `PageTransition`) — also ported, GSAP-backed,
-all honoring `prefers-reduced-motion`.
+Navigation retains Imageworks' floating, condensing desktop shell and full mobile disclosure. Links are Services, Work, Resources, About, Pricing, sign-in and Contact. No new mega-menu is imposed on the purchased design. All 14 services remain reachable from the directory, footer and related content.
 
-Type + spacing: `src/lib/typography.ts` is the source repo's ladder —
-`30 → 25 → 21 → 17 → 14 → 12 → 11` (H1 · STAT · H2 · H3 · BODY · CAPTION · META),
-plus `PAGE_RHYTHM` (`space-y-8`), `SECTION_RHYTHM` (`space-y-3`), `ROW_PAD`
-(`py-3`), `READING_COL` (`max-w-5xl mx-auto`).
+### Material and color
 
-## The one hard rule: no decorative icons
+Use the original theme tokens. Dark: background `#0a0a0a`, foreground `#fafafa`, muted `#171717`, border `#262626`, muted text `#a3a3a3`. Light: background `#ffffff`, foreground `#0a0a0a`, muted `#f5f5f5`, border `#e5e5e5`, muted text `#737373`. Preserve the template navigation blur, shadows and spectrum accent only in their original roles. Scope marketing tokens to `[data-imageworks-site]`. Remove the old racing-yellow website composition.
 
-Icons appear in exactly two places:
+### Details
 
-1. **Sidebar + top navigation.**
-2. **Functional controls** — the icon *is* the action and would otherwise need a
-   label in tight chrome: search glyph, close `×`, kebab `⋯`, view toggle, copy,
-   and the hover-revealed `RowAction` controls.
+Geist Sans, upright throughout (existing owner override). Preserve original optical sizes: hero 40/56/68px by breakpoint, leading 1.02, tracking -.02em; section headings clamp 32–56px; body 15–16px with 24–28px leading. Content max width 1440px; horizontal inset 16px mobile / 24px larger. Original rounded-xl controls and rounded-2xl imagery remain. Preserve functional arrows, theme toggle, focus rings and active navigation; no added badge-icon grid.
 
-Remove every other icon: section-heading glyphs, per-row avatar circles, status
-glyphs, empty-state heroes. If an icon conveys a category or status, render the
-**word** in a `RowPill`.
+Restore original theme photography and crops in the arc, brief, variations, formats and helix. Those images express the purchased visual direction, not client proof. Project screenshots belong only on actual work surfaces. Image alt text describes the actual image, without fictional brand attribution.
 
-## No gradients, no colour accents
+### Responsive and motion
 
-Surfaces are monochrome: `foreground`, `muted-foreground`, `border`, `card`,
-`muted`. No `bg-gradient-*`, no glow, no per-category colour coding — all five
-offerings share the same neutral pill. Colour is reserved for genuine semantics
-(overdue, failed → the destructive token). Charts draw in neutral ink
-(`--chart-1`); donut slices step down in opacity.
+Preserve original `sm`, `md`, `lg` behavior and `--u` arc sizing. Mobile navigation owns its open state, Escape dismissal, focus return and scroll lock. Formats retain the intentional horizontal strip with visible content continuation. Long service text stacks in reading order. Check at 390px, 768px and 1440px, with a 320px reflow check.
 
-**Brand orange is not a product colour.** It belongs to the logo and to
-`HELIX_PILL` (buttons that directly invoke Helix). Nothing else.
+Preserve the original intro, spring, scroll-reveal, brief expansion, variations convergence, image helix and footer behavior. Reduced motion uses the theme's static alternatives. Hero copy must still appear if the image arc fails. No new animation language is introduced. Hover cannot be required for navigation or content.
 
-## No terminal voice
+## Comparison and review
 
-Monospace, bracketed headers, ASCII fields and dot textures belong to the
-logged-out surface **only**. In the product, figures use `tabular-nums` in the
-sans face, section labels use `SECTION_LABEL`, and the serif appears only as
-`H1` and focal stat numbers.
+Baseline observed live: yellow shader hero, oversized left-aligned headline and old marketing sections. Local intermediate: paid arc retained but its photos replaced with repeated product screenshots, several original storytelling sections omitted. Selected: source theme with Fortitudo branding and complete offer content. The source-based version follows the explicit purchased-theme requirement; the tradeoff is preserving long cinematic scroll sections rather than maximizing content density.
 
-## Page frame
+Self-review only. Design OS governs composition and UX; Frontend OS governs routing, behavior and engineering; Details reviews final type, alignment, image crops and interaction states. No numerical beauty score or representative-user validation is asserted. Company OS/Symbolic provider context is not retrieved in this run; Notion and direct owner requirements ground the content.
 
-```tsx
-<div className={cn(PAGE_RHYTHM, 'pb-12')}>
-  <div className={READING_COL}>
-    <CrmPageHeader section="Operations." title="Clients" subtitle="5 on the board, 1 still in onboarding." />
-  </div>
-  {/* reading surfaces stay in READING_COL; only wide working surfaces
-      (a kanban board) span the full frame */}
-</div>
-```
+## Acceptance inventory
 
-Sections `space-y-8`, within-section `space-y-3`, rows `py-3`. Avoid airy
-`py-5`/`py-6` list spacing — it reads as unstructured, not premium.
+Review hero/nav, brief, variations, capabilities, formats, service tabs, pricing, FAQ, final CTA and footer; then service directory and every detail variant, resources/downloads, work, about, contact, legal and sign-in navigation. Capture desktop/mobile, expanded menus, focus states and reduced motion. Check HTTP routes, links, assets, typecheck, build and relevant regression tests. Any missing checks remain explicit in the final receipt.
 
-## Buttons and pills
-
-`PRIMARY_PILL` (near-black, `rounded-full`, `h-9`) for Save / Add / Confirm;
-`GHOST_PILL`; `QUIET_LINK`; `HELIX_PILL` only for direct-Helix actions. Status
-pills are `STATUS_PILL` / `RowPill` — neutral, bordered, 10px uppercase.
-
-## Sidebar
-
-Floating rounded card (`m-3 rounded-xl border border-border/70 bg-sidebar`). Nav
-rows 13px, `h-9`, `rounded-md`; the active row is `bg-foreground/[0.045]` with a
-2px **foreground** bar on its left edge — never an orange tint. Group labels are
-10px uppercase `text-muted-foreground/70`; icons 15px, `strokeWidth` 1.75 (2.25
-active). Top-bar controls are ghost, not boxed.
-
-## Helix surfaces
-
-Helix is part of the product, not a guest in it. Its screens compose from the
-same kit as everything else — no gradient, no glow, no "AI" treatment, and no
-sparkle except the one nav glyph. Four rules it adds:
-
-- **Risk is a word, never a colour.** `Routine` / `Notable` / `Significant`
-  ride in a neutral `RowPill`. Colour stays reserved for genuine semantics, and
-  a red "high risk" pill would be the first crack in that rule.
-- **Who acted is stated, not implied.** Every audit row and every executed
-  action names Helix or a person in the line itself.
-- **The diff is the deliverable.** An approval card leads with a plain-English
-  summary, then field-level `before → after`. Outward-facing content (a client
-  message) shows in full — you cannot approve what you have not read.
-- **Nothing empty is celebrated.** The overview's Helix strip renders *nothing*
-  when nothing is queued; a widget that usually reads "0" trains people to stop
-  looking, and the approval queue cannot afford that.
-
-`HELIX_PILL` marks buttons that directly invoke Helix (Send, Ask, New thread)
-and nothing else. Its surfaces live under `/admin/helix` — Threads, Approvals,
-Gadgets, Activity — plus a read-only `/helix` on the client portal.
-
----
-
-# Part 2 — The logged-out surface
-
-Racing yellow on charcoal. Structural rather than cinematic: the page is built
-out of hairlines and squared edges, and the one saturated colour in the system
-is spent on the thing you are meant to press.
-
-**The whole palette lives in one block**, on `[data-marketing-shell]` in
-`globals.css`. That selector is the boundary — the product never sees these
-tokens, and this surface never sees the product's. Nothing here reads the
-light/dark toggle; the logged-out site is charcoal in both.
-
-| Token | Value | What it is |
-| --- | --- | --- |
-| `--fx-yellow` | `#f8cd02` | The accent. A **surface**, and the primary action. |
-| `--fx-yellow-hover` | `#dcb602` | Its pressed state. |
-| `--fx-on-yellow` | `#1b1b1d` | Ink for anything sitting *on* yellow. Charcoal, not black. |
-| `--fx-charcoal` | `#0f0f12` | The ground. |
-| `--fx-charcoal-deep` | `#0a0a0c` | Inset surfaces, alternating bands. |
-| `--fx-charcoal-raised` | `#191a1d` | Raised surfaces. |
-| `--fx-white` / `--fx-muted` / `--fx-faint` | `#fff` / `.58` / `.38` | Text on charcoal. |
-| `--fx-hairline` | white `.12` | Structure. |
-
-**The two rules that define the scheme.** Yellow is a surface and text on it is
-always charcoal. Charcoal is the ground and body text on it is always white.
-Yellow as *text* is allowed only for accents a few words long — one clause of a
-headline, a hover state, an eyebrow dot. It clears contrast easily (12.5:1), but
-at paragraph length it stops reading as emphasis and starts competing with the
-call to action, which is the only job it has.
-
-**Charcoal, never black.** Every step above runs B two points above R and G.
-That trace of blue is what stops the dark reading as a second, colder colour
-next to the yellow, and it is why `#000` appears nowhere in the palette. The
-ramp moves as a SET — the three steps only read as depth while the gaps between
-them hold, so darkening the ground alone flattens the surface.
-
-**Two yellow buttons on one screen is a bug, not a style choice.** If two things
-both look primary, neither is.
-
-- **Kit**: `src/components/marketing/giga/` — `primitives.tsx` is the vocabulary
-  (`Serif`, `Eyebrow`, `BlurRise`, `Band`, `PillPrimary`, `PillGhost`). The
-  homepage hero is `src/components/originkit/` (OriginKit `hero-21`, recoloured).
-- **Type**: one voice — **Inter Tight**, self-hosted, for display at **medium
-  (500)** with `-0.03em` tracking; monospace for eyebrows. **There is no serif
-  on this surface, and there is none in the product either** — the same face
-  now runs on both sides of the sign-in boundary. `<Serif>` keeps its name only
-  because ~14 files import it; it renders the sans.
-  Body copy has three steps and only three: `LEAD` (15px), `BODY` (14px),
-  `BODY_S` (13px) in `giga/tokens.ts`. They exist because their absence let
-  seven different paragraph sizes onto the homepage.
-- **Shape**: squared. `rounded-[4px]` for controls, `rounded-[6px]` for panels,
-  and structure drawn with rules rather than rounded cards. Circles survive only
-  as dots and avatars.
-- **Contrast floor**: `--fx-muted` (6.5:1) is the lowest value allowed for text
-  that carries meaning. `--fx-faint` (3.6:1) fails WCAG body text and is for
-  decorative micro-labels only. Raw `text-white/45` and below fail — don't.
-- **Motion**: the `(marketing)/template.tsx` blur-in on route change; sections
-  enter with `BlurRise` on `EASE_OUT`; nothing bounces; everything respects
-  `prefers-reduced-motion`.
-- **Section rhythm**: eyebrow → display headline (two lines max) → one muted
-  paragraph (~65ch) → one CTA → the visual. Sections are `SECTION_Y`
-  (`py-24 sm:py-32`); bands that stack inside one continuous page take
-  `SECTION_Y_TIGHT` (`py-16 sm:py-20`); heroes take `HERO_Y`. All three live in
-  `primitives.tsx` — never write the padding inline. Sections are separated by
-  hairlines or by alternating charcoal depths.
-- **Everything is left-aligned.** The page is drawn out of hairlines and squared
-  edges, and a centred headline sitting over a left-aligned rule fights the
-  structure underneath it. The homepage hero is the single deliberate
-  exception, because it is a full-viewport column with no structure beside it.
-- **Type comes from the ladder, never inline.** `DISPLAY_XL`–`DISPLAY_XS`,
-  `TITLE_L`, `TITLE_S` and `EYEBROW_TEXT` are exported from `primitives.tsx`
-  with their leading baked in. A bare `text-[clamp(…)]` on this surface is how
-  eleven near-identical heading sizes happened the first time.
-- **Footer**: pinned beneath the page, uncovered on the last stretch of scroll
-  (`FooterReveal`).
-
-## Nothing on this surface is invented
-
-The site was ported from a real-estate CRM template, and the template's filler
-was written to look like proof: named clients, quantified outcomes, star
-ratings, logo walls, staff rosters. All of it has been removed, and none of it
-comes back.
-
-- **No client proof we cannot source.** A case study names a real client and a
-  number they agreed to, or it does not ship. `/portfolio` renders an empty
-  state rather than a filled grid.
-- **No invented metrics.** Not in headline stats, not in pricing, not in copy.
-- **Mock interfaces caption themselves.** Any section containing a drawing of
-  the product carries a visible mono label saying so, and the mock is
-  `aria-hidden` so a screen reader does not read invented numbers as fact.
-- **Placeholders stay placeholders.** If an image or a logo is missing, the slot
-  says it is missing.
-
-## Auth + onboarding
-
-**Auth follows the logged-out system.** `AuthPageLayout` tags its tree
-`data-marketing-shell` and forces `dark`, so `/sign-in` and `/sign-up` are
-charcoal with the yellow accent, and the Clerk widget is pinned to its dark
-appearance rather than reading the theme — it renders transparent inside our
-chrome, so following a light preference would put near-black labels on a
-near-black panel.
-
-**Onboarding deliberately does not.** It sits *behind* sign-in, and its whole
-design intent is to look like the product the client is about to live in — so
-it renders on the product palette (`bg-background`, `--font-title` as Georgia)
-and that is correct, not drift. This paragraph exists because the doc used to
-claim the opposite, and a typography audit found the contradiction rather than
-the bug: the flow was right and the sentence was wrong.
-
-The flow itself is the source repo's conversational onboarding, ported: intro
-cinematic → typed chat thread with inline answer stages (`StageWhoYouServe`,
-`StageVoice`, `StageSources`) → ready preloader. Its mechanics, timings, and
-markup are theirs; only the questions and the submit binding are ours.
-
----
-
-# Brand
-
-Company: **Fortitudo** / **Fortitudo Agency**. The AI delivery agent: **Helix**
-("Helix by Fortitudo Agency" formally). Voice: confident, concrete, short
-sentences. No hype adjectives, no exclamation marks.
-
-Offerings — exactly five, everywhere: **Websites, Software Solutions, AI
-Solutions, Consultation, Digital Marketing**.
-
----
-
-When in doubt, open the corresponding file in the realestatecrm repo and copy
-its vocabulary. That is the whole rule.
+Stages 0–12: direction and scope resolved from source theme and owner content; audience assumptions not user-research verified. Stages 13–17: accessibility, trust, runtime resilience, implementation fidelity and final refinement require current execution evidence, recorded in the restoration receipt. No skill checklist alone grants release acceptance.

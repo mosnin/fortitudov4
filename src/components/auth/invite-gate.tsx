@@ -73,7 +73,7 @@ export function InviteGate() {
         value={code}
         onChange={(event) => setCode(event.target.value)}
         placeholder="Your invite code"
-        className="h-11 w-full rounded-[4px] border border-[var(--fx-faint)] bg-transparent px-4 text-[14px] text-[var(--fx-white)] placeholder:text-[var(--fx-faint)] focus:border-[var(--fx-yellow)] focus:outline-none"
+        className="h-11 w-full rounded-xl border border-border bg-transparent px-4 text-[14px] text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       />
       {error ? (
         <p role="alert" aria-live="polite" className="text-[13px] text-red-400">
@@ -84,7 +84,7 @@ export function InviteGate() {
         type="submit"
         disabled={busy || code.trim().length === 0}
         className={cn(
-          'inline-flex h-11 w-full items-center justify-center rounded-[4px] bg-[var(--fx-yellow)] px-6 text-[14px] font-medium text-[var(--fx-on-yellow)] transition-colors duration-200 hover:bg-[var(--fx-yellow-hover)]',
+          'inline-flex h-11 w-full items-center justify-center rounded-xl bg-foreground px-6 text-[14px] font-medium text-background transition-colors duration-200 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring',
           (busy || code.trim().length === 0) && 'cursor-not-allowed opacity-60',
         )}
       >

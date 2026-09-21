@@ -1,5 +1,13 @@
 import type { MetadataRoute } from "next";
-import { LANGS, LANG_TAG, DEFAULT_LANG, localizedPath, LOCALIZED_PATHS } from "@/lib/i18n/markets";
+import { SERVICE_CATALOG } from "@/lib/service-catalog";
+import { WORK_PROJECTS } from "@/lib/work-projects";
+import {
+  LANGS,
+  LANG_TAG,
+  DEFAULT_LANG,
+  localizedPath,
+  LOCALIZED_PATHS,
+} from "@/lib/i18n/markets";
 
 /**
  * The sitemap, generated rather than served from `public/sitemap.xml`.
@@ -23,7 +31,7 @@ const ORIGIN = "https://fortitudo.agency";
  * catches you doing that, which costs you the signal on the pages where it
  * would have been true. Bump this when the copy actually changes.
  */
-const CONTENT_UPDATED = "2026-09-05";
+const CONTENT_UPDATED = "2026-09-21";
 
 /**
  * Cross-language `hreflang` is withheld for the same reason `src/proxy.ts`
@@ -46,10 +54,13 @@ const PAGES = [
   { path: "/services", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/websites", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/ecommerce", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/services/software-solutions", priority: 0.8, changeFrequency: "monthly" },
+  {
+    path: "/services/software-solutions",
+    priority: 0.8,
+    changeFrequency: "monthly",
+  },
   { path: "/services/ai-solutions", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/consultation", priority: 0.8, changeFrequency: "monthly" },
-  { path: "/services/digital-marketing", priority: 0.8, changeFrequency: "monthly" },
   { path: "/pricing", priority: 0.8, changeFrequency: "monthly" },
   { path: "/work", priority: 0.8, changeFrequency: "monthly" },
   { path: "/about", priority: 0.7, changeFrequency: "monthly" },
@@ -60,7 +71,9 @@ const PAGES = [
 ] as const satisfies ReadonlyArray<{
   path: string;
   priority: number;
-  changeFrequency: NonNullable<MetadataRoute.Sitemap[number]["changeFrequency"]>;
+  changeFrequency: NonNullable<
+    MetadataRoute.Sitemap[number]["changeFrequency"]
+  >;
 }>;
 
 /**
@@ -73,7 +86,8 @@ const PAGES = [
  * back to for a locale we do not publish.
  */
 function alternatesFor(path: string): Record<string, string> | undefined {
-  if (!LANG_ALTERNATES_ENABLED || !LOCALIZED_PATHS.includes(path)) return undefined;
+  if (!LANG_ALTERNATES_ENABLED || !LOCALIZED_PATHS.includes(path))
+    return undefined;
 
   const languages: Record<string, string> = { "x-default": `${ORIGIN}${path}` };
   for (const lang of LANGS) {
@@ -83,7 +97,28 @@ function alternatesFor(path: string): Record<string, string> | undefined {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const english = PAGES.map((page) => {
+  const extra = [
+    { path: "/resources", priority: 0.7, changeFrequency: "monthly" as const },
+    { path: "/portfolio", priority: 0.7, changeFrequency: "monthly" as const },
+    ...SERVICE_CATALOG.filter((s) => !PAGES.some(p => p.path === `/services/${s.slug}`)).map(
+      (s) => ({
+        path: `/services/${s.slug}`,
+        priority: 0.8,
+        changeFrequency: "monthly" as const,
+      }),
+    ),
+    ...SERVICE_CATALOG.map((s) => ({
+      path: `/resources/${s.resourceSlug}`,
+      priority: 0.6,
+      changeFrequency: "monthly" as const,
+    })),
+    ...WORK_PROJECTS.map((p) => ({
+      path: `/work/${p.slug}`,
+      priority: 0.7,
+      changeFrequency: "monthly" as const,
+    })),
+  ];
+  const english = [...PAGES, ...extra].map((page) => {
     const languages = alternatesFor(page.path);
     return {
       url: `${ORIGIN}${page.path}`,
@@ -99,7 +134,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Every translated page needs its own <url> entry, not just a mention in the
   // English page's alternates — a page that appears only as someone else's
   // hreflang is discoverable but not submitted.
-  const translated = PAGES.filter((page) => LOCALIZED_PATHS.includes(page.path)).flatMap((page) =>
+  const translated = PAGES.filter((page) =>
+    LOCALIZED_PATHS.includes(page.path),
+  ).flatMap((page) =>
     LANGS.filter((lang) => lang !== DEFAULT_LANG).map((lang) => ({
       url: `${ORIGIN}${localizedPath(page.path, lang)}`,
       lastModified: CONTENT_UPDATED,

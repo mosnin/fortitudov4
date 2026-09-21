@@ -3,6 +3,7 @@ import { PageIntro } from "@/components/imageworks/page-intro";
 import { Pricing } from "@/components/imageworks/pricing";
 import { Process } from "@/components/imageworks/process";
 import { Faq } from "@/components/imageworks/faq";
+import { ResourceCards } from "@/components/imageworks/resource-cards";
 import { FinalCta } from "@/components/imageworks/final-cta";
 export default function Page() {
   return (
@@ -14,6 +15,7 @@ export default function Page() {
       />
       <Pricing />
       <Process />
+      <ResourceCards featured />
       <Faq />
       <FinalCta />
     </>

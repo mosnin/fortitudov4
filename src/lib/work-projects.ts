@@ -79,21 +79,19 @@ export const WORK_PROJECTS: WorkProject[] = [
     slug: 'two-cookies',
     name: 'Two Cookies NYC',
     service: 'Websites',
-    url: 'https://twocookiesnyc.com/',
-    domain: 'twocookiesnyc.com',
+    url: 'https://twocookies.vercel.app/',
+    domain: 'twocookies.vercel.app',
     blurb:
-      'A New York City cookie shop with a current public presence on Instagram.',
+      'A New York City cookie shop with a digital storefront for discovering the cookies, the brand and ordering options.',
     details: [
       'Fresh-baked cookies',
       'Based in New York City',
     ],
-    art: '/work/two-cookies.webp',
-    image: '/work/two-cookies.webp',
+    art: '/work/case-studies/two-cookies.png',
+    image: '/work/case-studies/two-cookies.png',
     imageAlt:
-      'Typographic project artwork for Two Cookies NYC; a current live-site capture was unavailable',
-    imageLabel: 'Project artwork',
-    imageNote:
-      'A reliable live-site capture was unavailable during research, so the supplied project artwork is shown instead.',
+      'Two Cookies NYC homepage with its cookie menu and ordering links',
+    imageLabel: 'Live homepage capture',
   },
   {
     slug: 'nourish-reserve',
@@ -102,10 +100,10 @@ export const WORK_PROJECTS: WorkProject[] = [
     url: 'https://www.shopnourishreserve.com/',
     domain: 'shopnourishreserve.com',
     blurb:
-      'A wellness storefront for clinically aligned supplements made in the USA under FDA-compliant, GMP-certified standards.',
+      'A wellness storefront bringing supplement collections, product information and a guided shopping journey into one branded experience.',
     details: [
-      'Science-backed wellness positioning',
-      'Supplements made in the USA',
+      'Product collections and supplement information',
+      'A branded ecommerce shopping journey',
     ],
     art: '/work/case-studies/nourish-reserve.png',
     image: '/work/case-studies/nourish-reserve.png',

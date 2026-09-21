@@ -29,6 +29,7 @@ import {
 const LINKS = [
   { label: "Services", href: "/services", id: "services" },
   { label: "Work", href: "/work", id: "work" },
+  { label: "Resources", href: "/resources", id: "resources" },
   { label: "About", href: "/about", id: "about" },
   { label: "Pricing", href: "/pricing", id: "pricing" },
 ] as const;
@@ -354,7 +355,7 @@ export function Nav(): ReactNode {
     <>
       <motion.header
         onKeyDown={onKey}
-        className="fixed inset-x-0 top-0 z-50 flex items-start justify-between px-4 pt-4 sm:px-5 sm:pt-5"
+        className="fixed inset-x-0 top-0 z-50 flex items-start justify-between px-4 pt-4 max-[360px]:px-2 sm:px-5 sm:pt-5"
         aria-label="Site"
       >
         <motion.div

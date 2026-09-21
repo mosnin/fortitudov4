@@ -34,6 +34,9 @@ const MUST_BE_PUBLIC = [
   "/services",
   "/pricing",
   "/portfolio",
+  "/resources",
+  "/resources/ai-agents-and-infrastructure",
+  "/resources/fortitudo-ai-agents-and-infrastructure.pdf",
   "/about",
   "/contact",
   "/faq",
@@ -70,9 +73,17 @@ describe("public marketing pages", () => {
 
   it("covers nested paths under each public page", () => {
     // The list uses `(.*)` suffixes; a section page must not fall through.
-    for (const path of ["/services/websites", "/sign-in/factor-one", "/faq#tech"]) {
+    for (const path of [
+      "/services/websites",
+      "/sign-in/factor-one",
+      "/faq#tech",
+    ]) {
       expect(isPublicRoute(req(path)), path).toBe(true);
     }
+  });
+
+  it("does not expose similarly prefixed product routes", () => {
+    expect(isPublicRoute(req("/resources-admin"))).toBe(false);
   });
 });
 
@@ -91,12 +102,14 @@ describe("the contact form's submit target", () => {
 });
 
 describe("public API routes", () => {
-  it.each(["/api/leads", "/api/webhooks/clerk", "/api/webhooks/creem", "/api/db-check"])(
-    "%s is reachable without a session",
-    (path) => {
-      expect(isPublicRoute(req(path, "POST"))).toBe(true);
-    }
-  );
+  it.each([
+    "/api/leads",
+    "/api/webhooks/clerk",
+    "/api/webhooks/creem",
+    "/api/db-check",
+  ])("%s is reachable without a session", (path) => {
+    expect(isPublicRoute(req(path, "POST"))).toBe(true);
+  });
 });
 
 describe("the authenticated product", () => {
@@ -104,9 +117,12 @@ describe("the authenticated product", () => {
     expect(isPublicRoute(req(path))).toBe(false);
   });
 
-  it.each(MUST_BE_PROTECTED)("%s requires a session on nested paths too", (path) => {
-    expect(isPublicRoute(req(`${path}/anything/deeper`))).toBe(false);
-  });
+  it.each(MUST_BE_PROTECTED)(
+    "%s requires a session on nested paths too",
+    (path) => {
+      expect(isPublicRoute(req(`${path}/anything/deeper`))).toBe(false);
+    },
+  );
 
   it("does not expose the rest of the API", () => {
     // Everything under /api that is NOT explicitly public. These carry client
@@ -142,7 +158,11 @@ describe("the authenticated product", () => {
     // `/api/leads(.*)` must not turn `/api/leadsecret` into a public route by
     // accident, and a protected route must not become public by being spelled
     // as a suffix of a public one.
-    for (const path of ["/adminx", "/dashboardz", "/api/leadsomething/../admin"]) {
+    for (const path of [
+      "/adminx",
+      "/dashboardz",
+      "/api/leadsomething/../admin",
+    ]) {
       expect(isPublicRoute(req(path)), path).toBe(false);
     }
   });
@@ -169,7 +189,9 @@ describe("the partner surface", () => {
 
   it("is not public for any method", () => {
     for (const method of ["GET", "POST", "PATCH", "DELETE"]) {
-      expect(isPublicRoute(req("/partner/requests", method)), method).toBe(false);
+      expect(isPublicRoute(req("/partner/requests", method)), method).toBe(
+        false,
+      );
     }
   });
 
@@ -197,7 +219,13 @@ describe("the partner surface", () => {
   it("still treats the real marketing pages as marketing", () => {
     // Guards the assertion above against passing because isMarketingPath
     // started answering false to everything.
-    for (const path of ["/", "/pricing", "/services/websites", "/work/stored"]) {
+    for (const path of [
+      "/",
+      "/pricing",
+      "/services/websites",
+      "/work/stored",
+      "/resources/ai-agents-and-infrastructure",
+    ]) {
       expect(isMarketingPath(path), path).toBe(true);
     }
   });

@@ -18,10 +18,46 @@ import {
 } from "react";
 
 const STORIES = [
-  {quote:"A website should make your business easy to understand and the next step easy to take.",name:"Websites",role:"Design and development",company:"Websites",photo:PHOTOS[0],caption:"A considered first impression.",href:"/services/websites"},
-  {quote:"Build a store around the way people find, compare and buy your products.",name:"Ecommerce",role:"Storefronts and checkout",company:"Ecommerce",photo:PHOTOS[1],caption:"Designed around the whole journey.",href:"/services/ecommerce"},
-  {quote:"Give your team and customers software that fits the job they need to do.",name:"Software",role:"Products and internal tools",company:"Software",photo:PHOTOS[4],caption:"Form with a purpose.",href:"/services/software-solutions"},
-  {quote:"We’re an anti-slop agency. Custom agents built around real work, with considered design and outputs your team can review.",name:"AI solutions",role:"Practical automation",company:"AI",photo:PHOTOS[7],caption:"A clear direction for what comes next.",href:"/services/ai-solutions"},
+  {
+    quote:
+      "A website should make your business easy to understand and the next step easy to take.",
+    name: "Websites",
+    role: "Design and development",
+    company: "Websites",
+    photo: PHOTOS[0],
+    caption: "Abstract study",
+    href: "/services/websites",
+  },
+  {
+    quote:
+      "Build a store around the way people find, compare and buy your products.",
+    name: "Ecommerce",
+    role: "Storefronts and checkout",
+    company: "Ecommerce",
+    photo: PHOTOS[1],
+    caption: "Abstract study",
+    href: "/services/ecommerce",
+  },
+  {
+    quote:
+      "Give your team and customers software that fits the job they need to do.",
+    name: "Software",
+    role: "Products and internal tools",
+    company: "Software",
+    photo: PHOTOS[2],
+    caption: "Abstract study",
+    href: "/services/software-solutions",
+  },
+  {
+    quote:
+      "Custom agents built around a defined job, with connected tools, useful context and results your team can review.",
+    name: "AI solutions",
+    role: "Practical automation",
+    company: "AI",
+    photo: PHOTOS[7],
+    caption: "Abstract study",
+    href: "/services/ai-solutions",
+  },
 ];
 
 const AUTO_MS = 7000;
@@ -123,7 +159,7 @@ export function Testimonials(): ReactNode {
               <div
                 ref={tabsRef}
                 role="tablist"
-                aria-label="Stories"
+                aria-label="Services"
                 onKeyDown={onKeyDown}
                 className="-mx-6 mt-12 flex [scrollbar-width:none] gap-x-7 overflow-x-auto px-6 pt-5 whitespace-nowrap sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
               >

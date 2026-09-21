@@ -9,7 +9,7 @@ export default function Page() {
       <PageIntro
         label="Services"
         title="Choose the work your business needs."
-        lead="Websites, ecommerce, software, AI, consultation and marketing. Explore the scope, the process and the relevant work before you ask for a proposal."
+        lead="Websites, ecommerce, software, AI, brand, Unslop, consultation and marketing. Explore the scope, the process and the relevant work before you ask for a proposal."
       />
       <Services />
       <Process />

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { PHOTOS, photoUrl } from "./lib/photos";
 import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
 import { ArrowRight, Check } from "lucide-react";
@@ -82,7 +84,7 @@ function FeatureList({
   );
 }
 
-function TierCard({ tier }: { tier: Tier }): ReactNode {
+function TierCard({ tier, index }: { tier: Tier; index: number }): ReactNode {
   const inner = (
     <div className="flex h-full flex-col rounded-[15px] bg-background p-6 sm:p-7">
       <div className="flex items-start justify-between gap-3">
@@ -97,7 +99,7 @@ function TierCard({ tier }: { tier: Tier }): ReactNode {
       <p className="mt-8 font-sans text-[2.75rem] leading-none tracking-[-0.02em]">
         {tier.price}
       </p>
-      <p className="mt-3 text-sm text-muted-foreground">{tier.terms}</p>
+      <div className="mt-7 rounded-xl bg-muted p-3.5"><div className="flex items-center gap-3.5"><Image src={photoUrl(PHOTOS[[3, 6, 8][index]], 112)} alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-lg object-cover" /><p className="text-sm leading-6 text-muted-foreground">{tier.terms}</p></div></div>
       <div className="mt-7 border-t border-border pt-6 pb-10">
         <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
           Includes
@@ -157,7 +159,7 @@ export function Pricing(): ReactNode {
           {TIERS.map((tier, i) => (
             <li key={tier.name} className="min-w-0">
               <Reveal inView delay={0.08 * i} y={24} className="h-full">
-                <TierCard tier={tier} />
+                <TierCard tier={tier} index={i} />
               </Reveal>
             </li>
           ))}

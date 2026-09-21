@@ -49,8 +49,8 @@ export function Formats(): ReactNode {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
         <SectionHeading
           id="formats-heading"
-          title="One direction. Every detail considered."
-          description="From a wide desktop canvas to the phone in your customer’s hand. We design the full experience, with care for every format."
+          title="A consistent identity, wherever people find you."
+          description="Brand design and implementation across your website, store, software and content. The same visual direction, considered for every format."
         />
 
         <Reveal inView y={24} className="mt-12 lg:mt-14">
@@ -63,7 +63,7 @@ export function Formats(): ReactNode {
                   >
                     <Image
                       src={photoSrc(PHOTO, 1600, 1000)}
-                      alt={`Pink dahlias in motion, framed for a ${f.name.toLowerCase()} at ${f.ratio}.`}
+                      alt={`Abstract photographic study, framed for a ${f.name.toLowerCase()} at ${f.ratio}.`}
                       fill
                       sizes="(min-width: 1024px) 40vw, 100vw"
                       className={`object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.03] ${f.position}`}

@@ -180,7 +180,7 @@ function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
             src={kept ? SRC_LG : SRC}
             alt={
               kept
-                ? `Marigold field in motion, ${v.note.toLowerCase()} grade.`
+                ? `Abstract photographic study, ${v.note.toLowerCase()} grade.`
                 : ""
             }
             fill
@@ -241,7 +241,7 @@ function Kept({
         style={{ y }}
         className="absolute inset-x-0 bottom-0 p-6 font-sans text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-white sm:p-10 sm:text-[2rem]"
       >
-        Kept: warmer, as the board suggested.
+        One direction, carried through every detail.
       </motion.p>
     </motion.div>
   );
@@ -332,7 +332,7 @@ export function Variations(): ReactNode {
                 <Image
                   src={SRC}
                   alt={
-                    i === KEPT ? "Marigold field in motion, warmer grade." : ""
+                    i === KEPT ? "Abstract photographic study, warmer grade." : ""
                   }
                   fill
                   sizes="25vw"

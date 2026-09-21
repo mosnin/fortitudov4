@@ -6,10 +6,10 @@ import { MotionControlContext } from "./lib/motion";
 export function MotionSwitch() {
   const { paused, toggle } = useContext(MotionControlContext);
   return (
-    <div className="fixed right-6 bottom-6 z-20">
+    <div className="fixed right-20 bottom-6 z-50">
       <button
         onClick={toggle}
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-muted text-foreground shadow-lg transition-opacity hover:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-muted text-foreground opacity-60 shadow-lg transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         aria-label={paused ? "Resume animations" : "Pause animations"}
         aria-pressed={paused}
         type="button"

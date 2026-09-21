@@ -35,14 +35,7 @@ import { join } from 'node:path';
  * `initial`/`style`/`variants` prop, it is not effect-only and the answer is
  * `useReducedMotionSafe` instead.
  */
-const EFFECT_ONLY_CALLERS: Record<string, string> = {
-  'src/components/marketing/giga/page-hero.tsx':
-    'Passed as the `still` flag to the three.js dot-matrix inside an effect.',
-  'src/components/marketing/giga/film-roller-stage.tsx':
-    'Passed as the `still` flag to the film-roller factory inside an effect.',
-  'src/components/marketing/giga/pipeline.tsx':
-    'Read inside the effect that drives the ruled ground; an early return, not a prop.',
-};
+const EFFECT_ONLY_CALLERS: Record<string, string> = {};
 
 function sourceFiles(dir: string, found: string[] = []): string[] {
   for (const entry of readdirSync(dir)) {

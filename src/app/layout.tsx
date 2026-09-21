@@ -35,14 +35,14 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fortitudo Agency | We build it. You own it.",
+  title: "Fortitudo | Websites, Software & Applied AI",
   description:
-    "Websites, apps, AI tools, and marketing. You get a fixed price before we start, a page that shows you how it is going, and every file the day it goes live.",
+    "Websites, ecommerce, software, brand and applied AI. A defined scope, reviewed delivery and a practical handover.",
   metadataBase: new URL("https://fortitudo.agency"),
   openGraph: {
-    title: "Fortitudo Agency | We build it. You own it.",
+    title: "Fortitudo | Websites, Software & Applied AI",
     description:
-      "Websites, apps, AI tools, and marketing. A fixed price before we start, and everything is yours the day it goes live.",
+      "Design and development for websites, ecommerce, software, brands and applied AI.",
     url: "https://fortitudo.agency",
     siteName: "Fortitudo Agency",
     type: "website",

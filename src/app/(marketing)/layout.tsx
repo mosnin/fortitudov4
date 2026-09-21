@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
+import { MotionSwitch } from "@/components/imageworks/motion-switch";
 import { ThemeSwitch } from "@/components/imageworks/theme-switch";
 import { Footer } from "@/components/imageworks/footer";
 import { Nav } from "@/components/imageworks/nav";
@@ -11,11 +12,11 @@ import "./imageworks.css";
 export const metadata: Metadata = {
   title: "Fortitudo — Websites, Ecommerce, Software & AI Agents",
   description:
-    "Digital agency for websites, ecommerce stores, custom software, AI agents, consultation, and marketing. Defined scope, project pricing, design, development, and launch.",
+    "Digital agency for websites, ecommerce stores, custom software, AI agents, brand implementation, Unslop and consultation. Defined scope, project pricing, design, development, and launch.",
   openGraph: {
     title: "Fortitudo — Digital Design & Development Agency",
     description:
-      "Websites, ecommerce stores, custom software, AI agents, consultation, and marketing.",
+      "Websites, ecommerce stores, custom software, AI agents, brand implementation, Unslop and consultation.",
   },
 };
 
@@ -35,6 +36,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
           {children}
         </main>
         <Footer />
+        <MotionSwitch />
         <ThemeSwitch />
       </div>
     </Providers>

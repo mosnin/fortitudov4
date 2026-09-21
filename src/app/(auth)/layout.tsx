@@ -1,22 +1,7 @@
-/**
- * (auth) group layout. The pages compose their own visual shell
- * (`AuthPageLayout`); this layout exists to keep the shutter page transition
- * alive across the marketing ⇄ auth boundary — a "Sign in" click covers the
- * page while the (marketing) layout is mounted, and the instance here performs
- * the reveal once the auth route has rendered. The overlay itself is a
- * singleton on <body>, so the two instances hand off without a seam.
- */
+import type { ReactNode } from "react";
+import { GeistSans } from "geist/font/sans";
+import "../(marketing)/imageworks.css";
 
-import { PageShutter } from '@/components/marketing/giga/page-shutter';
-import { SoundLayer } from '@/components/sound/sound-layer';
-
-export default function AuthLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <PageShutter />
-      {/* Taps and form feedback only — no hover voice on the auth pages. */}
-      <SoundLayer hover={false} />
-      {children}
-    </>
-  );
+export default function AuthLayout({ children }: { children: ReactNode }) {
+  return <div className={GeistSans.variable}>{children}</div>;
 }

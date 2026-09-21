@@ -15,7 +15,7 @@ const cspHeader = [
   `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${clerkOrigins.join(" ")} https://challenges.cloudflare.com`,
   // Google Fonts: stylesheet from fonts.googleapis.com, font files from fonts.gstatic.com.
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://img.clerk.com https://utfs.io",
+  "img-src 'self' data: blob: https://img.clerk.com https://utfs.io https://images.unsplash.com",
   "font-src 'self' https://fonts.gstatic.com",
   // clerk-telemetry.com receives clerk-js usage telemetry via fetch; without it
   // the request is CSP-blocked and logs a console error on every auth page.

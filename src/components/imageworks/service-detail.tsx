@@ -1,135 +1,36 @@
 import Link from "next/link";
 import Image from "next/image";
-import { PHOTOS, photoSrc } from "./lib/photos";
+import { AiOffers } from "./ai-offers";
 import { PageIntro } from "./page-intro";
 import { SectionHeading } from "./section-heading";
-import { Reveal } from "./reveal";
-import { Faq } from "./faq";
 import { FinalCta } from "./final-cta";
-import type { ServicePage } from "@/lib/service-pages";
-import type { WorkProject } from "@/lib/work-projects";
-export function ServiceDetail({
-  service: s,
-  projects,
-}: {
-  service: ServicePage;
-  projects: WorkProject[];
-}) {
-  return (
-    <>
-      <PageIntro label={s.name} title={s.title} lead={s.lead} />
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-          <SectionHeading
-            id="scope-heading"
-            title={s.scope.title}
-            description={s.scope.body}
-          />
-          <Reveal inView y={24} className="mt-12 lg:mt-14">
-            <div className="grid gap-10 rounded-2xl border border-border bg-muted p-6 sm:p-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16 lg:p-10">
-              <div>
-                <h2 className="font-sans text-3xl">What we can include</h2>
-                <ul className="mt-6 space-y-4 text-[15px] leading-7 text-muted-foreground">
-                  {s.scope.deliverables.map((x) => (
-                    <li key={x} className="border-b border-border pb-4">
-                      {x}
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href={`/contact?service=${s.serviceId}`}
-                  className="mt-8 inline-flex min-h-12 items-center justify-center rounded-xl bg-foreground px-5 text-sm font-medium text-background"
-                >
-                  Discuss this project →
-                </Link>
-              </div>
-              <figure className="relative min-h-[300px] overflow-hidden rounded-xl sm:min-h-[420px]">
-                <Image
-                  src={photoSrc(PHOTOS[3], 1600, 1200)}
-                  alt="Softly lit glass form"
-                  fill
-                  sizes="(min-width:1024px) 60vw,100vw"
-                  className="object-cover object-top"
-                />
-              </figure>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-      <section className="pb-24 sm:pb-32">
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-          <SectionHeading
-            id="approach-heading"
-            title={s.approach.title}
-            description={s.approach.body}
-          />
-          <ol className="mt-12 grid divide-y divide-border rounded-2xl border border-border md:grid-cols-2 md:divide-y-0">
-            {s.approach.steps.map((step, i) => (
-              <li key={step} className="p-6 sm:p-8">
-                <span className="font-sans text-4xl text-foreground">
-                  0{i + 1}
-                </span>
-                <p className="mt-5 max-w-md text-lg leading-7">{step}</p>
-              </li>
-            ))}
-          </ol>
-          <div className="mt-10 max-w-3xl text-[15px] leading-7 text-muted-foreground">
-            <h3 className="text-lg font-medium text-foreground">
-              Before we quote
-            </h3>
-            <p className="mt-3">
-              We confirm your requirements, existing tools, available content
-              and review responsibilities. The proposal sets the scope,
-              timeline, revision rounds and price. Third-party costs and ongoing
-              support are identified separately. Business outcomes depend on
-              factors beyond the build; the agreement defines what we will
-              deliver and test.
-            </p>
-          </div>
-        </div>
-      </section>
-      {projects.length > 0 && (
-        <section className="pb-24 sm:pb-32">
-          <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-            <SectionHeading
-              id="related-heading"
-              title={s.proof.title}
-              description={s.proof.body}
-            />
-            <div className="mt-12 grid gap-6 md:grid-cols-2">
-              {projects.map((p) => (
-                <Link
-                  href={`/work/${p.slug}`}
-                  key={p.slug}
-                  className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-muted">
-                    <Image
-                      src={p.image}
-                      alt={p.imageAlt}
-                      fill
-                      sizes="50vw"
-                      className="object-cover object-top"
-                    />
-                  </div>
-                  <div className="mt-4 flex justify-between gap-4 text-[15px]">
-                    <span>{p.name}</span>
-                    <span className="text-muted-foreground">
-                      View case study →
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-      <Faq
-        heading="Questions about this service."
-        lead="A few details to help you decide what to ask for."
-        items={s.faq}
-      />
-      <FinalCta />
-    </>
-  );
+import { Faq } from "./faq";
+import { servicePdf, servicePreview, serviceOffer, serviceEnquiry, type ServiceCatalogEntry } from "@/lib/service-catalog";
+import { WORK_PROJECTS } from "@/lib/work-projects";
+const wrap = "mx-auto max-w-[1440px] px-4 sm:px-6";
+export const projectButton = "inline-flex min-h-12 items-center justify-center rounded-xl bg-foreground px-5 py-3 text-sm font-medium text-background transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring";
+export function ServiceDetail({ service: s }: { service: ServiceCatalogEntry }) {
+  const offer = serviceOffer(s);
+  const projects = s.projects.filter(slug => !["nourish-reserve","two-cookies","never-age"].includes(slug)).flatMap(slug => WORK_PROJECTS.filter(p => p.slug === slug));
+  return <>
+    <PageIntro label={s.name} title={s.title} lead={s.lead} />
+    <section className="pb-20 sm:pb-28"><div className={wrap}>
+      <nav aria-label="On this service page" className="mb-10 flex flex-wrap gap-x-7 gap-y-1 border-y border-border py-3 text-sm text-muted-foreground">{[["The offer","offer"],["Capabilities","scope"],["Delivery","delivery"],["Service pitch","pitch"]].map(([label,id])=><a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">{label} ↓</a>)}</nav>
+      <div id="offer" className="grid scroll-mt-28 gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
+        <div className="py-2"><p className="text-sm text-muted-foreground">The engagement</p><h2 className="mt-4 text-4xl leading-tight tracking-tight sm:text-5xl">{offer.name}</h2><p className="mt-6 max-w-xl text-xl leading-8">{offer.summary}</p><p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground">{offer.fit}</p><div className="mt-8 flex flex-wrap items-center gap-6"><Link href={serviceEnquiry(s)} className={projectButton}>{s.cta} →</Link><a href={servicePdf(s)} download className="inline-flex min-h-11 items-center text-sm underline underline-offset-4">Download the pitch ↓</a></div><p className="mt-6 max-w-lg text-sm leading-6 text-muted-foreground">{offer.firstStep}</p></div>
+        <div className="rounded-2xl border border-border bg-muted p-6 sm:p-9"><h3 className="text-xl tracking-tight">What you receive</h3><ol className="mt-6 divide-y divide-border">{offer.deliverables.map((item,i)=><li key={item} className="flex gap-5 py-5 first:pt-0"><span className="pt-1 text-xs tabular-nums text-muted-foreground">0{i+1}</span><span className="text-base leading-7">{item}</span></li>)}</ol><p className="mt-5 border-t border-border pt-5 text-sm leading-6 text-muted-foreground">A written scope and project price before work begins. Final inclusions depend on the requirements we agree together.</p></div>
+      </div>
+    </div></section>
+    <section id="scope" className="scroll-mt-28 pb-20 sm:pb-28"><div className={wrap}><SectionHeading id="scope-heading" title="What the work can include." description="Build the complete system or bring us a specific part. These capabilities are assembled into the scope your project needs."/><div className="mt-10 grid gap-x-16 md:grid-cols-2">{s.sections.map((item,i)=><article key={item.title} className="border-t border-border py-7 sm:py-9"><span className="text-xs tabular-nums text-muted-foreground">{String(i+1).padStart(2,"0")}</span><h3 className="mt-3 text-2xl leading-tight tracking-tight">{item.title}</h3><p className="mt-4 max-w-xl text-[15px] leading-7 text-muted-foreground">{item.body}</p></article>)}</div></div></section>
+    <section className="pb-20 sm:pb-28"><div className={wrap}><SectionHeading id="engagements-heading" title="Start with the scope you need." description="The complete engagement and the focused options below use the same approach: agree the result, build it, review it and hand it over."/><div className="mt-10 border-t border-border">{s.packages.map(item=><article key={item.id} className="grid gap-3 border-b border-border py-6 md:grid-cols-[1fr_1.5fr] md:gap-14"><h3 className="text-xl tracking-tight">{item.title}</h3><p className="max-w-2xl text-[15px] leading-7 text-muted-foreground">{item.body}</p></article>)}</div></div></section>
+    <section id="delivery" className="scroll-mt-28 pb-20 sm:pb-28"><div className={wrap}><SectionHeading id="delivery-heading" title="From the brief to the handover."/><ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">{s.process.map((step,i)=><li key={step} className="border-t border-border pt-6"><span className="text-4xl tracking-tight">0{i+1}</span><p className="mt-5 text-base leading-7 text-muted-foreground">{step}</p></li>)}</ol>
+      <div className="mt-14 grid gap-10 rounded-2xl bg-muted p-6 sm:p-10 md:grid-cols-2"><div><h3 className="text-2xl tracking-tight">How we review the result</h3><ul className="mt-5 list-disc space-y-4 pl-5 text-[15px] leading-7 text-muted-foreground">{offer.acceptance.map(item=><li key={item}>{item}</li>)}</ul></div><div><h3 className="text-2xl tracking-tight">What shapes the proposal</h3><ul className="mt-5 space-y-3 text-[15px] leading-7 text-muted-foreground">{offer.scopeDrivers.map(item=><li key={item} className="border-b border-border pb-3">{item}</li>)}</ul><p className="mt-5 text-sm leading-6 text-muted-foreground">Price and timing follow the agreed scope. Third-party subscriptions and optional ongoing support are listed separately.</p></div></div>
+      <div className="mt-10 grid gap-8 md:grid-cols-2"><div><h3 className="text-xl">What we need to begin</h3><p className="mt-4 text-[15px] leading-7 text-muted-foreground">{s.inputs}</p></div><div><h3 className="text-xl">Scope boundaries</h3><p className="mt-4 text-[15px] leading-7 text-muted-foreground">{s.boundary}</p></div></div>
+    </div></section>
+    {projects.length>0 && <section className="pb-20 sm:pb-28"><div className={wrap}><SectionHeading id="related-heading" title="Explore the work." description="Published projects you can inspect. Each case study links to the product itself."/><div className="mt-10 grid gap-8 md:grid-cols-2">{projects.map(p=><article key={p.slug}><Link href={`/work/${p.slug}`} className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"><div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted"><Image src={p.image} alt={p.imageAlt} fill sizes="(min-width:768px) 50vw,100vw" className="object-cover object-top"/></div><div className="mt-4 flex justify-between gap-4"><h3 className="text-xl">{p.name}</h3><span className="text-sm text-muted-foreground">View project →</span></div></Link><p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">{p.blurb}</p></article>)}</div></div></section>}
+    <section id="pitch" className="scroll-mt-28 pb-20 sm:pb-28"><div className={wrap}><div className="grid items-center gap-8 rounded-2xl border border-border p-6 sm:p-10 md:grid-cols-[180px_1fr] lg:grid-cols-[200px_1fr_auto]"><Link href={`/resources/${s.resourceSlug}`} className="relative block aspect-[1/1.414] w-36 overflow-hidden rounded-lg bg-muted md:w-full"><Image src={servicePreview(s)} alt={`${s.name} service pitch cover`} fill sizes="200px" className="object-cover"/></Link><div><p className="text-sm text-muted-foreground">Service pitch · PDF</p><h2 className="mt-3 text-3xl tracking-tight">Take the details to your team.</h2><p className="mt-4 max-w-xl text-[15px] leading-7 text-muted-foreground">The offer, capabilities, delivery and handover in one document. Read it here or download it without submitting your email.</p><Link href={`/resources/${s.resourceSlug}`} className="mt-4 inline-flex min-h-11 items-center text-sm underline underline-offset-4">Read the pitch →</Link></div><a href={servicePdf(s)} download className={projectButton}>Download PDF ↓</a></div></div></section>
+    {s.slug === "ai-solutions" && <AiOffers/>}
+    <Faq heading="Before we begin." lead={`A few practical questions about ${s.name.toLowerCase()}.`} items={offer.faq}/>
+    <FinalCta />
+  </>;
 }

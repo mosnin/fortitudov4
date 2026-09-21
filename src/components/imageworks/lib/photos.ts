@@ -14,7 +14,7 @@ export const PHOTOS = [
 export type PhotoId = (typeof PHOTOS)[number];
 
 export function photoUrl(id: PhotoId, size: number): string {
-  return `/_next/image?url=${encodeURIComponent(`https://images.unsplash.com/photo-${id}?w=${size}&h=${size}&q=75&auto=format&fit=crop`)}&w=1080&q=75`;
+  return `https://images.unsplash.com/photo-${id}?w=${size}&h=${size}&q=75&auto=format&fit=crop`;
 }
 
 export function photoSrc(id: PhotoId, w: number, h: number): string {

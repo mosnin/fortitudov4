@@ -1,0 +1,44 @@
+{
+  "websites": {
+    "cover": "stored-ui.webp",
+    "caption": "Stored \u00b7 generated presentation of the current website",
+    "secondary": "fortitudo-brand.webp",
+    "secondaryCaption": "Fortitudo \u00b7 studio identity"
+  },
+  "ecommerce": {
+    "cover": "forme-product.webp",
+    "caption": "Forme \u00b7 studio product and brand concept",
+    "secondary": "stored-ui.webp",
+    "secondaryCaption": "Stored \u00b7 generated presentation of the current website"
+  },
+  "software-solutions": {
+    "cover": "stored-ui.webp",
+    "caption": "Stored \u00b7 generated presentation of the current website",
+    "secondary": "chippi-ui.webp",
+    "secondaryCaption": "Chippi \u00b7 generated interface presentation"
+  },
+  "ai-solutions": {
+    "cover": "chippi-ui.webp",
+    "caption": "Chippi \u00b7 generated interface presentation",
+    "secondary": "chippi-ui.webp",
+    "secondaryCaption": "Chippi \u00b7 generated interface presentation"
+  },
+  "brand": {
+    "cover": "fortitudo-brand.webp",
+    "caption": "Fortitudo \u00b7 studio identity",
+    "secondary": "forme-product.webp",
+    "secondaryCaption": "Forme \u00b7 studio product and brand concept"
+  },
+  "unslop": {
+    "cover": "fortitudo-identity.webp",
+    "caption": "Fortitudo \u00b7 studio identity",
+    "secondary": "fortitudo-brand.webp",
+    "secondaryCaption": "Fortitudo \u00b7 studio identity"
+  },
+  "consultation": {
+    "cover": "fortitudo-brand.webp",
+    "caption": "Fortitudo \u00b7 studio identity",
+    "secondary": "fortitudo-identity.webp",
+    "secondaryCaption": "Fortitudo \u00b7 studio identity"
+  }
+}

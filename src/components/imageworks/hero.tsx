@@ -27,9 +27,9 @@ export function Hero(): ReactNode {
       <div className="relative z-10 row-start-2 flex items-end justify-center px-5 pb-[calc(var(--u)*3.5)] sm:pb-[calc(var(--u)*3)]">
         <Reveal when={arcSettled} y={10} scale={0.75} duration={1.1}>
           <h1 className="text-center font-sans text-[min(2.5rem,10.25vw)] leading-[1.02] tracking-[-0.02em] text-foreground sm:text-[3.5rem] lg:text-[4.25rem]">
-            Your next website, store
+            Websites. Products.
             <br />
-            or software product.
+            Applied AI.
           </h1>
         </Reveal>
       </div>
@@ -42,8 +42,8 @@ export function Hero(): ReactNode {
             <span className="text-foreground">
               Design and development by Fortitudo.
             </span>{" "}
-            From the first brief to a working launch. A defined scope, a fixed
-            project price, and direct access to the people building it.
+            From the first brief to a working website, store or product.
+            One team for the design, the build and the handover.
           </p>
         </Reveal>
         <Reveal

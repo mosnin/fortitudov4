@@ -1,21 +1,8 @@
-/**
- * The global 404.
- *
- * It used to be `bg-charcoal-dark text-white`. That token is a back-compat
- * alias which resolves to #ffffff under the current neutral system, so the
- * page was white text on a white background — the whole thing was invisible,
- * on every wrong URL, in both themes.
- *
- * It is charcoal now, like the rest of the logged-out site, with the palette
- * written out rather than pulled from `--fx-*`: those tokens are scoped to
- * `[data-marketing-shell]`, and a 404 can be served from anywhere in the app.
- */
-
 import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0f0f12] px-6 text-center text-white">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] px-6 text-center text-white">
       <p
         style={{ fontFamily: 'var(--font-geist-mono), ui-monospace, monospace' }}
         // "Error 404" is the only place the status code appears, so it reads
@@ -32,7 +19,7 @@ export default function NotFound() {
       </p>
       <Link
         href="/"
-        className="mt-9 inline-flex h-11 items-center justify-center rounded-[4px] bg-[#f8cd02] px-6 text-[14px] font-medium text-[#0f0f12] transition-colors duration-200 hover:bg-[#dcb602]"
+        className="mt-9 inline-flex h-11 items-center justify-center rounded-xl bg-[#fafafa] px-6 text-[14px] font-medium text-[#0a0a0a] transition-colors duration-200 hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
       >
         Go home
       </Link>
