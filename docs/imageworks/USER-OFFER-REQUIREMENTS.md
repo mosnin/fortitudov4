@@ -54,3 +54,18 @@ Deliver one coherent software product from start to finish, including:
 - Purchaser owns the project code, deployment and data. Optional retainers after handover.
 
 Research must translate this into a full-product offer with explicit product-feature scope, dependencies, acceptance criteria and actual ownership/handover deliverables. Core ownership must not become agency lock-in. Third-party provider/IP terms and existing payment/ownership terms must be made clear. Do not invent testimonials, unlimited feature scope, universal fixed timelines or flat pricing unsupported by scope. “Customer building” must stay traceable as an open terminology question; do not silently rewrite it as billing. Define acceptance through public site, account setup/onboarding, customer workflows, authorized admin operations, integrations, persisted data and deployed frontend/backend.
+
+## AI agent expansion — explicit user requirements
+Additive to all earlier capabilities; retain every named item in research and offer traceability.
+
+- Custom Hermes agent; OpenClaw; custom agents; agent harness creation or deployment; agent teams.
+- MCP creation; API creation; agent workflows; agent installation/integration inside applications.
+- Vector database creation; Jev installation/integration; agent context storage installation.
+- Grokbot setup and consulting (exact user wording; intended official product to be verified).
+- ChatGPT / ChatGPT Work installation, setup and consulting.
+- Claude / Claude Code installation, setup and consulting.
+- Image, video and audio model workflows, explicitly including Seedance and ElevenLabs, with models embedded into the workflow.
+- Example agents: outreach, personal assistants, custom coding agents, financial analysts.
+- Manager agents with worker teams supporting product buildouts through business operations, including the user's ambition of helping run an entire business.
+
+Research must verify official platform identities, deployment/access patterns and integration availability. Distinguish installation, hosted workspace configuration and API integration. Compare media models against workload-specific evidence rather than asserting a universally best model. Define the task, permissions, context, evaluation, monitoring, cost boundaries, human approval/escalation, recovery and ownership for each proposed agent/team offer. Do not convert the broad business-management ambition into an unsupported promise of unlimited autonomous operation. The software wording “customer building” remains unresolved pending clarification.
