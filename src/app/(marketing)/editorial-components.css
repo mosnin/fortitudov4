@@ -1,0 +1,18 @@
+.about-reveal { background:#111; min-height:650px; }
+.about-reveal .hero-01__image { object-position:center 60%; }
+.about-reveal .hero-01__overlay { background:linear-gradient(180deg,rgba(0,0,0,.45),rgba(0,0,0,.1) 45%,rgba(0,0,0,.7)); }
+.about-reveal .hero-01__content h1 { font-size:clamp(44px,6.1vw,88px); letter-spacing:-.045em; max-width:17ch; }
+.about-reveal .hero-01__bottom p { max-width:40ch; }
+.deck-carousel { padding:0 0 60px; }
+.deck-carousel-intro { display:flex; justify-content:space-between; gap:20px; padding:0 32px 24px; font-size:14px; }
+.deck-carousel-intro span { color:#929292; }
+.deck-carousel [data-parallax-carousel] { min-height:0; align-items:flex-start; padding-bottom:12px; }
+.deck-carousel [data-parallax-carousel] > .card .frame { border-radius:12px; background:#252525; }
+.deck-carousel [data-parallax-carousel] > .card .caption { padding-top:20px; gap:8px; }
+.deck-carousel [data-parallax-carousel] > .card .caption .title { color:var(--foreground); font-size:clamp(23px,2.5vw,36px); letter-spacing:-.025em; }
+.deck-carousel [data-parallax-carousel] > .card .caption .eyebrow { color:#999; font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+.deck-carousel .caption > a { font-size:14px; text-decoration:underline; text-underline-offset:5px; padding-block:8px; width:fit-content; }
+.deck-carousel [data-parallax-carousel]:focus-visible { outline:1px solid #aaa; outline-offset:-1px; }
+@media(max-width:700px){.about-reveal{min-height:620px}.deck-carousel-intro{padding-inline:20px;flex-direction:column;gap:6px}.deck-carousel [data-parallax-carousel]{--parallax:240px}}
+.about-reveal .hero-01__bottom{padding-bottom:180px}
+@media(max-width:700px){.about-reveal .hero-01__content{padding-top:22svh}.about-reveal .hero-01__bottom{padding-bottom:150px;font-size:16px}.about-reveal .hero-01__content h1{font-size:42px}}

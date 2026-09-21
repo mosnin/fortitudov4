@@ -1,0 +1,174 @@
+.hero-01 {
+  position: relative;
+  overflow: hidden;
+  height: 100svh;
+  color: #ffffff;
+}
+
+
+.hero-01 header {
+  position: fixed;
+  width: 100%;
+  padding: 20px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  font-size: 18px;
+}
+
+
+@media (max-width: 1024px) {
+  .hero-01 header {
+    padding-inline: 20px;
+  }
+}
+
+
+.hero-01 .logo img {
+  width: 40px;
+  height: 40px;
+}
+
+
+@media (max-width: 1024px) {
+  .hero-01 .logo img {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+.hero-01 nav {
+  display: flex;
+  gap: 16px;
+}
+
+
+.hero-01 nav a {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+
+.hero-01__media {
+  position: absolute;
+  inset: 0;
+}
+
+
+.hero-01__image,
+.hero-01__overlay {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+
+.hero-01__content {
+  position: relative;
+  padding-top: 23vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-inline: 32px;
+}
+
+
+@media (max-width: 1024px) {
+  .hero-01__content {
+    padding-inline: 20px;
+  }
+}
+
+
+.hero-01__content h1 {
+  font-size: 90px;
+  line-height: 1;
+  max-width: 16ch;
+}
+
+
+@media (max-width: 1024px) {
+  .hero-01__content h1 {
+    font-size: 60px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  .hero-01__content h1 {
+    font-size: 40px;
+    max-width: unset;
+  }
+}
+
+
+.hero-01__bottom {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-block: 32px;
+  font-size: 24px;
+}
+
+
+.hero-01__bottom p {
+  max-width: 40ch;
+  line-height: 1.35;
+}
+
+
+.hero-01__bottom span {
+  opacity: 0.5;
+}
+
+
+@media (max-width: 1024px) {
+  .hero-01__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 16px;
+  }
+}
+
+:root {
+  --reveal-descender: 0.18em;
+  --reveal-clip-margin: 0.06em;
+}
+
+
+[data-reveal-01] {
+  visibility: hidden;
+}
+
+
+[data-reveal-01] > * {
+  margin-bottom: calc(-1 * var(--reveal-descender));
+}
+
+
+.word-mask,
+.char-mask {
+  vertical-align: top;
+}
+
+
+.line-mask,
+.word-mask,
+.char-mask {
+  overflow: clip;
+  overflow-clip-margin: var(--reveal-clip-margin);
+}
+
+
+.line-mask > *,
+.word-mask > *,
+.char-mask > * {
+  padding-bottom: var(--reveal-descender);
+  will-change: transform;
+}

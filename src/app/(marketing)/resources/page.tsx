@@ -1,3 +1,4 @@
+import { DeckCarousel } from "@/components/imageworks/deck-carousel";
 import { PageIntro } from "@/components/imageworks/page-intro";
 import { ResourceCards } from "@/components/imageworks/resource-cards";
 import { FinalCta } from "@/components/imageworks/final-cta";
@@ -15,6 +16,7 @@ export default function Resources() {
         title="Bring the right proposal to the table."
         lead="Detailed presentations for every service. Explore the scope, deliverables, review process and handover, then download the PDF to share with your team. No form required."
       />
+      <DeckCarousel />
       <ResourceCards />
       <FinalCta />
     </>

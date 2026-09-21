@@ -14,6 +14,10 @@ import "./expansion.css";
 import "./source-service-cards.css";
 import "./source-squeeze.css";
 import "./source-adaptations.css";
+import "./service-menu.css";
+import "./source-parallaxCarousel.css";
+import "./source-hero01.css";
+import "./editorial-components.css";
 
 export const metadata: Metadata = {
   title: "Fortitudo — Websites, Ecommerce, Software & AI Agents",

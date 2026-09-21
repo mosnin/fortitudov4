@@ -1,6 +1,7 @@
+import { servicePhoto } from "@/content/service-groups";
 import Image from "next/image";
 import Link from "next/link";
-import { SERVICE_CATALOG, servicePdf, servicePreview } from "@/lib/service-catalog";
+import { SERVICE_CATALOG, servicePdf } from "@/lib/service-catalog";
 import manifest from "@/content/resource-manifest.json";
 import { SectionHeading } from "./section-heading";
 export function ResourceCards({ featured = false }: { featured?: boolean }) {
@@ -40,8 +41,8 @@ export function ResourceCards({ featured = false }: { featured?: boolean }) {
                 >
                   <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-muted">
                     <Image
-                      src={servicePreview(s)}
-                      alt={`${s.name} service pitch cover`}
+                      src={servicePhoto(s.slug)}
+                      alt={`${s.name} editorial photograph`}
                       fill
                       sizes="(min-width:1024px) 33vw,(min-width:768px) 50vw,100vw"
                       className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"

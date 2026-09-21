@@ -3,6 +3,9 @@ import json, hashlib
 from pathlib import Path
 from xml.sax.saxutils import escape
 from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.utils import ImageReader
+from PIL import Image, ImageOps
+from io import BytesIO
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph
@@ -16,25 +19,36 @@ fonts=ROOT/'node_modules/geist/dist/fonts/geist-sans'
 for name,file in [('Regular','Geist-Regular.ttf'),('Medium','Geist-Medium.ttf')]: pdfmetrics.registerFont(TTFont(name,str(fonts/file)))
 catalog=json.loads((ROOT/'src/content/service-catalog.json').read_text())
 offers=json.loads((ROOT/'src/content/service-offers.json').read_text())
+photography=json.loads((ROOT/"src/content/service-photography.json").read_text())
 manifest=[]
 W,H=960,540
 for s in catalog:
- o=offers[s['slug']]; target=OUT/('fortitudo-'+s['resourceSlug']+'.pdf'); c=Canvas(str(target),pagesize=(W,H)); c.setTitle(s['name']+' — Fortitudo service deck');c.setAuthor('Fortitudo'); page=0
+ o=offers[s['slug']]; target=OUT/('fortitudo-'+s['resourceSlug']+'.pdf'); c=Canvas(str(target),pagesize=(W,H)); c.setTitle(s['name']+' — Fortitudo service deck');c.setAuthor('Fortitudo');c.setSubject('Service scope, delivery and ownership'); page=0; light=False
+ photo=Image.open(ROOT/"public"/photography[s["slug"]].lstrip("/")).convert("RGB")
+ def image(x,y,w,h):
+  crop=ImageOps.fit(photo,(int(w*2),int(h*2)),method=Image.Resampling.LANCZOS)
+  c.drawImage(ImageReader(crop),x,y,w,h)
  def text(value,x,y,width,size=18,color='#b8b8b8'):
+  if light: color = '#171916' if color == '#f7f7f5' else '#5a5d56'
   p=Paragraph(escape(value),ParagraphStyle('p',fontName='Regular',fontSize=size,leading=size*1.42,textColor=HexColor(color)))
   _,h=p.wrap(width,1000)
   assert y-h>48,(s['slug'],page,value,y,h)
   p.drawOn(c,x,y-h); return y-h
  def slide(label,title):
-  global page
+  global page,light
   if page:c.showPage()
-  page+=1;c.setFillColor(HexColor('#101010'));c.rect(0,0,W,H,stroke=0,fill=1)
-  c.setFillColor(HexColor('#f7f7f5'));c.setFont('Medium',15);c.drawString(48,501,'Fortitudo')
-  c.setFont('Regular',10);c.setFillColor(HexColor('#9b9b9b'));c.drawRightString(912,502,label.upper())
-  c.setStrokeColor(HexColor('#363636'));c.line(48,44,912,44);c.setFont('Regular',9);c.drawString(48,25,'FORTITUDO / '+s['name'].upper());c.drawRightString(912,25,f'{page:02d}')
-  c.linkURL('https://www.fortitudo.agency/services/'+s['slug'],(48,15,650,38))
-  return text(title,48,449,850,39,'#f7f7f5')-30
- y=slide('Service deck',s['name']);text(o['summary'],48,y,680,27,'#f7f7f5');text(o['fit'],48,211,680,18);text('Design. Development. Delivery.',48,102,700,12)
+  page+=1;light=label not in ['Service deck','Review & acceptance','Working together']
+  background='#f0f0e9' if light else '#111510'; ink='#171916' if light else '#f7f7f5'; muted='#6e7468' if light else '#adb5a5'
+  c.setFillColor(HexColor(background));c.rect(0,0,W,H,stroke=0,fill=1)
+  if label=='Service deck':
+   image(570,0,390,H)
+   c.setFillColor(HexColor('#111510'));c.rect(0,0,570,H,stroke=0,fill=1)
+  c.setFillColor(HexColor(ink));c.setFont('Medium',15);c.drawString(48,501,'Fortitudo')
+  c.setFont('Regular',10);c.setFillColor(HexColor(muted));c.drawRightString(525 if label=='Service deck' else 912,502,label.upper())
+  c.setStrokeColor(HexColor('#c7ccbf' if light else '#343e2f'));c.line(48,44,525 if label=='Service deck' else 912,44);c.setFont('Regular',9);c.drawString(48,25,'FORTITUDO / '+s['name'].upper());c.drawRightString(525 if label=='Service deck' else 912,25,f'{page:02d}')
+  c.linkURL('https://www.fortitudo.agency/services/'+s['slug'],(48,15,525,38))
+  return text(title,48,434,465 if label=='Service deck' else 850,38,'#f7f7f5')-30
+ y=slide('Service deck',s['name']);text(o['summary'],48,y,465,21,'#f7f7f5');text('Service overview / Scope / Delivery / Ownership',48,110,465,11);text('fortitudo.agency',48,85,465,12)
  y=slide('The opportunity','What your business needs.');text(s['lead'],48,y,540,23,'#f7f7f5');text('Who this is for',655,y,250,13,'#f7f7f5');text(o['fit'],655,y-35,250,17)
  y=slide('The result','What we deliver.');text(s['result'],48,y,810,21,'#f7f7f5');
  for i,item in enumerate(o['deliverables']):text(f'{i+1:02d}  {item}',48+(i%2)*440,238-(i//2)*80,397,17)

@@ -1,6 +1,6 @@
 import { ArrowButton } from "@/components/imageworks/arrow-button";
 import Image from "next/image";
-import { PageIntro } from "@/components/imageworks/page-intro";
+import { AboutReveal } from "@/components/imageworks/about-reveal";
 import { Process } from "@/components/imageworks/process";
 import { FinalCta } from "@/components/imageworks/final-cta";
 import { SectionHeading } from "@/components/imageworks/section-heading";
@@ -31,18 +31,11 @@ const principles = [
 export default function About() {
   return (
     <>
-      <PageIntro
-        label="About Fortitudo"
-        title="Built on experience. Made for what comes next."
-        lead="For more than a decade, we have been building websites, running advertising campaigns and helping businesses scale. Fortitudo brings that experience together across brand, commerce, software and applied AI."
-      />
-      <section className="pb-24 sm:pb-32">
+      <AboutReveal />
+      <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#e4e4e4]">
-              <Image src="/about/fortitudo-in-hand.webp" alt="A hand holding a glass card bearing the Fortitudo mark." fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
-            </div>
-            <div className="max-w-xl">
+          <div className="mx-auto max-w-[960px]">
+            <div className="max-w-3xl">
               <h2 className="text-4xl leading-tight tracking-tight">
                 An eye for the brand.
                 <br />A mind for the business.

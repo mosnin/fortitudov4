@@ -1,0 +1,6 @@
+"use client";
+import { useState } from "react";
+import Link from "next/link";
+import { SERVICE_GROUPS } from "@/content/service-groups";
+import { SERVICE_CATALOG, servicePdf } from "@/lib/service-catalog";
+export function ServiceDirectory(){const [open,setOpen]=useState<Record<number,boolean>>({});return <section className="service-directory"><div className="accordion" aria-label="Explore our services">{SERVICE_GROUPS.map((g,i)=><article className="item" key={g.title}><input className="toggle" type="checkbox" id={`service-group-${i}`} checked={!!open[i]} onChange={e=>setOpen({...open,[i]:e.target.checked})} aria-expanded={!!open[i]} aria-controls={`service-answer-${i}`}/><label className="question" htmlFor={`service-group-${i}`}><span>{g.title}</span><span className="icon" aria-hidden="true"><span className="icon-mark"/></span></label><div className="answer" id={`service-answer-${i}`} inert={!open[i]}><div className="answer-inner"><div className="service-directory-links">{g.slugs.map(slug=>{const s=SERVICE_CATALOG.find(s=>s.slug===slug)!;return <article key={slug}><Link href={`/services/${slug}`}><h3>{s.name} ↗</h3></Link><p>{s.lead}</p><a href={servicePdf(s)} download>Download service deck ↓</a></article>})}</div></div></div></article>)}</div></section>}

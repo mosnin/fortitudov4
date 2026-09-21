@@ -1,3 +1,4 @@
+import { servicePhoto } from "@/content/service-groups";
 import { ArrowButton } from "@/components/imageworks/arrow-button";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,7 +7,7 @@ import type { Metadata } from "next";
 import {
   SERVICE_CATALOG,
   resourceService,
-  servicePdf, servicePreview,
+  servicePdf,
   serviceOffer,
   serviceEnquiry,
 } from "@/lib/service-catalog";
@@ -46,8 +47,8 @@ export default async function Resource({
           <aside className="lg:sticky lg:top-28">
             <div className="relative mx-auto aspect-[16/9] max-w-md overflow-hidden rounded-2xl border border-border bg-muted lg:max-w-[320px]">
               <Image
-                src={servicePreview(s)}
-                alt={`${s.name} pitch cover`}
+                src={servicePhoto(s.slug)}
+                alt={`${s.name} editorial photograph`}
                 fill
                 priority
                 sizes="(min-width:1024px) 35vw,100vw"
