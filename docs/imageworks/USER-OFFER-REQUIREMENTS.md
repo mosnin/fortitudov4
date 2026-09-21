@@ -42,3 +42,15 @@ Added after the initial inventory; retain all prior capabilities. Duplicate lega
 - Performance/conversion tools: site speed improvements/integrations, advanced upsells, advanced FAQs, quizzes and related functionality.
 
 Research must retain each item in the capability-to-offer matrix. Package boundaries should distinguish brand/label work, store foundations, storefront buildouts, operations/data and optimization. Verify current provider access, platform/plan/region support and third-party costs, particularly ChatGPT ads. These are user-stated capabilities and required research scope, not evidence that every third-party integration is currently available to every merchant. Separate implementation from ongoing operations or legal/compliance certification; agree merchant inputs and consent/data handling when scoping.
+
+## Complete software creation package — explicit user requirements
+Deliver one coherent software product from start to finish, including:
+
+- Public/logged-out marketing website: About the Product, Product, Solutions, Resources, Blog, Contact and legal pages; consistent branding/design, testimonials where genuine evidence exists, and CTAs.
+- Customer application: custom account setup, onboarding, “customer building” (user's exact phrase; meaning unresolved), product dashboard and product-specific features, profile and settings pages, MCP/API where needed, email integration, custom UX flows and premium on-brand UI.
+- Third-party data API integrations and custom database-provider integrations.
+- Owner/admin dashboard: user management, refunds, financial data and other scoped operational functions.
+- Frontend AND backend deployment assistance.
+- Purchaser owns the project code, deployment and data. Optional retainers after handover.
+
+Research must translate this into a full-product offer with explicit product-feature scope, dependencies, acceptance criteria and actual ownership/handover deliverables. Core ownership must not become agency lock-in. Third-party provider/IP terms and existing payment/ownership terms must be made clear. Do not invent testimonials, unlimited feature scope, universal fixed timelines or flat pricing unsupported by scope. “Customer building” must stay traceable as an open terminology question; do not silently rewrite it as billing. Define acceptance through public site, account setup/onboarding, customer workflows, authorized admin operations, integrations, persisted data and deployed frontend/backend.
