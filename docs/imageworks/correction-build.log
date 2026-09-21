@@ -1,0 +1,140 @@
+▲ Next.js 16.2.12 (webpack)
+- Environments: .env.local
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 12.1s
+  Running TypeScript ...
+  Finished TypeScript in 10.5s ...
+  Collecting page data using 10 workers ...
+  Generating static pages using 10 workers (0/96) ...
+  Generating static pages using 10 workers (24/96) 
+  Generating static pages using 10 workers (48/96) 
+  Generating static pages using 10 workers (72/96) 
+✓ Generating static pages using 10 workers (96/96) in 373ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ○ /about
+├ ƒ /admin
+├ ƒ /admin/clients
+├ ƒ /admin/clients/[id]/portal
+├ ƒ /admin/financials
+├ ƒ /admin/helix
+├ ƒ /admin/helix/[id]
+├ ƒ /admin/helix/activity
+├ ƒ /admin/helix/approvals
+├ ƒ /admin/helix/gadgets
+├ ƒ /admin/helix/gadgets/[id]
+├ ƒ /admin/leads
+├ ƒ /admin/messages
+├ ƒ /admin/partners
+├ ƒ /admin/partners/[id]
+├ ƒ /admin/partners/[id]/requests/[requestId]
+├ ƒ /admin/payments
+├ ƒ /admin/projects
+├ ƒ /admin/projects/[id]
+├ ƒ /admin/tasks
+├ ƒ /admin/team
+├ ƒ /analytics
+├ ƒ /api/admin/client-payments
+├ ƒ /api/admin/client-payments/[id]
+├ ƒ /api/admin/client-tasks
+├ ƒ /api/admin/client-tasks/[id]
+├ ƒ /api/admin/clients
+├ ƒ /api/admin/clients/[id]
+├ ƒ /api/admin/clients/[id]/payments
+├ ƒ /api/admin/clients/[id]/portal
+├ ƒ /api/admin/clients/[id]/tasks
+├ ƒ /api/admin/dashboard
+├ ƒ /api/admin/leads
+├ ƒ /api/admin/metrics
+├ ƒ /api/admin/weekly-reports
+├ ƒ /api/analytics
+├ ƒ /api/comments
+├ ƒ /api/db-check
+├ ƒ /api/files
+├ ƒ /api/helix/activity
+├ ƒ /api/helix/approvals
+├ ƒ /api/helix/blueprints
+├ ƒ /api/helix/blueprints/install
+├ ƒ /api/helix/client-gadgets
+├ ƒ /api/helix/client-thread
+├ ƒ /api/helix/gadgets
+├ ƒ /api/helix/gadgets/[id]
+├ ƒ /api/helix/gadgets/[id]/rpc
+├ ƒ /api/helix/resources
+├ ƒ /api/helix/search
+├ ƒ /api/helix/threads
+├ ƒ /api/helix/threads/[id]
+├ ƒ /api/helix/threads/[id]/introductions
+├ ƒ /api/helix/threads/[id]/messages
+├ ƒ /api/invite
+├ ƒ /api/invoices
+├ ƒ /api/leads
+├ ƒ /api/messages
+├ ƒ /api/notifications
+├ ƒ /api/onboarding
+├ ƒ /api/partner-requests
+├ ƒ /api/partner-requests/[id]
+├ ƒ /api/partners
+├ ƒ /api/partners/[id]
+├ ƒ /api/projects
+├ ƒ /api/projects/[id]/phases
+├ ƒ /api/reports
+├ ƒ /api/revisions
+├ ƒ /api/search
+├ ƒ /api/surveys
+├ ƒ /api/team
+├ ƒ /api/uploadthing
+├ ƒ /api/webhooks/clerk
+├ ƒ /api/webhooks/creem
+├ ○ /checkout
+├ ○ /contact
+├ ƒ /dashboard
+├ ○ /faq
+├ ƒ /guides
+├ ƒ /helix
+├ ƒ /messages
+├ ƒ /notifications
+├ ƒ /onboarding
+├ ƒ /partner
+├ ƒ /partner/requests/[id]
+├ ƒ /partner/requests/new
+├ ƒ /payments
+├ ○ /portfolio
+├ ƒ /post-login
+├ ○ /pricing
+├ ○ /privacy
+├ ƒ /projects
+├ ƒ /projects/[id]
+├ ƒ /reports
+├ ○ /robots.txt
+├ ○ /services
+├ ● /services/[slug]
+│ ├ /services/websites
+│ ├ /services/software-solutions
+│ ├ /services/ai-solutions
+│ └ [+3 more paths]
+├ ƒ /settings
+├ ƒ /sign-in/[[...sign-in]]
+├ ƒ /sign-up/[[...sign-up]]
+├ ○ /sitemap.xml
+├ ○ /terms
+├ ƒ /tools
+├ ○ /work
+└ ● /work/[slug]
+  ├ /work/stored
+  ├ /work/chippi
+  ├ /work/never-age
+  └ [+5 more paths]
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

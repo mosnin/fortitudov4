@@ -1,0 +1,13 @@
+
+> fortitudov4@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.10 /Users/preston/Documents/ChatGPT/os/fortitudo
+
+
+ Test Files  30 passed (30)
+      Tests  1047 passed (1047)
+   Start at  20:19:09
+   Duration  1.90s (transform 3.01s, setup 0ms, import 10.90s, tests 1.33s, environment 2ms)
+
