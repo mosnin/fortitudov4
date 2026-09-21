@@ -17,7 +17,7 @@ import {
 import { useEffect, useRef, type PointerEvent, type ReactNode } from "react";
 
 const COLUMNS = [
- { title: "Services", links: [{label:"Websites & ecommerce",href:"/services#web-commerce"},{label:"Software & integrations",href:"/services#software"},{label:"AI & automation",href:"/services#ai"},{label:"Design & advisory",href:"/services#design-advisory"}] },
+ { title: "Services", links: [{label:"Websites & ecommerce",href:"/services/websites"},{label:"Software & integrations",href:"/services/software-solutions"},{label:"AI & automation",href:"/services/ai-solutions"},{label:"Design & advisory",href:"/services/brand"}] },
  { title: "Agency", links: [{label:"Our work",href:"/work"},{label:"About",href:"/about"},{label:"How we work",href:"/approach"},{label:"Service pitch decks",href:"/resources"}] },
  { title: "Contact", links: [{label:"Start a project",href:"/contact"},{label:"Client sign in",href:"/sign-in"},{label:"Ownership & handover",href:"/handover"},{label:"Ongoing support",href:"/ongoing-support"}] },
 ];

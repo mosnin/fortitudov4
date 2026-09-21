@@ -1,0 +1,161 @@
+[data-morphing-carousel-2] {
+  --text: #0d0d0d;
+  --muted-text: #6b6866;
+  --control-surface: #f3f2f1;
+  --media-surface: #eae8e6;
+  --card-radius: 6px;
+  --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  color: var(--text);
+}
+[data-morphing-carousel-2],
+[data-morphing-carousel-2] *,
+[data-morphing-carousel-2] *::before,
+[data-morphing-carousel-2] *::after {
+  box-sizing: border-box;
+}
+@media (max-width: 760px) {
+  [data-morphing-carousel-2] {
+    gap: 16px;
+  }
+}
+[data-morphing-carousel-2] p {
+  margin: 0;
+}
+[data-morphing-carousel-2] img,
+[data-morphing-carousel-2] svg {
+  display: block;
+}
+[data-morphing-carousel-2] button {
+  margin: 0;
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+[data-morphing-carousel-2] button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+}
+[data-morphing-carousel-2] .arrows {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+[data-morphing-carousel-2] .arrows button {
+  position: relative;
+  display: grid;
+  width: 48px;
+  aspect-ratio: 1;
+  place-items: center;
+  color: var(--text);
+  background: transparent;
+  border-radius: 50%;
+}
+[data-morphing-carousel-2] .arrows button::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: "";
+  background: var(--control-surface);
+  border-radius: inherit;
+  transition: transform 400ms var(--ease-out-expo);
+}
+[data-morphing-carousel-2] .arrows button:hover::before {
+  transform: scale(1.06);
+}
+[data-morphing-carousel-2] .arrows button:hover .arrow svg:first-child {
+  transform: translateX(48px);
+}
+[data-morphing-carousel-2] .arrows button:hover .arrow svg:last-child {
+  transform: translateX(0);
+}
+[data-morphing-carousel-2] .arrows button:active::before {
+  transform: scale(0.98);
+}
+[data-morphing-carousel-2] .arrows button .arrow {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: block;
+  overflow: clip;
+  border-radius: inherit;
+}
+[data-morphing-carousel-2] .arrows button .arrow svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 12px;
+  margin: -6px 0 0 -7px;
+  transition: transform 500ms var(--ease-out-expo);
+}
+[data-morphing-carousel-2] .arrows button .arrow svg:first-child {
+  transform: translateX(0);
+}
+[data-morphing-carousel-2] .arrows button .arrow svg:last-child {
+  transform: translateX(-48px);
+}
+[data-morphing-carousel-2] .arrows button[data-previous] .arrow {
+  transform: rotate(180deg);
+}
+[data-morphing-carousel-2] .strip {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  user-select: none;
+}
+[data-morphing-carousel-2] .strip .card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--media-surface);
+  border-radius: var(--card-radius);
+  will-change: transform, width;
+}
+[data-morphing-carousel-2] .strip .media {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--media-surface);
+  will-change: transform;
+}
+[data-morphing-carousel-2] .strip .media img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+[data-morphing-carousel-2] .captions {
+  display: grid;
+}
+[data-morphing-carousel-2] .captions .caption {
+  grid-area: 1/1;
+  max-width: 62ch;
+  font-size: 16px;
+  line-height: 1.5;
+  visibility: hidden;
+}
+[data-morphing-carousel-2] .captions .caption.is-active {
+  visibility: visible;
+}
+[data-morphing-carousel-2] .captions .caption strong {
+  color: var(--text);
+}
+[data-morphing-carousel-2] .captions .caption span {
+  color: var(--muted-text);
+}
+[data-morphing-carousel-2] .split-line-mask {
+  overflow: clip;
+}
+[data-morphing-carousel-2] .split-line {
+  will-change: transform;
+}

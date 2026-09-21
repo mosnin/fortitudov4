@@ -11,7 +11,9 @@ import "./imageworks.css";
 import "./premium.css";
 import "./animation-library.css";
 import "./expansion.css";
-import "./agency.css";
+import "./source-service-cards.css";
+import "./source-squeeze.css";
+import "./source-adaptations.css";
 
 export const metadata: Metadata = {
   title: "Fortitudo — Websites, Ecommerce, Software & AI Agents",

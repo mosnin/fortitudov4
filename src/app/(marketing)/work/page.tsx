@@ -1,5 +1,6 @@
 export const metadata = { title: "Our work | Fortitudo Agency" };
 import { PageIntro } from "@/components/imageworks/page-intro";
+import { SourceProjectCarousel } from "@/components/imageworks/source-project-carousel";
 import { Portfolio } from "@/components/imageworks/portfolio";
 import { FinalCta } from "@/components/imageworks/final-cta";
 export default function Page() {
@@ -10,6 +11,7 @@ export default function Page() {
         title="See what we have worked on."
         lead="From online stores to AI products. Explore the businesses, the briefs and the work behind them."
       />
+      <SourceProjectCarousel />
       <Portfolio />
       <FinalCta />
     </>
