@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
-import { MotionSwitch } from "@/components/imageworks/motion-switch";
-import { ThemeSwitch } from "@/components/imageworks/theme-switch";
 import { Footer } from "@/components/imageworks/footer";
 import { MotionShell } from "@/components/imageworks/motion-shell";
 import { Providers } from "@/components/imageworks/providers";
@@ -38,7 +36,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         className={`min-h-screen bg-background text-foreground antialiased ${GeistSans.variable}`}
       >
         <SkipToContent />
-        <MotionShell controls={<><MotionSwitch /><ThemeSwitch /></>}>
+        <MotionShell>
         <main
           id="main-content"
           tabIndex={-1}

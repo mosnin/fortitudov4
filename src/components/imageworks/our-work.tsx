@@ -28,11 +28,11 @@ export function OurWork(): ReactNode {
               <li key={project.slug}>
                 <Link href={`/work/${project.slug}`} className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
                   <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
-                    <Image src={project.image} alt={project.imageAlt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-contain object-center" />
+                    <Image src={project.image} alt={project.imageAlt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
                   </div>
                   <div className="mt-5 flex items-baseline justify-between gap-4">
                     <h3 className="text-xl font-medium">{project.name}</h3>
-                    <span className="text-sm text-muted-foreground">{project.service}</span>
+                    <span className="max-w-[55%] text-right text-xs leading-5 text-muted-foreground sm:text-sm">{project.serviceLabel ?? project.service}</span>
                   </div>
                   <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">{project.blurb}</p>
                 </Link>

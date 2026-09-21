@@ -218,3 +218,12 @@
 .service-directory .accordion>.item{border-top:1px solid var(--border)}
 .service-directory .accordion .answer-inner p{padding:0;max-width:54ch}
 [data-drawer-navigation] .service-menu .answer-inner p{padding:0}
+
+/* Clip the zero-row panel itself: nested links must never bleed into siblings. */
+[data-drawer-navigation] .service-menu .answer{overflow:hidden}
+[data-drawer-navigation] .service-menu .answer-inner{overflow:hidden;padding:0;min-height:0}
+[data-drawer-navigation] .service-menu .answer-inner>a{margin-top:12px}
+[data-drawer-navigation] .service-menu .answer-inner>div:last-child{padding-bottom:20px}
+[data-drawer-navigation] .service-menu .service-menu-check:not(:checked)~.answer{visibility:hidden}
+[data-drawer-navigation] .drawer .drawer-content{padding-top:100px}
+@media(max-width:600px){[data-drawer-navigation] .drawer .drawer-content{padding-top:96px}}

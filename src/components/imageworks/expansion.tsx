@@ -1,3 +1,4 @@
+import { HeroVideo } from "./hero-video";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowButton } from "./arrow-button";
@@ -16,7 +17,8 @@ export function EditorialHero({
 }) {
   const hook = { [`data-reveal-${effect}`]: "lines" };
   return (
-    <header className="editorial-hero">
+    <header className="editorial-hero video-page-hero">
+      <HeroVideo />
       <p className="editorial-label">Fortitudo / {label}</p>
       <h1 {...hook}>{title}</h1>
       <div className="editorial-hero-bottom">

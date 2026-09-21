@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ServiceMenu } from "./service-menu";
@@ -59,7 +59,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
     if (overlay.current) overlay.current.dataset.visible = "false";
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const scope = root.current;
     if (!scope) return;
     const cleanup = textReveal06(scope);
@@ -80,7 +80,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
     const surface = page.current;
     const nav = drawer.current;
     if (!scope || !surface || !nav) return;
-    let focusTimer: ReturnType<typeof setTimeout> | undefined;
+
     if (open) {
       scope.style.setProperty("--drawer-scroll", `${window.scrollY}px`);
       surface.inert = true;
@@ -88,8 +88,8 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
       const oldOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       const tween = gsap.fromTo(nav.querySelectorAll(".eyebrow, .links a, .socials a, .divider"), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.65, stagger: 0.045, ease: "power3.out", delay: 0.12 });
-      focusTimer = setTimeout(() => nav.querySelector<HTMLAnchorElement>("a")?.focus(), 160);
-      return () => { clearTimeout(focusTimer); tween.kill(); document.body.style.overflow = oldOverflow; surface.inert = false; siteScroll.current?.start(); };
+
+      return () => { tween.kill(); document.body.style.overflow = oldOverflow; surface.inert = false; siteScroll.current?.start(); };
     }
     const closeTimer = setTimeout(() => setActive(false), 510);
     return () => clearTimeout(closeTimer);
@@ -139,7 +139,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
       }, contact ? 2500 : 500);
       recoveryTimer.current = setTimeout(resetNavigation, 12000);
     }
-    function historyChange() { resetNavigation(); setOpen(false); requestAnimationFrame(enter); }
+    function historyChange() { resetNavigation(); setOpen(false); }
     document.addEventListener("click", click, true);
     window.addEventListener("popstate", historyChange);
     return () => { document.removeEventListener("click", click, true); window.removeEventListener("popstate", historyChange); resetNavigation(); };
@@ -155,7 +155,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
       <div className="drawer-content"><p className="eyebrow">Fortitudo</p><ul className="links">{LINKS.map(([label, href]) => <li key={href}>{href === "/services" ? <ServiceMenu key={pathname}/> : <Link href={href} aria-current={pathname === href ? "page" : undefined}><span>{label}</span></Link>}</li>)}</ul><div className="divider" aria-hidden="true" /><div className="socials"><Link href="/approach"><span>How we work</span></Link><Link href="/resources"><span>Service pitch decks</span></Link><Link href="/sign-in"><span>Client sign in</span></Link><a href="mailto:hello@fortitudo.agency"><span>hello@fortitudo.agency</span></a></div></div>
     </nav>
     <div className="page"><div ref={page} className="page-content">{children}</div><button className="cover" type="button" tabIndex={-1} aria-label="Close navigation" onClick={close} /></div>
-    <div className="persistent-controls" inert={open}>{controls}</div>
+    {controls && <div className="persistent-controls" inert={open}>{controls}</div>}
     {["top", "bottom"].map(edge => <div key={edge} className={`progressive-blur ${edge}-blur`} aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <div key={i} className={`layer blur-${i + 1}`} />)}</div>)}
     <div ref={overlay} className="contact-transition" data-visible="false" aria-hidden="true"><div ref={auraRoot} data-aura-border data-dither-src="https://www.details.so/vault-previews/aurora-glow/_astro/dither.DYfTq7JB.png" data-state="off" data-palette="spectrum"><canvas data-aura-canvas aria-hidden="true" /><span ref={origin} data-aura-origin /><span className="contact-transition-label">Let’s talk.</span></div></div>
   </div>;

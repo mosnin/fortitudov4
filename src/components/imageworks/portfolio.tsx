@@ -7,7 +7,7 @@ import type { ReactNode } from "react";
 
 const FRAMES = WORK_PROJECTS.map((p) => ({
   ...p,
-  ratio: p.service,
+  ratio: p.serviceLabel ?? p.service,
   grow: "",
   aspect: "aspect-[16/10]",
   position: "object-top",
@@ -40,12 +40,12 @@ export function Portfolio(): ReactNode {
                         alt={f.imageAlt}
                         fill
                         sizes="(min-width: 1024px) 40vw, 100vw"
-                        className={`object-contain object-center`}
+                        className={`object-cover object-top`}
                       />
                     </div>
-                    <figcaption className="mt-4 flex items-baseline justify-between text-[15px]">
+                    <figcaption className="mt-4 flex items-baseline justify-between gap-4 text-[15px]">
                       <span className="font-medium">{f.name}</span>
-                      <span className="text-muted-foreground tabular-nums">
+                      <span className="max-w-[55%] text-right text-xs leading-5 text-muted-foreground sm:text-sm">
                         {f.ratio}
                       </span>
                     </figcaption>

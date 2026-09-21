@@ -8,6 +8,7 @@ export interface WorkProject {
   slug: string;
   name: string;
   service: 'Websites' | 'Software Solutions' | 'AI Solutions';
+  serviceLabel?: string;
   url: string;
   domain: string;
   blurb: string;
@@ -22,9 +23,20 @@ export interface WorkProject {
 
 export const WORK_PROJECTS: WorkProject[] = [
   {
+    slug: 'plat-bio-labs', name: 'Plat Bio Labs', service: 'Websites',
+    serviceLabel: 'Websites + Ecommerce',
+    url: 'https://platbiolabs.com/', domain: 'platbiolabs.com',
+    blurb: 'An ecommerce storefront for laboratory research products, with product collections, a searchable certificate-of-analysis library and a clear purchasing journey.',
+    details: ['Research product catalog and collections', 'Product and batch documentation in a COA library', 'An ecommerce experience with clear research-use information'],
+    art: '/work/case-studies/plat-bio-labs.png', image: '/work/case-studies/plat-bio-labs.png',
+    imageAlt: 'Chrome molecular sculpture behind optical glass from the Plat Bio Labs storefront',
+    imageLabel: 'Brand imagery', imageNote: 'Editorial imagery from platbiolabs.com.',
+  },
+  {
     slug: 'stored',
     name: 'Stored',
     service: 'AI Solutions',
+    serviceLabel: 'Software Builds + AI Solutions',
     url: 'https://www.stored.to/',
     domain: 'stored.to',
     blurb:
@@ -42,6 +54,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     slug: 'chippi',
     name: 'Chippi',
     service: 'AI Solutions',
+    serviceLabel: 'Software Builds + AI Solutions',
     url: 'https://www.usechippi.com/',
     domain: 'usechippi.com',
     blurb:
@@ -131,6 +144,7 @@ export const WORK_PROJECTS: WorkProject[] = [
     slug: 'govern',
     name: 'Govern',
     service: 'Software Solutions',
+    serviceLabel: 'Software Builds + AI Solutions',
     url: 'https://www.govern.sh/',
     domain: 'govern.sh',
     blurb:

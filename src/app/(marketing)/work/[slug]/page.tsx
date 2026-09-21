@@ -31,7 +31,7 @@ export default async function Page({
   if (!p) notFound();
   return (
     <>
-      <PageIntro label={p.service} title={p.name} lead={p.blurb} />
+      <PageIntro label={p.serviceLabel ?? p.service} title={p.name} lead={p.blurb} />
       <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
           <div className="mb-8 flex flex-wrap items-center justify-between gap-5 text-sm">
@@ -55,7 +55,7 @@ export default async function Page({
                 fill
                 priority
                 sizes="100vw"
-                className="object-contain object-center"
+                className="object-cover object-top"
               />
             </div>
             <figcaption className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground">

@@ -1,3 +1,4 @@
+import { HeroVideo } from "./hero-video";
 import { Reveal } from "./reveal";
 import type { ReactNode } from "react";
 export function PageIntro({
@@ -10,7 +11,8 @@ export function PageIntro({
   lead: string;
 }) {
   return (
-    <section className="px-4 pt-36 pb-20 text-center sm:px-6 sm:pt-44 sm:pb-28">
+    <section className="video-page-hero px-4 pt-36 pb-20 text-center sm:px-6 sm:pt-44 sm:pb-28">
+      <HeroVideo />
       <div className="mx-auto max-w-4xl">
         <Reveal>
           <p className="mb-6 text-sm font-medium">{label}</p>

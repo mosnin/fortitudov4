@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
+import { HeroVideo } from "./hero-video";
 import { hero01 } from "./effects/library/hero01";
 import { textReveal01 } from "./effects/library/textReveal01";
 export function AboutReveal() {
@@ -18,9 +19,7 @@ export function AboutReveal() {
   }, []);
   return <section className="hero-01 about-reveal" ref={ref} aria-label="About Fortitudo">
     <div className="hero-01__media" data-hero-01-media>
-      {/* Native media retains the supplied reveal's direct DOM target. */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="hero-01__image" src="/about/fortitudo-in-hand.webp" alt="A hand holding a glass card bearing the Fortitudo mark." />
+      <HeroVideo className="hero-01__image" />
       <div className="hero-01__overlay" data-hero-01-overlay />
     </div>
     <div className="hero-01__content"><h1 data-reveal-01="lines">Built on experience.<br/>Made for what comes next.</h1><div className="hero-01__bottom"><p data-reveal-01="lines">More than a decade bringing businesses to life through design, development and the practical application of technology.</p><span>About Fortitudo</span></div></div>

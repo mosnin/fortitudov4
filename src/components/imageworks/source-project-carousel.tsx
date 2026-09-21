@@ -5,7 +5,7 @@ import Link from "next/link";
 import { WORK_PROJECTS } from "@/lib/work-projects";
 import { squeezeCarousel } from "./effects/library/squeezeCarousel";
 import { ArrowButton } from "./arrow-button";
-const projects = ["stored", "govern", "chippi", "tellme", "hannah-joy"].map(slug => WORK_PROJECTS.find(p => p.slug === slug)!);
+const projects = ["stored", "govern", "chippi", "plat-bio-labs", "tellme", "hannah-joy"].map(slug => WORK_PROJECTS.find(p => p.slug === slug)!);
 const arrow = "M0 8.88482V6.76069L13.2244 6.78353L12.8362 6.3724L7.94837 1.50745L9.41014 0L17.2672 7.81133L9.43298 15.6455L7.94837 14.1381L13.2473 8.86198L0 8.88482Z";
 export function SourceProjectCarousel() {
  const scope = useRef<HTMLDivElement>(null);

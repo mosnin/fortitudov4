@@ -1,3 +1,4 @@
+import { HeroVideo } from "@/components/imageworks/hero-video";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,7 +17,8 @@ export default async function Article({params}:{params:Promise<{slug:string}>}) 
   return <>
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify([articleStructuredData(p),breadcrumb]).replace(/</g,"\\u003c")}}/>
     <article>
-      <header className="mx-auto max-w-[1120px] px-4 pt-36 pb-12 sm:px-6 sm:pt-44 sm:pb-16">
+      <header className="video-page-hero journal-video-hero px-4 pt-36 pb-12 sm:px-6 sm:pt-44 sm:pb-16">
+        <HeroVideo />
         <nav aria-label="Breadcrumb" className="mb-8 flex flex-wrap items-center gap-3 text-sm text-muted-foreground"><Link href="/blog" className="inline-flex min-h-11 items-center underline underline-offset-4">Blog</Link><span aria-hidden>/</span><Link href={`/blog?topic=${encodeURIComponent(p.category)}`} className="inline-flex min-h-11 items-center">{p.category}</Link></nav>
         <h1 className="max-w-[1050px] text-[clamp(2.25rem,4.6vw,4.5rem)] leading-[1.06] tracking-[-0.035em]">{p.title}</h1>
         <p className="mt-7 max-w-3xl text-lg leading-8 text-muted-foreground">{p.description}</p>
