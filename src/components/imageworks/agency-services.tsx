@@ -15,7 +15,7 @@ export function AgencyServices({ detailed = false }: { detailed?: boolean }) {
   <div className="agency-section-heading"><p className="agency-eyebrow">Our services</p><h2 id="agency-services-title"><span data-reveal-06>Design. Development.<br/>A complete delivery team.</span></h2><p>We bring strategy, design and engineering together to build websites, digital products and the systems behind your business.</p></div>
   <div className="agency-service-groups">{SERVICE_GROUPS.map((group, i) => <article id={group.id} key={group.id} className="agency-service-group">
     <span className="agency-eyebrow">0{i+1}</span><div><h3>{group.title}</h3><p>{group.description}</p></div>
-    <ul>{group.slugs.map(slug => { const s = SERVICE_CATALOG.find(s => s.slug === slug)!; return <li key={slug}><Link href={`/services/${slug}`}>{s.name}<span aria-hidden>↗</span></Link>{detailed && <><p>{s.lead}</p><a className="agency-download" href={servicePdf(s)} download>Download service deck ↓</a></>}</li>; })}</ul>
+    <ul>{(detailed ? group.slugs : group.slugs.slice(0, 3)).map(slug => { const s = SERVICE_CATALOG.find(s => s.slug === slug)!; return <li key={slug}><Link href={`/services/${slug}`}>{s.name}<span aria-hidden>↗</span></Link>{detailed && <><p>{s.lead}</p><a className="agency-download" href={servicePdf(s)} download>Download service deck ↓</a></>}</li>; })}{!detailed && group.slugs.length > 3 && <li><Link href={`/services#${group.id}`}>All AI services<span aria-hidden>↗</span></Link></li>}</ul>
   </article>)}</div>
   {!detailed && <div className="agency-section-end"><ArrowButton href="/services">Explore our services</ArrowButton><Link href="/resources">Download our pitch decks ↗</Link></div>}
  </section>;
