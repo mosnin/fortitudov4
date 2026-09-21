@@ -1,3 +1,5 @@
+import { ServiceCover } from "./service-pathways";
+import { ServiceReading } from "./journal-cards";
 import Link from "next/link";
 import Image from "next/image";
 import { AiOffers } from "./ai-offers";
@@ -14,6 +16,7 @@ export function ServiceDetail({ service: s }: { service: ServiceCatalogEntry }) 
   const projects = s.projects.filter(slug => !["nourish-reserve","two-cookies","never-age"].includes(slug)).flatMap(slug => WORK_PROJECTS.filter(p => p.slug === slug));
   return <>
     <PageIntro label={s.name} title={s.title} lead={s.lead} />
+    <ServiceCover slug={s.slug}/>
     <section className="pb-20 sm:pb-28"><div className={wrap}>
       <nav aria-label="On this service page" className="mb-10 flex flex-wrap gap-x-7 gap-y-1 border-y border-border py-3 text-sm text-muted-foreground">{[["The offer","offer"],["Capabilities","scope"],["Delivery","delivery"],["Service pitch","pitch"]].map(([label,id])=><a key={id} href={`#${id}`} className="inline-flex min-h-11 items-center hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">{label} ↓</a>)}</nav>
       <div id="offer" className="grid scroll-mt-28 gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-20">
@@ -31,6 +34,7 @@ export function ServiceDetail({ service: s }: { service: ServiceCatalogEntry }) 
     <section id="pitch" className="scroll-mt-28 pb-20 sm:pb-28"><div className={wrap}><div className="grid items-center gap-8 rounded-2xl border border-border p-6 sm:p-10 md:grid-cols-[180px_1fr] lg:grid-cols-[200px_1fr_auto]"><Link href={`/resources/${s.resourceSlug}`} className="relative block aspect-[1/1.414] w-36 overflow-hidden rounded-lg bg-muted md:w-full"><Image src={servicePreview(s)} alt={`${s.name} service pitch cover`} fill sizes="200px" className="object-cover"/></Link><div><p className="text-sm text-muted-foreground">Service pitch · PDF</p><h2 className="mt-3 text-3xl tracking-tight">Take the details to your team.</h2><p className="mt-4 max-w-xl text-[15px] leading-7 text-muted-foreground">The offer, capabilities, delivery and handover in one document. Read it here or download it without submitting your email.</p><Link href={`/resources/${s.resourceSlug}`} className="mt-4 inline-flex min-h-11 items-center text-sm underline underline-offset-4">Read the pitch →</Link></div><a href={servicePdf(s)} download className={projectButton}>Download PDF ↓</a></div></div></section>
     {s.slug === "ai-solutions" && <AiOffers/>}
     <Faq heading="Before we begin." lead={`A few practical questions about ${s.name.toLowerCase()}.`} items={offer.faq}/>
+    <ServiceReading service={s.slug}/>
     <FinalCta />
   </>;
 }

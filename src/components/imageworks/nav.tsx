@@ -29,7 +29,7 @@ import {
 const LINKS = [
   { label: "Services", href: "/services", id: "services" },
   { label: "Work", href: "/work", id: "work" },
-  { label: "Resources", href: "/resources", id: "resources" },
+  { label: "Blog", href: "/blog", id: "blog" },
   { label: "About", href: "/about", id: "about" },
   { label: "Pricing", href: "/pricing", id: "pricing" },
 ] as const;

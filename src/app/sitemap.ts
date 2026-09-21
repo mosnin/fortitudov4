@@ -1,3 +1,4 @@
+import { JOURNAL } from "@/lib/journal";
 import type { MetadataRoute } from "next";
 import { SERVICE_CATALOG } from "@/lib/service-catalog";
 import { WORK_PROJECTS } from "@/lib/work-projects";
@@ -20,7 +21,7 @@ import {
  * remembers exists.
  */
 
-const ORIGIN = "https://fortitudo.agency";
+const ORIGIN = "https://www.fortitudo.agency";
 
 /**
  * When the content of these pages last meaningfully changed.
@@ -51,6 +52,8 @@ const LANG_ALTERNATES_ENABLED: boolean = false;
  */
 const PAGES = [
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
+  { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
+  { path: "/services/other-tech-solutions", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/websites", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/ecommerce", priority: 0.8, changeFrequency: "monthly" },
@@ -112,6 +115,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
       changeFrequency: "monthly" as const,
     })),
+    ...JOURNAL.map(p => ({path: `/blog/${p.slug}`, priority: 0.7, changeFrequency: "monthly" as const})),
     ...WORK_PROJECTS.map((p) => ({
       path: `/work/${p.slug}`,
       priority: 0.7,

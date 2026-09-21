@@ -28,6 +28,7 @@ const COLUMNS = [
       { label: "Brand", href: "/services/brand" },
       { label: "Unslop", href: "/services/unslop" },
       { label: "Consultation", href: "/services/consultation" },
+      { label: "Other tech solutions", href: "/services/other-tech-solutions" },
       { label: "Jev implementation", href: "/services/jev-implementation" },
       { label: "MCP & APIs", href: "/services/mcp-and-api" },
       { label: "AI engineering", href: "/services#ai-capabilities" },
@@ -38,6 +39,7 @@ const COLUMNS = [
     links: [
       { label: "Our work", href: "/work" },
       { label: "Resources", href: "/resources" },
+      { label: "Blog", href: "/blog" },
       { label: "Services", href: "/services" },
       { label: "About", href: "/about" },
       { label: "Pricing", href: "/pricing" },

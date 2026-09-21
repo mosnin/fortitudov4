@@ -19,6 +19,7 @@ const PUBLIC_PAGES = new Set([
   "services",
   "work",
   "resources",
+  "blog",
 ]);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

@@ -15,7 +15,7 @@ import type { MetadataRoute } from "next";
  * entry here, which is exactly the detail that made the static file rot.
  */
 
-const ORIGIN = "https://fortitudo.agency";
+const ORIGIN = "https://www.fortitudo.agency";
 
 /**
  * The authenticated surface, as `src/app` actually lays it out. Keep in step

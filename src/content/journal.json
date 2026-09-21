@@ -1,0 +1,465 @@
+[
+  {
+    "slug": "custom-software-vs-saas-small-business",
+    "title": "Custom software vs SaaS: how to decide for a small business",
+    "description": "Compare custom software and off-the-shelf SaaS using workflow fit, ownership, integration costs and a practical decision checklist.",
+    "category": "Software",
+    "service": "software-solutions",
+    "cover": "/journal/software-v2.webp",
+    "coverAlt": "Brushed aluminum prototype detail with a recessed vent and quiet grey negative space.",
+    "published": "2026-09-21",
+    "intro": "Choose SaaS when a proven product fits the core job and your team can work within its rules. Consider custom software when a valuable, repeatable business process depends on behavior the available tools cannot support. The useful comparison is the cost of running that process over time, including the work people do between applications.",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Start with one workflow, not a feature wishlist",
+        "paragraphs": [
+          "Write down one real journey from beginning to end. For a service business, that might be enquiry, qualification, quote, booking, delivery and follow-up. Record who makes each decision, where information lives and which exceptions interrupt the process. A tool that looks complete in a demo can still leave the difficult part of your work in a spreadsheet.",
+          "Then separate genuine requirements from habits. A custom approval chain may protect a contractual commitment; a particular button location may simply be familiar. Ask a prospective SaaS supplier to demonstrate your actual workflow using representative, non-sensitive examples. A feature checkbox is weaker evidence than completing the task."
+        ]
+      },
+      {
+        "id": "section-2",
+        "heading": "Compare three options, not just two",
+        "paragraphs": [
+          "The middle option is often overlooked: keep a suitable SaaS product and build a narrow integration or internal interface around it. You might retain an established CRM while adding a customer portal that displays only the records each customer is permitted to see. This can preserve useful standard features without forcing customers through a staff-oriented interface.",
+          "Configuration is usually the first option to investigate, integration the next, and a full custom product the most substantial commitment. That ordering is a starting point, not a rule. If the application itself is what you sell, the product experience may be central enough to justify a custom build from the outset."
+        ]
+      },
+      {
+        "id": "section-3",
+        "heading": "Model the costs your team actually carries",
+        "paragraphs": [
+          "Compare subscription tiers, seats, implementation, data cleanup, connected apps, training and support. For custom software, include discovery, design, engineering, hosting, monitoring, maintenance and eventual upgrades. A low initial subscription and a one-time development quote describe different things; neither is a complete operating cost.",
+          "Use a simple worksheet over the same planning period for each option. Add staff hours spent copying data or correcting errors, but keep those estimates visible as assumptions. If someone proposes replacing eight hours of weekly work, test that claim against a real task before treating the saving as certain."
+        ]
+      },
+      {
+        "id": "section-4",
+        "heading": "Make ownership practical",
+        "paragraphs": [
+          "For SaaS, inspect what you can export, in which format, and whether important history or attachments are included. For a custom build, agree who controls the repository, deployment, domain, database and third-party accounts. Ask how another developer would run the application from the documentation.",
+          "Owning code does not make ongoing engineering unnecessary. Equally, choosing SaaS does not remove responsibility for permissions, data quality or business continuity. Name the person who will manage access and decide when the system needs to change."
+        ]
+      },
+      {
+        "id": "section-5",
+        "heading": "Test the hardest part before committing",
+        "paragraphs": [
+          "Imagine a distributor whose pricing depends on customer agreements, order volume and regional stock. A standard storefront might handle most sales while a small integration resolves the pricing rules. Before commissioning an entire commerce platform, test one representative customer and one exception through that combined approach.",
+          "Ask for a bounded discovery or prototype with a decision at the end: configure, connect, build or stop. Define what the prototype must prove and keep production data out until the access controls are appropriate. The result should reduce uncertainty, not merely produce an attractive screen."
+        ]
+      }
+    ],
+    "checklist": [
+      "Document one end-to-end workflow and its exceptions.",
+      "Demonstrate the workflow in shortlisted existing products.",
+      "Compare operating costs over the same period.",
+      "Confirm export, account ownership and handover requirements.",
+      "Prototype the riskiest missing behavior before expanding scope."
+    ],
+    "faq": [
+      {
+        "question": "Is custom software always more expensive than SaaS?",
+        "answer": "It usually requires a larger initial engineering commitment, but the overall comparison depends on subscriptions, team time, integrations and maintenance. Compare actual scoped options rather than assuming either model is cheaper."
+      },
+      {
+        "question": "Can we move from SaaS to custom software later?",
+        "answer": "Often, but the path depends on export access, data quality and the workflows involved. Plan a staged migration and verify the destination with a representative data sample first."
+      }
+    ],
+    "sources": [],
+    "coverWidth": 1120,
+    "coverHeight": 1400
+  },
+  {
+    "slug": "shopify-migration-checklist-existing-store",
+    "title": "A Shopify migration checklist for an existing online store",
+    "description": "Plan a Shopify migration around products, customer data, redirects, connected apps, checkout testing and a controlled cutover.",
+    "category": "Ecommerce",
+    "service": "ecommerce",
+    "cover": "/journal/ecommerce-v2.webp",
+    "coverAlt": "Black fabric pouch revealed between asymmetric matte white shell panels.",
+    "published": "2026-09-21",
+    "intro": "A store migration is ready when customers can find the right products, complete the intended buying journey and receive the correct follow-up. Moving a product spreadsheet is only one part of that result. This checklist organizes the decisions an existing store needs to make before switching to Shopify.",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Inventory the store you are actually running",
+        "paragraphs": [
+          "List products, variants, collections, content pages, customer records, discounts, subscriptions and active integrations. Note which system owns stock, fulfillment and customer communication. Record the source of each dataset and the person who can approve its migration.",
+          "Include the less visible parts: gift cards, customer account access, review history, tracking events and app-specific settings. Do not assume every record moves through the same import. Shopify provides a migration checklist, but the exact transfer method depends on the source platform and the data involved."
+        ]
+      },
+      {
+        "id": "section-2",
+        "heading": "Map products before importing the full catalog",
+        "paragraphs": [
+          "Use a small representative sample first: a simple product, a product with many variants, a sold-out item and any item with unusual shipping or subscription behavior. Check titles, handles, SKUs, prices, images, options and collection membership after the import.",
+          "For example, a clothing store should check that a size and color combination maps to the correct image and stock record. A technically successful import can still produce the wrong buying experience. Reconcile counts and inspect exceptions before repeating the import across the entire catalog."
+        ]
+      },
+      {
+        "id": "section-3",
+        "heading": "Give every important old URL a destination",
+        "paragraphs": [
+          "Create an inventory of current landing pages and their intended destinations. Keep useful URLs where practical. When an address changes, map it to the closest relevant page rather than sending every old page to the homepage. Include images and downloadable content in the review.",
+          "Shopify supports URL redirects, subject to its routing rules. Test the actual redirect on the published destination, including its status and final page. Use Google Search Console and your analytics baseline to prioritize pages that already bring qualified visitors."
+        ]
+      },
+      {
+        "id": "section-4",
+        "heading": "Rehearse the buying journey",
+        "paragraphs": [
+          "Test product selection, cart changes, shipping options, discounts, payment, confirmation and fulfillment handoff. Review the mobile journey on a real narrow screen. Confirm that a customer sees accurate stock and pricing and that the operations team receives an order it can fulfill.",
+          "Test failure as well as success: an invalid discount, an unavailable shipping destination and an interrupted payment attempt. Use the platform’s appropriate test facilities and distinguish test orders from real transactions. Check connected email and analytics behavior under the store’s chosen consent settings."
+        ]
+      },
+      {
+        "id": "section-5",
+        "heading": "Plan the cutover and the first week",
+        "paragraphs": [
+          "Choose who can authorize the switch, what must pass before it happens and how to restore service if a critical problem appears. Agree how orders and inventory changes arriving during migration will be reconciled. Avoid having two systems silently competing to update the same stock.",
+          "After launch, monitor checkout, fulfillment, broken links and the pages that mattered before the move. Compare against the baseline and inspect specific failures instead of attributing every change to the migration. Ranking fluctuations can happen; a migration plan reduces avoidable mistakes but cannot promise unchanged search traffic."
+        ]
+      }
+    ],
+    "checklist": [
+      "Inventory data, integrations and account owners.",
+      "Run and approve a representative catalog import.",
+      "Map and test important old URLs.",
+      "Rehearse checkout and fulfillment, including failures.",
+      "Assign cutover, reconciliation and post-launch owners."
+    ],
+    "faq": [
+      {
+        "question": "Will customer passwords migrate to Shopify?",
+        "answer": "Do not assume they will. Confirm the supported customer-account migration process for your source platform and chosen Shopify account setup, then plan customer communication around it."
+      },
+      {
+        "question": "Can a Shopify migration happen without downtime?",
+        "answer": "The practical goal is a controlled transition with clear ownership and testing. Whether downtime can be avoided depends on the source system, domain changes, inventory updates and checkout setup."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Shopify: migrating an existing store",
+        "url": "https://help.shopify.com/en/manual/intro-to-shopify/initial-setup/new-to-shopify-checklists/migrating-to-shopify-checklist"
+      },
+      {
+        "title": "Shopify: URL redirects",
+        "url": "https://help.shopify.com/en/manual/online-store/menus-and-links/url-redirect"
+      }
+    ],
+    "coverWidth": 1120,
+    "coverHeight": 1400
+  },
+  {
+    "slug": "website-redesign-without-losing-seo",
+    "title": "How to redesign a website without losing sight of SEO",
+    "description": "A practical website redesign SEO checklist covering URL mapping, content preservation, launch checks and post-launch monitoring.",
+    "category": "Websites",
+    "service": "websites",
+    "cover": "/journal/websites-v2.webp",
+    "coverAlt": "A silver ribbon bending across the lower third of a deep black scene.",
+    "published": "2026-09-21",
+    "intro": "The best time to consider SEO in a website redesign is before pages are removed or URLs are changed. Keep the search value of the existing site visible throughout the project: what people find, which questions the pages answer and where visitors go next. No redesign can guarantee stable rankings, but avoidable migration errors can be reduced.",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Capture the baseline before changing the design",
+        "paragraphs": [
+          "Export the current page inventory and record titles, main headings, canonical URLs and indexability. Pair that with the available Search Console and analytics data. Identify pages that earn relevant impressions, clicks, enquiries or sales rather than judging every page by raw traffic alone.",
+          "A small service page that brings a few qualified enquiries may deserve more attention than a broadly popular article. Keep a record of the query themes each valuable page answers. That becomes a content brief for the new version, not a command to preserve every sentence."
+        ]
+      },
+      {
+        "id": "section-2",
+        "heading": "Keep useful content and simplify its presentation",
+        "paragraphs": [
+          "A redesign should improve clarity without removing the information that makes a page useful. Preserve the core service explanation, supporting detail and relevant proof. Give a visitor enough information to decide whether to enquire, including process, scope and practical limitations.",
+          "For example, replacing a detailed commercial booking page with a large photograph and a two-line slogan may remove answers visitors need. A better redesign can keep those answers while introducing a clearer hierarchy, stronger imagery and easier navigation. Visual restraint should not require informational emptiness."
+        ]
+      },
+      {
+        "id": "section-3",
+        "heading": "Treat changed URLs as an explicit migration",
+        "paragraphs": [
+          "Google’s site-move guidance calls for mapping old URLs to new destinations and implementing redirects when URLs change. Use permanent server-side redirects for permanent moves, and update internal links to the new addresses. Send each valuable old page to the most relevant replacement.",
+          "Keep a migration sheet with old URL, intended new URL, reason for change and test result. Identify genuinely retired pages separately. Do not redirect unrelated content to a generic landing page merely to make a spreadsheet look complete."
+        ]
+      },
+      {
+        "id": "section-4",
+        "heading": "Check the rendered site before opening it to visitors",
+        "paragraphs": [
+          "Review the actual production candidate, including mobile layouts, titles, descriptions, headings and canonical tags. Confirm that essential content is present in the rendered page and accessible through ordinary links. Test navigation and enquiry routes from the pages search visitors are most likely to land on.",
+          "Staging environments often use access controls or noindex directives. Confirm the intended production behavior deliberately rather than assuming the deployment removes them. Check the XML sitemap, robots directives, image loading and the HTTP response of representative pages. An attractive screenshot cannot establish any of those things."
+        ]
+      },
+      {
+        "id": "section-5",
+        "heading": "Monitor specific signals after launch",
+        "paragraphs": [
+          "Save a dated launch checklist and watch indexing, failed requests, important landing pages and conversions. Search engines need time to revisit changed pages. Compare patterns over a useful period rather than interpreting one quiet day as a definitive result.",
+          "When something drops, investigate the affected URLs and queries. A missing section, broken redirect or changed conversion event requires a different response from ordinary demand variation. Preserve the previous version and release details so that a specific regression can be corrected quickly."
+        ]
+      }
+    ],
+    "checklist": [
+      "Export page and search-performance baselines.",
+      "Preserve the purpose and useful detail of important pages.",
+      "Approve an old-to-new URL map.",
+      "Check redirects, canonicals, robots and sitemap behavior.",
+      "Test mobile reading and enquiry journeys.",
+      "Monitor landing pages and conversions after launch."
+    ],
+    "faq": [
+      {
+        "question": "Should every website redesign change the URL structure?",
+        "answer": "No. Keep useful existing URLs when there is no strong reason to change them. A new visual design does not require a new address for each page."
+      },
+      {
+        "question": "Does a better-looking website automatically rank higher?",
+        "answer": "No. Visual quality can improve usability, but search visibility also depends on content, crawlability, relevance and many other factors. Evaluate design and search performance separately."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Google Search Central: site moves with URL changes",
+        "url": "https://developers.google.com/search/docs/crawling-indexing/site-move-with-url-changes"
+      }
+    ],
+    "coverWidth": 1120,
+    "coverHeight": 1400
+  },
+  {
+    "slug": "ai-agent-vs-workflow-automation-small-business",
+    "title": "AI agent vs workflow automation: which does your business need?",
+    "description": "Learn when to use fixed workflow automation, an AI-assisted step or a custom AI agent, with examples and a practical pilot checklist.",
+    "category": "AI agents",
+    "service": "ai-solutions",
+    "cover": "/journal/ai-agents-v2.webp",
+    "coverAlt": "Conceptual portrait of a woman looking upward with restrained red light tracing her face.",
+    "published": "2026-09-21",
+    "intro": "Use a fixed workflow when the sequence and rules are predictable. Use an AI-assisted step when one part needs interpretation, such as classifying a message. Consider an agent when the system must choose among tools or next steps to reach a defined outcome. More autonomy adds decisions to test and operations to supervise.",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Start with the job and its acceptable result",
+        "paragraphs": [
+          "Describe the work in business terms before choosing an architecture. “Triage incoming enquiries and prepare a draft response” is a useful starting point. “Deploy autonomous AI everywhere” is not. Specify which inputs the system sees, what output someone needs and what must never happen without review.",
+          "Anthropic distinguishes workflows with predefined paths from agents that direct their own process and tool use. That distinction is useful for scoping: predictable paths are generally easier to inspect, while open-ended tasks may justify more flexible decision-making."
+        ]
+      },
+      {
+        "id": "section-2",
+        "heading": "Use the smallest amount of autonomy that solves the problem",
+        "paragraphs": [
+          "An enquiry workflow might copy form fields to a CRM and notify the responsible person. An AI-assisted version could also classify the enquiry and summarize the brief. An agent might research permitted internal records, choose relevant documents and assemble a response for approval.",
+          "These are different products with different failure modes. If a fixed rule handles most cases, keep it. If an AI classifier is sufficient, you do not need to hand it general access to email, billing and customer records. Keep the initial job narrow enough that a human can judge the result."
+        ]
+      },
+      {
+        "id": "section-3",
+        "heading": "Design access and approval around consequences",
+        "paragraphs": [
+          "List every tool the system may use and distinguish reading from writing. Reading an approved knowledge base is different from changing a customer’s subscription or sending a message. Give tools the narrowest useful scope and keep sensitive actions behind an explicit review step.",
+          "Consider an internal support assistant that drafts answers but cannot send them. Staff can compare the draft with source material and correct missing information. That boundary lets you learn whether retrieval and writing are useful before taking on the operational risk of automatic sending."
+        ]
+      },
+      {
+        "id": "section-4",
+        "heading": "Build an evaluation set from representative work",
+        "paragraphs": [
+          "Collect examples of ordinary inputs, incomplete requests, conflicting information and requests outside the scope. Remove unnecessary private information. Define what a correct result looks like, including when the system should ask for help or decline to act.",
+          "Measure task completion, unsupported claims, inappropriate actions, human corrections, latency and running cost. Keep the same examples when you change prompts or models so that improvement is observable. A convincing demonstration on one friendly input does not establish reliability on the rest of the work."
+        ]
+      },
+      {
+        "id": "section-5",
+        "heading": "Treat launch as the start of operation",
+        "paragraphs": [
+          "Decide who reviews failures, maintains tool access and pauses the workflow when something changes. Log the events needed to understand a run without collecting unrelated sensitive information. Define what happens when a provider is unavailable, a document is stale or a tool request fails.",
+          "Expand only after the narrow pilot earns it. A sensible next step may be a second workflow, better retrieval or a clearer approval interface rather than a larger agent team. The goal is dependable assistance with a real task, not the maximum number of autonomous components."
+        ]
+      }
+    ],
+    "checklist": [
+      "Name one job and its success criteria.",
+      "Separate fixed rules from tasks needing interpretation.",
+      "List read and write permissions for every tool.",
+      "Create ordinary, edge-case and out-of-scope evaluation examples.",
+      "Choose the reviewer, escalation path and pause control."
+    ],
+    "faq": [
+      {
+        "question": "Is an AI agent the same as a chatbot?",
+        "answer": "No. A chat interface is one way to interact with a system. An agent can use tools and decide next steps; a chatbot may simply answer questions without taking actions."
+      },
+      {
+        "question": "Should a small business start with multiple agents?",
+        "answer": "Only if the task needs distinct roles and the coordination can be evaluated. A single narrow workflow is often a more manageable first experiment."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Anthropic: building effective agents",
+        "url": "https://www.anthropic.com/engineering/building-effective-agents"
+      }
+    ],
+    "coverWidth": 1120,
+    "coverHeight": 1400
+  },
+  {
+    "slug": "crm-api-integration-project-checklist",
+    "title": "CRM API integration: a checklist before development starts",
+    "description": "Scope a CRM integration with field ownership, identity matching, permissions, retries, reconciliation and realistic acceptance tests.",
+    "category": "Tech solutions",
+    "service": "other-tech-solutions",
+    "cover": "/journal/tech-v2.webp",
+    "coverAlt": "Four dark metal conduits curving diagonally into a single industrial socket.",
+    "published": "2026-09-21",
+    "intro": "A CRM integration should leave people with records they can trust. Start by deciding which system owns each fact, what triggers a change and how the connection recovers when something fails. The API request itself is only a small part of that design.",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Name the source of truth for each field",
+        "paragraphs": [
+          "Write a mapping of source field, destination field, direction, owner and transformation. A CRM might own contact details while an order system owns fulfillment status. Two-way synchronization needs an explicit conflict rule; “keep everything in sync” does not define what happens when both sides change.",
+          "For example, a customer may update an address after placing an order. Should that change affect only the contact record, or also an unfulfilled shipment? The answer is a business decision. Record it before a developer chooses a default that silently changes an operational record."
+        ]
+      },
+      {
+        "id": "section-2",
+        "heading": "Choose how records are matched",
+        "paragraphs": [
+          "Use stable identifiers where available and preserve the mapping between systems. Decide how the integration handles missing identifiers, duplicate contacts and merged accounts. An email address may be useful for a lookup, but changing it should not accidentally create a second customer.",
+          "Test a few messy examples from the outset. A shared company mailbox, an existing duplicate and a customer with two orders can reveal more than a clean sample record. Agree whether uncertain matches are held for review instead of merged automatically."
+        ]
+      },
+      {
+        "id": "section-3",
+        "heading": "Plan for repeated, late and missing events",
+        "paragraphs": [
+          "A connection may receive the same notification more than once. It may also fail after one system commits a change but before the other confirms receipt. Design operations so that retrying does not create a duplicate result, and track enough state to reconcile an incomplete transfer.",
+          "Stripe’s webhook documentation illustrates this class of problem with guidance on duplicate events and event ordering. Your CRM and connected providers may behave differently, so check their documented delivery guarantees. Add a reconciliation process rather than assuming the event stream will always be complete."
+        ]
+      },
+      {
+        "id": "section-4",
+        "heading": "Make access and failure handling visible",
+        "paragraphs": [
+          "Use the appropriate application authorization and only the scopes the integration requires. Keep credentials out of source code and browser-delivered bundles. Record who owns the connection and how access can be revoked or refreshed when a staff member leaves.",
+          "Operationally, define where failures appear, who receives an alert and which errors can be retried automatically. A dashboard showing “connected” is insufficient if records have stopped moving. A useful status includes the last successful transfer and the records awaiting attention."
+        ]
+      },
+      {
+        "id": "section-5",
+        "heading": "Accept the business outcome, not a successful request",
+        "paragraphs": [
+          "Write a small acceptance matrix: create a new contact, update an existing one, repeat the same event, supply an invalid record, revoke access and recover from a temporary failure. Check the final state in both systems and the audit trail available to the operator.",
+          "If the purpose is to connect a website enquiry to a CRM, verify the enquiry reaches the correct pipeline with its attribution and owner. A 200 response from an endpoint does not prove that the salesperson can find and act on it. Close the loop at the point where the business uses the result."
+        ]
+      }
+    ],
+    "checklist": [
+      "Document fields, ownership and synchronization direction.",
+      "Agree identifier matching and conflict behavior.",
+      "Handle retries, duplicates and out-of-order updates.",
+      "Assign connection ownership and scoped permissions.",
+      "Test recovery and reconcile the final records."
+    ],
+    "faq": [
+      {
+        "question": "Do we need a custom integration if an app already exists?",
+        "answer": "Not necessarily. First test the existing app against your required fields, permissions and recovery behavior. Custom work is useful when a meaningful requirement remains unsupported."
+      },
+      {
+        "question": "Is MCP a replacement for every API integration?",
+        "answer": "No. MCP can give AI applications a standard way to access tools and context. Conventional application-to-application workflows may still be better served by direct APIs and events."
+      }
+    ],
+    "sources": [
+      {
+        "title": "Stripe: webhook delivery and handling",
+        "url": "https://docs.stripe.com/webhooks"
+      }
+    ],
+    "coverWidth": 1120,
+    "coverHeight": 1400
+  },
+  {
+    "slug": "prepare-for-technical-consultation",
+    "title": "What to prepare for a technical consultation: a founder’s checklist",
+    "description": "Make a technical consultation useful with a clear decision, workflow examples, constraints and an agreed written outcome.",
+    "category": "Consultation",
+    "service": "consultation",
+    "cover": "/journal/consultation-v2.webp",
+    "coverAlt": "A hand balancing a small black cylinder at the edge of a graphite platform.",
+    "published": "2026-09-21",
+    "intro": "A useful technical consultation ends with a decision you can act on, or a clear plan for resolving the uncertainty that prevents it. You do not need a finished technical specification. Bring the business problem, the current situation and the constraints that any recommendation must respect.",
+    "sections": [
+      {
+        "id": "section-1",
+        "heading": "Frame the decision in one sentence",
+        "paragraphs": [
+          "Try: “We need to decide whether to repair our current booking system or replace it before opening a second location.” That gives the discussion a concrete purpose. “We need help with technology” leaves too many possible conversations open.",
+          "Write down what happens if nothing changes and what a good result would enable. Separate the immediate decision from longer-term ambitions. If the next month depends on fixing failed bookings, a broad roadmap for AI features should not displace that work."
+        ]
+      },
+      {
+        "id": "section-2",
+        "heading": "Bring examples of the work, not just opinions",
+        "paragraphs": [
+          "Prepare a short walkthrough of the current journey and two or three examples of where it breaks down. Include the people involved, the systems they use and any manual steps. Screenshots or a sanitized sample are often enough to make an initial conversation specific.",
+          "For a slow website, share the affected pages, devices and observed behavior rather than only saying it feels slow. For an unreliable integration, record the expected destination and an example of a missing or incorrect result. Evidence lets the consultant distinguish a symptom from a proposed explanation."
+        ]
+      },
+      {
+        "id": "section-3",
+        "heading": "Make the constraints explicit",
+        "paragraphs": [
+          "List the deadline, budget range, existing commitments, required integrations and the people who can approve decisions. Explain whether your team will maintain the result or needs an ongoing service. Note what cannot change, and why.",
+          "A recommendation that assumes an in-house engineering team is not useful if nobody can operate the system. Similarly, a platform choice that ignores existing contracts may be impractical even when it is technically sound. Constraints are part of the problem to solve, not inconvenient details to add at the end."
+        ]
+      },
+      {
+        "id": "section-4",
+        "heading": "Share access in stages",
+        "paragraphs": [
+          "Begin with public URLs, architecture notes and appropriately sanitized examples. If deeper diagnosis needs account access, agree the purpose, permissions and duration. Use named access where possible and share credentials through the agreed secure process rather than pasting secrets into a general project document.",
+          "Clarify what the consultation can establish from the available evidence. A high-level review can compare approaches; a definitive diagnosis may require logs, a reproducible example or a bounded technical investigation. Those are different deliverables and should be scoped accordingly."
+        ]
+      },
+      {
+        "id": "section-5",
+        "heading": "Agree what you will leave with",
+        "paragraphs": [
+          "Ask for a written outcome that records the problem, evidence, options, tradeoffs, recommendation and next steps. It should distinguish confirmed findings from assumptions and name any further investigation required. You should be able to share it with your own team or another implementation partner.",
+          "Before commissioning a build, turn the selected direction into a practical scope: what is included, what is excluded, who supplies inputs and how the result will be accepted. Consultation is valuable when it helps you make that commitment with a clearer understanding of the work."
+        ]
+      }
+    ],
+    "checklist": [
+      "Write the decision you need to make.",
+      "Prepare a current workflow and representative failure examples.",
+      "List deadlines, budget, dependencies and operating responsibilities.",
+      "Share only the access needed for the agreed investigation.",
+      "Agree a written recommendation with next steps and open questions."
+    ],
+    "faq": [
+      {
+        "question": "Do I need a technical brief before booking a consultation?",
+        "answer": "No. A clear business problem, current URL or workflow and a description of the desired result are enough to begin scoping the review."
+      },
+      {
+        "question": "Does a consultation commit us to a development project?",
+        "answer": "Fortitudo’s consultation is a defined engagement. Implementation can be proposed separately; the written recommendation is intended to support your decision, including work with your own team."
+      }
+    ],
+    "sources": [],
+    "coverWidth": 1120,
+    "coverHeight": 1400
+  }
+]

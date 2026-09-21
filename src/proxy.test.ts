@@ -34,6 +34,8 @@ const MUST_BE_PUBLIC = [
   "/services",
   "/pricing",
   "/portfolio",
+  "/blog",
+  "/blog/custom-software-vs-saas-small-business",
   "/resources",
   "/resources/ai-agents-and-infrastructure",
   "/resources/fortitudo-ai-agents-and-infrastructure.pdf",
@@ -84,6 +86,7 @@ describe("public marketing pages", () => {
 
   it("does not expose similarly prefixed product routes", () => {
     expect(isPublicRoute(req("/resources-admin"))).toBe(false);
+    expect(isPublicRoute(req("/blog-admin"))).toBe(false);
   });
 });
 

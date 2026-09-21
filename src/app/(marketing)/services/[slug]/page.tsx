@@ -1,3 +1,4 @@
+import { JOURNAL } from "@/lib/journal";
 import type { Metadata } from "next";
 import { SpecialistDetail } from "@/components/imageworks/specialist-detail";
 import { AI_SPECIALIST_SLUGS } from "@/components/imageworks/ai-offers";
@@ -20,10 +21,11 @@ export async function generateMetadata({
   return {
     title: `${s.name} — Fortitudo Agency`,
     description: s.lead,
-    alternates: { canonical: `/services/${s.slug}` },
+    alternates: { canonical: `https://www.fortitudo.agency/services/${s.slug}` },
     openGraph: {
       title: `${s.name} — Fortitudo`,
       description: s.lead,
+      images: JOURNAL.filter(p => p.service === s.slug).map(p => ({url: `https://www.fortitudo.agency${p.cover}`,width:p.coverWidth,height:p.coverHeight,alt:p.coverAlt})),
     },
   };
 }
