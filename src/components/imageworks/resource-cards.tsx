@@ -4,15 +4,16 @@ import Link from "next/link";
 import { SERVICE_CATALOG, servicePdf } from "@/lib/service-catalog";
 import manifest from "@/content/resource-manifest.json";
 import { SectionHeading } from "./section-heading";
-export function ResourceCards({ featured = false }: { featured?: boolean }) {
+export function ResourceCards({ featured = false, exclude = [], heading }: { featured?: boolean; exclude?: string[]; heading?: string }) {
   const entries = featured
     ? SERVICE_CATALOG.filter((s) =>
         ["ecommerce", "software-solutions", "ai-solutions"].includes(s.slug),
       )
-    : SERVICE_CATALOG;
+    : SERVICE_CATALOG.filter(s => !exclude.includes(s.slug));
   return (
     <section className="py-24 sm:py-32">
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
+        {heading && <h2 className="mb-12 text-3xl tracking-tight sm:text-4xl">{heading}</h2>}
         {featured && (
           <SectionHeading
             id="resources-heading"

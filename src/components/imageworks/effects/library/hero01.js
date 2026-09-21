@@ -68,5 +68,3 @@ export function hero01(scope = document) {
       "<+=.5",
     );
 }
-
-

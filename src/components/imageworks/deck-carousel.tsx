@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { parallaxCarousel } from "./effects/library/parallaxCarousel";
 import { SERVICE_CATALOG, servicePdf } from "@/lib/service-catalog";
-import { servicePhoto } from "@/content/service-groups";
-const featured = ["websites", "software-solutions", "ai-solutions", "ecommerce", "brand"].map(slug => SERVICE_CATALOG.find(s => s.slug === slug)!);
+import { servicePhoto, FEATURED_DECK_SLUGS } from "@/content/service-groups";
+const featured = FEATURED_DECK_SLUGS.map(slug => SERVICE_CATALOG.find(s => s.slug === slug)!);
 export function DeckCarousel() {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {

@@ -6,3 +6,5 @@ export const SERVICE_GROUPS = [
  {title:"Design & advisory",slugs:["brand","unslop","consultation"],photo:"feature-motion.webp"},
 ];
 export const servicePhoto = (slug: string) => photography[slug as keyof typeof photography] ?? "/photography/feature-moss.webp";
+
+export const FEATURED_DECK_SLUGS = ["websites", "software-solutions", "ai-solutions", "ecommerce", "brand"];

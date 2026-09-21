@@ -1,3 +1,4 @@
+import { FEATURED_DECK_SLUGS } from "@/content/service-groups";
 import { DeckCarousel } from "@/components/imageworks/deck-carousel";
 import { PageIntro } from "@/components/imageworks/page-intro";
 import { ResourceCards } from "@/components/imageworks/resource-cards";
@@ -17,7 +18,7 @@ export default function Resources() {
         lead="Detailed presentations for every service. Explore the scope, deliverables, review process and handover, then download the PDF to share with your team. No form required."
       />
       <DeckCarousel />
-      <ResourceCards />
+      <ResourceCards exclude={FEATURED_DECK_SLUGS} heading="Specialist service decks" />
       <FinalCta />
     </>
   );

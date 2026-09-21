@@ -248,6 +248,3 @@ export function parallaxCarousel(scope = document) {
     };
   });
 }
-
-
-
