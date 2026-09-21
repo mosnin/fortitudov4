@@ -1,0 +1,4 @@
+# Influence review
+All seven principles considered. Reciprocity: ungated scope and process. Commitment/consistency: optional service choice preselects inquiry type; no forced funnel. Liking: direct human copy, no invented founder story. Authority: inspectable existing portfolio, no credentials or leading-agency claim. Social proof: case work is evidence of activity, not an endorsement; removed theme testimonial people/quotes. Scarcity: omitted, no proven capacity constraint. Unity: omitted, no demonstrated membership/shared identity. No countdowns or preselected marketing consent.
+
+Source permission is declared from the user's explicit request to preserve already published branding/cases, not independently reobtained client permission. Dossier checker validates declarations/hashes only, not efficacy or legal rights. Existing case image qualifications stay intact. Customer research and production conversion remain unmeasured.

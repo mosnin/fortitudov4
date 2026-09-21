@@ -1,0 +1,146 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/about",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/contact",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/faq",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/portfolio",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/pricing",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/privacy",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/terms",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services/websites",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services/software-solutions",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services/ai-solutions",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services/consultation",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services/digital-marketing",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/services/ecommerce",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/stored",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/chippi",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/never-age",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/two-cookies",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/nourish-reserve",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/hannah-joy",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/govern",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  },
+  {
+    "path": "/work/tellme",
+    "status": 200,
+    "imageworks": true,
+    "main": true
+  }
+]

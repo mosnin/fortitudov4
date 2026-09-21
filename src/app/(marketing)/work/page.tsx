@@ -1,22 +1,17 @@
-import type { Metadata } from 'next';
-import { PageHero } from '@/components/shader/page-hero';
-import { WorkGrid } from '@/components/shader/work-grid';
-
-export const metadata: Metadata = {
-  title: 'Our Work — Fortitudo',
-  description:
-    'A selection of websites, software products and AI experiences built by Fortitudo.',
-};
-
-export default function WorkPage() {
+export const metadata = { title: "Our work | Fortitudo Agency" };
+import { PageIntro } from "@/components/imageworks/page-intro";
+import { Formats } from "@/components/imageworks/formats";
+import { FinalCta } from "@/components/imageworks/final-cta";
+export default function Page() {
   return (
     <>
-      <PageHero
-        eyebrow="Selected work"
-        title="Digital products made to be used."
-        lead="Eight client builds, shown through the work itself. Explore the live product, the thinking behind it and the exact part of the experience Fortitudo helped bring to life."
+      <PageIntro
+        label="Selected work"
+        title="See what we have worked on."
+        lead="From online stores to AI products. Explore the businesses, the briefs and the work behind them."
       />
-      <WorkGrid />
+      <Formats />
+      <FinalCta />
     </>
   );
 }

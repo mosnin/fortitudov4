@@ -1,0 +1,49 @@
+/* Imageworks source palette contract, scoped to Fortitudo marketing. */
+[data-imageworks-site] {
+  --background: #0f0f12;
+  --foreground: #fafafa;
+  --muted: #19191d;
+  --muted-foreground: #b0b0b7;
+  --border: #323237;
+  --ring: #f8cd02;
+  --accent: #f8cd02;
+  --accent-foreground: #0f0f12;
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  font-family: var(--font-sans);
+  isolation: isolate;
+  color-scheme: dark;
+}
+[data-imageworks-site] .font-serif {
+  font-family: var(--font-instrument-serif), Georgia, serif;
+  font-weight: 400;
+}
+[data-imageworks-site] .iw-yellow {
+  --background: #f8cd02;
+  --foreground: #0f0f12;
+  --muted: #e6be02;
+  --muted-foreground: #48400e;
+  --border: #b3960a;
+  --ring: #0f0f12;
+  background: var(--background);
+  color: var(--foreground);
+  color-scheme: light;
+}
+[data-imageworks-site] .iw-nav {
+  --background: #f8cd02;
+  --foreground: #0f0f12;
+  --ring: #f8cd02;
+}
+[data-imageworks-site] ::selection {
+  background: #f8cd02;
+  color: #0f0f12;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-imageworks-site] *,
+  [data-imageworks-site] *::before,
+  [data-imageworks-site] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

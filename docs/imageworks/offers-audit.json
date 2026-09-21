@@ -1,0 +1,370 @@
+{
+  "version": 1,
+  "kernel": "offers-os",
+  "scope": "Fortitudo Imageworks public website, offer revision 2",
+  "revision": "2",
+  "environment": "local implementation and proposed commercial structure",
+  "reviewer": "Codex self-review",
+  "evidence": [
+    {
+      "id": "worksheet",
+      "path": "OFFER-BUILDER.md",
+      "sha256": "9e2837e425fee123416bc375563beac3e1cd6d0e4ff84ff38a85a5152d4092c4",
+      "kind": "design",
+      "observed_at": "2026-09-20T20:00:00-04:00",
+      "summary": "Offer choices, dependencies, hypotheses and unresolved economics"
+    },
+    {
+      "id": "offer",
+      "path": "OFFER.md",
+      "sha256": "5b9e944b662a9c9afddfc49792832929074520a7a49b5664f088cf05889d69aa",
+      "kind": "design",
+      "observed_at": "2026-09-20T20:00:00-04:00",
+      "summary": "Customer offer and material terms"
+    }
+  ],
+  "results": [
+    {
+      "id": "O01",
+      "status": "pass",
+      "reason": "Reviewed in Context and decision log; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O02",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O03",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O04",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O05",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O06",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers and economics; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O07",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers and economics; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O08",
+      "status": "pass",
+      "reason": "Reviewed in Market and value drivers and economics; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O09",
+      "status": "unknown",
+      "reason": "Adviser cost/capacity is unavailable; first useful milestone is scoped consultation, not a free audit.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O10",
+      "status": "pass",
+      "reason": "Reviewed in Obstacle and solution map; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O11",
+      "status": "pass",
+      "reason": "Reviewed in Obstacle and solution map; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O12",
+      "status": "pass",
+      "reason": "Reviewed in Obstacle and solution map; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O13",
+      "status": "pass",
+      "reason": "Reviewed in Obstacle and solution map; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O14",
+      "status": "pass",
+      "reason": "Reviewed in Delivery assembly and runbook; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O15",
+      "status": "unknown",
+      "reason": "Actual delivery cost, capacity and named project owners require a real proposal.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O16",
+      "status": "pass",
+      "reason": "Reviewed in Delivery assembly and runbook; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O17",
+      "status": "pass",
+      "reason": "Reviewed in Delivery assembly and runbook; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O18",
+      "status": "pass",
+      "reason": "Reviewed in Delivery assembly and runbook; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O19",
+      "status": "unknown",
+      "reason": "Normal and stressed demand/capacity data unavailable.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O20",
+      "status": "unknown",
+      "reason": "Private cost and value inputs are unavailable; numerical pricing remains quote-based.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O21",
+      "status": "unknown",
+      "reason": "Actual payment/renewal/currency terms must be reconciled in each proposal; no numeric public checkout.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O22",
+      "status": "unknown",
+      "reason": "Cash timing, margin, refund and support exposure are unavailable.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O23",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O24",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: explicit omissions; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O25",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: explicit omissions; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O26",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: explicit omissions; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O27",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: explicit omissions; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O28",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: no new guarantee; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O29",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: no new guarantee; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O30",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: no new guarantee; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O31",
+      "status": "pass",
+      "reason": "Reviewed in Economics and enhancements: chosen names; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O32",
+      "status": "pass",
+      "reason": "Reviewed in OFFER.md; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O33",
+      "status": "pass",
+      "reason": "Reviewed in Scenario review and validation; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O34",
+      "status": "pass",
+      "reason": "Reviewed in Scenario review and validation; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O35",
+      "status": "pass",
+      "reason": "Reviewed in Scenario review and validation; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O36",
+      "status": "pass",
+      "reason": "Reviewed in Next experiment; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O37",
+      "status": "pass",
+      "reason": "Reviewed in Validation and handoff; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    },
+    {
+      "id": "O38",
+      "status": "pass",
+      "reason": "Reviewed in Validation and handoff; design-level declaration only, not measured commercial validation.",
+      "evidence": [
+        "worksheet",
+        "offer"
+      ]
+    }
+  ]
+}

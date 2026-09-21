@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "audience": "Business owners and product leads considering agency delivery",
+  "decision": "Choose whether to explore a case or request a scoped proposal",
+  "voluntary_exit": true,
+  "material_terms_visible": true,
+  "sensitive_vulnerability_targeting": false,
+  "sources": [
+    {
+      "id": "portfolio",
+      "artifact": "proof-source.ts",
+      "sha256": "632a62738f955f4e58f20d7fe3f072cac237892605adcb8dda2f1ad188a04d03",
+      "scope": "Eight pre-existing Fortitudo public portfolio records preserved from baseline d0e30d6 on 2026-09-20. Product descriptions and existing image qualifiers only, not independent outcome measurements or endorsements. User explicitly asked to preserve these cases.",
+      "permission": "public",
+      "review_by": "2026-12-20"
+    }
+  ],
+  "claims": [
+    {
+      "id": "cases",
+      "text": "Fortitudo presents these eight published projects as its work; the site retains their original descriptions and image qualifications.",
+      "status": "observed",
+      "evidence": [
+        "portfolio"
+      ],
+      "public": true,
+      "qualified": true,
+      "kind": "authority"
+    }
+  ],
+  "tactics": [
+    {
+      "id": "reciprocity",
+      "principle": "reciprocity",
+      "mechanism": "Publish service scope and process before collecting contact details",
+      "audience_benefit": "Compare options freely",
+      "evidence": [],
+      "claim_ids": [],
+      "disclosed": true,
+      "pressure_free": true,
+      "constraint": null
+    },
+    {
+      "id": "commitment_consistency",
+      "principle": "commitment_consistency",
+      "mechanism": "Let visitors choose a service before an optional enquiry",
+      "audience_benefit": "Carry chosen service into the form without requiring submission",
+      "evidence": [],
+      "claim_ids": [],
+      "disclosed": true,
+      "pressure_free": true,
+      "constraint": null
+    },
+    {
+      "id": "liking",
+      "principle": "liking",
+      "mechanism": "Use direct respectful copy without pressure",
+      "audience_benefit": "Understand the people and process without status theater",
+      "evidence": [],
+      "claim_ids": [],
+      "disclosed": true,
+      "pressure_free": true,
+      "constraint": null
+    },
+    {
+      "id": "authority",
+      "principle": "authority",
+      "mechanism": "Link existing project descriptions and visuals to full case pages",
+      "audience_benefit": "Inspect relevant work before deciding",
+      "evidence": [
+        "portfolio"
+      ],
+      "claim_ids": [
+        "cases"
+      ],
+      "disclosed": true,
+      "pressure_free": true,
+      "constraint": null
+    }
+  ],
+  "evaluation": {
+    "primary_metric": "Qualified voluntary proposal enquiries, not yet measured",
+    "comprehension_check": "Five target readers identify scope, quote basis, ownership condition and next step without prompting",
+    "guardrails": [
+      "No inferred revenue guarantee",
+      "No fabricated testimonial or urgency",
+      "No confusion about third-party costs"
+    ],
+    "decision_rule": "Revise if two readers misunderstand a material term; do not claim conversion uplift from comprehension interviews"
+  }
+}

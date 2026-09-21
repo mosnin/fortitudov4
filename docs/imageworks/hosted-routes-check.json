@@ -1,0 +1,122 @@
+[
+  {
+    "path": "/",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/about",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/contact",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/faq",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/portfolio",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/pricing",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/privacy",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/terms",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services/websites",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services/software-solutions",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services/ai-solutions",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services/consultation",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services/digital-marketing",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/services/ecommerce",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/stored",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/chippi",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/never-age",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/two-cookies",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/nourish-reserve",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/hannah-joy",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/govern",
+    "status": 200,
+    "imageworks": false
+  },
+  {
+    "path": "/work/tellme",
+    "status": 200,
+    "imageworks": false
+  }
+]

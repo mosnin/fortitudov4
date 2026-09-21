@@ -60,7 +60,7 @@ describe("motion's useReducedMotion is confined to effect-only readers", () => {
   // a scan that counts those is a scan people learn to work around. `\b` after
   // the name is what keeps `useReducedMotionSafe` from matching.
   const IMPORTS_MOTIONS_HOOK =
-    /import[\s\S]{0,200}?\buseReducedMotion\b[\s\S]{0,200}?from\s*['"]motion\/react['"]/;
+    /\bimport\s*\{[^}]*\buseReducedMotion\b[^}]*\}\s*from\s*['"]motion\/react['"]/;
 
   const callers = sourceFiles('src')
     .filter((path) => !path.includes('use-reduced-motion-safe'))

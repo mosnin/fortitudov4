@@ -1,0 +1,22 @@
+{
+  "status": "ok",
+  "deployment": {
+    "id": "dpl_AEzhsxvv972gs2BRcKtZYDfowCMq",
+    "url": "https://fortitudov4-fz6r5wtmq-mosnins-projects.vercel.app",
+    "inspectorUrl": "https://vercel.com/mosnins-projects/fortitudov4/AEzhsxvv972gs2BRcKtZYDfowCMq",
+    "readyState": "READY",
+    "target": null,
+    "deploymentApiUrl": "https://api.vercel.com/v13/deployments/dpl_AEzhsxvv972gs2BRcKtZYDfowCMq"
+  },
+  "message": "Deployment fortitudov4-fz6r5wtmq-mosnins-projects.vercel.app ready.",
+  "next": [
+    {
+      "command": "vercel inspect fortitudov4-fz6r5wtmq-mosnins-projects.vercel.app --scope mosnins-projects",
+      "when": "Inspect deployment"
+    },
+    {
+      "command": "vercel deploy --prod --scope mosnins-projects",
+      "when": "Promote to production"
+    }
+  ]
+}

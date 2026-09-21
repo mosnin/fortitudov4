@@ -1,14 +1,17 @@
-import { redirect } from 'next/navigation';
-
-/**
- * `/portfolio` → `/work`, permanently.
- *
- * The work moved when the owner named ten real client projects and the ring
- * carousel landed at /work — this route survives only because it has been
- * linked from the nav and the sitemap since launch, and an old link deserves
- * a page, not a 404. The `portfolio.ts` dictionary (the old empty-state copy)
- * stays for the day a translated case-study index needs it.
- */
-export default function PortfolioPage() {
-  redirect('/work');
+export const metadata = { title: "Portfolio | Fortitudo Agency" };
+import { PageIntro } from "@/components/imageworks/page-intro";
+import { Formats } from "@/components/imageworks/formats";
+import { FinalCta } from "@/components/imageworks/final-cta";
+export default function Page() {
+  return (
+    <>
+      <PageIntro
+        label="Portfolio"
+        title="Websites, software and AI in practice."
+        lead="Browse the same eight projects in our selected work, then open a case study for the details."
+      />
+      <Formats />
+      <FinalCta />
+    </>
+  );
 }

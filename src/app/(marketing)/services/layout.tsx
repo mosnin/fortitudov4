@@ -19,6 +19,10 @@ export const metadata: Metadata = {
     "Websites, software, AI tools, consultation, and digital marketing. Five things, each with a fixed price before we start.",
 };
 
-export default function ServicesLayout({ children }: { children: React.ReactNode }) {
+export default function ServicesLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return children;
 }

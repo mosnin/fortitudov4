@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ServiceDetail } from "@/components/shader/service-detail";
+import { ServiceDetail } from "@/components/imageworks/service-detail";
 import { getServicePage, PUBLIC_SERVICE_PAGES } from "@/lib/service-pages";
 import { WORK_PROJECTS } from "@/lib/work-projects";
 
@@ -8,7 +8,11 @@ export function generateStaticParams() {
   return PUBLIC_SERVICE_PAGES.map((service) => ({ slug: service.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
   const { slug } = await params;
   const service = getServicePage(slug);
   if (!service) notFound();
@@ -25,7 +29,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function ServicePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ServicePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = await params;
   const service = getServicePage(slug);
   if (!service) notFound();

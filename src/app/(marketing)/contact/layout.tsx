@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   description: CONTACT.en.meta.description,
 };
 
-export default function ContactLayout({ children }: { children: React.ReactNode }) {
+export default function ContactLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return children;
 }

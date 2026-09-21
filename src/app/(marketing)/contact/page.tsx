@@ -1,90 +1,246 @@
 "use client";
-
-import { useState } from "react";
-import { CheckCircle, Clock, Loader2, Mail, MapPin, Send } from "lucide-react";
-import { PageHero } from "@/components/shader/page-hero";
-import { CONTACT } from "@/lib/i18n/dictionaries/contact";
-import { fill } from "@/lib/i18n/dictionaries/pricing";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { PageIntro } from "@/components/imageworks/page-intro";
 import { services } from "@/lib/services";
-
 const EMPTY = { name: "", email: "", company: "", service: "", message: "" };
-const CONTACT_EMAIL = "hello@fortitudo.agency";
-const t = CONTACT.en;
-const FIELD = "w-full rounded-md border border-foreground/20 bg-foreground/[0.04] px-4 py-3 text-base text-foreground placeholder:text-foreground/60 transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20";
-const LABEL = "mb-2 block text-sm font-medium text-foreground/80";
-
-export default function ContactPage() {
+const FIELD =
+  "mt-2 min-h-13 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring";
+export default function Contact() {
   const [form, setForm] = useState(EMPTY);
   const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
   const [error, setError] = useState<string | null>(null);
-  const set = (key: keyof typeof EMPTY) => (value: string) => setForm((current) => ({ ...current, [key]: value }));
-
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  useEffect(() => {
+    const chosen = new URLSearchParams(window.location.search).get("service");
+    if (services.some((s) => s.id === chosen))
+      setForm((f) => ({ ...f, service: chosen! }));
+  }, []);
+  const update = (key: keyof typeof EMPTY, value: string) =>
+    setForm((f) => ({ ...f, [key]: value }));
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (status === "sending") return;
     setStatus("sending");
     setError(null);
     try {
-      const response = await fetch("/api/leads", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => ({}));
-        setError(payload.error ?? fill(t.form.errorSend, { email: CONTACT_EMAIL }));
-        setStatus("idle");
-        return;
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          typeof data.error === "string"
+            ? data.error
+            : "We could not send your brief. Please try again or email hello@fortitudo.agency.",
+        );
       }
       setStatus("sent");
-    } catch {
-      setError(fill(t.form.errorNetwork, { email: CONTACT_EMAIL }));
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Please try again or email hello@fortitudo.agency.",
+      );
       setStatus("idle");
     }
   }
-
-  const details = [
-    { icon: Mail, title: t.details.emailTitle, body: CONTACT_EMAIL },
-    { icon: Clock, title: t.details.responseTitle, body: t.details.responseBody },
-    { icon: MapPin, title: t.details.locationTitle, body: t.details.locationBody },
-  ];
-
   return (
     <>
-      <PageHero eyebrow={t.hero.eyebrow} title={<>{t.hero.titleLead} <span className="text-[#f8cd02]">{t.hero.titleAccent}</span></>} lead={t.hero.body} />
-      <section className="bg-background px-6 py-24 text-foreground sm:px-10 lg:py-32">
-        <div className="mx-auto grid max-w-6xl grid-cols-5 gap-8 lg:gap-14 max-[850px]:grid-cols-1">
-          <div className="col-span-3 rounded-2xl border border-foreground/10 bg-foreground/[0.035] p-6 sm:p-9 max-[850px]:col-span-1">
+      <PageIntro
+        label="Start a conversation"
+        title="What would you like to build?"
+        lead="Tell us what needs to change. We will review the brief, work through the requirements, and explain the scope and price if we are a fit."
+      />
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto grid max-w-[1440px] gap-12 px-4 sm:px-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-20">
+          <aside>
+            <h2 className="font-serif text-4xl leading-tight">
+              A useful first conversation.
+            </h2>
+            <p className="mt-6 max-w-md text-[15px] leading-7 text-muted-foreground">
+              You do not need a finished specification. Share your current
+              website or product, the problem you want to solve, and any launch
+              date or budget constraints.
+            </p>
+            <ol className="mt-8 space-y-6 text-[15px] leading-7">
+              <li>We review the brief and ask about the gaps.</li>
+              <li>
+                We discuss the work, the dependencies and the right starting
+                point.
+              </li>
+              <li>
+                You receive a written proposal to consider before committing.
+              </li>
+            </ol>
+            <Link
+              href="mailto:hello@fortitudo.agency"
+              className="mt-10 inline-flex min-h-11 items-center underline underline-offset-4"
+            >
+              hello@fortitudo.agency
+            </Link>
+            <p className="mt-5 text-sm leading-6 text-muted-foreground">
+              Prefer to explore first?{" "}
+              <Link
+                href="/work"
+                className="text-foreground underline underline-offset-4"
+              >
+                See the work
+              </Link>{" "}
+              or{" "}
+              <Link
+                href="/pricing"
+                className="text-foreground underline underline-offset-4"
+              >
+                read how pricing works
+              </Link>
+              .
+            </p>
+          </aside>
+          <div className="rounded-2xl border border-border bg-muted p-6 sm:p-10">
             {status === "sent" ? (
-              <div role="status" className="flex min-h-[480px] flex-col items-start justify-center">
-                <CheckCircle className="h-11 w-11 text-accent" aria-hidden />
-                <h2 className="mt-6 text-4xl font-medium tracking-tight">{t.sent.title}</h2>
-                <p className="mt-3 text-foreground/75">{t.sent.body}</p>
-                <button type="button" onClick={() => { setForm(EMPTY); setStatus("idle"); }} className="mt-8 rounded-md border border-foreground/15 px-5 py-3 text-xs font-medium uppercase tracking-widest hover:bg-foreground/[0.05]">{t.sent.again}</button>
+              <div role="status" aria-live="polite" className="py-20">
+                <h2 className="font-serif text-4xl">We have your brief.</h2>
+                <p className="mt-5 text-base leading-7 text-muted-foreground">
+                  The team will review it and follow up using the email address
+                  you provided.
+                </p>
+                <button
+                  className="mt-8 min-h-12 rounded-xl border border-border px-5"
+                  onClick={() => {
+                    setForm(EMPTY);
+                    setStatus("idle");
+                  }}
+                >
+                  Send another enquiry
+                </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <div className="grid grid-cols-2 gap-5 max-[600px]:grid-cols-1">
-                  <div><label htmlFor="name" className={LABEL}>{t.form.nameLabel} <span className="text-accent">*</span></label><input id="name" required maxLength={255} className={FIELD} value={form.name} onChange={(event) => set("name")(event.target.value)} /></div>
-                  <div><label htmlFor="email" className={LABEL}>{t.form.emailLabel} <span className="text-accent">*</span></label><input id="email" type="email" required maxLength={255} className={FIELD} value={form.email} onChange={(event) => set("email")(event.target.value)} /></div>
-                </div>
-                <div className="grid grid-cols-2 gap-5 max-[600px]:grid-cols-1">
-                  <div><label htmlFor="company" className={LABEL}>{t.form.companyLabel}</label><input id="company" maxLength={255} className={FIELD} value={form.company} onChange={(event) => set("company")(event.target.value)} /></div>
-                  <div><label htmlFor="service" className={LABEL}>{t.form.serviceLabel}</label><select id="service" className={FIELD} value={form.service} onChange={(event) => set("service")(event.target.value)}><option value="">{t.form.serviceUnset}</option>{services.map((service) => <option key={service.id} value={service.id}>{service.name}</option>)}</select></div>
-                </div>
-                <div><label htmlFor="message" className={LABEL}>{t.form.messageLabel} <span className="text-accent">*</span></label><textarea id="message" required rows={7} maxLength={5000} className={FIELD} placeholder={t.form.messagePlaceholder} value={form.message} onChange={(event) => set("message")(event.target.value)} /></div>
-                {error ? <p role="alert" className="rounded-md border border-red-400/30 bg-red-400/10 px-4 py-3 text-sm text-red-100">{error}</p> : null}
-                <button type="submit" disabled={status === "sending"} className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-accent px-6 text-sm font-medium text-accent-foreground transition-colors hover:bg-[#dcb602] disabled:cursor-not-allowed disabled:opacity-60">{status === "sending" ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}{t.form.submit}</button>
-                <p className="text-xs leading-relaxed text-foreground/70">{t.form.privacyNote}</p>
+              <form onSubmit={submit} className="space-y-6">
+                <fieldset
+                  disabled={status === "sending"}
+                  className="space-y-6 disabled:opacity-70"
+                >
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <label className="block text-sm font-medium" htmlFor="name">
+                      Your name
+                      <input
+                        id="name"
+                        name="name"
+                        autoComplete="name"
+                        required
+                        maxLength={255}
+                        className={FIELD}
+                        value={form.name}
+                        onChange={(e) => update("name", e.target.value)}
+                      />
+                    </label>
+                    <label
+                      className="block text-sm font-medium"
+                      htmlFor="email"
+                    >
+                      Email address
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        maxLength={255}
+                        className={FIELD}
+                        value={form.email}
+                        onChange={(e) => update("email", e.target.value)}
+                      />
+                    </label>
+                  </div>
+                  <label
+                    className="block text-sm font-medium"
+                    htmlFor="company"
+                  >
+                    Company{" "}
+                    <span className="font-normal text-muted-foreground">
+                      (optional)
+                    </span>
+                    <input
+                      id="company"
+                      name="company"
+                      autoComplete="organization"
+                      maxLength={255}
+                      className={FIELD}
+                      value={form.company}
+                      onChange={(e) => update("company", e.target.value)}
+                    />
+                  </label>
+                  <label
+                    className="block text-sm font-medium"
+                    htmlFor="service"
+                  >
+                    What are you considering?
+                    <select
+                      id="service"
+                      name="service"
+                      className={FIELD}
+                      value={form.service}
+                      onChange={(e) => update("service", e.target.value)}
+                    >
+                      <option value="">Help me work it out</option>
+                      {services.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label
+                    className="block text-sm font-medium"
+                    htmlFor="message"
+                  >
+                    Your project
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      minLength={10}
+                      maxLength={5000}
+                      rows={6}
+                      className={FIELD}
+                      placeholder="What do you have now, what needs to change, and when would you like to launch?"
+                      value={form.message}
+                      onChange={(e) => update("message", e.target.value)}
+                    />
+                  </label>
+                </fieldset>
+                {error && (
+                  <p
+                    role="alert"
+                    className="rounded-xl border border-red-300/30 p-4 text-sm text-red-200"
+                  >
+                    {error}
+                  </p>
+                )}
+                <button
+                  disabled={status === "sending"}
+                  type="submit"
+                  className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-foreground px-5 text-[15px] font-medium text-background transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60"
+                >
+                  {status === "sending"
+                    ? "Sending your brief…"
+                    : "Send your project brief →"}
+                </button>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  We use these details to respond to your enquiry. Read our{" "}
+                  <Link
+                    className="underline underline-offset-4"
+                    href="/privacy"
+                  >
+                    privacy policy
+                  </Link>
+                  . Sending a brief does not commit you to a project.
+                </p>
               </form>
             )}
           </div>
-          <aside className="col-span-2 max-[850px]:col-span-1">
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-foreground/70">What happens next</p>
-            <h2 className="mt-5 text-3xl font-medium leading-tight tracking-tight">Let’s give that idea a way forward.</h2>
-            <ol className="mt-7 space-y-5 text-sm leading-relaxed text-foreground/75">
-              <li><span className="mr-3 font-mono text-accent">01</span>We read your brief and follow up with the questions that matter.</li>
-              <li><span className="mr-3 font-mono text-accent">02</span>We talk through the opportunity, the constraints, and what should happen first.</li>
-              <li><span className="mr-3 font-mono text-accent">03</span>If we are a good fit, you get a written scope and fixed price to consider.</li>
-            </ol>
-            <div className="mt-10 border-t border-foreground/10">{details.map((detail) => { const Icon = detail.icon; return <div key={detail.title} className="flex gap-4 border-b border-foreground/10 py-6"><Icon className="mt-0.5 h-5 w-5 shrink-0 text-accent" strokeWidth={1.7} aria-hidden /><div><p className="font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/70">{detail.title}</p><p className="mt-2 text-sm text-foreground/80">{detail.body}</p></div></div>; })}</div>
-            <div className="mt-8 rounded-2xl bg-accent p-7 text-accent-foreground"><h2 className="text-2xl font-medium tracking-tight">{t.start.title}</h2><p className="mt-3 text-sm leading-relaxed text-accent-foreground/80">{t.start.body}</p><a href={`mailto:${CONTACT_EMAIL}`} className="mt-6 inline-flex text-sm font-medium underline underline-offset-4">{t.start.cta}</a></div>
-          </aside>
         </div>
       </section>
     </>

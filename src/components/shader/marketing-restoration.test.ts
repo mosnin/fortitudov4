@@ -48,11 +48,11 @@ describe("purchased theme restoration", () => {
     expect(html).toContain("service-work");
   });
 
-  it("keeps the original theme section order without the added artwork gallery", () => {
+  it("uses the user-selected Imageworks source for the public homepage", () => {
     const page = readFileSync("src/app/(marketing)/page.tsx", "utf8");
-    const sequence = ["HeroExperience", "ValueProp", "Product", "Pillars", "Partners", "Pricing", "Faq", "FinalCta"];
-    const rendered = [...page.matchAll(/<([A-Z]\w+) \/>/g)].map((match) => match[1]);
+    const sequence = ["Hero", "Brief", "Variations", "Services", "Testimonials", "Process", "Pricing", "Faq", "FinalCta"];
+    const rendered = [...page.matchAll(/<([A-Z]\w+)\s*\/>/g)].map((match) => match[1]);
     expect(rendered).toEqual(sequence);
-    expect(page).not.toContain("BrandShowcase");
+    expect(page).not.toContain("@/components/shader/");
   });
 });
