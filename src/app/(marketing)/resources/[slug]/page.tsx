@@ -1,3 +1,4 @@
+import { ArrowButton } from "@/components/imageworks/arrow-button";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,7 +12,6 @@ import {
 } from "@/lib/service-catalog";
 import manifest from "@/content/resource-manifest.json";
 import { PageIntro } from "@/components/imageworks/page-intro";
-import { projectButton } from "@/components/imageworks/service-detail";
 import { FinalCta } from "@/components/imageworks/final-cta";
 export function generateStaticParams() {
   return SERVICE_CATALOG.map((s) => ({ slug: s.resourceSlug }));
@@ -62,9 +62,7 @@ export default async function Resource({
               · Selectable text and clickable links
             </p>
             <div className="mt-5 flex flex-wrap items-center gap-5">
-              <a href={servicePdf(s)} download className={projectButton}>
-                Download PDF ↓
-              </a>
+              <ArrowButton href={servicePdf(s)} download className="">Download PDF</ArrowButton>
               <a
                 href={servicePdf(s)}
                 target="_blank"
@@ -133,12 +131,7 @@ export default async function Resource({
               timeline and third-party costs.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-6">
-              <Link
-                href={serviceEnquiry(s)}
-                className={projectButton}
-              >
-                {s.cta} →
-              </Link>
+              <ArrowButton href={serviceEnquiry(s)} className="">{s.cta}</ArrowButton>
               <Link
                 href={`/services/${s.slug}`}
                 className="text-sm underline underline-offset-4"

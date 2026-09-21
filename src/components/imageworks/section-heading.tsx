@@ -27,7 +27,7 @@ export function SectionHeading({
             id={id}
             className="max-w-3xl font-sans text-[clamp(2.25rem,4.5vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance"
           >
-            {title}
+            <span data-reveal-06>{title}</span>
           </h2>
         </Reveal>
         {description && (

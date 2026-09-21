@@ -1,9 +1,7 @@
-import Link from "next/link";
-import Image from "next/image";
-import { PHOTOS, photoUrl } from "./lib/photos";
+import { ArrowButton } from "@/components/imageworks/arrow-button";
 import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
-import { ArrowRight, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import type { ReactNode } from "react";
 import { SPECTRUM_CLASS } from "./lib/spectrum";
 interface Tier {
@@ -84,7 +82,7 @@ function FeatureList({
   );
 }
 
-function TierCard({ tier, index }: { tier: Tier; index: number }): ReactNode {
+function TierCard({ tier }: { tier: Tier; index: number }): ReactNode {
   const inner = (
     <div className="flex h-full flex-col rounded-[15px] bg-background p-6 sm:p-7">
       <div className="flex items-start justify-between gap-3">
@@ -99,7 +97,7 @@ function TierCard({ tier, index }: { tier: Tier; index: number }): ReactNode {
       <p className="mt-8 font-sans text-[2.75rem] leading-none tracking-[-0.02em]">
         {tier.price}
       </p>
-      <div className="mt-7 rounded-xl bg-muted p-3.5"><div className="flex items-center gap-3.5"><Image src={photoUrl(PHOTOS[[3, 6, 8][index]], 112)} alt="" width={48} height={48} className="h-12 w-12 shrink-0 rounded-lg object-cover" /><p className="text-sm leading-6 text-muted-foreground">{tier.terms}</p></div></div>
+      <div className="mt-7 rounded-xl bg-muted p-3.5"><div className="flex items-center gap-3.5"><p className="text-sm leading-6 text-muted-foreground">{tier.terms}</p></div></div>
       <div className="mt-7 border-t border-border pt-6 pb-10">
         <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
           Includes
@@ -107,20 +105,7 @@ function TierCard({ tier, index }: { tier: Tier; index: number }): ReactNode {
         <FeatureList items={tier.features} className="mt-4" />
       </div>
 
-      <Link
-        href={tier.href}
-        className={`group mt-auto inline-flex h-11 items-center justify-center gap-2 rounded-xl text-[15px] font-medium transition-[opacity,background-color,transform] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.98] ${
-          tier.featured
-            ? "bg-foreground text-background hover:opacity-85"
-            : "bg-foreground/[0.06] text-foreground hover:bg-foreground/[0.1] dark:bg-white/[0.1] dark:hover:bg-white/[0.14]"
-        }`}
-      >
-        {tier.cta}
-        <ArrowRight
-          className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-          aria-hidden
-        />
-      </Link>
+      <ArrowButton href={tier.href} className="mt-auto text-[15px]">{tier.cta}</ArrowButton>
     </div>
   );
 

@@ -1,3 +1,4 @@
+import { ArrowButton } from "@/components/imageworks/arrow-button";
 import Link from "next/link";
 import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
@@ -15,7 +16,7 @@ export function Capabilities() {
             <div>
               <h3 className="text-[clamp(2rem,4vw,3.5rem)] leading-[1.05] tracking-[-0.02em]">Design, development<br />and applied AI.</h3>
               <p className="mt-6 max-w-sm text-[15px] leading-7 text-muted-foreground">Bring the idea, the existing product or the problem. We define the work with you and take it through review, launch and handover.</p>
-              <Link href="/services" className="mt-6 inline-flex min-h-12 items-center gap-3 rounded-xl bg-foreground px-5 text-[15px] font-medium text-background focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">Explore all services <span aria-hidden>→</span></Link>
+              <ArrowButton href="/services" className="mt-6 text-[15px]">Explore all services</ArrowButton>
             </div>
             <ul className="grid gap-x-8 sm:grid-cols-2">
               {SERVICE_CATALOG.filter(s => ["websites", "ecommerce", "software-solutions", "brand", "unslop", "consultation"].includes(s.slug)).map(s => <li key={s.slug} className="border-t border-border py-5"><Link href={`/services/${s.slug}`} className="group block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"><h4 className="flex items-center justify-between gap-3 text-lg font-medium">{s.name}<span aria-hidden className="text-muted-foreground transition-transform group-hover:translate-x-1">↗</span></h4><p className="mt-2 text-[15px] leading-6 text-muted-foreground">{serviceOffer(s).summary}</p></Link></li>)}

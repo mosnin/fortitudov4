@@ -1,4 +1,6 @@
 "use client";
+import { ArrowAction } from "@/components/imageworks/arrow-button";
+
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PageIntro } from "@/components/imageworks/page-intro";
@@ -224,15 +226,9 @@ export default function Contact() {
                     {error}
                   </p>
                 )}
-                <button
-                  disabled={status === "sending"}
-                  type="submit"
-                  className="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-foreground px-5 text-[15px] font-medium text-background transition-opacity hover:opacity-85 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:opacity-60"
-                >
-                  {status === "sending"
+                <ArrowAction disabled={status === "sending"} type="submit" className="w-full text-[15px] disabled:opacity-60">{status === "sending"
                     ? "Sending your brief…"
-                    : "Send your project brief →"}
-                </button>
+                    : "Send your project brief "}</ArrowAction>
                 <p className="text-sm leading-6 text-muted-foreground">
                   We use these details to respond to your enquiry. Read our{" "}
                   <Link

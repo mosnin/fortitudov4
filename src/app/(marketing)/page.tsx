@@ -1,12 +1,10 @@
-import { Hero } from "@/components/imageworks/hero";
-import { Brief } from "@/components/imageworks/brief";
-import { Variations } from "@/components/imageworks/variations";
+import { CinematicHero } from "@/components/imageworks/cinematic-hero";
+import { StackedFeatures } from "@/components/imageworks/stacked-features";
 import { Capabilities } from "@/components/imageworks/capabilities";
 import { OurWork } from "@/components/imageworks/our-work";
-import { Testimonials } from "@/components/imageworks/testimonials";
 import { Pricing } from "@/components/imageworks/pricing";
 import { Faq } from "@/components/imageworks/faq";
 import { FinalCta } from "@/components/imageworks/final-cta";
 export default function Home() {
-  return <><span id="top" className="sr-only" /><Hero /><Brief /><Variations /><Capabilities /><OurWork /><Testimonials /><Pricing /><Faq /><FinalCta /></>;
+  return <div className="hero-page"><CinematicHero /><section className="hero-section-01-next" data-hero-next aria-label="Our capabilities and work"><StackedFeatures /><OurWork /><Capabilities /><Pricing /><Faq /><FinalCta /></section></div>;
 }

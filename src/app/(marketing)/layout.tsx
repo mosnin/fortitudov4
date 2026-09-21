@@ -3,11 +3,12 @@ import type { Metadata } from "next";
 import { MotionSwitch } from "@/components/imageworks/motion-switch";
 import { ThemeSwitch } from "@/components/imageworks/theme-switch";
 import { Footer } from "@/components/imageworks/footer";
-import { Nav } from "@/components/imageworks/nav";
+import { MotionShell } from "@/components/imageworks/motion-shell";
 import { Providers } from "@/components/imageworks/providers";
 import { SkipToContent } from "@/components/imageworks/skip-to-content";
 import { GeistSans } from "geist/font/sans";
 import "./imageworks.css";
+import "./premium.css";
 
 export const metadata: Metadata = {
   title: "Fortitudo — Websites, Ecommerce, Software & AI Agents",
@@ -28,16 +29,16 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         className={`min-h-screen bg-background text-foreground antialiased ${GeistSans.variable}`}
       >
         <SkipToContent />
-        <Nav />
+        <MotionShell controls={<><MotionSwitch /><ThemeSwitch /></>}>
         <main
           id="main-content"
+          tabIndex={-1}
           className="relative z-10 min-h-screen bg-background"
         >
           {children}
         </main>
         <Footer />
-        <MotionSwitch />
-        <ThemeSwitch />
+        </MotionShell>
       </div>
     </Providers>
   );

@@ -3,6 +3,9 @@
 import { features } from "@/components/imageworks/lib/config";
 import { useReducedMotion } from "./lib/motion";
 import Lenis from "lenis";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import gsap from "gsap";
+export const siteScroll: { current: Lenis | null } = { current: null };
 import { useEffect, type ReactNode } from "react";
 
 const LENIS_OPTIONS = {
@@ -25,7 +28,10 @@ export function SmoothScroll({ children }: { children: ReactNode }): ReactNode {
     ).matches;
     if (prefersReducedMotion || reducedMotion) return;
 
+    gsap.registerPlugin(ScrollTrigger);
     const lenis = new Lenis(LENIS_OPTIONS);
+    siteScroll.current = lenis;
+    lenis.on("scroll", ScrollTrigger.update);
 
     let frame = 0;
     function raf(time: number): void {
@@ -52,6 +58,8 @@ export function SmoothScroll({ children }: { children: ReactNode }): ReactNode {
     return () => {
       document.removeEventListener("click", handleAnchorClick);
       cancelAnimationFrame(frame);
+      lenis.off("scroll", ScrollTrigger.update);
+      siteScroll.current = null;
       lenis.destroy();
     };
   }, [reducedMotion]);

@@ -15,7 +15,7 @@ export function PageIntro({
         <Reveal>
           <p className="mb-6 text-sm font-medium">{label}</p>
           <h1 className="font-sans text-[clamp(2.75rem,6vw,5rem)] leading-[1.02] tracking-[-0.02em] text-balance">
-            {title}
+            <span data-reveal-06>{title}</span>
           </h1>
           <p className="mx-auto mt-7 max-w-xl text-[16px] leading-7 text-foreground/80">
             {lead}

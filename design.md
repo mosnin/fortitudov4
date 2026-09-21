@@ -102,3 +102,11 @@ Creative OS: emphasis belongs to the client outcome; material and lighting estab
 
 ### Homepage work section — 21 September 2026
 Replace the repeated campaign-format section with Our work. Use the existing Stored and Chippi project screenshots and factual portfolio copy, each linked to its case study, with a visible View all work link to /work. Preserve theme typography, spacing, rounded image frames and reveal motion. No generated imagery for this section.
+
+
+### Supplied motion components applied to Fortitudo — 21 September 2026
+The owner explicitly chose the supplied cinematic hero, drawer, NumberFlow, stacked panels, Aurora contact glow, edge blur, glass arrow CTA and gradient text reveal for Fortitudo. These replace the prior homepage campaign repetition. Use existing agency copy and actual Govern, Stored and Chippi screenshots. Details-hosted hero media is temporary, awaiting owner content. No new generated imagery.
+
+React owns mount and teardown of the source helpers. Keep the existing single Lenis/window scroller, persistent Fortitudo header and router. Adapt fade/blur to Next navigation rather than inserting Swup into Next's DOM. Contact navigation waits 2.5 seconds behind the canonical opaque Aurora canvas, then fades into the destination. Query strings and standard modified-link behavior are preserved. NumberFlow animates only existing numeric progress; no fabricated statistics or pricing.
+
+Local self-review: desktop thumbnail selection and outgoing-video pause, phone fixed hero and opaque section handoff, readable mobile drawer/focus/Escape, contact form destination, work navigation and browser back. TypeScript and focused ESLint pass. These checks establish implementation behavior, not owner visual acceptance.

@@ -1,5 +1,5 @@
+import { ArrowButton } from "@/components/imageworks/arrow-button";
 import Image from "next/image";
-import Link from "next/link";
 import { PageIntro } from "@/components/imageworks/page-intro";
 import { Process } from "@/components/imageworks/process";
 import { FinalCta } from "@/components/imageworks/final-cta";
@@ -54,12 +54,7 @@ export default function About() {
                 considered design with the systems that help a business work.
               </p>
               <p className="mt-5 text-base leading-8 text-muted-foreground">Our work spans websites and ecommerce, complete software products, brand identities and applied AI. Whether we are shaping a new idea or improving something already in motion, the aim is the same: useful work, carefully made, with a clear path from the brief to the handover.</p>
-              <Link
-                href="/work"
-                className="mt-8 inline-flex min-h-12 items-center rounded-xl bg-foreground px-5 text-sm font-medium text-background"
-              >
-                Explore our work →
-              </Link>
+              <ArrowButton href="/work" className="mt-8 text-sm">Explore our work</ArrowButton>
             </div>
           </div>
         </div>
@@ -75,7 +70,7 @@ export default function About() {
             <p className="mt-7 text-lg leading-8">A decade spent building businesses, finding audiences and turning ideas into things people use.</p>
             <p className="mt-5 text-base leading-8 text-muted-foreground">Over the past decade, Preston has generated nearly one billion social media impressions across his own ventures and his clients’ brands. Along the way, he has built dozens of software projects and ecommerce brands, working across the creative, commercial and technical sides of bringing a business to life.</p>
             <p className="mt-5 text-base leading-8 text-muted-foreground">Fortitudo brings that experience into one practice. Brand and design sit alongside development, advertising and the practical application of AI, with attention to how each decision serves the business behind it.</p>
-            <a href="https://www.linkedin.com/in/preston-wilms-6967a4192/" target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex min-h-12 items-center gap-3 rounded-sm text-base underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">Connect with Preston on LinkedIn <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a>
+            <ArrowButton href="https://www.linkedin.com/in/preston-wilms-6967a4192/" target="_blank" rel="noopener noreferrer" className="mt-7">Connect with Preston on LinkedIn <span className="sr-only"> (opens in a new tab)</span></ArrowButton>
           </div>
         </div>
       </section>

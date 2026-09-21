@@ -1,3 +1,4 @@
+import { ArrowButton } from "@/components/imageworks/arrow-button";
 import Image from "next/image";
 import Link from "next/link";
 import { Reveal } from "@/components/imageworks/reveal";
@@ -18,9 +19,7 @@ export function OurWork(): ReactNode {
           title="Our work."
           description="Explore the software and AI products we have worked on."
           aside={
-            <Link href="/work" className="inline-flex min-h-11 items-center gap-3 rounded-full border border-border px-6 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
-              View all work <span aria-hidden="true">↗</span>
-            </Link>
+            <ArrowButton href="/work" className="text-sm">View all work</ArrowButton>
           }
         />
         <Reveal inView y={24} className="mt-12 lg:mt-14">
