@@ -21,7 +21,7 @@ const STORIES = [
   {quote:"A website should make your business easy to understand and the next step easy to take.",name:"Websites",role:"Design and development",company:"Websites",photo:PHOTOS[0],caption:"A considered first impression.",href:"/services/websites"},
   {quote:"Build a store around the way people find, compare and buy your products.",name:"Ecommerce",role:"Storefronts and checkout",company:"Ecommerce",photo:PHOTOS[1],caption:"Designed around the whole journey.",href:"/services/ecommerce"},
   {quote:"Give your team and customers software that fits the job they need to do.",name:"Software",role:"Products and internal tools",company:"Software",photo:PHOTOS[4],caption:"Form with a purpose.",href:"/services/software-solutions"},
-  {quote:"Start with a useful task. Build AI around the information, limits and oversight it needs.",name:"AI solutions",role:"Practical automation",company:"AI",photo:PHOTOS[7],caption:"A clear direction for what comes next.",href:"/services/ai-solutions"},
+  {quote:"We’re an anti-slop agency. Custom agents built around real work, with considered design and outputs your team can review.",name:"AI solutions",role:"Practical automation",company:"AI",photo:PHOTOS[7],caption:"A clear direction for what comes next.",href:"/services/ai-solutions"},
 ];
 
 const AUTO_MS = 7000;

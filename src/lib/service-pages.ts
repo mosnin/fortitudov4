@@ -213,9 +213,9 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
     description:
       "Practical AI tools and automations that handle repetitive work, connect to your business systems, and keep people in control.",
     title: "AI agents that handle defined work, with human oversight.",
-    lead: "The copying, sorting, chasing, and rewriting adds up. We find the repetitive work AI can handle, connect it to your business, and keep your team in charge of the decisions that matter.",
+    lead: "Custom agents, harnesses and AI infrastructure, connected to the systems you use. We’re an anti-slop agency: thoughtful design, clear content and work checked against a real brief.",
     directoryLead:
-      "Make the repetitive work lighter, with useful AI and clear human control.",
+      "Custom agents and connected workflows, built with an anti-slop standard: clear purpose, considered design and tested behavior.",
     image: "/work/case-studies/chippi.png",
     imageAlt: "Chippi website from Fortitudo's published AI work",
     narrative: {
@@ -250,8 +250,10 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
       body: "We agree on the task, the information it can use, and the actions it can take. The scope reflects the integrations, review steps, and reliability the job needs.",
       deliverables: [
         "Workflow review and opportunity selection",
-        "Data sources and integration planning",
-        "AI assistants or automation as agreed",
+        "Context systems, data sources and integration planning",
+        "Custom agents, harnesses and applied AI workflows",
+        "AI tool, MCP and custom API integrations as agreed",
+        "Image and video model workflows as agreed",
         "Human review and permission boundaries",
         "Evaluation with representative business tasks",
         "Launch, monitoring plan, and handover",
@@ -273,6 +275,14 @@ export const SERVICE_PAGES: readonly ServicePage[] = [
       slugs: ["stored", "chippi"],
     },
     faq: [
+      {
+        q: "Can you unslop a website or content made with AI?",
+        a: "Yes. Bring us the website or content you already have. We identify what feels generic, what misses your brand, and what does not work. Then we agree on the design, copy and functional fixes. For content, that includes structure, voice and checking factual claims; for websites, it includes responsive layouts, usability and the agreed user journeys. You receive the revised work and a clear handover.",
+      },
+      {
+        q: "Can you implement Jev?",
+        a: "Yes. We can scope TypeSafe AI’s Jev into an agent harness or business workflow for structured decisions such as routing, classification and evaluation. The work includes defining the questions, connecting the API, testing against representative examples, and setting review thresholds and fallbacks. Access and suitability are confirmed before the build; benchmark results are not a promise for your workload.",
+      },
       {
         q: "How do we know whether AI is the right answer?",
         a: "We start by looking at the task, its volume, and the cost of getting it wrong. Some work suits AI, some needs a simple integration, and some should stay with a person. The recommendation comes from that review.",
