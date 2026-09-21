@@ -66,8 +66,8 @@ export default function About() {
       </section>
       <section aria-labelledby="founder-heading" className="py-24 sm:py-32">
         <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 sm:px-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-24">
-          <div className="relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden rounded-full">
-            <Image src="/about/preston-wilms.jpg" alt="Preston Wilms, founder of Fortitudo." fill sizes="(min-width: 768px) 360px, 85vw" className="rounded-full object-cover scale-[1.035]" />
+          <div className="relative mx-auto aspect-square w-full max-w-[200px] overflow-hidden rounded-full md:max-w-[240px]">
+            <Image src="/about/preston-wilms.jpg" alt="Preston Wilms, founder of Fortitudo." fill sizes="(min-width: 768px) 240px, 200px" className="rounded-full object-cover scale-[1.035]" />
           </div>
           <div>
             <p className="mb-5 text-sm text-muted-foreground">About the founder</p>
