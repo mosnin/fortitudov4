@@ -30,6 +30,13 @@ const req = (path: string, method = "GET") =>
 
 /** Every page and endpoint a signed-out visitor has to be able to use. */
 const MUST_BE_PUBLIC = [
+  "/solutions",
+  "/approach",
+  "/handover",
+  "/ongoing-support",
+  "/project-planner",
+  "/solutions/launch-a-product",
+
   "/sitemap.xml",
   "/robots.txt",
   "/",
@@ -89,6 +96,7 @@ describe("public marketing pages", () => {
   it("does not expose similarly prefixed product routes", () => {
     expect(isPublicRoute(req("/resources-admin"))).toBe(false);
     expect(isPublicRoute(req("/blog-admin"))).toBe(false);
+    expect(isPublicRoute(req("/solutions-admin"))).toBe(false);
   });
 });
 

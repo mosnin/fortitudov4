@@ -5,6 +5,12 @@ import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
 const PUBLIC_PAGES = new Set([
+  "solutions",
+  "approach",
+  "handover",
+  "ongoing-support",
+  "project-planner",
+
   "",
   "about",
   "sign-in",

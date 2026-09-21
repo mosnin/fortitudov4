@@ -9,6 +9,8 @@ import { SkipToContent } from "@/components/imageworks/skip-to-content";
 import { GeistSans } from "geist/font/sans";
 import "./imageworks.css";
 import "./premium.css";
+import "./animation-library.css";
+import "./expansion.css";
 
 export const metadata: Metadata = {
   title: "Fortitudo — Websites, Ecommerce, Software & AI Agents",

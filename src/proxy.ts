@@ -26,6 +26,12 @@ import {
  * `/dashboard` and `/admin`, and absence from this list is what protects it.
  */
 export const PUBLIC_ROUTES = [
+  "/solutions",
+  "/solutions/(.*)",
+  "/approach",
+  "/handover",
+  "/ongoing-support",
+  "/project-planner",
   "/sitemap.xml",
   "/robots.txt",
   "/",
@@ -104,6 +110,11 @@ const LANG_REDIRECTS_ENABLED: boolean = false;
  * page they just loaded.
  */
 const MARKETING_ROOTS = new Set([
+  "/solutions",
+  "/approach",
+  "/handover",
+  "/ongoing-support",
+  "/project-planner",
   "/",
   "/about",
   "/contact",

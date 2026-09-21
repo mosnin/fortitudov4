@@ -41,6 +41,10 @@ const COLUMNS = [
       { label: "Blog", href: "/blog" },
       { label: "Services", href: "/services" },
       { label: "About", href: "/about" },
+      { label: "Our approach", href: "/approach" },
+      { label: "Solutions", href: "/solutions" },
+      { label: "Ownership & handover", href: "/handover" },
+      { label: "Ongoing support", href: "/ongoing-support" },
       { label: "Pricing", href: "/pricing" },
       { label: "FAQ", href: "/faq" },
     ],
@@ -49,6 +53,7 @@ const COLUMNS = [
     title: "Contact",
     links: [
       { label: "Start a project", href: "/contact" },
+      { label: "Project planner", href: "/project-planner" },
       { label: "Client sign in", href: "/sign-in" },
       { label: "Portfolio", href: "/portfolio" },
     ],

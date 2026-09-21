@@ -52,6 +52,16 @@ const LANG_ALTERNATES_ENABLED: boolean = false;
  */
 const PAGES = [
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
+  { path: "/solutions", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/approach", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/handover", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/ongoing-support", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/project-planner", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/solutions/launch-a-product", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/solutions/improve-your-website", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/solutions/sell-online", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/solutions/connect-operations", priority: 0.7, changeFrequency: "monthly" },
+  { path: "/solutions/apply-ai", priority: 0.7, changeFrequency: "monthly" },
   { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
   { path: "/services/other-tech-solutions", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services", priority: 0.8, changeFrequency: "monthly" },
