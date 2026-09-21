@@ -1,3 +1,7 @@
+# Revision 3 correction
+
+Previous visual acceptance was rejected by the user. Restored exact Imageworks colors, photography, rainbow accents, theme toggle, variation field and image-format layout. Sans-serif Geist now used throughout. The prior preview below is superseded; see correction-deployment.json for the new preview.
+
 # Fortitudo Imageworks rebuild — review receipt
 
 Preview: https://fortitudov4-fz6r5wtmq-mosnins-projects.vercel.app

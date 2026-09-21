@@ -1,3 +1,11 @@
+# Revision 3 — user correction supersedes revisions 1 and 2
+
+The prior interpretation was rejected. Exact Imageworks palette and photography are authoritative. No Fortitudo yellow theme override. Use Geist Sans for every text role as explicitly requested. Restore original neutral light/dark tokens, spectrum accent, theme switch, photo arc/helix, twelve-variation field and four-format composition. Case images belong only in portfolio/case-study content, not decorative theme image systems. Preserve agency identity, existing pages, scoped offers and original case facts.
+
+Verified locally: white #ffffff and dark #0a0a0a; h1 computed GeistSans; zero case-study images on homepage; actual original photo arc renders. Source image optimizer proxy maintains existing CSP.
+
+Historical rejected plan below, retained as decision history only:
+
 # Imageworks adaptation, revision 1
 
 Mode: product refinement. User-selected exact source: imageworks.zip. Scope: every public marketing page, shared navigation, footer and service/case-study detail surfaces. All existing routes, case-study facts, brand mark, contact flow, auth and product functionality survive. Production release is not yet requested. Baseline: origin/main d0e30d6, verified Vercel deployment dpl_Du6s3ULjorMmW1MjxNj3pc8EDo2X. Prior dirty checkouts remain untouched.

@@ -1,6 +1,7 @@
 "use client";
 
 import { useReducedMotion } from "@/components/imageworks/lib/motion";
+import { PHOTOS, photoSrc } from "@/components/imageworks/lib/photos";
 import {
   motion,
   useMotionValue,
@@ -10,7 +11,6 @@ import {
   type MotionValue,
 } from "motion/react";
 import Image from "next/image";
-import { WORK_PROJECTS } from "@/lib/work-projects";
 import {
   useEffect,
   useRef,
@@ -19,11 +19,31 @@ import {
   type RefObject,
 } from "react";
 
-const VARIATIONS = WORK_PROJECTS.map((p) => ({
-  note: p.name,
-  className: "",
-  image: p.image,
-}));
+const PHOTO = PHOTOS[6];
+const SRC = photoSrc(PHOTO, 800, 500);
+
+const SRC_LG = photoSrc(PHOTO, 2000, 1250);
+
+const VARIATIONS: { note: string; className: string }[] = [
+  { note: "As briefed", className: "filter-none" },
+  { note: "Cooler", className: "[filter:hue-rotate(-28deg)_saturate(0.9)]" },
+  { note: "Softer", className: "[filter:contrast(0.8)_brightness(1.1)]" },
+  { note: "Darker", className: "[filter:brightness(0.7)_contrast(1.08)]" },
+  { note: "Muted", className: "[filter:saturate(0.4)]" },
+  { note: "Warmer", className: "[filter:sepia(0.45)_saturate(1.25)]" },
+  { note: "Punchier", className: "[filter:saturate(1.6)_contrast(1.15)]" },
+  {
+    note: "Faded",
+    className: "[filter:contrast(0.8)_brightness(1.18)_saturate(0.7)]",
+  },
+  { note: "Mono", className: "[filter:grayscale(1)_contrast(1.08)]" },
+  { note: "Brighter", className: "[filter:brightness(1.25)]" },
+  { note: "Flatter", className: "[filter:contrast(0.7)_brightness(1.06)]" },
+  {
+    note: "Deeper",
+    className: "[filter:saturate(1.2)_brightness(0.82)_contrast(1.1)]",
+  },
+];
 const KEPT = 5;
 
 const SPLIT: [number, number] = [0.04, 0.5];
@@ -58,7 +78,7 @@ interface TileProps {
 
 function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
   const ref = useRef<HTMLLIElement>(null);
-  const v = VARIATIONS[index] ?? { note: "", className: "", image: "" };
+  const v = VARIATIONS[index] ?? { note: "", className: "filter-none" };
   const kept = index === KEPT;
 
   const m = useRef({ dx: 0, dy: 0, rank: 0, fill: 1, cx: 0, cy: 0 });
@@ -88,7 +108,7 @@ function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
   });
   const appear = useTransform(progress, (p) => span(p, [0, 0.04]));
   const opacity = useTransform([appear, keep], ([a, k]) =>
-    kept ? (a as number) : (a as number) * (1 - (k as number)),
+    kept ? (a as number) : (a as number) * (1 - (k as number))
   );
 
   const near = useTransform(
@@ -97,17 +117,17 @@ function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
       if (kept) return 0;
       const d = Math.hypot(
         m.current.cx - (fx as number),
-        m.current.cy - (fy as number),
+        m.current.cy - (fy as number)
       );
       const f = 1 - clamp01(d / FIELD_R);
       const soft = f * f * (3 - 2 * f);
       return soft * (on as number) * (b as number) * (1 - (k as number));
-    },
+    }
   );
   const floatScale = useTransform(near, (n) => 1 + FIELD_LIFT * n);
 
   const zIndex = useTransform(near, (n) =>
-    kept ? 20 : 12 - index + Math.round(n * 12),
+    kept ? 20 : 12 - index + Math.round(n * 12)
   );
 
   useEffect(() => {
@@ -142,6 +162,7 @@ function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
   return (
     <motion.li
       ref={ref}
+
       style={{ x, y, scale, opacity, zIndex }}
       className={`relative min-h-0 ${kept ? "" : "will-change-transform"}`}
     >
@@ -156,11 +177,15 @@ function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
         />
         <figure className="relative h-full w-full overflow-hidden rounded-xl bg-muted">
           <Image
-            src={v.image}
-            alt={v.note}
+            src={kept ? SRC_LG : SRC}
+            alt={
+              kept
+                ? `Marigold field in motion, ${v.note.toLowerCase()} grade.`
+                : ""
+            }
             fill
             sizes={kept ? "100vw" : "(min-width: 1024px) 25vw, 33vw"}
-            className={`object-cover object-top ${v.className}`}
+            className={`object-cover ${v.className}`}
           />
           <figcaption className="sr-only">{v.note}</figcaption>
         </figure>
@@ -190,7 +215,7 @@ function Kept({
     const fit = (): void => {
       const fill = Math.min(
         grid.clientWidth / tile.offsetWidth,
-        grid.clientHeight / tile.offsetHeight,
+        grid.clientHeight / tile.offsetHeight
       );
       width.set(`${tile.offsetWidth * fill}px`);
       height.set(`${tile.offsetHeight * fill}px`);
@@ -214,9 +239,9 @@ function Kept({
       <span className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent" />
       <motion.p
         style={{ y }}
-        className="absolute inset-x-0 bottom-0 p-6 font-serif text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-white sm:p-10 sm:text-[2rem]"
+        className="absolute inset-x-0 bottom-0 p-6 font-sans text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-white sm:p-10 sm:text-[2rem]"
       >
-        Hannah Joy. Makeup education, online.
+        Kept: warmer, as the board suggested.
       </motion.p>
     </motion.div>
   );
@@ -226,18 +251,18 @@ function Headline({ progress }: { progress: MotionValue<number> }): ReactNode {
   const a = useTransform(progress, (p) => 1 - span(p, [0.5, 0.58]));
   const b = useTransform(progress, (p) => span(p, [0.6, 0.7]));
   const cls =
-    "font-serif text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance";
+    "font-sans text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance";
   return (
     <div className="relative mx-auto max-w-3xl text-center">
       <motion.h2 id="features-heading" style={{ opacity: a }} className={cls}>
-        Websites, software and AI.
+        Explore the possibilities.
       </motion.h2>
       <motion.p
         aria-hidden="true"
         style={{ opacity: b }}
         className={`${cls} absolute inset-x-0 top-0`}
       >
-        Built around real businesses.
+        Refine the direction.
       </motion.p>
     </div>
   );
@@ -290,11 +315,11 @@ export function Variations(): ReactNode {
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
           <h2
             id="features-heading"
-            className="mx-auto max-w-3xl text-center font-serif text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance"
+            className="mx-auto max-w-3xl text-center font-sans text-[clamp(2rem,4.2vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance"
           >
-            Websites, software and AI. Explore our work.
+            Explore the possibilities. Refine the direction.
           </h2>
-          <ul className="mt-12 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <ul className="mt-12 grid grid-cols-3 gap-3 lg:grid-cols-4">
             {VARIATIONS.map((v, i) => (
               <li
                 key={v.note}
@@ -305,11 +330,13 @@ export function Variations(): ReactNode {
                 }`}
               >
                 <Image
-                  src={v.image}
-                  alt={v.note}
+                  src={SRC}
+                  alt={
+                    i === KEPT ? "Marigold field in motion, warmer grade." : ""
+                  }
                   fill
                   sizes="25vw"
-                  className={`object-cover object-top ${v.className}`}
+                  className={`object-cover ${v.className}`}
                 />
               </li>
             ))}
@@ -339,7 +366,7 @@ export function Variations(): ReactNode {
             className="relative h-full"
           >
             <Kept progress={progress} gridRef={gridRef} />
-            <ul className="grid h-full grid-cols-2 grid-rows-4 gap-2.5 sm:gap-3 lg:grid-cols-4 lg:grid-rows-2">
+            <ul className="grid h-full grid-cols-3 grid-rows-4 gap-2.5 sm:gap-3 lg:grid-cols-4 lg:grid-rows-3">
               {VARIATIONS.map((v, i) => (
                 <Tile
                   key={v.note}

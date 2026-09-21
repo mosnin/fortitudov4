@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Hero } from "@/components/imageworks/hero";
 import { Brief } from "@/components/imageworks/brief";
 import { Variations } from "@/components/imageworks/variations";
-import { Services } from "@/components/imageworks/services";
+import { Formats } from "@/components/imageworks/formats";
 import { Testimonials } from "@/components/imageworks/testimonials";
 import { Process } from "@/components/imageworks/process";
 import { Pricing } from "@/components/imageworks/pricing";
@@ -17,9 +17,9 @@ export default async function Home() {
       <Hero />
       <Brief />
       <Variations />
-      <Services />
-      <Testimonials />
       <Process />
+      <Formats />
+      <Testimonials />
       <Pricing />
       <Faq />
       <FinalCta />

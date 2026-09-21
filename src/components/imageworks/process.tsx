@@ -27,7 +27,7 @@ export function Process() {
           <ol className="grid grid-cols-1 divide-y divide-border rounded-2xl border border-border bg-background md:grid-cols-3 md:divide-x md:divide-y-0">
             {steps.map(([title, body], i) => (
               <li key={title} className="p-6 sm:p-8">
-                <p className="font-serif text-[3rem] leading-none text-accent">
+                <p className="font-sans text-[3rem] leading-none text-foreground">
                   0{i + 1}
                 </p>
                 <h3 className="mt-8 text-lg font-medium">{title}</h3>

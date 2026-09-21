@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { PHOTOS, photoSrc } from "./lib/photos";
 import { PageIntro } from "./page-intro";
 import { SectionHeading } from "./section-heading";
 import { Reveal } from "./reveal";
@@ -27,7 +28,7 @@ export function ServiceDetail({
           <Reveal inView y={24} className="mt-12 lg:mt-14">
             <div className="grid gap-10 rounded-2xl border border-border bg-muted p-6 sm:p-8 lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-16 lg:p-10">
               <div>
-                <h2 className="font-serif text-3xl">What we can include</h2>
+                <h2 className="font-sans text-3xl">What we can include</h2>
                 <ul className="mt-6 space-y-4 text-[15px] leading-7 text-muted-foreground">
                   {s.scope.deliverables.map((x) => (
                     <li key={x} className="border-b border-border pb-4">
@@ -44,8 +45,8 @@ export function ServiceDetail({
               </div>
               <figure className="relative min-h-[300px] overflow-hidden rounded-xl sm:min-h-[420px]">
                 <Image
-                  src={s.image}
-                  alt={s.imageAlt}
+                  src={photoSrc(PHOTOS[3], 1600, 1200)}
+                  alt="Softly lit glass form"
                   fill
                   sizes="(min-width:1024px) 60vw,100vw"
                   className="object-cover object-top"
@@ -65,7 +66,7 @@ export function ServiceDetail({
           <ol className="mt-12 grid divide-y divide-border rounded-2xl border border-border md:grid-cols-2 md:divide-y-0">
             {s.approach.steps.map((step, i) => (
               <li key={step} className="p-6 sm:p-8">
-                <span className="font-serif text-4xl text-accent">
+                <span className="font-sans text-4xl text-foreground">
                   0{i + 1}
                 </span>
                 <p className="mt-5 max-w-md text-lg leading-7">{step}</p>

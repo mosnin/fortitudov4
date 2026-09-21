@@ -4,10 +4,9 @@ import Link from "next/link";
 import { SectionHeading } from "@/components/imageworks/section-heading";
 import { Reveal } from "@/components/imageworks/reveal";
 import { softEase, useReducedMotion } from "@/components/imageworks/lib/motion";
-import { photoSrc } from "@/components/imageworks/lib/photos";
+import { PHOTOS, photoSrc } from "@/components/imageworks/lib/photos";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
-import { WORK_PROJECTS } from "@/lib/work-projects";
 import {
   useCallback,
   useEffect,
@@ -18,15 +17,12 @@ import {
   type ReactNode,
 } from "react";
 
-const STORIES = WORK_PROJECTS.map((p) => ({
-  quote: p.blurb,
-  name: p.name,
-  role: p.service,
-  company: p.name,
-  photo: p.image,
-  caption: p.imageLabel,
-  href: `/work/${p.slug}`,
-}));
+const STORIES = [
+  {quote:"A website should make your business easy to understand and the next step easy to take.",name:"Websites",role:"Design and development",company:"Websites",photo:PHOTOS[0],caption:"A considered first impression.",href:"/services/websites"},
+  {quote:"Build a store around the way people find, compare and buy your products.",name:"Ecommerce",role:"Storefronts and checkout",company:"Ecommerce",photo:PHOTOS[1],caption:"Designed around the whole journey.",href:"/services/ecommerce"},
+  {quote:"Give your team and customers software that fits the job they need to do.",name:"Software",role:"Products and internal tools",company:"Software",photo:PHOTOS[4],caption:"Form with a purpose.",href:"/services/software-solutions"},
+  {quote:"Start with a useful task. Build AI around the information, limits and oversight it needs.",name:"AI solutions",role:"Practical automation",company:"AI",photo:PHOTOS[7],caption:"A clear direction for what comes next.",href:"/services/ai-solutions"},
+];
 
 const AUTO_MS = 7000;
 
@@ -85,8 +81,8 @@ export function Testimonials(): ReactNode {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
         <SectionHeading
           id="stories-heading"
-          title="Look closer at the work."
-          description="See what each product does, who it serves, and the work behind it."
+          title="Built around what you need."
+          description="Explore the work we can take on, then see what a project includes."
         />
 
         <Reveal inView y={24} className="mt-12 lg:mt-14">
@@ -105,7 +101,7 @@ export function Testimonials(): ReactNode {
                     {...fade}
                     transition={transition}
                   >
-                    <p className="font-serif text-[clamp(1.75rem,2.8vw,2.625rem)] leading-[1.15] tracking-[-0.015em] text-pretty">
+                    <p className="font-sans text-[clamp(1.75rem,2.8vw,2.625rem)] leading-[1.15] tracking-[-0.015em] text-pretty">
                       {story.quote}
                     </p>
                     <footer className="mt-8 text-[15px]">
@@ -118,7 +114,7 @@ export function Testimonials(): ReactNode {
                       className="mt-5 inline-flex min-h-11 items-center underline underline-offset-4"
                       href={story.href}
                     >
-                      Explore the case study →
+                      Explore the service →
                     </Link>
                   </motion.div>
                 </AnimatePresence>

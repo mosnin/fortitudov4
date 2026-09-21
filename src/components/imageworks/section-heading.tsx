@@ -25,7 +25,7 @@ export function SectionHeading({
         <Reveal inView>
           <h2
             id={id}
-            className="max-w-3xl font-serif text-[clamp(2.25rem,4.5vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance"
+            className="max-w-3xl font-sans text-[clamp(2.25rem,4.5vw,3.5rem)] leading-[1.02] tracking-[-0.02em] text-balance"
           >
             {title}
           </h2>

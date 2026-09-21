@@ -1,0 +1,18 @@
+{
+  "revision": 3,
+  "original_photo_ids_match": true,
+  "original_spectrum_bytes_match": true,
+  "original_light_dark_tokens_present": true,
+  "yellow_override_removed": true,
+  "serif_font_import_removed": true,
+  "browser": {
+    "home_case_image_count": 0,
+    "heading_font": "Geist Sans",
+    "mobile_width": 390,
+    "mobile_scroll_width": 390,
+    "light_background": "#ffffff",
+    "dark_background": "#0a0a0a"
+  },
+  "tests": "1047 passed, 30 files",
+  "limitations": "Agency copy and page-specific content differ from Imageworks demo; sans serif is the explicit user override. Production has not been promoted."
+}

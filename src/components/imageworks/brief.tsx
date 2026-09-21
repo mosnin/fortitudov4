@@ -15,7 +15,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 const BRIEF =
   "A useful product starts with a clear brief. We define what needs to work, design the experience, and build it through to launch.";
 const WORDS = BRIEF.split(" ");
-const PHOTO = PHOTOS[1];
+const PHOTO = PHOTOS[3];
 const SRC = photoSrc(PHOTO, 2400, 1500);
 
 const WORDS_END = 0.28;
@@ -100,7 +100,7 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
     >
       <Image
         src={SRC}
-        alt="Chippi, an AI assistant for real-estate enquiries."
+        alt="Softly lit glass form from the Imageworks theme."
         fill
         sizes="100vw"
         className="object-cover object-top"
@@ -115,8 +115,8 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
         style={{ opacity: caption, y: captionY }}
         className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10"
       >
-        <p className="max-w-md font-serif text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-balance sm:text-[2rem]">
-          Chippi. From inquiry to tour.
+        <p className="max-w-md font-sans text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-balance sm:text-[2rem]">
+          From the brief to the final detail.
         </p>
       </motion.div>
     </motion.div>
@@ -136,7 +136,7 @@ export function Brief(): ReactNode {
   );
 
   const textClass =
-    "mx-auto max-w-3xl text-center font-serif text-[clamp(1.75rem,3.3vw,2.75rem)] leading-[1.15] tracking-[-0.015em] text-balance text-foreground";
+    "mx-auto max-w-3xl text-center font-sans text-[clamp(1.75rem,3.3vw,2.75rem)] leading-[1.15] tracking-[-0.015em] text-balance text-foreground";
 
   if (reducedMotion) {
     return (
@@ -146,7 +146,7 @@ export function Brief(): ReactNode {
           <div className="relative mt-12 aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
             <Image
               src={SRC}
-              alt="Chippi, an AI assistant for real-estate enquiries."
+              alt="Softly lit glass form from the Imageworks theme."
               fill
               sizes="100vw"
               className="object-cover object-top"
@@ -156,8 +156,8 @@ export function Brief(): ReactNode {
               className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent"
             />
             <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10">
-              <p className="max-w-md font-serif text-[1.5rem] leading-[1.15] sm:text-[2rem]">
-                Chippi. From inquiry to tour.
+              <p className="max-w-md font-sans text-[1.5rem] leading-[1.15] sm:text-[2rem]">
+                From the brief to the final detail.
               </p>
             </div>
           </div>

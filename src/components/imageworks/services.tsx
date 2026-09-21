@@ -20,7 +20,7 @@ export function Services() {
                 className="group flex h-full flex-col rounded-2xl border border-border bg-muted p-6 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring sm:p-8"
               >
                 <span className="flex items-center justify-between">
-                  <h3 className="font-serif text-3xl">{s.name}</h3>
+                  <h3 className="font-sans text-3xl">{s.name}</h3>
                   <ArrowUpRight className="size-5" aria-hidden />
                 </span>
                 <p className="mt-4 max-w-md text-[15px] leading-7 text-muted-foreground">

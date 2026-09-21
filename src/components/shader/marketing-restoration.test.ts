@@ -50,7 +50,7 @@ describe("purchased theme restoration", () => {
 
   it("uses the user-selected Imageworks source for the public homepage", () => {
     const page = readFileSync("src/app/(marketing)/page.tsx", "utf8");
-    const sequence = ["Hero", "Brief", "Variations", "Services", "Testimonials", "Process", "Pricing", "Faq", "FinalCta"];
+    const sequence = ["Hero", "Brief", "Variations", "Process", "Formats", "Testimonials", "Pricing", "Faq", "FinalCta"];
     const rendered = [...page.matchAll(/<([A-Z]\w+)\s*\/>/g)].map((match) => match[1]);
     expect(rendered).toEqual(sequence);
     expect(page).not.toContain("@/components/shader/");

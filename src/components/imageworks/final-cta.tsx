@@ -23,7 +23,7 @@ export function FinalCta(): ReactNode {
           <div id="cta-stage">
             <h2
               id="cta-heading"
-              className="mx-auto max-w-4xl font-serif text-[clamp(2.75rem,5.6vw,4.75rem)] leading-[1.0] tracking-[-0.025em] text-balance"
+              className="mx-auto max-w-4xl font-sans text-[clamp(2.75rem,5.6vw,4.75rem)] leading-[1.0] tracking-[-0.025em] text-balance"
             >
               Tell us what you
               <br className="hidden sm:block" /> want to build.

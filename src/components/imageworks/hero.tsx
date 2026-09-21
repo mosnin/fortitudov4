@@ -19,14 +19,14 @@ export function Hero(): ReactNode {
     <section
       id="hero"
       aria-label="Hero"
-      className="iw-yellow relative grid min-h-[100dvh] grid-rows-[1fr_auto_calc(var(--u)*12)_auto_1fr] [overflow-x:clip] [--u:2.2vw] sm:[--u:1.5vw] lg:[--u:min(1vw,16px)]"
+      className="relative grid min-h-[100dvh] grid-rows-[1fr_auto_calc(var(--u)*12)_auto_1fr] [overflow-x:clip] [--u:2.2vw] sm:[--u:1.5vw] lg:[--u:min(1vw,16px)]"
     >
       <DotField stageId="hero-stage" />
       <ImageArc stageId="hero-stage" onSettled={onSettled} />
 
       <div className="relative z-10 row-start-2 flex items-end justify-center px-5 pb-[calc(var(--u)*3.5)] sm:pb-[calc(var(--u)*3)]">
         <Reveal when={arcSettled} y={10} scale={0.75} duration={1.1}>
-          <h1 className="text-center font-serif text-[min(2.5rem,10.25vw)] leading-[1.02] tracking-[-0.02em] text-foreground sm:text-[3.5rem] lg:text-[4.25rem]">
+          <h1 className="text-center font-sans text-[min(2.5rem,10.25vw)] leading-[1.02] tracking-[-0.02em] text-foreground sm:text-[3.5rem] lg:text-[4.25rem]">
             Your next website, store
             <br />
             or software product.

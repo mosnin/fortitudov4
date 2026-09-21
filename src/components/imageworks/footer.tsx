@@ -54,7 +54,7 @@ const LEGAL = [
 function Newsletter(): ReactNode {
   return (
     <div className="max-w-[26rem]">
-      <h2 className="font-serif text-[2rem] leading-none tracking-[-0.01em]">
+      <h2 className="font-sans text-[2rem] leading-none tracking-[-0.01em]">
         Have a project in mind?
       </h2>
       <p className="mt-4 text-[15px] leading-7 text-muted-foreground">

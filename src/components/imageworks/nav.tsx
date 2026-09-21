@@ -236,7 +236,7 @@ function MobilePanel({
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            className="iw-nav fixed top-[4.25rem] right-4 left-4 z-40 origin-top-left overflow-hidden rounded-2xl bg-foreground p-2 text-background shadow-[0_24px_70px_-24px_rgba(0,0,0,0.6)] md:hidden dark:shadow-[0_24px_70px_-24px_rgba(0,0,0,0.9)]"
+            className="fixed top-[4.25rem] right-4 left-4 z-40 origin-top-left overflow-hidden rounded-2xl bg-foreground p-2 text-background shadow-[0_24px_70px_-24px_rgba(0,0,0,0.6)] md:hidden dark:shadow-[0_24px_70px_-24px_rgba(0,0,0,0.9)]"
             {...panel}
           >
             <nav aria-label="Mobile">
@@ -354,7 +354,7 @@ export function Nav(): ReactNode {
     <>
       <motion.header
         onKeyDown={onKey}
-        className="iw-nav fixed inset-x-0 top-0 z-50 flex items-start justify-between px-4 pt-4 sm:px-5 sm:pt-5"
+        className="fixed inset-x-0 top-0 z-50 flex items-start justify-between px-4 pt-4 sm:px-5 sm:pt-5"
         aria-label="Site"
       >
         <motion.div

@@ -1,6 +1,6 @@
 export const metadata = { title: "Portfolio | Fortitudo Agency" };
 import { PageIntro } from "@/components/imageworks/page-intro";
-import { Formats } from "@/components/imageworks/formats";
+import { Portfolio } from "@/components/imageworks/portfolio";
 import { FinalCta } from "@/components/imageworks/final-cta";
 export default function Page() {
   return (
@@ -10,7 +10,7 @@ export default function Page() {
         title="Websites, software and AI in practice."
         lead="Browse the same eight projects in our selected work, then open a case study for the details."
       />
-      <Formats />
+      <Portfolio />
       <FinalCta />
     </>
   );

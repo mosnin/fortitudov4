@@ -3,7 +3,7 @@ import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
 import { ArrowRight, Check } from "lucide-react";
 import type { ReactNode } from "react";
-const SPECTRUM_CLASS = "bg-[#f8cd02]";
+import { SPECTRUM_CLASS } from "./lib/spectrum";
 interface Tier {
   name: string;
   blurb: string;
@@ -94,7 +94,7 @@ function TierCard({ tier }: { tier: Tier }): ReactNode {
         </div>
       </div>
 
-      <p className="mt-8 font-serif text-[3.75rem] leading-none tracking-[-0.02em]">
+      <p className="mt-8 font-sans text-[2.75rem] leading-none tracking-[-0.02em]">
         {tier.price}
       </p>
       <p className="mt-3 text-sm text-muted-foreground">{tier.terms}</p>
