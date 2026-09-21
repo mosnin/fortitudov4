@@ -4,7 +4,7 @@ import { PHOTOS, photoSrc } from "@/components/imageworks/lib/photos";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
-const PHOTO = PHOTOS[1];
+const PHOTO = PHOTOS[3];
 
 const FRAMES: {
   name: string;
@@ -39,7 +39,7 @@ const FRAMES: {
     ratio: "9:16",
     grow: "lg:flex-[0.5625_1_0%]",
     aspect: "aspect-[9/16]",
-    position: "object-[60%_50%]",
+    position: "object-[50%_50%]",
   },
 ];
 
@@ -63,7 +63,7 @@ export function Formats(): ReactNode {
                   >
                     <Image
                       src={photoSrc(PHOTO, 1600, 1000)}
-                      alt={`Abstract photographic study, framed for a ${f.name.toLowerCase()} at ${f.ratio}.`}
+                      alt={`SERA client-brand campaign concept, framed for a ${f.name.toLowerCase()} at ${f.ratio}.`}
                       fill
                       sizes="(min-width: 1024px) 40vw, 100vw"
                       className={`object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.03] ${f.position}`}

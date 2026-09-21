@@ -25,7 +25,7 @@ const STORIES = [
     role: "Design and development",
     company: "Websites",
     photo: PHOTOS[0],
-    caption: "Abstract study",
+    caption: "Architecture website · Studio concept",
     href: "/services/websites",
   },
   {
@@ -34,8 +34,8 @@ const STORIES = [
     name: "Ecommerce",
     role: "Storefronts and checkout",
     company: "Ecommerce",
-    photo: PHOTOS[1],
-    caption: "Abstract study",
+    photo: PHOTOS[8],
+    caption: "Mobile storefront · Studio concept",
     href: "/services/ecommerce",
   },
   {
@@ -45,7 +45,7 @@ const STORIES = [
     role: "Products and internal tools",
     company: "Software",
     photo: PHOTOS[2],
-    caption: "Abstract study",
+    caption: "Customer portal · Studio concept",
     href: "/services/software-solutions",
   },
   {
@@ -55,7 +55,7 @@ const STORIES = [
     role: "Practical automation",
     company: "AI",
     photo: PHOTOS[7],
-    caption: "Abstract study",
+    caption: "AI lead review · Studio concept",
     href: "/services/ai-solutions",
   },
 ];

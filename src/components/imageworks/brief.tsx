@@ -100,7 +100,7 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
     >
       <Image
         src={SRC}
-        alt="Abstract forms in the original Imageworks photographic series."
+        alt="SERA skincare packaging study, an original client-brand concept."
         fill
         sizes="100vw"
         className="object-cover"
@@ -116,7 +116,7 @@ function Scene({ progress }: { progress: MotionValue<number> }): ReactNode {
         className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10"
       >
         <p className="max-w-md font-sans text-[1.5rem] leading-[1.15] tracking-[-0.01em] text-balance sm:text-[2rem]">
-          A considered direction, from the first brief.
+          SERA · Brand and product campaign concept.
         </p>
       </motion.div>
     </motion.div>
@@ -146,7 +146,7 @@ export function Brief(): ReactNode {
           <div className="relative mt-12 aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
             <Image
               src={SRC}
-              alt="Abstract forms in the original Imageworks photographic series."
+              alt="SERA skincare packaging study, an original client-brand concept."
               fill
               sizes="100vw"
               className="object-cover"
@@ -157,7 +157,7 @@ export function Brief(): ReactNode {
             />
             <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-10">
               <p className="max-w-md font-sans text-[1.5rem] leading-[1.15] sm:text-[2rem]">
-                A considered direction, from the first brief.
+                SERA · Brand and product campaign concept.
               </p>
             </div>
           </div>

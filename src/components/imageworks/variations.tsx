@@ -180,7 +180,7 @@ function Tile({ index, progress, gridRef, field }: TileProps): ReactNode {
             src={kept ? SRC_LG : SRC}
             alt={
               kept
-                ? `Abstract photographic study, ${v.note.toLowerCase()} grade.`
+                ? `MORROW packaging concept, ${v.note.toLowerCase()} grade.`
                 : ""
             }
             fill
@@ -332,7 +332,7 @@ export function Variations(): ReactNode {
                 <Image
                   src={SRC}
                   alt={
-                    i === KEPT ? "Abstract photographic study, warmer grade." : ""
+                    i === KEPT ? "MORROW packaging concept, warmer grade." : ""
                   }
                   fill
                   sizes="25vw"
