@@ -1,0 +1,416 @@
+{
+  "version": 1,
+  "kernel": "offers-os",
+  "scope": "Fortitudo public marketing route families and all 14 service offers; baseline 6f513d7",
+  "revision": "presentation-2026-09-21",
+  "environment": "local implementation and design audit",
+  "reviewer": "Codex",
+  "evidence": [
+    {
+      "id": "OFFER.md",
+      "path": "OFFER.md",
+      "sha256": "27ff7cbc5c8629c3fa4f8a3d139d75d8f1444dec67a6ce05b6f7eb41ee6b27d3",
+      "kind": "design",
+      "observed_at": "2026-09-21T20:58:08.750074+00:00",
+      "summary": "Local source-grounded presentation and commercial review; no provider validation."
+    },
+    {
+      "id": "OFFER-BUILDER.md",
+      "path": "OFFER-BUILDER.md",
+      "sha256": "ded0e94e0cbe7d672bbde628b927f0f3957cfb9ce057a82b4600d306f0c8992d",
+      "kind": "design",
+      "observed_at": "2026-09-21T20:58:08.750074+00:00",
+      "summary": "Local source-grounded presentation and commercial review; no provider validation."
+    },
+    {
+      "id": "REVIEW.md",
+      "path": "REVIEW.md",
+      "sha256": "5526978584e998c2a9b266459975323ba126ae4f8b7e1de1760bcf5d8d1f8839",
+      "kind": "design",
+      "observed_at": "2026-09-21T20:58:08.750074+00:00",
+      "summary": "Local source-grounded presentation and commercial review; no provider validation."
+    }
+  ],
+  "results": [
+    {
+      "id": "O01",
+      "status": "pass",
+      "reason": "Owner context, current 14-service catalog and exact baseline recovered; provider context unavailable is explicit.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O02",
+      "status": "pass",
+      "reason": "Buyer roles, triggers, alternatives and poor-fit requests recorded in OFFER and worksheet; audience now visible on service pages.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O03",
+      "status": "unknown",
+      "reason": "No demand or willingness-to-pay dataset; proposed comprehension test is not demand validation.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O04",
+      "status": "pass",
+      "reason": "Design/development/handover mechanism retained; existing-software and repair alternatives acknowledged.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O05",
+      "status": "pass",
+      "reason": "Existing broad agency remit retained; invented niche or premium pricing rejected.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O06",
+      "status": "pass",
+      "reason": "Observable deliverables and acceptance retained; timing and inputs explicitly require the written scope.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O07",
+      "status": "pass",
+      "reason": "Four value drivers examined separately in worksheet without quantitative promises.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O08",
+      "status": "unknown",
+      "reason": "Existing owner-supplied founder experience metrics lack independently inspected proof receipts in this audit.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O09",
+      "status": "unknown",
+      "reason": "First step is scoped enquiry; cost and staffing for first useful milestone not inspected.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O10",
+      "status": "pass",
+      "reason": "Before, during and after obstacles mapped including ongoing maintenance.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O11",
+      "status": "pass",
+      "reason": "Obstacles map to inputs, scope, reviews, handover or explicit operating unknowns.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O12",
+      "status": "pass",
+      "reason": "Existing software, repair, consultation and full build alternatives considered before retaining scope.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O13",
+      "status": "pass",
+      "reason": "Delivery dependencies and provider limitations remain stated for each offer.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O14",
+      "status": "unknown",
+      "reason": "Alternatives named but comparative speed, support cost and effort not measured.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O15",
+      "status": "unknown",
+      "reason": "Acceptance and dependencies present; actual unit cost and capacity missing.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O16",
+      "status": "pass",
+      "reason": "Decorative wrappers removed; useful scope and acceptance retained without added fulfillment obligations.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O17",
+      "status": "pass",
+      "reason": "Core deliverables cover stated build/handover promise on paper; actual delivery is not certified.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O18",
+      "status": "unknown",
+      "reason": "Public process exists; internal failure recovery and fulfillment staffing runbook not audited.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O19",
+      "status": "unknown",
+      "reason": "No expected or stressed demand capacity evidence available.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O20",
+      "status": "unknown",
+      "reason": "No pricing handoff invoked; actual costs and value validation unavailable.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O21",
+      "status": "unknown",
+      "reason": "Written proposal model explicit; transaction-specific prices, currency, payment and renewal terms not supplied.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O22",
+      "status": "unknown",
+      "reason": "No cash timing, contribution or refund exposure model inspected.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O23",
+      "status": "unknown",
+      "reason": "Premium appearance is not willingness-to-pay evidence; no price changes made.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O24",
+      "status": "pass",
+      "reason": "No bonus stack; core functionality remains included in the agreed engagement.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O25",
+      "status": "pass",
+      "reason": "No fabricated value anchors added; pricing uses proposal-based terms.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O26",
+      "status": "pass",
+      "reason": "No capacity counters or artificial quantity limits introduced.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O27",
+      "status": "pass",
+      "reason": "No timers or unsupported deadline claims introduced.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O28",
+      "status": "pass",
+      "reason": "Written scope and review are practical risk controls; no new performance guarantee proposed.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O29",
+      "status": "pass",
+      "reason": "No additional remedy or guarantee offered; actual agreement governs remedies.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O30",
+      "status": "pass",
+      "reason": "No new guarantee exposure introduced; operating economics remain unknown separately.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O31",
+      "status": "pass",
+      "reason": "Names identify actual engagements; no invented credentials or fixed durations.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O32",
+      "status": "pass",
+      "reason": "All 14 offers retain inclusions, exclusions, inputs, acceptance, PDF and voluntary service-specific enquiry.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O33",
+      "status": "pass",
+      "reason": "Offer-specific FAQs and scope boundaries answer practical fit and ownership objections.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O34",
+      "status": "pass",
+      "reason": "Late inputs, adoption, overload, failed acceptance and declined purchase reviewed in worksheet.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O35",
+      "status": "pass",
+      "reason": "Structural checks explicitly separated from demand and fulfillment proof.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O36",
+      "status": "pass",
+      "reason": "Proposed buyer-comprehension test includes population, observation, threshold and stop rule.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O37",
+      "status": "pass",
+      "reason": "Versioned local review records unavailable provider context and uninvoked companion handoffs.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    },
+    {
+      "id": "O38",
+      "status": "pass",
+      "reason": "Implementation, commercial unknowns and proposed experiment are distinguished.",
+      "evidence": [
+        "OFFER.md",
+        "OFFER-BUILDER.md",
+        "REVIEW.md"
+      ]
+    }
+  ]
+}

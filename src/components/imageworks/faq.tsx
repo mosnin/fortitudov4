@@ -23,7 +23,7 @@ function Item({
 }): ReactNode {
   const reducedMotion = useReducedMotion();
   return (
-    <li className="rounded-2xl bg-muted">
+    <li className="border-b border-border">
       <h3>
         <button
           type="button"
@@ -31,7 +31,7 @@ function Item({
           aria-expanded={open}
           aria-controls={`${id}-a`}
           onClick={onToggle}
-          className="group flex w-full items-center justify-between gap-6 rounded-2xl px-5 py-5 text-left text-[17px] leading-6 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:px-6 sm:py-6"
+          className="group flex w-full items-center justify-between gap-6 py-5 text-left text-[17px] leading-6 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:py-6"
         >
           <span className="transition-colors group-hover:text-foreground/80">
             {q}
@@ -66,7 +66,7 @@ function Item({
             }
             className="overflow-hidden"
           >
-            <p className="max-w-2xl px-5 pb-6 text-[15px] leading-7 text-muted-foreground sm:px-6 sm:pb-7">
+            <p className="max-w-2xl pr-8 pb-6 text-[15px] leading-7 text-muted-foreground sm:pb-7">
               {a}
             </p>
           </motion.div>
@@ -99,7 +99,7 @@ export function Faq({
           <SectionHeading id="faq-heading" title={heading} description={lead} />
         </div>
         <Reveal inView delay={0.1}>
-          <ul className="flex flex-col gap-3">
+          <ul className="flex flex-col border-t border-border">
             {items.map((item, i) => (
               <Item
                 key={item.q}

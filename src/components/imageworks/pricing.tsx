@@ -3,7 +3,6 @@ import { Reveal } from "./reveal";
 import { SectionHeading } from "./section-heading";
 import { Check } from "lucide-react";
 import type { ReactNode } from "react";
-import { SPECTRUM_CLASS } from "./lib/spectrum";
 interface Tier {
   name: string;
   blurb: string;
@@ -84,7 +83,7 @@ function FeatureList({
 
 function TierCard({ tier }: { tier: Tier; index: number }): ReactNode {
   const inner = (
-    <div className="flex h-full flex-col rounded-[15px] bg-background p-6 sm:p-7">
+    <div className="flex h-full flex-col border-t border-border pt-7 pb-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-[1.375rem] leading-tight font-medium tracking-[-0.01em]">
@@ -97,7 +96,7 @@ function TierCard({ tier }: { tier: Tier; index: number }): ReactNode {
       <p className="mt-8 font-sans text-[2.75rem] leading-none tracking-[-0.02em]">
         {tier.price}
       </p>
-      <div className="mt-7 rounded-xl bg-muted p-3.5"><div className="flex items-center gap-3.5"><p className="text-sm leading-6 text-muted-foreground">{tier.terms}</p></div></div>
+      <div className="mt-5"><div className="flex items-center gap-3.5"><p className="text-sm leading-6 text-muted-foreground">{tier.terms}</p></div></div>
       <div className="mt-7 border-t border-border pt-6 pb-10">
         <p className="text-[11px] font-medium tracking-wider text-muted-foreground uppercase">
           Includes
@@ -109,22 +108,7 @@ function TierCard({ tier }: { tier: Tier; index: number }): ReactNode {
     </div>
   );
 
-  if (tier.featured) {
-    return (
-      <div className="relative h-full rounded-2xl shadow-[0_28px_60px_-32px_rgba(0,0,0,0.28)] dark:shadow-none">
-        <div
-          aria-hidden="true"
-          className={`absolute inset-0 rounded-2xl [background-size:200%_100%] motion-safe:animate-[spectrum-drift_14s_linear_infinite] ${SPECTRUM_CLASS}`}
-        />
-        <div className="relative h-full p-px">{inner}</div>
-      </div>
-    );
-  }
-  return (
-    <div className="h-full rounded-2xl border border-border transition-colors hover:border-foreground/20">
-      {inner}
-    </div>
-  );
+  return inner;
 }
 
 export function Pricing(): ReactNode {
@@ -140,7 +124,7 @@ export function Pricing(): ReactNode {
           title="Start where the work needs to start."
           description="Get a clear plan, commission the build, or keep improving after launch. Your proposal defines the deliverables, responsibilities and price before you commit."
         />
-        <ul className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-5 lg:mt-14">
+        <ul className="mt-12 grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10 lg:mt-14">
           {TIERS.map((tier, i) => (
             <li key={tier.name} className="min-w-0">
               <Reveal inView delay={0.08 * i} y={24} className="h-full">

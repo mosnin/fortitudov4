@@ -26,3 +26,12 @@
 .journal-video-hero> :not(video){width:100%;max-width:1050px;margin-inline:auto}
 .editorial-hero.video-page-hero{max-width:none;padding-inline:max(24px,calc((100vw - 1328px)/2));padding-top:150px}
 @media(max-width:700px){.video-page-hero{min-height:90svh;margin-bottom:48px;padding-top:130px;padding-bottom:140px}.editorial-hero.video-page-hero{padding-inline:20px}}
+
+/* Service information lives on the page surface, with a quiet reading rhythm. */
+.offer-deliverables { align-self:start; border-top:1px solid var(--border); padding-top:22px; }
+.offer-deliverables h3 { margin:0 0 22px; font-size:13px; line-height:1.5; font-weight:400; color:var(--muted-foreground); }
+.offer-deliverables ul { list-style:none; margin:0; padding:0; }
+.offer-deliverables li { margin:0; padding:17px 0; border-bottom:1px solid var(--border); font-size:clamp(17px,1.5vw,21px); line-height:1.55; letter-spacing:-.015em; }
+.offer-deliverables li:first-child { padding-top:0; }
+.offer-terms { max-width:48ch; margin:22px 0 0; font-size:13px; line-height:1.7; color:var(--muted-foreground); }
+@media(min-width:1024px) { .offer-deliverables { margin-left:24px; } }
