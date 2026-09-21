@@ -31,3 +31,14 @@ Read on September 20, 2026. Vendor/experimental performance figures must not be 
 
 ## Implemented copy
 Understated anti-slop positioning appears in the homepage AI tab, AI directory description and AI detail intro. AI detail FAQ describes website/content remediation and Jev integration. No prices, capacity promises, endorsements or performance guarantees have been invented. Complete offer packaging remains the research task's work.
+
+## Ecommerce expansion — explicit user requirements
+Added after the initial inventory; retain all prior capabilities. Duplicate legal-page mentions consolidated.
+
+- Product label creation, store setup, brand creation and ecommerce technology integration.
+- Shopify setup: domain connection, collection creation, legal pages, SEO, pixel installation, product creation, inventory management, and data ingestion for email and SMS marketing.
+- Storefront layout/functionality: properly structured homepage; collection pages; product pages; upsells; subscriptions; product widgets; sales/promotions; customer accounts; tracking pages; About the Brand page; FAQs; discount popups.
+- Third-party integrations: Mailchimp (user wording “mainchimp”), Klaviyo (“klayvio”), Shopify Collabs, TikTok Shop, ChatGPT ads and other performance integrations.
+- Performance/conversion tools: site speed improvements/integrations, advanced upsells, advanced FAQs, quizzes and related functionality.
+
+Research must retain each item in the capability-to-offer matrix. Package boundaries should distinguish brand/label work, store foundations, storefront buildouts, operations/data and optimization. Verify current provider access, platform/plan/region support and third-party costs, particularly ChatGPT ads. These are user-stated capabilities and required research scope, not evidence that every third-party integration is currently available to every merchant. Separate implementation from ongoing operations or legal/compliance certification; agree merchant inputs and consent/data handling when scoping.
