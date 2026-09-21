@@ -30,6 +30,8 @@ const req = (path: string, method = "GET") =>
 
 /** Every page and endpoint a signed-out visitor has to be able to use. */
 const MUST_BE_PUBLIC = [
+  "/sitemap.xml",
+  "/robots.txt",
   "/",
   "/services",
   "/pricing",

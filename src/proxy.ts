@@ -26,6 +26,8 @@ import {
  * `/dashboard` and `/admin`, and absence from this list is what protects it.
  */
 export const PUBLIC_ROUTES = [
+  "/sitemap.xml",
+  "/robots.txt",
   "/",
   "/sign-in(.*)",
   "/sign-up(.*)",
