@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 
 import { LogoMark } from "@/components/imageworks/logo";
 import { softEase, useReducedMotion } from "@/components/imageworks/lib/motion";
@@ -72,6 +73,9 @@ function Newsletter(): ReactNode {
       >
         hello@fortitudo.agency <ArrowRight className="size-4" aria-hidden />
       </Link>
+      <div className="relative mt-8 aspect-square w-48 sm:w-56">
+        <Image src="/brand/fortitudo-glass.webp" alt="Fortitudo’s circular wave mark rendered in smoked glass." fill sizes="224px" className="object-contain" />
+      </div>
     </div>
   );
 }

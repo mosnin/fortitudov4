@@ -1,4 +1,4 @@
-import { Logo } from "@/components/imageworks/logo";
+import Image from "next/image";
 import Link from "next/link";
 import { PageIntro } from "@/components/imageworks/page-intro";
 import { Process } from "@/components/imageworks/process";
@@ -8,7 +8,7 @@ import { StudioStandard } from "@/components/imageworks/studio-standard";
 export const metadata = {
   title: "About — Fortitudo Agency",
   description:
-    "Design, engineering and applied AI brought together around your business, with clear scope and a complete handover.",
+    "Meet Fortitudo and founder Preston Wilms. More than a decade building websites, running campaigns and growing businesses, now brought together with software and applied AI.",
 };
 const principles = [
   [
@@ -33,29 +33,27 @@ export default function About() {
     <>
       <PageIntro
         label="About Fortitudo"
-        title="Design and engineering, in the same conversation."
-        lead="Fortitudo builds websites, ecommerce stores, software and applied AI. We connect brand decisions with technical decisions so the work holds together from the first impression to daily use."
+        title="Built on experience. Made for what comes next."
+        lead="For more than a decade, we have been building websites, running advertising campaigns and helping businesses scale. Fortitudo brings that experience together across brand, commerce, software and applied AI."
       />
       <section className="pb-24 sm:pb-32">
         <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
           <div className="grid items-center gap-12 lg:grid-cols-2">
-            <div className="flex aspect-[4/3] flex-col justify-between rounded-2xl border border-border bg-muted p-8 sm:p-12">
-              <Logo className="h-12 self-start" />
-              <p className="text-4xl leading-tight tracking-tight sm:text-5xl">From the first<br />impression to<br />the final handover.</p>
-              <p className="text-sm text-muted-foreground">Brand · Websites · Commerce · Software · AI</p>
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[#e4e4e4]">
+              <Image src="/about/fortitudo-in-hand.webp" alt="A hand holding a glass card bearing the Fortitudo mark." fill sizes="(min-width: 1024px) 50vw, 100vw" className="object-cover" />
             </div>
             <div className="max-w-xl">
               <h2 className="text-4xl leading-tight tracking-tight">
-                A clear idea.
-                <br />A considered build.
-                <br />A complete handover.
+                An eye for the brand.
+                <br />A mind for the business.
               </h2>
               <p className="mt-7 text-base leading-8 text-muted-foreground">
-                Some projects begin with a new business. Others begin with
-                software that needs fixing, a store ready to grow or a workflow
-                ready for AI. We start by understanding the job, then bring the
-                right design and development work into one scope.
+                A business takes shape in many places: the first impression,
+                the product, the campaign and the experience that follows.
+                We bring those pieces into the same conversation, connecting
+                considered design with the systems that help a business work.
               </p>
+              <p className="mt-5 text-base leading-8 text-muted-foreground">Our work spans websites and ecommerce, complete software products, brand identities and applied AI. Whether we are shaping a new idea or improving something already in motion, the aim is the same: useful work, carefully made, with a clear path from the brief to the handover.</p>
               <Link
                 href="/work"
                 className="mt-8 inline-flex min-h-12 items-center rounded-xl bg-foreground px-5 text-sm font-medium text-background"
@@ -63,6 +61,21 @@ export default function About() {
                 Explore our work →
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+      <section aria-labelledby="founder-heading" className="py-24 sm:py-32">
+        <div className="mx-auto grid max-w-[1200px] items-center gap-12 px-4 sm:px-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-24">
+          <div className="relative mx-auto aspect-square w-full max-w-[360px] overflow-hidden rounded-full">
+            <Image src="/about/preston-wilms.jpg" alt="Preston Wilms, founder of Fortitudo." fill sizes="(min-width: 768px) 360px, 85vw" className="rounded-full object-cover scale-[1.035]" />
+          </div>
+          <div>
+            <p className="mb-5 text-sm text-muted-foreground">About the founder</p>
+            <h2 id="founder-heading" className="text-4xl leading-tight tracking-tight sm:text-5xl">Preston Wilms</h2>
+            <p className="mt-7 text-lg leading-8">A decade spent building businesses, finding audiences and turning ideas into things people use.</p>
+            <p className="mt-5 text-base leading-8 text-muted-foreground">Over the past decade, Preston has generated nearly one billion social media impressions across his own ventures and his clients’ brands. Along the way, he has built dozens of software projects and ecommerce brands, working across the creative, commercial and technical sides of bringing a business to life.</p>
+            <p className="mt-5 text-base leading-8 text-muted-foreground">Fortitudo brings that experience into one practice. Brand and design sit alongside development, advertising and the practical application of AI, with attention to how each decision serves the business behind it.</p>
+            <a href="https://www.linkedin.com/in/preston-wilms-6967a4192/" target="_blank" rel="noopener noreferrer" className="mt-7 inline-flex min-h-12 items-center gap-3 rounded-sm text-base underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">Connect with Preston on LinkedIn <span aria-hidden="true">↗</span><span className="sr-only"> (opens in a new tab)</span></a>
           </div>
         </div>
       </section>

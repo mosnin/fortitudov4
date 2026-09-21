@@ -72,3 +72,8 @@ Self-review only. Design OS governs composition and UX; Frontend OS governs rout
 Review hero/nav, brief, variations, capabilities, formats, service tabs, pricing, FAQ, final CTA and footer; then service directory and every detail variant, resources/downloads, work, about, contact, legal and sign-in navigation. Capture desktop/mobile, expanded menus, focus states and reduced motion. Check HTTP routes, links, assets, typecheck, build and relevant regression tests. Any missing checks remain explicit in the final receipt.
 
 Stages 0–12: direction and scope resolved from source theme and owner content; audience assumptions not user-research verified. Stages 13–17: accessibility, trust, runtime resilience, implementation fidelity and final refinement require current execution evidence, recorded in the restoration receipt. No skill checklist alone grants release acceptance.
+
+
+## Founder and glass brand extension — 21 September 2026
+
+Owner-supplied art direction adds a smoked-glass rendition of the existing circular wave mark to the footer without replacing the purchased footer composition. About uses the supplied hand/glass-card composition with the Fortitudo mark, followed by an editorial founder section with Preston Wilms’s original portrait clipped to a square, fully circular frame. LinkedIn opens in a new tab with an accessible announcement. Biography claims (over a decade, nearly one billion impressions, dozens of projects and brands) are supplied directly by Preston; agency scope is grounded in the current Notion Offer Library. Preserve Imageworks typography, spacing, dark default, rounded imagery and responsive stacking.
