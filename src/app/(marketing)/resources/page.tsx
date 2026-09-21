@@ -11,9 +11,9 @@ export default function Resources() {
   return (
     <>
       <PageIntro
-        label="Resources"
-        title="The details behind the work."
-        lead="Explore what we can build, how an engagement works and what your team takes away. Read the service pitches here or download them to share. No form required."
+        label="Service pitch decks"
+        title="Bring the right proposal to the table."
+        lead="Detailed presentations for every service. Explore the scope, deliverables, review process and handover, then download the PDF to share with your team. No form required."
       />
       <ResourceCards />
       <FinalCta />

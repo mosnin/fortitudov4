@@ -22,7 +22,7 @@ export function ResourceCards({ featured = false }: { featured?: boolean }) {
                 href="/resources"
                 className="inline-flex min-h-11 items-center text-sm underline underline-offset-4"
               >
-                All resources →
+                All pitch decks →
               </Link>
             }
           />
@@ -38,7 +38,7 @@ export function ResourceCards({ featured = false }: { featured?: boolean }) {
                   href={`/resources/${s.resourceSlug}`}
                   className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
                 >
-                  <div className="relative aspect-[1/1.414] overflow-hidden rounded-2xl border border-border bg-muted">
+                  <div className="relative aspect-[16/9] overflow-hidden rounded-2xl border border-border bg-muted">
                     <Image
                       src={servicePreview(s)}
                       alt={`${s.name} service pitch cover`}
@@ -48,7 +48,7 @@ export function ResourceCards({ featured = false }: { featured?: boolean }) {
                     />
                   </div>
                   <p className="mt-5 text-xs text-muted-foreground">
-                    SERVICE PITCH · PDF{file ? ` · ${file.pages} PAGES` : ""}
+                    SERVICE DECK · PDF{file ? ` · ${file.pages} PAGES` : ""}
                   </p>
                   <h2 className="mt-3 text-2xl tracking-tight">{s.name}</h2>
                 </Link>
@@ -60,7 +60,7 @@ export function ResourceCards({ featured = false }: { featured?: boolean }) {
                     className="inline-flex min-h-11 items-center underline underline-offset-4"
                     href={`/resources/${s.resourceSlug}`}
                   >
-                    Read the pitch →
+                    Read the service overview →
                   </Link>
                   <a
                     href={servicePdf(s)}

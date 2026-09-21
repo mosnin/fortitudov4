@@ -17,47 +17,9 @@ import {
 import { useEffect, useRef, type PointerEvent, type ReactNode } from "react";
 
 const COLUMNS = [
-  {
-    title: "Services",
-    links: [
-      { label: "Websites", href: "/services/websites" },
-      { label: "Ecommerce", href: "/services/ecommerce" },
-      { label: "Software", href: "/services/software-solutions" },
-      { label: "AI solutions", href: "/services/ai-solutions" },
-      { label: "Brand", href: "/services/brand" },
-      { label: "Unslop", href: "/services/unslop" },
-      { label: "Consultation", href: "/services/consultation" },
-      { label: "Other tech solutions", href: "/services/other-tech-solutions" },
-      { label: "Jev implementation", href: "/services/jev-implementation" },
-      { label: "MCP & APIs", href: "/services/mcp-and-api" },
-      { label: "AI engineering", href: "/services#ai-capabilities" },
-    ],
-  },
-  {
-    title: "Agency",
-    links: [
-      { label: "Our work", href: "/work" },
-      { label: "Resources", href: "/resources" },
-      { label: "Blog", href: "/blog" },
-      { label: "Services", href: "/services" },
-      { label: "About", href: "/about" },
-      { label: "Our approach", href: "/approach" },
-      { label: "Solutions", href: "/solutions" },
-      { label: "Ownership & handover", href: "/handover" },
-      { label: "Ongoing support", href: "/ongoing-support" },
-      { label: "Pricing", href: "/pricing" },
-      { label: "FAQ", href: "/faq" },
-    ],
-  },
-  {
-    title: "Contact",
-    links: [
-      { label: "Start a project", href: "/contact" },
-      { label: "Project planner", href: "/project-planner" },
-      { label: "Client sign in", href: "/sign-in" },
-      { label: "Portfolio", href: "/portfolio" },
-    ],
-  },
+ { title: "Services", links: [{label:"Websites & ecommerce",href:"/services#web-commerce"},{label:"Software & integrations",href:"/services#software"},{label:"AI & automation",href:"/services#ai"},{label:"Design & advisory",href:"/services#design-advisory"}] },
+ { title: "Agency", links: [{label:"Our work",href:"/work"},{label:"About",href:"/about"},{label:"How we work",href:"/approach"},{label:"Service pitch decks",href:"/resources"}] },
+ { title: "Contact", links: [{label:"Start a project",href:"/contact"},{label:"Client sign in",href:"/sign-in"},{label:"Ownership & handover",href:"/handover"},{label:"Ongoing support",href:"/ongoing-support"}] },
 ];
 const LEGAL = [
   { label: "Terms", href: "/terms" },

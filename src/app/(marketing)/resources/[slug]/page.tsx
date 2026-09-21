@@ -44,7 +44,7 @@ export default async function Resource({
       <section className="pb-24 sm:pb-32">
         <div className="mx-auto grid max-w-[1440px] items-start gap-12 px-4 sm:px-6 lg:grid-cols-[.75fr_1.25fr] lg:gap-20">
           <aside className="lg:sticky lg:top-28">
-            <div className="relative mx-auto aspect-[1/1.414] max-w-md overflow-hidden rounded-2xl border border-border bg-muted lg:max-w-[320px]">
+            <div className="relative mx-auto aspect-[16/9] max-w-md overflow-hidden rounded-2xl border border-border bg-muted lg:max-w-[320px]">
               <Image
                 src={servicePreview(s)}
                 alt={`${s.name} pitch cover`}

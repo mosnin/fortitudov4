@@ -11,7 +11,7 @@ import { textReveal06 } from "./effects/text-reveal";
 import { auraBorder } from "./effects/aura-border";
 
 type AuraElement = HTMLDivElement & { __auraBorder?: { setActive: (active: boolean) => void; destroy: () => void } };
-const LINKS = [["Services", "/services"], ["Solutions", "/solutions"], ["Work", "/work"], ["Approach", "/approach"], ["About", "/about"], ["Contact", "/contact"]];
+const LINKS = [["Home", "/"], ["Our work", "/work"], ["Services", "/services"], ["About", "/about"], ["Contact", "/contact"]];
 const isMarketing = (path: string) => !/^\/(admin|dashboard|partner|sign-in|sign-up|api|post-login)(\/|$)/.test(path);
 const FADE = { duration: 500, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", fill: "forwards" as const };
 
@@ -151,7 +151,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
       <span className="toggle-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></span>
     </button>
     <nav ref={drawer} className="drawer" id="navigation-06-menu" aria-label="Main navigation" aria-hidden={!open} inert={!open} data-lenis-prevent>
-      <div className="drawer-content"><p className="eyebrow">Fortitudo</p><ul className="links">{LINKS.map(([label, href]) => <li key={href}><Link href={href} aria-current={pathname === href ? "page" : undefined}><span>{label}</span></Link></li>)}</ul><div className="divider" aria-hidden="true" /><div className="socials"><Link href="/project-planner"><span>Project planner</span></Link><Link href="/pricing"><span>Pricing</span></Link><Link href="/resources"><span>Resources</span></Link><Link href="/sign-in"><span>Client sign in</span></Link><a href="mailto:hello@fortitudo.agency"><span>hello@fortitudo.agency</span></a></div></div>
+      <div className="drawer-content"><p className="eyebrow">Fortitudo</p><ul className="links">{LINKS.map(([label, href]) => <li key={href}><Link href={href} aria-current={pathname === href ? "page" : undefined}><span>{label}</span></Link></li>)}</ul><div className="divider" aria-hidden="true" /><div className="socials"><Link href="/approach"><span>How we work</span></Link><Link href="/resources"><span>Service pitch decks</span></Link><Link href="/sign-in"><span>Client sign in</span></Link><a href="mailto:hello@fortitudo.agency"><span>hello@fortitudo.agency</span></a></div></div>
     </nav>
     <div className="page"><div ref={page} className="page-content">{children}</div><button className="cover" type="button" tabIndex={-1} aria-label="Close navigation" onClick={close} /></div>
     <div className="persistent-controls" inert={open}>{controls}</div>
