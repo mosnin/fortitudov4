@@ -18,7 +18,8 @@ import { useEffect, useRef, type PointerEvent, type ReactNode } from "react";
 
 const COLUMNS = [
  { title: "Services", links: [{label:"Websites & ecommerce",href:"/services/websites"},{label:"Software & integrations",href:"/services/software-solutions"},{label:"AI & automation",href:"/services/ai-solutions"},{label:"Design & advisory",href:"/services/brand"}] },
- { title: "Agency", links: [{label:"Our work",href:"/work"},{label:"About",href:"/about"},{label:"How we work",href:"/approach"},{label:"Service pitch decks",href:"/resources"}] },
+ { title: "Explore", links: [{label:"Industries",href:"/industries"},{label:"Our work",href:"/work"},{label:"Blog",href:"/blog"},{label:"Service pitch decks",href:"/resources"}] },
+ { title: "Company", links: [{label:"About",href:"/about"},{label:"How we work",href:"/approach"},{label:"Careers",href:"/careers"},{label:"Language / Translate",href:"/language"}] },
  { title: "Contact", links: [{label:"Start a project",href:"/contact"},{label:"Client sign in",href:"/sign-in"},{label:"Ownership & handover",href:"/handover"},{label:"Ongoing support",href:"/ongoing-support"}] },
 ];
 const LEGAL = [
@@ -194,7 +195,7 @@ export function Footer(): ReactNode {
             <Newsletter />
 
             <nav aria-label="Footer">
-              <div className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3">
+              <div className="grid grid-cols-2 gap-x-8 gap-y-10">
                 {COLUMNS.map((col) => (
                   <div key={col.title}>
                     <h3 className="text-xs font-medium tracking-[0.08em] text-foreground/85 uppercase">

@@ -2,6 +2,7 @@ import { JOURNAL } from "@/lib/journal";
 import type { MetadataRoute } from "next";
 import { SERVICE_CATALOG } from "@/lib/service-catalog";
 import { WORK_PROJECTS } from "@/lib/work-projects";
+import { INDUSTRIES } from "@/content/industries";
 import {
   LANGS,
   LANG_TAG,
@@ -63,6 +64,9 @@ const PAGES = [
   { path: "/solutions/connect-operations", priority: 0.7, changeFrequency: "monthly" },
   { path: "/solutions/apply-ai", priority: 0.7, changeFrequency: "monthly" },
   { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
+  { path: "/industries", priority: 0.8, changeFrequency: "monthly" },
+  { path: "/careers", priority: 0.5, changeFrequency: "monthly" },
+  { path: "/language", priority: 0.4, changeFrequency: "yearly" },
   { path: "/services/other-tech-solutions", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services", priority: 0.8, changeFrequency: "monthly" },
   { path: "/services/websites", priority: 0.8, changeFrequency: "monthly" },
@@ -126,6 +130,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly" as const,
     })),
     ...JOURNAL.map(p => ({path: `/blog/${p.slug}`, priority: 0.7, changeFrequency: "monthly" as const})),
+    ...INDUSTRIES.map((industry) => ({
+      path: `/industries/${industry.slug}`,
+      priority: 0.8,
+      changeFrequency: "monthly" as const,
+    })),
     ...WORK_PROJECTS.map((p) => ({
       path: `/work/${p.slug}`,
       priority: 0.7,

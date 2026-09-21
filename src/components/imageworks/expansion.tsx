@@ -3,17 +3,23 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowButton } from "./arrow-button";
 import { SOLUTIONS } from "@/content/solution-pathways";
+import { INDUSTRIES } from "@/content/industries";
 import { SERVICE_CATALOG } from "@/lib/service-catalog";
+import { workProject } from "@/lib/work-projects";
 export function EditorialHero({
   label,
   title,
   lead,
   effect = "01",
+  ctaHref = "/contact",
+  ctaLabel = "Discuss your project",
 }: {
   label: string;
   title: string;
   lead: string;
   effect?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
 }) {
   const hook = { [`data-reveal-${effect}`]: "lines" };
   return (
@@ -23,9 +29,83 @@ export function EditorialHero({
       <h1 {...hook}>{title}</h1>
       <div className="editorial-hero-bottom">
         <p>{lead}</p>
-        <ArrowButton href="/contact">Discuss your project</ArrowButton>
+        <ArrowButton href={ctaHref}>{ctaLabel}</ArrowButton>
       </div>
     </header>
+  );
+}
+export function IndustryIndex() {
+  return (
+    <section className="editorial-section" aria-label="Industries">
+      <div className="editorial-section-head">
+        <p className="editorial-label">Operating context</p>
+        <h2 data-reveal-02="lines" data-scroll data-once>
+          Start with the environment your team operates in.
+        </h2>
+      </div>
+      <div className="pathway-list">
+        {INDUSTRIES.map((item, index) => (
+          <Link
+            key={item.slug}
+            href={`/industries/${item.slug}`}
+            className="pathway-row"
+          >
+            <span className="editorial-number">0{index + 1}</span>
+            <div>
+              <h3>{item.label}</h3>
+              <p>{item.fit}</p>
+            </div>
+            <span aria-hidden>↗</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+export function IndustryPriorities({
+  items,
+}: {
+  items: Array<{ title: string; body: string }>;
+}) {
+  return (
+    <section className="editorial-section">
+      <div className="editorial-section-head">
+        <p className="editorial-label">What shapes the work</p>
+        <h2>Business context before implementation.</h2>
+      </div>
+      <div className="industry-priority-list">
+        {items.map((item, index) => (
+          <article key={item.title}>
+            <span className="editorial-number">0{index + 1}</span>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+export function RelatedWork({ slugs }: { slugs: string[] }) {
+  const projects = slugs.map(workProject).filter((item) => item !== undefined);
+  if (!projects.length) return null;
+  return (
+    <section className="editorial-section">
+      <div className="editorial-section-head">
+        <p className="editorial-label">Relevant work</p>
+        <h2>See the systems and experiences behind the scope.</h2>
+      </div>
+      <div className="industry-work-list">
+        {projects.map((project) => (
+          <Link href={`/work/${project.slug}`} key={project.slug}>
+            <span>
+              <strong>{project.name}</strong>
+              <small>{project.blurb}</small>
+            </span>
+            <span aria-hidden>↗</span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 export function PathwayIndex() {
