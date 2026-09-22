@@ -1,0 +1,105 @@
+{
+  "dossier_sha256": "4a4ca1bee4808469fb5feb34d77da952593b161e157340fdf929b10733556541",
+  "claim_reviews": [
+    {
+      "claim_id": "c1",
+      "verdict": "supported",
+      "scope_preserved": true,
+      "temporal_scope_justified": true,
+      "rationale": "The retained Duarte article explicitly distinguishes presenter-led slides from leave-behind Slidedocs and defines the latter as visuals plus text comprehensible without a presenter. The claim is about that guidance, not measured conversion effects.",
+      "evidence_assessments": [
+        {
+          "citation_index": 0,
+          "relation": "supports",
+          "rationale": "The quoted definition is completed by the same sentence specifying no presenter; surrounding sections describe supplemental context."
+        }
+      ]
+    },
+    {
+      "claim_id": "c2",
+      "verdict": "supported",
+      "scope_preserved": true,
+      "temporal_scope_justified": true,
+      "rationale": "Duarte explicitly uses contrast between current customer problems and the situation a solution could enable. Its sales-story method is practitioner guidance and the claim preserves that scope.",
+      "evidence_assessments": [
+        {
+          "citation_index": 0,
+          "relation": "supports",
+          "rationale": "The surrounding paragraph identifies what is and what could be, and subsequent sections ground sales stories in buyer objections and evidence."
+        }
+      ]
+    },
+    {
+      "claim_id": "c3",
+      "verdict": "supported",
+      "scope_preserved": true,
+      "temporal_scope_justified": true,
+      "rationale": "NN/g makes the stated grouping recommendation following 13 qualitative desktop usability tests. The claim and limitations preserve desktop-web scope and do not imply a PDF experiment.",
+      "evidence_assessments": [
+        {
+          "citation_index": 0,
+          "relation": "supports",
+          "rationale": "The cited recommendation is explicit; the study also notes legitimate uses of focused dispersion, which the report retains."
+        }
+      ]
+    },
+    {
+      "claim_id": "c4",
+      "verdict": "supported",
+      "scope_preserved": true,
+      "temporal_scope_justified": true,
+      "rationale": "The WWDC20 transcript explicitly calls hierarchy important and text styles a tool for achieving it. This is a historical UI typography claim, not a claim that Apple specifies Fortitudo slide layouts.",
+      "evidence_assessments": [
+        {
+          "citation_index": 0,
+          "relation": "supports",
+          "rationale": "The cited sentence directly supports the claim; preceding material explains size, weight and leading as coordinated text styles."
+        }
+      ]
+    },
+    {
+      "claim_id": "c5",
+      "verdict": "supported",
+      "scope_preserved": true,
+      "temporal_scope_justified": true,
+      "rationale": "NN/g explicitly says every piece of content, including negative space, needs a purpose. The article distinguishes necessary information from visual minimalism and warns against removing required content.",
+      "evidence_assessments": [
+        {
+          "citation_index": 0,
+          "relation": "supports",
+          "rationale": "The quotation supports the proposition and surrounding discussion supplies the material counterpoint against empty minimalism."
+        }
+      ]
+    },
+    {
+      "claim_id": "c6",
+      "verdict": "supported",
+      "scope_preserved": true,
+      "temporal_scope_justified": true,
+      "rationale": "Harvard Chan explicitly recommends one takeaway per slide within health-communication presentation guidance. The report correctly qualifies transfer to standalone reading documents.",
+      "evidence_assessments": [
+        {
+          "citation_index": 0,
+          "relation": "supports",
+          "rationale": "The recommendation appears verbatim and the article separately advises take-home handouts, preventing a claim that sparse projected slides alone meet all reading needs."
+        }
+      ]
+    }
+  ],
+  "question_reviews": [
+    {
+      "question_id": "q1",
+      "verdict": "sufficient",
+      "rationale": "The four specified facets are addressed: Duarte directly covers standalone reading and buyer narrative; Apple covers hierarchy; NN/g covers both purposeful restraint and excessive dispersion. The recommendations are labeled synthesis and retain the UI/web/presented-slide transfer limits. This suffices for a bounded design decision, not a best-performing layout or commercial outcome assertion.",
+      "missing_facets": []
+    }
+  ],
+  "discovery_review": {
+    "verdict": "limited",
+    "rationale": "Actual returned search representations and contrary-oriented queries are retained, and excessive-minimalism evidence is included. However most excluded candidates have an identical outside-selected-six-source-set rationale, so the record does not substantively explain individual exclusions. Direct acquisition of chosen URLs is labeled neutral while it is selection-based; batched search receipts do not expose per-query ranking. This limits claims of neutral or exhaustive discovery without invalidating the narrow supported source statements. Candidate-specific reasons and a neutral agency leave-behind query would improve the record."
+  },
+  "lineage_review": {
+    "verdict": "adequate",
+    "rationale": "The two Duarte documents and two NN/g documents are conservatively grouped by publisher, leaving four organizations. The cited claims concern each publisher\u2019s own recommendations; the report does not misrepresent these as six independent experimental replications. Harvard references other research but the included claim is Harvard\u2019s recommendation, not independent verification of the underlying study."
+  }
+}

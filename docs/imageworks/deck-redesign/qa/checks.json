@@ -1,0 +1,425 @@
+[
+  {
+    "slug": "websites",
+    "pages": 12,
+    "bytes": 509533,
+    "sha256": "4a3b55319102f1f81cb30ee9f7dc052fe8ebee5ff5767bc29499ab96789670cf",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=websites",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=websites"
+    ],
+    "requiredTextChecks": 24,
+    "textBlocks": 96,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "ecommerce",
+    "pages": 14,
+    "bytes": 1313384,
+    "sha256": "5f5f5786ba6065747f1033d10ab4ead479e05ad9476de8122adae803e1c5b987",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=ecommerce",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=ecommerce"
+    ],
+    "requiredTextChecks": 31,
+    "textBlocks": 116,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Scope 3",
+      "Ways to work together",
+      "Ways to work together 2",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "software-solutions",
+    "pages": 14,
+    "bytes": 1387751,
+    "sha256": "f482d8a1b591b595bd91b640ace1f2113d86a2d78ba315007113247c2d8840d0",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=software_solutions&offer=software-solutions",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=software_solutions&offer=software-solutions"
+    ],
+    "requiredTextChecks": 31,
+    "textBlocks": 116,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Scope 3",
+      "Ways to work together",
+      "Ways to work together 2",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "ai-solutions",
+    "pages": 13,
+    "bytes": 658877,
+    "sha256": "b52b7b143a67574ae67428dcab0d32f117ca297e11ae59fbafb9ed13f93dcd79",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-solutions",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-solutions"
+    ],
+    "requiredTextChecks": 26,
+    "textBlocks": 103,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Scope 3",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "agent-teams",
+    "pages": 11,
+    "bytes": 896142,
+    "sha256": "4acc5b6e6e13269dc0db60d731bc2b6e24f7f56540f637f52a6fef8a97f10f21",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-teams",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-teams"
+    ],
+    "requiredTextChecks": 21,
+    "textBlocks": 88,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "agent-infrastructure",
+    "pages": 11,
+    "bytes": 1097172,
+    "sha256": "9ecf9ec5059989efa7cb5680189d16c0aec67950aefeb135e37525d7387e2731",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-infrastructure",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-infrastructure"
+    ],
+    "requiredTextChecks": 21,
+    "textBlocks": 88,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "jev-implementation",
+    "pages": 12,
+    "bytes": 651072,
+    "sha256": "0db2f5a2d60659ba3507d290b5ef485d0d21b75bfc7ca7bda12d902996a8b201",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=jev-implementation",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=jev-implementation"
+    ],
+    "requiredTextChecks": 22,
+    "textBlocks": 93,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "context-and-memory",
+    "pages": 11,
+    "bytes": 788245,
+    "sha256": "bfc399999301b4401f5be8ed00f46174bd36136bba2b85996b8ee1c0c278d498",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=context-and-memory",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=context-and-memory"
+    ],
+    "requiredTextChecks": 21,
+    "textBlocks": 88,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "mcp-and-api",
+    "pages": 12,
+    "bytes": 680920,
+    "sha256": "de2ee3de8f6ab5663c3d58db7576cbe9ab5db7bb4fccff2c91622fe1c1d48537",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=mcp-and-api",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=mcp-and-api"
+    ],
+    "requiredTextChecks": 25,
+    "textBlocks": 98,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "creative-ai-workflows",
+    "pages": 12,
+    "bytes": 1097976,
+    "sha256": "3e23f54f5b80463971290606c14e791faca8508bbc45cfef96998a32fac5e31d",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=creative-ai-workflows",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=creative-ai-workflows"
+    ],
+    "requiredTextChecks": 23,
+    "textBlocks": 94,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "ai-setup-and-consulting",
+    "pages": 12,
+    "bytes": 509757,
+    "sha256": "e424e0d887250c1c4b3bebcc00bde9e9e8d3e7a29472379488987581e38a08ff",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-setup-and-consulting",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-setup-and-consulting"
+    ],
+    "requiredTextChecks": 23,
+    "textBlocks": 94,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "brand",
+    "pages": 12,
+    "bytes": 663320,
+    "sha256": "17cbc640a89fc930b8820528df9e385531596fd3a6ec678e3084359fab167ec9",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=brand",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=brand"
+    ],
+    "requiredTextChecks": 25,
+    "textBlocks": 98,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "unslop",
+    "pages": 12,
+    "bytes": 599680,
+    "sha256": "d6edb473c6760671be58de230b99d6aa3d44b2db9c73441ca22c4980582879cb",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=unslop",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=websites&offer=unslop"
+    ],
+    "requiredTextChecks": 24,
+    "textBlocks": 96,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  },
+  {
+    "slug": "consultation",
+    "pages": 13,
+    "bytes": 883739,
+    "sha256": "97af0a48dd606409f03240abf4715273f86fdba01f8329d566cf5332e23b3473",
+    "links": [
+      "https://www.fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=consultation&offer=consultation",
+      "mailto:hello@fortitudo.agency",
+      "https://www.fortitudo.agency/contact?service=consultation&offer=consultation"
+    ],
+    "requiredTextChecks": 24,
+    "textBlocks": 100,
+    "minBodySize": 20,
+    "boundsAndOverlap": "passed",
+    "sections": [
+      "Service overview",
+      "The challenge",
+      "The solution",
+      "Why Fortitudo",
+      "How it works",
+      "Review and acceptance",
+      "Scope 1",
+      "Scope 2",
+      "Scope 3",
+      "Ways to work together",
+      "Planning your project",
+      "Your questions",
+      "Get started"
+    ]
+  }
+]

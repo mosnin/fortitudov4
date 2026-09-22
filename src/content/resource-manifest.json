@@ -1,100 +1,100 @@
 [
   {
     "slug": "website-design-and-development",
-    "pages": 11,
-    "bytes": 2059182,
-    "previewRevision": "3b94f5bdef10",
+    "pages": 12,
+    "bytes": 509533,
+    "previewRevision": "4a3b55319102",
     "file": "/resources/fortitudo-website-design-and-development.pdf"
   },
   {
     "slug": "ecommerce-and-shopify",
-    "pages": 13,
-    "bytes": 2943083,
-    "previewRevision": "2b4e19d5522d",
+    "pages": 14,
+    "bytes": 1313384,
+    "previewRevision": "5f5f5786ba60",
     "file": "/resources/fortitudo-ecommerce-and-shopify.pdf"
   },
   {
     "slug": "complete-software-buildout",
-    "pages": 12,
-    "bytes": 2691650,
-    "previewRevision": "f4916b0d783d",
+    "pages": 14,
+    "bytes": 1387751,
+    "previewRevision": "f482d8a1b591",
     "file": "/resources/fortitudo-complete-software-buildout.pdf"
   },
   {
     "slug": "ai-agents-and-infrastructure",
-    "pages": 11,
-    "bytes": 2047140,
-    "previewRevision": "d42944e91551",
+    "pages": 13,
+    "bytes": 658877,
+    "previewRevision": "b52b7b143a67",
     "file": "/resources/fortitudo-ai-agents-and-infrastructure.pdf"
   },
   {
     "slug": "agent-teams",
-    "pages": 10,
-    "bytes": 2784805,
-    "previewRevision": "dfc24fe903be",
+    "pages": 11,
+    "bytes": 896142,
+    "previewRevision": "4acc5b6e6e13",
     "file": "/resources/fortitudo-agent-teams.pdf"
   },
   {
     "slug": "agent-infrastructure",
-    "pages": 10,
-    "bytes": 2999203,
-    "previewRevision": "df2ccca6d4cb",
+    "pages": 11,
+    "bytes": 1097172,
+    "previewRevision": "9ecf9ec50599",
     "file": "/resources/fortitudo-agent-infrastructure.pdf"
   },
   {
     "slug": "jev-implementation",
-    "pages": 10,
-    "bytes": 2001050,
-    "previewRevision": "37a7e0c86b8c",
+    "pages": 12,
+    "bytes": 651072,
+    "previewRevision": "0db2f5a2d606",
     "file": "/resources/fortitudo-jev-implementation.pdf"
   },
   {
     "slug": "context-and-memory",
-    "pages": 10,
-    "bytes": 2476990,
-    "previewRevision": "b615534c11ab",
+    "pages": 11,
+    "bytes": 788245,
+    "previewRevision": "bfc399999301",
     "file": "/resources/fortitudo-context-and-memory.pdf"
   },
   {
     "slug": "mcp-and-api",
-    "pages": 10,
-    "bytes": 2150311,
-    "previewRevision": "8de666c82064",
+    "pages": 12,
+    "bytes": 680920,
+    "previewRevision": "de2ee3de8f6a",
     "file": "/resources/fortitudo-mcp-and-api.pdf"
   },
   {
     "slug": "creative-ai-workflows",
-    "pages": 10,
-    "bytes": 2670235,
-    "previewRevision": "0200c4964973",
+    "pages": 12,
+    "bytes": 1097976,
+    "previewRevision": "3e23f54f5b80",
     "file": "/resources/fortitudo-creative-ai-workflows.pdf"
   },
   {
     "slug": "ai-setup-and-consulting",
-    "pages": 10,
-    "bytes": 1368916,
-    "previewRevision": "b4a9f2671cf3",
+    "pages": 12,
+    "bytes": 509757,
+    "previewRevision": "e424e0d88725",
     "file": "/resources/fortitudo-ai-setup-and-consulting.pdf"
   },
   {
     "slug": "brand-creation-and-implementation",
-    "pages": 11,
-    "bytes": 1790420,
-    "previewRevision": "9ec768e02943",
+    "pages": 12,
+    "bytes": 663320,
+    "previewRevision": "17cbc640a89f",
     "file": "/resources/fortitudo-brand-creation-and-implementation.pdf"
   },
   {
     "slug": "unslop-websites-and-content",
-    "pages": 11,
-    "bytes": 1627910,
-    "previewRevision": "dfd57bbe5467",
+    "pages": 12,
+    "bytes": 599680,
+    "previewRevision": "d6edb473c676",
     "file": "/resources/fortitudo-unslop-websites-and-content.pdf"
   },
   {
     "slug": "technical-and-strategic-consultation",
-    "pages": 11,
-    "bytes": 2461181,
-    "previewRevision": "8399b14e1965",
+    "pages": 13,
+    "bytes": 883739,
+    "previewRevision": "97af0a48dd60",
     "file": "/resources/fortitudo-technical-and-strategic-consultation.pdf"
   }
 ]

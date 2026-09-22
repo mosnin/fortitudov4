@@ -1,0 +1,535 @@
+{
+  "websites": {
+    "hook": "Make your website worthy of your business.",
+    "problemHeadline": "When the business has moved on, but the website has not.",
+    "pains": [
+      {
+        "title": "An unclear story",
+        "body": "Visitors have to piece together what you do and whether it is right for them."
+      },
+      {
+        "title": "A disconnected journey",
+        "body": "The site looks finished, but enquiries, bookings or publishing still need manual work."
+      },
+      {
+        "title": "A site nobody can own",
+        "body": "Every small update becomes another request to a developer."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "A clearer first impression",
+        "body": "We organize your pages and copy around the questions customers need answered."
+      },
+      {
+        "title": "Design and delivery together",
+        "body": "The visual identity, build and connected journeys are reviewed as one experience."
+      },
+      {
+        "title": "A site your team can manage",
+        "body": "The agreed CMS, access and documentation are part of the handover."
+      }
+    ],
+    "solutionHeadline": "One website. From first impression to next step.",
+    "closing": "Let’s talk about your website.",
+    "scopeHeadlines": [
+      "Explain the business. Make it recognizable.",
+      "Build the journey. Prepare the launch."
+    ]
+  },
+  "ecommerce": {
+    "hook": "Make every part of the store work together.",
+    "problemHeadline": "When the storefront and the operation fall out of step.",
+    "pains": [
+      {
+        "title": "An inconsistent buying experience",
+        "body": "The brand, product pages and checkout journey feel like separate projects."
+      },
+      {
+        "title": "Too much manual upkeep",
+        "body": "Catalog, inventory and customer data move between disconnected tools."
+      },
+      {
+        "title": "A launch with loose ends",
+        "body": "The site is ready, but channels, notifications or store operations are not."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "A joined-up launch",
+        "body": "Brand implementation, catalog setup and the buying experience share one agreed scope."
+      },
+      {
+        "title": "Connections with a purpose",
+        "body": "We connect the store to the inventory, marketing and operating tools it needs."
+      },
+      {
+        "title": "A store you can operate",
+        "body": "Test orders and a practical handover prepare your team for the agreed workflows."
+      }
+    ],
+    "solutionHeadline": "A considered storefront. A working operation.",
+    "closing": "Let’s plan your store.",
+    "scopeHeadlines": [
+      "Build the brand and the store together.",
+      "Connect the buying journey to your operations.",
+      "Improve, migrate or connect the store."
+    ]
+  },
+  "software-solutions": {
+    "hook": "Build the product your business actually needs.",
+    "problemHeadline": "When the tools no longer fit the way you work.",
+    "pains": [
+      {
+        "title": "A fragmented experience",
+        "body": "Customers, staff and owners work across tools that were never designed together."
+      },
+      {
+        "title": "A prototype without a path to launch",
+        "body": "The idea is visible, but accounts, data, integrations and operations remain unfinished."
+      },
+      {
+        "title": "Unclear ownership",
+        "body": "You need to know who controls the code, deployment and data after delivery."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "One coherent product",
+        "body": "The public website, customer application and owner tools are built around the same journeys."
+      },
+      {
+        "title": "A useful first release",
+        "body": "We define the priority workflows and distinguish a prototype from a production build."
+      },
+      {
+        "title": "A practical handover",
+        "body": "Commissioned code, deployment and data are handed over under the agreed terms; support is optional."
+      }
+    ],
+    "solutionHeadline": "The website. The application. The tools to run it.",
+    "closing": "Let’s define your first release.",
+    "scopeHeadlines": [
+      "Connect the first visit to the product.",
+      "Build for customers and the people running it.",
+      "Connect the data. Hand over the product."
+    ]
+  },
+  "ai-solutions": {
+    "hook": "Give AI a real job in your business.",
+    "problemHeadline": "When the demo works, but the workflow does not.",
+    "pains": [
+      {
+        "title": "Missing business context",
+        "body": "An agent cannot do useful work with the right instructions but the wrong information."
+      },
+      {
+        "title": "Disconnected tools",
+        "body": "People still move inputs and outputs between the agent and the systems they use."
+      },
+      {
+        "title": "Outputs nobody can trust",
+        "body": "There is no agreed way to judge results, handle mistakes or approve important actions."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "A task worth building around",
+        "body": "We start with real examples and a defined job, then test the uncertain behavior first."
+      },
+      {
+        "title": "Useful access, with boundaries",
+        "body": "The agent gets the agreed tools and context, with permissions and review steps."
+      },
+      {
+        "title": "Operation your team can inspect",
+        "body": "Evaluation, cost controls and recovery are scoped alongside deployment and handover."
+      }
+    ],
+    "solutionHeadline": "A defined task. Connected tools. Reviewed results.",
+    "closing": "Let’s start with the task.",
+    "scopeHeadlines": [
+      "Put the agent where the work happens.",
+      "Build around the tools and evidence it needs.",
+      "Connect the agent to the application."
+    ]
+  },
+  "agent-teams": {
+    "hook": "Turn separate agents into a coordinated team.",
+    "problemHeadline": "When more agents create more coordination work.",
+    "pains": [
+      {
+        "title": "Work without clear ownership",
+        "body": "Tasks overlap or disappear between agents with loosely defined roles."
+      },
+      {
+        "title": "Context lost at handoff",
+        "body": "Each worker starts again because the relevant information does not travel with the job."
+      },
+      {
+        "title": "Outputs without a reviewed result",
+        "body": "Separate answers arrive, but someone still has to check and combine them."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Roles built around the work",
+        "body": "We map the workflow before assigning a manager and specialist workers."
+      },
+      {
+        "title": "Deliberate handoffs",
+        "body": "Shared context, tool permissions and escalation rules connect each stage."
+      },
+      {
+        "title": "One reviewable result",
+        "body": "The manager reconciles outputs, while failed or blocked jobs remain visible."
+      }
+    ],
+    "solutionHeadline": "The right roles. A shared workflow.",
+    "closing": "Let’s map your team’s work.",
+    "scopeHeadlines": [
+      "Build the team around the workflow."
+    ]
+  },
+  "agent-infrastructure": {
+    "hook": "Give your agents a dependable place to work.",
+    "problemHeadline": "When the experiment needs an operating environment.",
+    "pains": [
+      {
+        "title": "Execution tied to a local setup",
+        "body": "The agent works in development but has no defined deployment or operating path."
+      },
+      {
+        "title": "Failures are hard to inspect",
+        "body": "Task state, tool calls and retries are difficult to follow or recover."
+      },
+      {
+        "title": "Controls added too late",
+        "body": "Permissions, usage limits and operator responsibilities are still undefined."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "An environment that fits",
+        "body": "We configure an existing harness or build the execution behavior your agent requires."
+      },
+      {
+        "title": "Visibility into the run",
+        "body": "Task state, logs and recovery paths help operators understand what happened."
+      },
+      {
+        "title": "Controls from the start",
+        "body": "Tool permissions, time and usage limits are part of the agreed build."
+      }
+    ],
+    "solutionHeadline": "Execution, tools and operating controls. Together.",
+    "closing": "Let’s plan the environment.",
+    "scopeHeadlines": [
+      "Build the environment. Define the controls."
+    ]
+  },
+  "jev-implementation": {
+    "hook": "Make the next decision explicit.",
+    "problemHeadline": "When a repeated decision controls what happens next.",
+    "pains": [
+      {
+        "title": "Unstructured decisions",
+        "body": "Your application needs a defined category or route, rather than another open-ended answer."
+      },
+      {
+        "title": "Unclear uncertainty",
+        "body": "The workflow has no agreed rule for when to proceed, switch routes or ask for review."
+      },
+      {
+        "title": "An integration without evaluation",
+        "body": "The decision logic has not been compared with representative, reviewed examples."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "A decision your software can use",
+        "body": "We define the schema and connect Jev to a specific branch in your system."
+      },
+      {
+        "title": "A deliberate fallback",
+        "body": "Thresholds and uncertainty paths determine when a result needs another route or human review."
+      },
+      {
+        "title": "A testable implementation",
+        "body": "Reviewed examples exercise the routes and failure cases before the integration is handed over."
+      }
+    ],
+    "solutionHeadline": "Context becomes a decision. The workflow knows what follows.",
+    "closing": "Let’s define the decision.",
+    "scopeHeadlines": [
+      "Turn context into an actionable decision.",
+      "Evaluate the result. Define the fallback."
+    ]
+  },
+  "context-and-memory": {
+    "hook": "Give your agents the context they keep missing.",
+    "problemHeadline": "When useful knowledge never reaches the task.",
+    "pains": [
+      {
+        "title": "The same briefing, again",
+        "body": "People repeat information because an agent does not retain the context it needs."
+      },
+      {
+        "title": "Sources that are hard to find",
+        "body": "Important business knowledge is spread across documents and systems."
+      },
+      {
+        "title": "Information without clear rules",
+        "body": "Freshness, access, updates and deletion are not consistently defined."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Context shaped around the task",
+        "body": "We organize the business sources and task state your agents need to use."
+      },
+      {
+        "title": "Retrieval checked against real questions",
+        "body": "Storage and search are selected for the workload, then tested with representative examples."
+      },
+      {
+        "title": "Knowledge you can maintain",
+        "body": "Update, access and deletion behavior are defined with your source owners."
+      }
+    ],
+    "solutionHeadline": "Your sources. Relevant retrieval. Controlled memory.",
+    "closing": "Let’s connect the right context.",
+    "scopeHeadlines": [
+      "Organize, retrieve and maintain the context."
+    ]
+  },
+  "mcp-and-api": {
+    "hook": "Connect the tools your work depends on.",
+    "problemHeadline": "When one missing connection holds the workflow back.",
+    "pains": [
+      {
+        "title": "Manual transfer between systems",
+        "body": "People copy data or repeat actions because applications do not share a working interface."
+      },
+      {
+        "title": "Private tools beyond the agent’s reach",
+        "body": "A useful business system has no supported agent-facing connection."
+      },
+      {
+        "title": "Access without clear boundaries",
+        "body": "Authentication, permitted actions and failure behavior need to be defined together."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "The right connection for the job",
+        "body": "We use an existing supported integration where it fits, or build the missing API or MCP interface."
+      },
+      {
+        "title": "Permissions built into the interface",
+        "body": "Tool contracts, validation and authorization define what each client can do."
+      },
+      {
+        "title": "A connection your team can maintain",
+        "body": "The handover includes interface documentation, deployment details and agreed operational checks."
+      }
+    ],
+    "solutionHeadline": "A working interface between your systems.",
+    "closing": "Let’s connect your systems.",
+    "scopeHeadlines": [
+      "Connect existing tools or build the missing interface.",
+      "Bring the connection into the product."
+    ]
+  },
+  "creative-ai-workflows": {
+    "hook": "Bring the whole creative workflow together.",
+    "problemHeadline": "When generating an asset is only the first step.",
+    "pains": [
+      {
+        "title": "A brief lost between tools",
+        "body": "Brand context and references do not reliably follow the work into generation."
+      },
+      {
+        "title": "Review scattered across files",
+        "body": "Versions, feedback and approvals become difficult to track."
+      },
+      {
+        "title": "Delivery still done by hand",
+        "body": "Jobs finish, but outputs still need organizing, checking and exporting."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "The actual brief stays in view",
+        "body": "Brand context, references and intended placement inform the connected workflow."
+      },
+      {
+        "title": "Review remains part of production",
+        "body": "Generation leads into explicit review and refinement, rather than automatic publishing."
+      },
+      {
+        "title": "Outputs prepared for their destination",
+        "body": "Agreed file types, dimensions and delivery connections are checked end to end."
+      }
+    ],
+    "solutionHeadline": "From approved brief to reviewed delivery.",
+    "closing": "Let’s map your production workflow.",
+    "scopeHeadlines": [
+      "Carry the brief into image and video production.",
+      "Connect audio, agents and final review."
+    ]
+  },
+  "ai-setup-and-consulting": {
+    "hook": "Make the tools useful to the people using them.",
+    "problemHeadline": "When access to AI has not become a working practice.",
+    "pains": [
+      {
+        "title": "Tools without a clear use",
+        "body": "The team has accounts, but no defined workflow to configure or evaluate."
+      },
+      {
+        "title": "A setup that does not connect",
+        "body": "The right context, repository or business tools are missing from the environment."
+      },
+      {
+        "title": "An uncertain handover",
+        "body": "Users do not know how to operate the setup or what it will cost to run."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "A setup with a purpose",
+        "body": "We start with the intended work, then verify the exact product and supported access."
+      },
+      {
+        "title": "Configuration around your team",
+        "body": "Context, instructions and agreed tool connections are configured for representative tasks."
+      },
+      {
+        "title": "A practical introduction",
+        "body": "Your team receives a walkthrough, usage guidance and the configuration handover."
+      }
+    ],
+    "solutionHeadline": "The right setup. A workflow your team can use.",
+    "closing": "Let’s make the setup work.",
+    "scopeHeadlines": [
+      "Configure the environment around the workflow.",
+      "Verify the product, access and setup path."
+    ]
+  },
+  "brand": {
+    "hook": "Build an identity that carries through the business.",
+    "problemHeadline": "When the brand changes from one touchpoint to the next.",
+    "pains": [
+      {
+        "title": "An identity that feels unfinished",
+        "body": "The logo exists, but typography, imagery and applications do not hold together."
+      },
+      {
+        "title": "Guidelines without usable assets",
+        "body": "The team still improvises every new page, document or campaign."
+      },
+      {
+        "title": "A gap between design and implementation",
+        "body": "The approved direction has not made it into the website, store or product."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "A direction grounded in the business",
+        "body": "We agree the audience and visual direction through representative applications."
+      },
+      {
+        "title": "A brand kit people can use",
+        "body": "The agreed assets, templates and guidance support the channels your team works in."
+      },
+      {
+        "title": "Implementation in context",
+        "body": "We apply and review the identity on the actual digital surfaces in scope."
+      }
+    ],
+    "solutionHeadline": "A considered identity. A usable system.",
+    "closing": "Let’s define the brand.",
+    "scopeHeadlines": [
+      "Define the identity. Make it usable.",
+      "Carry the brand into its real applications."
+    ]
+  },
+  "unslop": {
+    "hook": "Bring the work up to the standard of your business.",
+    "problemHeadline": "When the starting point is there, but the quality is not.",
+    "pains": [
+      {
+        "title": "Design that could belong to anyone",
+        "body": "Generic layouts and inconsistent branding weaken the character of the work."
+      },
+      {
+        "title": "Copy that does not say enough",
+        "body": "Repetition and vague language obscure the business and its offer."
+      },
+      {
+        "title": "A journey that breaks down",
+        "body": "The pages look complete, but the mobile layout, forms or next steps fall short."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "Keep what is worth keeping",
+        "body": "We inspect the actual work before recommending repair or a rebuild."
+      },
+      {
+        "title": "Agree the standard in context",
+        "body": "A representative correction establishes the direction before wider changes."
+      },
+      {
+        "title": "Finish with a checked result",
+        "body": "Design, editorial and functional changes are reviewed against the agreed scope."
+      }
+    ],
+    "solutionHeadline": "A focused repair. A more considered result.",
+    "closing": "Let’s review the work.",
+    "scopeHeadlines": [
+      "Preserve the foundation. Repair the experience.",
+      "Set a clear standard for the writing and the work."
+    ]
+  },
+  "consultation": {
+    "hook": "Make the next decision with a clear plan.",
+    "problemHeadline": "When the next commitment needs a better answer.",
+    "pains": [
+      {
+        "title": "Too many plausible options",
+        "body": "Platforms, architectures or suppliers offer different tradeoffs without a clear recommendation."
+      },
+      {
+        "title": "A problem without a diagnosis",
+        "body": "Symptoms are visible, but the evidence does not yet explain the cause."
+      },
+      {
+        "title": "A proposal with unanswered questions",
+        "body": "Dependencies, ownership or acceptance remain unclear before work begins."
+      }
+    ],
+    "benefits": [
+      {
+        "title": "An answer to a defined question",
+        "body": "We agree the decision and inspection scope before the review begins."
+      },
+      {
+        "title": "Tradeoffs made explicit",
+        "body": "The assessment separates evidence, assumptions, practical options and remaining gaps."
+      },
+      {
+        "title": "A plan you can use independently",
+        "body": "Take the written recommendation to your own team, Fortitudo or another provider."
+      }
+    ],
+    "solutionHeadline": "A diagnosis. A recommendation. A practical next step.",
+    "closing": "Let’s clarify the next decision.",
+    "scopeHeadlines": [
+      "Turn the objective or problem into a plan.",
+      "Review the technical and customer experience.",
+      "Clarify the implementation before committing."
+    ]
+  }
+}
