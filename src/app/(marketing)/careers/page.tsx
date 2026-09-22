@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LibraryMotion } from "@/components/imageworks/library-motion";
-import {
-  EditorialClose,
-  EditorialHero,
-  SourceAccordion,
-} from "@/components/imageworks/expansion";
+import { PageIntro } from "@/components/imageworks/page-intro";
+import { SectionHeading } from "@/components/imageworks/section-heading";
+import { FinalCta } from "@/components/imageworks/final-cta";
+import { Faq } from "@/components/imageworks/faq";
+import { Reveal } from "@/components/imageworks/reveal";
+import { ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Careers | Fortitudo",
@@ -29,70 +29,65 @@ const principles = [
   },
 ];
 
+const careerQuestions = [
+  {
+    q: "Can I send a general introduction?",
+    a: "Yes. Send a short note about the work you do, the problems you are strongest at solving and links to work you can discuss. We cannot promise a role or a reply to every introduction.",
+  },
+  {
+    q: "Where will future roles appear?",
+    a: "Any active role will be published on this page with its responsibilities, working arrangement and application instructions.",
+  },
+  {
+    q: "Does Fortitudo use recruiters?",
+    a: "A real opportunity will be listed here and correspondence will come from a fortitudo.agency address. We will never ask a candidate to pay for equipment, software or an application.",
+  },
+];
+
 export default function CareersPage() {
   return (
-    <LibraryMotion>
-      <EditorialHero
+    <>
+      <PageIntro
         label="Careers"
         title="Do considered work. Take responsibility for the result."
         lead="Fortitudo brings strategy, design and implementation into one delivery team. We look for people who can work across the whole problem and communicate clearly with the people affected by it."
-        ctaHref="mailto:hello@fortitudo.agency?subject=Careers%20at%20Fortitudo"
-        ctaLabel="Introduce yourself"
       />
-      <section className="editorial-section">
-        <div className="editorial-section-head">
-          <p className="editorial-label">How we work</p>
-          <h2>Craft, judgment and accountability belong together.</h2>
-        </div>
-        <div className="industry-priority-list">
+      <section className="mx-auto max-w-[1440px] px-4 py-24 sm:px-6 sm:py-32" aria-labelledby="careers-principles-heading">
+        <SectionHeading
+          id="careers-principles-heading"
+          title="Craft, judgment and accountability belong together."
+          description="How we approach the work, the client relationship and the result left behind."
+        />
+        <div className="mt-14 border-t border-border sm:mt-16">
           {principles.map((item, index) => (
-            <article key={item.title}>
-              <span className="editorial-number">0{index + 1}</span>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </article>
+            <Reveal inView delay={index * 0.06} key={item.title}>
+              <article className="grid gap-3 border-b border-border py-7 sm:grid-cols-[3rem_minmax(12rem,0.8fr)_minmax(0,1.2fr)] sm:gap-8 sm:py-9">
+                <span className="text-sm text-muted-foreground">0{index + 1}</span>
+                <h3 className="font-sans text-2xl leading-tight tracking-[-0.02em] sm:text-3xl">{item.title}</h3>
+                <p className="max-w-2xl text-[15px] leading-7 text-muted-foreground sm:text-base">{item.body}</p>
+              </article>
+            </Reveal>
           ))}
         </div>
       </section>
-      <section className="editorial-section">
-        <div className="editorial-section-head">
-          <p className="editorial-label">Open roles</p>
-          <h2>No open roles are listed right now.</h2>
-        </div>
-        <SourceAccordion
-          id="careers"
-          items={[
-            {
-              question: "Can I send a general introduction?",
-              answer:
-                "Yes. Send a short note about the work you do, the problems you are strongest at solving and links to work you can discuss. We cannot promise a role or a reply to every introduction.",
-            },
-            {
-              question: "Where will future roles appear?",
-              answer:
-                "Any active role will be published on this page with its responsibilities, working arrangement and application instructions.",
-            },
-            {
-              question: "Does Fortitudo use recruiters?",
-              answer:
-                "A real opportunity will be listed here and correspondence will come from a fortitudo.agency address. We will never ask a candidate to pay for equipment, software or an application.",
-            },
-          ]}
-        />
-        <div className="editorial-actions">
+      <section className="border-y border-border bg-foreground/[0.025]">
+        <div className="mx-auto max-w-[1440px] px-4 py-24 sm:px-6 sm:py-32">
+          <SectionHeading
+            id="open-roles-heading"
+            title="No open roles are listed right now."
+            description="You can still introduce yourself. Tell us the work you do, the problems you solve well and share work you can discuss."
+          />
           <Link
-            className="button-04"
+            className="group mt-9 inline-flex h-12 items-center justify-center gap-2.5 rounded-xl bg-foreground pr-4 pl-5 text-[15px] font-medium text-background transition-opacity hover:opacity-90"
             href="mailto:hello@fortitudo.agency?subject=Careers%20at%20Fortitudo"
           >
-            <span className="span-wrapper">
-              <span className="span-text">Send an introduction</span>
-            </span>
+            Send an introduction
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </Link>
         </div>
       </section>
-      <EditorialClose title="Interested in working with us as a client?">
-        Tell us what you are trying to change and the people, systems and constraints involved. We will help define a sensible starting point.
-      </EditorialClose>
-    </LibraryMotion>
+      <Faq heading="Careers questions." lead="Introductions, future openings and how to recognize official correspondence." items={careerQuestions} />
+      <FinalCta />
+    </>
   );
 }
