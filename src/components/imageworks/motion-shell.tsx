@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ServiceMenu } from "./service-menu";
+import { IndustryMenu, ServiceMenu } from "./service-menu";
 import { Logo } from "./logo";
 import { ArrowButton } from "./arrow-button";
 import { siteScroll } from "./smooth-scroll";
@@ -12,7 +12,7 @@ import { textReveal06 } from "./effects/text-reveal";
 import { auraBorder } from "./effects/aura-border";
 
 type AuraElement = HTMLDivElement & { __auraBorder?: { setActive: (active: boolean) => void; destroy: () => void } };
-const LINKS = [["Home", "/"], ["Our work", "/work"], ["Services", "/services"], ["About", "/about"], ["Contact", "/contact"]];
+const LINKS = [["Home", "/"], ["Our work", "/work"], ["Services", "/services"], ["Industries", "/industries"], ["Blog", "/blog"], ["About", "/about"], ["Contact", "/contact"]];
 const isMarketing = (path: string) => !/^\/(admin|dashboard|partner|sign-in|sign-up|api|post-login)(\/|$)/.test(path);
 const FADE = { duration: 500, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", fill: "forwards" as const };
 
@@ -152,7 +152,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
       <span className="toggle-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></span>
     </button>
     <nav ref={drawer} className="drawer" id="navigation-06-menu" aria-label="Main navigation" aria-hidden={!open} inert={!open} data-lenis-prevent>
-      <div className="drawer-content"><p className="eyebrow">Fortitudo</p><ul className="links">{LINKS.map(([label, href]) => <li key={href}>{href === "/services" ? <ServiceMenu key={pathname}/> : <Link href={href} aria-current={pathname === href ? "page" : undefined}><span>{label}</span></Link>}</li>)}</ul><div className="divider" aria-hidden="true" /><div className="socials"><Link href="/approach"><span>How we work</span></Link><Link href="/resources"><span>Service pitch decks</span></Link><Link href="/sign-in"><span>Client sign in</span></Link><a href="mailto:hello@fortitudo.agency"><span>hello@fortitudo.agency</span></a></div></div>
+      <div className="drawer-content"><p className="eyebrow">Fortitudo</p><ul className="links">{LINKS.map(([label, href]) => <li key={href}>{href === "/services" ? <ServiceMenu key={`services-${pathname}`}/> : href === "/industries" ? <IndustryMenu key={`industries-${pathname}`} /> : <Link href={href} aria-current={pathname === href ? "page" : undefined}><span>{label}</span></Link>}</li>)}</ul><div className="divider" aria-hidden="true" /><div className="socials"><Link href="/approach"><span>How we work</span></Link><Link href="/handover"><span>Ownership &amp; handover</span></Link><Link href="/ongoing-support"><span>Ongoing support</span></Link><Link href="/careers"><span>Careers</span></Link><Link href={`/language?from=${encodeURIComponent(pathname)}`}><span>Language / Translate</span></Link><Link href="/sign-in"><span>Client sign in</span></Link><a href="mailto:hello@fortitudo.agency"><span>hello@fortitudo.agency</span></a></div></div>
     </nav>
     <div className="page"><div ref={page} className="page-content">{children}</div><button className="cover" type="button" tabIndex={-1} aria-label="Close navigation" onClick={close} /></div>
     {controls && <div className="persistent-controls" inert={open}>{controls}</div>}

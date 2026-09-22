@@ -9,11 +9,15 @@ export function EditorialHero({
   title,
   lead,
   effect = "01",
+  ctaHref = "/contact",
+  ctaLabel = "Discuss your project",
 }: {
   label: string;
   title: string;
   lead: string;
   effect?: string;
+  ctaHref?: string;
+  ctaLabel?: string;
 }) {
   const hook = { [`data-reveal-${effect}`]: "lines" };
   return (
@@ -23,7 +27,7 @@ export function EditorialHero({
       <h1 {...hook}>{title}</h1>
       <div className="editorial-hero-bottom">
         <p>{lead}</p>
-        <ArrowButton href="/contact">Discuss your project</ArrowButton>
+        <ArrowButton href={ctaHref}>{ctaLabel}</ArrowButton>
       </div>
     </header>
   );

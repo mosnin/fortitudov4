@@ -40,7 +40,7 @@ export default function MarketingLayout({ children }: { children: ReactNode }) {
         <main
           id="main-content"
           tabIndex={-1}
-          className="relative z-10 min-h-screen bg-background"
+          className="relative z-10 min-h-screen bg-background text-foreground"
         >
           {children}
         </main>

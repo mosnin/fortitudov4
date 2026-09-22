@@ -45,6 +45,10 @@ const MUST_BE_PUBLIC = [
   "/portfolio",
   "/blog",
   "/blog/custom-software-vs-saas-small-business",
+  "/industries",
+  "/industries/fintech",
+  "/careers",
+  "/language",
   "/resources",
   "/resources/ai-agents-and-infrastructure",
   "/resources/fortitudo-ai-agents-and-infrastructure.pdf",
@@ -86,6 +90,7 @@ describe("public marketing pages", () => {
     // The list uses `(.*)` suffixes; a section page must not fall through.
     for (const path of [
       "/services/websites",
+      "/industries/real-estate-and-proptech",
       "/sign-in/factor-one",
       "/faq#tech",
     ]) {
@@ -97,6 +102,7 @@ describe("public marketing pages", () => {
     expect(isPublicRoute(req("/resources-admin"))).toBe(false);
     expect(isPublicRoute(req("/blog-admin"))).toBe(false);
     expect(isPublicRoute(req("/solutions-admin"))).toBe(false);
+    expect(isPublicRoute(req("/industries-admin"))).toBe(false);
   });
 });
 
@@ -238,6 +244,9 @@ describe("the partner surface", () => {
       "/services/websites",
       "/work/stored",
       "/resources/ai-agents-and-infrastructure",
+      "/industries/logistics-and-supply-chain",
+      "/careers",
+      "/language",
     ]) {
       expect(isMarketingPath(path), path).toBe(true);
     }
