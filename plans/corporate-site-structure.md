@@ -1,6 +1,6 @@
 # Corporate site structure
 
-Status: resolved for implementation on 2026-09-21. Self-review by Codex.
+Status: corrected after visual review on 2026-09-21.
 
 ## Audience and meaning
 
@@ -29,13 +29,13 @@ Each industry page is a front door. It names the buyer and context, the operatin
 
 ### Hierarchy
 
-1. The industry or company promise is the first priority through the existing editorial hero.
+1. The industry or company promise is the first priority through the same PageIntro used by Services, Our Work and FAQ.
 2. Buyer fit and operating priorities are second through plain, ruled rows.
 3. Delivery, scope, proof and contact follow in that order. Supporting labels remain quiet.
 
 ### Composition
 
-The existing paid Imageworks hero, editorial sections, stacked delivery panels, scope notes, service lists and closing CTA remain the source components. New indexes use the existing pathway row structure. Navigation uses the supplied drawer and accordion structure. No new card system or decorative layer is introduced.
+The existing PageIntro, 1440px content frame, SectionHeading, ruled lists and FinalCta are the source components. These are the same page patterns used by Services, Our Work, Blog and FAQ. Navigation uses the supplied drawer and accordion structure.
 
 ### Material
 
@@ -47,7 +47,7 @@ The existing Geist sans roles, type scale, spacing, focus treatment, arrow links
 
 ### Responsive behavior
 
-Desktop keeps the current wide editorial columns. Mobile follows the existing single-column order, with the buyer question before its explanation. Drawer content remains vertically scrollable. Long industry and language names wrap rather than truncate. Reduced motion continues through the existing motion shell.
+Desktop keeps the current wide marketing-page columns. Mobile follows the existing single-column order, with the buyer question before its explanation. Drawer content remains vertically scrollable. Long industry and language names wrap rather than truncate. Reduced motion continues through the existing motion shell.
 
 ## Graphic decision
 
@@ -60,6 +60,5 @@ A single Industries page would be shorter, but it would force buyers to scan unr
 ## Verification risks
 
 - Expanded drawer height and focus order need desktop, short-height and mobile checks.
-- Industry rows, delivery panels and related work need screenshot review at desktop and mobile widths.
+- Industry rows, delivery stages and related work need screenshot review at desktop and mobile widths against Services, Our Work and FAQ.
 - Google translated browsing is an external service and must remain labeled as machine translation.
-
