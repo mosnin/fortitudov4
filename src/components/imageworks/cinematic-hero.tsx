@@ -1,4 +1,5 @@
 "use client";
+import { ArrowButton } from "./arrow-button";
 /* eslint-disable @next/next/no-img-element -- Keep direct visual children required by the supplied media controller. */
 import { createElement, useContext, useEffect, useRef } from "react";
 import { cinematicMediaHero } from "./effects/cinematic-media-hero";
@@ -43,7 +44,8 @@ export function CinematicHero() {
       </div>
       <div className="content">
         <h1>Websites. Products. Applied AI.</h1>
-        <p>Design and development by Fortitudo. <span>From the first brief to a working website, store or product. One team for the design, the build and the handover.</span></p>
+        <p>Design and development for businesses and product teams. <span>From the first brief to a working website, store or product. One team for the design, the build and the handover.</span></p>
+        <ArrowButton href="/contact" className="home-hero-cta">Discuss your project</ArrowButton>
         <span className="divider" aria-hidden="true" />
         <div className="thumbs" aria-label="Choose hero media">
           {MEDIA.map((item, i) => <button key={item.preview} className={i === 0 ? "active" : ""} type="button" aria-label={item.label} aria-pressed={i === 0}><img src={BASE + item.preview} alt="" /></button>)}

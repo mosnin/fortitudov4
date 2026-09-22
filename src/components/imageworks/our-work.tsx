@@ -7,7 +7,7 @@ import { WORK_PROJECTS } from "@/lib/work-projects";
 import type { ReactNode } from "react";
 
 const SELECTED_WORK = WORK_PROJECTS.filter((project) =>
-  ["stored", "chippi"].includes(project.slug),
+  ["stored", "chippi", "plat-bio-labs"].includes(project.slug),
 );
 
 export function OurWork(): ReactNode {
@@ -16,23 +16,23 @@ export function OurWork(): ReactNode {
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6">
         <SectionHeading
           id="our-work-heading"
-          title="Our work."
-          description="Explore the software and AI products we have worked on."
+          title="Selected work."
+          description="Software, applied AI and ecommerce. Explore three projects and the businesses behind them."
           aside={
             <ArrowButton href="/work" className="text-sm">View all work</ArrowButton>
           }
         />
         <Reveal inView y={24} className="mt-12 lg:mt-14">
-          <ul className="grid gap-x-6 gap-y-10 md:grid-cols-2">
+          <ul className="grid gap-x-6 gap-y-10 md:grid-cols-3">
             {SELECTED_WORK.map((project) => (
               <li key={project.slug}>
                 <Link href={`/work/${project.slug}`} className="group block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
                   <div className="relative aspect-[16/10] overflow-hidden rounded-2xl bg-muted">
-                    <Image src={project.image} alt={project.imageAlt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover object-top" />
+                    <Image src={project.image} alt={project.imageAlt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover object-top" />
                   </div>
-                  <div className="mt-5 flex items-baseline justify-between gap-4">
+                  <div className="mt-5 flex flex-col gap-2">
                     <h3 className="text-xl font-medium">{project.name}</h3>
-                    <span className="max-w-[55%] text-right text-xs leading-5 text-muted-foreground sm:text-sm">{project.serviceLabel ?? project.service}</span>
+                    <span className="text-xs leading-5 text-muted-foreground sm:text-sm">{project.serviceLabel ?? project.service}</span>
                   </div>
                   <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">{project.blurb}</p>
                 </Link>
