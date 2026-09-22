@@ -127,7 +127,8 @@ class Deck:
 
         self.slide('The challenge')
         self.text(n['problemHeadline'], M, 636, 530, 54, leading=60)
-        self.text(o['fit'], M, 300, 480, 24, MUTED)
+        fit_end = self.text(o['fit'], M, 300, 530, 24, MUTED)
+        self.text(n['alternative'], M, fit_end-28, 530, 22, MUTED)
         for i, item in enumerate(n['pains']):
             self.block(item['title'], item['body'], 694, 638-i*176, 510, 28, 23)
 
@@ -149,6 +150,8 @@ class Deck:
             x, top = M+(i%2)*600, min(y, 430)-(i//2)*169
             self.text(f'{i+1:02d}', x, top, 70, 22, MUTED)
             self.text(item, x+85, top, 437, 27, leading=36)
+
+        self.text(n['firstCheckpoint'], M, 128, 1152, 22, MUTED, leading=28)
 
         self.slide('Review and acceptance')
         self.text('A working result, checked together.', M, 636, 570, 56, leading=62)
@@ -203,8 +206,10 @@ class Deck:
         self.photograph(824, 0, 456, H)
         self.text(n['closing'], M, 614, 692, 66, leading=72)
         self.text(o['firstStep'], M, 365, 660, 27, leading=37)
-        self.text('Start a conversation', M, 190, 650, 29, weight='GeistMedium')
+        self.text('Start a conversation', M, 190, 390, 29, weight='GeistMedium')
         self.c.linkURL(self.enquiry, (M, 143, 505, 196), relative=0)
+        self.text('See our work', 520, 184, 230, 22)
+        self.c.linkURL('https://www.fortitudo.agency/work', (520, 148, 750, 190), relative=0)
         self.text('hello@fortitudo.agency', M, 122, 650, 24, MUTED)
         self.c.linkURL('mailto:hello@fortitudo.agency', (M, 84, 530, 125), relative=0)
         self.text('fortitudo.agency/contact', M, 65, 650, 15, MUTED, bottom=36)
@@ -217,7 +222,7 @@ class Deck:
         assert len(reader.pages) == self.page
         all_text = '\n'.join(page.extract_text() for page in reader.pages)
         normalized = ' '.join(all_text.split())
-        expected = [self.n['hook'], self.o['firstStep'], self.s['inputs'], self.s['boundary']]
+        expected = [self.n['hook'], self.n['alternative'], self.n['firstCheckpoint'], self.o['summary'], self.o['fit'], self.o['firstStep'], self.s['inputs'], self.s['boundary']]
         expected += self.o['deliverables'] + self.o['acceptance'] + self.s['process']
         expected += [p['body'] for p in self.s['sections']] + [p['body'] for p in self.s['packages']]
         expected += [p['a'] for p in self.o['faq']]
@@ -265,12 +270,15 @@ class Deck:
 def main():
     parser = argparse.ArgumentParser(); parser.add_argument('--only', nargs='*'); args=parser.parse_args()
     catalog, offers, stories, photos = [read(n) for n in ['service-catalog.json', 'service-offers.json', 'deck-narratives.json', 'service-photography.json']]
+    copy = read('deck-offer-copy.json')
+    assert set(copy) == {s['slug'] for s in catalog}
+    assert all(set(item) == {'summary', 'fit', 'firstStep', 'deliverables'} for item in copy.values())
     assert set(stories) == {s['slug'] for s in catalog}
     QA.mkdir(parents=True, exist_ok=True); OUT.mkdir(exist_ok=True)
     manifest = read('resource-manifest.json'); checks=[]
     for s in catalog:
         if args.only and s['slug'] not in args.only: continue
-        result=Deck(s, offers[s['slug']], stories[s['slug']], photos[s['slug']]).build()
+        result=Deck(s, {**offers[s['slug']], **copy[s['slug']]}, stories[s['slug']], photos[s['slug']]).build()
         checks.append(result)
         entry=dict(slug=s['resourceSlug'], pages=result['pages'], bytes=result['bytes'], previewRevision=result['sha256'][:12], file=f'/resources/fortitudo-{s["resourceSlug"]}.pdf')
         manifest=[entry if row['slug']==s['resourceSlug'] else row for row in manifest]

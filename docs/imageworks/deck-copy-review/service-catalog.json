@@ -1,0 +1,809 @@
+[
+  {
+    "slug": "websites",
+    "serviceId": "websites",
+    "name": "Websites",
+    "resourceSlug": "website-design-and-development",
+    "art": "identity",
+    "title": "A website that represents the business behind it.",
+    "lead": "We design and build business websites with a clear story, a considered visual identity and a useful path from first visit to enquiry, booking or purchase.",
+    "audience": "For small businesses, established companies and product teams launching a new site or replacing one that no longer fits.",
+    "result": "A complete website, tested across the agreed pages and customer journeys, with the access and documentation your team needs to manage it.",
+    "sections": [
+      {
+        "title": "Structure and copy",
+        "body": "Page planning, navigation, service and product explanations, relevant calls to action and copy grounded in your business. We map the questions a visitor needs answered before they contact you."
+      },
+      {
+        "title": "Brand and interface",
+        "body": "A responsive design system with deliberate typography, imagery and page layouts. We can implement your existing identity or scope a new brand kit alongside the website."
+      },
+      {
+        "title": "Pages and publishing",
+        "body": "Marketing pages, About, Product, Solutions, Resources, Blog, Contact and supplied legal content. Content management and publishing workflows are selected around your team's needs."
+      },
+      {
+        "title": "Connected customer journeys",
+        "body": "Enquiries, booking systems, CRM connections, email capture and third-party APIs where required. Each integration has a defined purpose and a tested success and failure path."
+      },
+      {
+        "title": "Launch and handover",
+        "body": "Domain connection, technical SEO foundations, responsive checks, accessibility review, performance work and deployment. Your team receives the agreed files, accounts and documentation."
+      }
+    ],
+    "packages": [
+      {
+        "id": "W01",
+        "title": "New website or complete rebuild",
+        "body": "Design and development for an agreed page inventory and customer journey."
+      },
+      {
+        "id": "U01",
+        "title": "Repair an existing website",
+        "body": "A scoped Unslop engagement when the foundation is worth keeping."
+      }
+    ],
+    "process": [
+      "Review the business, content and existing site.",
+      "Agree the pages, design direction and connected workflows.",
+      "Build and review the real content at desktop and mobile sizes.",
+      "Test, launch and hand over access and documentation."
+    ],
+    "inputs": "Your current URL, brand assets, page requirements, approved business facts, system access and a decision-maker for feedback.",
+    "boundary": "Page count, content production, CMS, integrations and migration are defined in the proposal. Hosting, paid fonts, stock licenses and ongoing maintenance are identified separately.",
+    "projects": [
+      "two-cookies",
+      "hannah-joy"
+    ],
+    "cta": "Discuss your website"
+  },
+  {
+    "slug": "ecommerce",
+    "serviceId": "websites",
+    "name": "Ecommerce",
+    "resourceSlug": "ecommerce-and-shopify",
+    "art": "brand",
+    "title": "Your brand, storefront and store operations. Built together.",
+    "lead": "From product labels to Shopify setup, we connect the way your brand looks with the way customers shop and your team runs the store.",
+    "audience": "For brands launching a store, merchants migrating platforms, and established stores improving their buying experience or operations.",
+    "result": "A branded storefront with the agreed catalog, buying journeys, integrations and operating workflows ready for your team to use.",
+    "sections": [
+      {
+        "title": "Brand and product launch",
+        "body": "Brand creation, custom brand kits, product label design and implementation. Packaging is prepared against supplied specifications and approved product information; specialist regulatory review remains a separate responsibility."
+      },
+      {
+        "title": "Shopify foundations",
+        "body": "Store setup, domain connection, product and collection creation, inventory setup, SEO foundations, pixel installation and supplied legal pages. We agree catalog size, variants, markets and data quality before quoting."
+      },
+      {
+        "title": "The complete storefront",
+        "body": "Homepage, collection and product pages, About the Brand, FAQs, customer accounts and order-tracking pages. Product widgets, promotions, discount popups, subscriptions and upsells are configured to suit the offer and platform."
+      },
+      {
+        "title": "Data and marketing connections",
+        "body": "Product and inventory data ingestion, plus consent-aware email and SMS data flows. Integrations can include Mailchimp, Klaviyo, Shopify Collabs, TikTok Shop and other supported sales and performance tools."
+      },
+      {
+        "title": "Performance and conversion work",
+        "body": "Site-speed improvements, advanced upsells, expanded FAQs, quizzes and product discovery. We test important buying journeys and make measurement useful without promising a revenue uplift."
+      },
+      {
+        "title": "Migration and connected operations",
+        "body": "Catalog and content migration, B2B ordering and agreed links to fulfillment, inventory or other business systems. Existing customers and orders require a specific migration and reconciliation plan."
+      },
+      {
+        "title": "Platform eligibility",
+        "body": "Sales-channel access, subscriptions, checkout customization and advertising connections depend on plan, region and account approval. ChatGPT ads and emerging channels are scoped only after current merchant access and a supported integration path are confirmed."
+      }
+    ],
+    "packages": [
+      {
+        "id": "E01",
+        "title": "Store launch",
+        "body": "A new store from catalog and brand inputs through launch checks."
+      },
+      {
+        "id": "E02",
+        "title": "Migration or B2B ordering",
+        "body": "A defined platform transition or wholesale ordering workflow."
+      },
+      {
+        "id": "E03",
+        "title": "Brand and product launch",
+        "body": "Identity, product labels and launch-ready brand assets."
+      },
+      {
+        "id": "E04",
+        "title": "Storefront buildout",
+        "body": "An agreed set of shopping pages and customer experiences."
+      },
+      {
+        "id": "E05",
+        "title": "Commerce data and integrations",
+        "body": "Connect catalog, inventory, email, SMS and business systems."
+      },
+      {
+        "id": "E06",
+        "title": "Sales-channel connections",
+        "body": "Configure eligible third-party channels and test the connection."
+      },
+      {
+        "id": "E07",
+        "title": "Store improvement sprint",
+        "body": "Repair or improve a specific buying or operating journey."
+      }
+    ],
+    "process": [
+      "Review the catalog, brand, platform and operational requirements.",
+      "Agree storefront layouts, data mappings and order scenarios.",
+      "Build the store and configure the agreed integrations.",
+      "Run test orders, verify data and hand over store operations."
+    ],
+    "inputs": "Product data, prices, inventory, brand assets, approved policies, shipping and returns rules, platform access and marketing-consent requirements.",
+    "boundary": "Platform plans, payment fees, apps, media spend, printing and ongoing store operation are separate unless expressly included. Legal pages use owner-approved content; implementation is not legal certification.",
+    "projects": [
+      "nourish-reserve",
+      "never-age"
+    ],
+    "cta": "Discuss your store"
+  },
+  {
+    "slug": "software-solutions",
+    "serviceId": "software_solutions",
+    "name": "Software",
+    "resourceSlug": "complete-software-buildout",
+    "art": "identity",
+    "title": "The website. The application. The tools to run it.",
+    "lead": "We build complete software products: the public website, customer experience, product features and owner dashboard, with frontend and backend deployment and a clear handover.",
+    "audience": "For founders, product teams and businesses commissioning B2B or B2C software, a custom application, or a replacement for a workflow that no longer fits.",
+    "result": "One coherent product with an agreed feature scope. You own the commissioned code, deployment and data, with optional support after handover.",
+    "sections": [
+      {
+        "title": "The public product website",
+        "body": "Branded marketing pages for the product, solutions, resources, blog, About, Contact and approved legal content. Genuine testimonials and relevant calls to action connect the website to the application."
+      },
+      {
+        "title": "Accounts and customer experience",
+        "body": "Custom account setup, onboarding, the product dashboard, profile and settings. We design the customer journey around the product's actual features, roles and data."
+      },
+      {
+        "title": "The application itself",
+        "body": "Booking systems, CRMs, social and community platforms, B2B and B2C applications, internal tools and Web3 products. We agree the product-specific capabilities and acceptance scenarios before development."
+      },
+      {
+        "title": "The owner's dashboard",
+        "body": "Authorized user management, refund operations, financial visibility and other agreed administrative tools. Roles and access are enforced around the operations each person is allowed to perform."
+      },
+      {
+        "title": "Data and integrations",
+        "body": "Custom databases, third-party data APIs, email, custom APIs and MCP interfaces where needed. Data ownership, vendor dependencies and operating costs are documented."
+      },
+      {
+        "title": "Deployment and ownership",
+        "body": "Frontend and backend deployment assistance, source code, configuration guidance and a practical handover. Your accounts and data remain yours. Payment milestones, commissioned IP transfer and third-party licenses are stated in the agreement."
+      }
+    ],
+    "packages": [
+      {
+        "id": "S07",
+        "title": "Complete software product",
+        "body": "The public site, customer application, admin tools, integrations and deployment in one scoped engagement."
+      },
+      {
+        "id": "S01",
+        "title": "One working business workflow",
+        "body": "A focused implementation connecting a specific task and its systems."
+      },
+      {
+        "id": "S02",
+        "title": "Product prototype",
+        "body": "A representative vertical slice to test a product decision before a larger build."
+      },
+      {
+        "id": "S03",
+        "title": "Booking systems",
+        "body": "Scheduling, availability and the booking exceptions your business needs."
+      },
+      {
+        "id": "S04",
+        "title": "CRM build or extension",
+        "body": "Customer records, workflows and integrations around your operating process."
+      },
+      {
+        "id": "S05",
+        "title": "Social and community products",
+        "body": "A scoped pilot or complete product with accounts, interactions and moderation requirements."
+      },
+      {
+        "id": "S06",
+        "title": "Web3 implementation",
+        "body": "Begin with a bounded integration or prototype; production transactions require additional security and operational scope."
+      },
+      {
+        "id": "P01",
+        "title": "Custom API",
+        "body": "A documented interface connecting your product, data and other systems."
+      }
+    ],
+    "process": [
+      "Define the users, business model, permissions and required product journeys.",
+      "Review the brand, architecture, interface and representative working slice.",
+      "Build and test customer, admin and integration behavior.",
+      "Deploy the frontend and backend, transfer the agreed assets and document operations."
+    ],
+    "inputs": "Product goals, priority features, user roles, existing data, provider accounts, approved business content and an owner for acceptance decisions.",
+    "boundary": "Feature scope, integrations, data volumes and acceptance tests determine the project. A prototype is not a complete production product. Hosting, vendor usage and optional retainers are separate; ownership does not require an ongoing retainer.",
+    "projects": [
+      "govern",
+      "tellme"
+    ],
+    "cta": "Discuss your product"
+  },
+  {
+    "slug": "ai-solutions",
+    "serviceId": "ai_solutions",
+    "name": "Custom AI agents",
+    "resourceSlug": "ai-agents-and-infrastructure",
+    "art": "identity",
+    "title": "An agent built for the work you actually do.",
+    "lead": "Outreach, personal assistance, coding, financial analysis and agents inside your applications. We build the agent around the task, connect your tools and give you a way to inspect its work.",
+    "audience": "For teams applying AI to an existing operation, adding agents to software, or establishing a managed environment for individual agents and teams.",
+    "result": "A scoped agent or workflow with connected tools, relevant context, operating boundaries and an inspected handover. We are an anti-slop agency: the design and output must hold up to review.",
+    "sections": [
+      {
+        "title": "Outreach agents",
+        "body": "Research prospects from approved sources, prepare personalized outreach, route replies and update your CRM. Sending permissions, approved channels and review steps are defined with your team."
+      },
+      {
+        "title": "Personal assistants",
+        "body": "Connect the documents, calendar, email and business tools you choose. Give the assistant useful context and clear permission to prepare, recommend or carry out specific tasks."
+      },
+      {
+        "title": "Custom coding agents",
+        "body": "Configure repository context, development tools, test commands and review workflows around your codebase. Build a repeatable path from task to checked change."
+      },
+      {
+        "title": "Financial analyst agents",
+        "body": "Connect authorized data, extract information and prepare research, comparisons and reports with traceable sources. Your team reviews analysis and financial decisions."
+      },
+      {
+        "title": "Agents inside your software",
+        "body": "Add agent-powered features to an existing application or a new product. Connect accounts, product data, tools and the interface people use to give instructions and review results."
+      },
+      {
+        "title": "Custom Hermes and OpenClaw agents",
+        "body": "Set up and customize the supported agent environment around your workflows. Define models, instructions, skills, tool access, memory and deployment with a documented operator handover."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A01",
+        "title": "Custom agent build",
+        "body": "One agent built around a defined business task, with its tools, context and review workflow."
+      },
+      {
+        "id": "A09",
+        "title": "Agent inside an application",
+        "body": "An agent-powered product feature connected to the application’s accounts, data and customer journey."
+      }
+    ],
+    "process": [
+      "Define the task, data, permissions and examples of a useful result.",
+      "Test the uncertain model, tool and integration behavior first.",
+      "Build the workflow with evaluation, cost limits and recovery.",
+      "Roll out the agreed scope, document operation and hand over controls."
+    ],
+    "inputs": "Task examples, authorized data and tool access, account eligibility, expected volume and an operational owner for approvals and review.",
+    "boundary": "Provider access, model usage, hosting and third-party subscriptions are separate. Outreach requires authorized channels and consent practices. Financial-analysis agents support review; they do not promise returns or unrestricted trading. Agent teams do not imply unlimited autonomous business operation.",
+    "projects": [],
+    "cta": "Plan an agent"
+  },
+  {
+    "slug": "agent-teams",
+    "serviceId": "ai_solutions",
+    "name": "Agent teams",
+    "resourceSlug": "agent-teams",
+    "art": "identity",
+    "title": "A manager. The right specialists. One coordinated workflow.",
+    "lead": "Build a team of agents that can divide a product or business workflow into jobs, share context and bring the result back for review.",
+    "audience": "For product buildouts and business operations that need several kinds of work to happen together.",
+    "result": "A coordinated agent team with assigned roles, shared context and a reviewed result.",
+    "sections": [
+      {
+        "title": "Product buildout teams",
+        "body": "Coordinate planning, research, coding, testing and review around your product. Give each worker a bounded task and have the manager reconcile the results."
+      },
+      {
+        "title": "Business operations teams",
+        "body": "Connect defined research, reporting, customer operations and administrative workflows. Add the tools and approval steps appropriate to each job."
+      },
+      {
+        "title": "Coordination and recovery",
+        "body": "Define who can assign work, how workers exchange context, when the manager escalates and what happens when a task fails or stalls."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A08",
+        "title": "Manager and worker teams",
+        "body": "An orchestrated team for an agreed product or operating workflow."
+      }
+    ],
+    "process": [
+      "Map the work and the roles it requires.",
+      "Define handoffs, shared context and permissions.",
+      "Implement the manager, workers and review workflow.",
+      "Run representative jobs and hand over operating controls."
+    ],
+    "inputs": "A workflow map, representative jobs, tool access and the person responsible for approvals.",
+    "boundary": "Autonomy is agreed per workflow. A team supporting business operations is not an unrestricted promise to run the entire business. Model usage and hosting are separate.",
+    "projects": [],
+    "cta": "Plan your agent team"
+  },
+  {
+    "slug": "agent-infrastructure",
+    "serviceId": "ai_solutions",
+    "name": "Agent harnesses & infrastructure",
+    "resourceSlug": "agent-infrastructure",
+    "art": "identity",
+    "title": "Build the environment your agents work in.",
+    "lead": "Custom harness creation, installation and deployment for agents that need persistent execution, controlled tools and visibility into what happened.",
+    "audience": "For a custom agent, an existing harness that needs deployment, or a team moving beyond a local experiment.",
+    "result": "An execution environment that connects the model, tools, permissions and operating controls.",
+    "sections": [
+      {
+        "title": "Custom harness creation",
+        "body": "Build the execution loop, tool interfaces, model connections and task state around the way your agent needs to work."
+      },
+      {
+        "title": "Harness installation and deployment",
+        "body": "Deploy a supported existing harness into the agreed environment. Connect accounts, configure access and verify operation after installation."
+      },
+      {
+        "title": "Operating controls",
+        "body": "Add run inspection, error handling, retries, time and usage limits, approval boundaries and the controls an operator needs to manage the system."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A02",
+        "title": "Agent harness and infrastructure",
+        "body": "Create or deploy the environment an agent or team runs inside."
+      }
+    ],
+    "process": [
+      "Inspect the agent and execution requirements.",
+      "Design model, tool and permission boundaries.",
+      "Build or deploy the harness and operating controls.",
+      "Test normal runs, failures and recovery with your operator."
+    ],
+    "inputs": "The current code or platform, deployment access, required tools and operating constraints.",
+    "boundary": "Hosting, model usage and third-party subscriptions are listed separately. The proposal identifies the supported runtime and maintenance responsibility.",
+    "projects": [],
+    "cta": "Discuss your harness"
+  },
+  {
+    "slug": "jev-implementation",
+    "serviceId": "ai_solutions",
+    "name": "Jev implementation",
+    "resourceSlug": "jev-implementation",
+    "art": "identity",
+    "title": "Give your agent a structured decision layer.",
+    "lead": "Integrate TypeSafe AI’s Jev into routing, classification and evaluation. The result feeds a defined branch in your application or agent harness.",
+    "audience": "For teams choosing a model, classifying requests, reviewing agent output or deciding when a workflow needs escalation.",
+    "result": "A tested Jev integration for a specific decision in your system.",
+    "sections": [
+      {
+        "title": "Model and task routing",
+        "body": "Classify an incoming task and use the result to select the next model, worker or workflow branch."
+      },
+      {
+        "title": "Classification and prioritization",
+        "body": "Turn context into typed decisions your software can act on, such as request category, priority or whether a review is needed."
+      },
+      {
+        "title": "Agent evaluation",
+        "body": "Apply defined criteria to agent output or traces. Compare the decisions with reviewed examples before using the results to control a workflow."
+      },
+      {
+        "title": "Thresholds and fallback",
+        "body": "Define how confidence affects the next action and what happens when the result is uncertain or the provider is unavailable."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A05",
+        "title": "Jev decision integration",
+        "body": "One defined decision, its application connection and a representative evaluation set."
+      }
+    ],
+    "process": [
+      "Choose the decision and define the possible results.",
+      "Prepare examples and review the expected decisions.",
+      "Connect Jev and implement thresholds and fallback paths.",
+      "Evaluate the integration and document the operating tradeoffs."
+    ],
+    "inputs": "Representative inputs, expected decisions, application access and a TypeSafe AI account with the required access.",
+    "boundary": "Jev returns structured decisions rather than generated text or media. We measure suitability on your examples; vendor speed and cost claims are not a project guarantee.",
+    "projects": [],
+    "cta": "Discuss Jev integration"
+  },
+  {
+    "slug": "context-and-memory",
+    "serviceId": "ai_solutions",
+    "name": "Context systems & memory",
+    "resourceSlug": "context-and-memory",
+    "art": "identity",
+    "title": "Give agents the information they need to do the job.",
+    "lead": "Build context storage, vector databases and retrieval around your business sources, with control over what stays current and who can access it.",
+    "audience": "For agents that lose useful context, cannot find internal information or rely on repeated manual briefings.",
+    "result": "A connected context and memory system that agents can retrieve from and update as agreed.",
+    "sections": [
+      {
+        "title": "Context systems",
+        "body": "Organize the instructions, business knowledge and task state that should inform an agent’s work. Separate durable knowledge from temporary task context."
+      },
+      {
+        "title": "Vector databases and retrieval",
+        "body": "Create the database, ingestion and search connection for the agreed sources. Test whether the right information is retrieved for representative questions."
+      },
+      {
+        "title": "Agent context storage",
+        "body": "Install persistent storage for selected context and memory. Define updates, deletion, retention and who is allowed to read or write."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A03",
+        "title": "Context and memory system",
+        "body": "Business sources, ingestion, retrieval and persistent agent context."
+      }
+    ],
+    "process": [
+      "Inventory sources and agent information needs.",
+      "Design storage, retrieval and access rules.",
+      "Connect ingestion and the agent’s context tools.",
+      "Test retrieval, updates and access with representative tasks."
+    ],
+    "inputs": "Authorized sources, source owners, representative questions and data retention requirements.",
+    "boundary": "Storage, embedding and model usage costs are separate. Source access and the permitted uses of data must be agreed.",
+    "projects": [],
+    "cta": "Plan your context system"
+  },
+  {
+    "slug": "mcp-and-api",
+    "serviceId": "ai_solutions",
+    "name": "MCP, APIs & AI integrations",
+    "resourceSlug": "mcp-and-api",
+    "art": "identity",
+    "title": "Connect the tools. Build the missing interfaces.",
+    "lead": "Install existing MCP connections, create custom MCP servers and APIs, and connect AI workflows to the applications and data they need.",
+    "audience": "For a missing integration, a private business tool that needs an agent interface, or a product that needs its own API.",
+    "result": "A working, documented connection between your agent or application and the required system.",
+    "sections": [
+      {
+        "title": "MCP installation and integration",
+        "body": "Configure an existing supported MCP server, connect it to the intended client and verify the tools against real permitted tasks."
+      },
+      {
+        "title": "Custom MCP creation",
+        "body": "Expose your business systems through purpose-built tools. Define inputs, outputs, authentication and the actions each agent is allowed to perform."
+      },
+      {
+        "title": "Custom API creation",
+        "body": "Build endpoints for your product or business workflow, including validation, authorization, data handling and documentation."
+      },
+      {
+        "title": "AI tools inside applications",
+        "body": "Connect model and agent capabilities to product accounts, interfaces and existing workflows. Define how results are returned and failures reach the user."
+      }
+    ],
+    "packages": [
+      {
+        "id": "M01",
+        "title": "MCP integration",
+        "body": "Connect and verify an existing supported server."
+      },
+      {
+        "id": "M02",
+        "title": "Custom MCP server",
+        "body": "Create a tool interface for your private system."
+      },
+      {
+        "id": "S08",
+        "title": "Custom API",
+        "body": "Build and document application endpoints."
+      },
+      {
+        "id": "A04",
+        "title": "AI tool integration",
+        "body": "Connect an agent or model to a product workflow."
+      }
+    ],
+    "process": [
+      "Define the systems, actions and data to connect.",
+      "Agree contracts, authentication and permissions.",
+      "Implement and deploy the interface.",
+      "Test permitted actions, denied access and failure behavior."
+    ],
+    "inputs": "System documentation, authorized accounts, sample data and access requirements.",
+    "boundary": "Third-party API access, limits and fees depend on the provider. The proposal identifies supported operations and maintenance responsibility.",
+    "projects": [],
+    "cta": "Connect your tools"
+  },
+  {
+    "slug": "creative-ai-workflows",
+    "serviceId": "ai_solutions",
+    "name": "Image, video & audio workflows",
+    "resourceSlug": "creative-ai-workflows",
+    "art": "identity",
+    "title": "From a creative brief to a repeatable production workflow.",
+    "lead": "Build generation agents and connected workflows for images, video and audio, including Seedance and ElevenLabs where the required access is available.",
+    "audience": "For teams turning repeated creative production into a controlled process inside their own tools.",
+    "result": "A workflow that takes approved inputs through generation, review and delivery.",
+    "sections": [
+      {
+        "title": "Image generation workflows",
+        "body": "Connect brand context, product references, generation, review and export. Define the formats and checks that make an asset usable in its intended placement."
+      },
+      {
+        "title": "Video workflows",
+        "body": "Integrate supported video models, including Seedance where available, into the brief, generation and review process. Handle jobs, status and output delivery."
+      },
+      {
+        "title": "Audio and voice workflows",
+        "body": "Connect supported audio tools such as ElevenLabs to the agreed voice or audio production workflow, with approved inputs and delivery formats."
+      },
+      {
+        "title": "Applied creative agents",
+        "body": "Build agents that prepare inputs, call the selected models and organize outputs inside an application or business system. Final review remains part of the production workflow."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A06",
+        "title": "Creative model workflow",
+        "body": "Image, video or audio production connected to review and delivery."
+      },
+      {
+        "id": "A10",
+        "title": "Creative generation agent",
+        "body": "A custom agent that operates the agreed production workflow."
+      }
+    ],
+    "process": [
+      "Define the outputs, references and intended placements.",
+      "Test available models against representative creative briefs.",
+      "Connect generation, review and delivery in the workflow.",
+      "Run a complete production example and hand over controls."
+    ],
+    "inputs": "Approved brand assets and references, output specifications, account access and a creative reviewer.",
+    "boundary": "Model access, usage fees and content rights are checked during scoping. This is a workflow implementation offer; ongoing content production is a separate scope.",
+    "projects": [],
+    "cta": "Build your creative workflow"
+  },
+  {
+    "slug": "ai-setup-and-consulting",
+    "serviceId": "ai_solutions",
+    "name": "AI setup & consulting",
+    "resourceSlug": "ai-setup-and-consulting",
+    "art": "identity",
+    "title": "Put the tools you chose to work in your business.",
+    "lead": "Setup, configuration and consultation for custom Hermes agents, OpenClaw, ChatGPT / ChatGPT Work, Claude and Claude Code.",
+    "audience": "For an individual, team or business adopting an AI tool or repairing a setup that is not working.",
+    "result": "A configured environment, connected workflow and practical handover for the people using it.",
+    "sections": [
+      {
+        "title": "Hermes and OpenClaw",
+        "body": "Configure the selected agent environment, models, instructions, skills and tool access. Customize it for the workflow you want to run."
+      },
+      {
+        "title": "ChatGPT / ChatGPT Work",
+        "body": "Scope the available workspace, account configuration, knowledge, tool connections and working practices. Hosted setup is distinguished from custom API development."
+      },
+      {
+        "title": "Claude and Claude Code",
+        "body": "Configure supported product access and the relevant document or coding workflow. For coding use, include repository instructions, development tools and review practices."
+      },
+      {
+        "title": "Grokbot setup and consultation",
+        "body": "Review the exact Grokbot product and deployment you mean, then define the supported installation, configuration or consulting scope. We verify product identity and access before quoting."
+      }
+    ],
+    "packages": [
+      {
+        "id": "A07",
+        "title": "Platform and agent setup",
+        "body": "Configure the selected supported AI environment and hand it over."
+      },
+      {
+        "id": "D02",
+        "title": "AI adoption consultation",
+        "body": "Choose tools and workflows, diagnose setup issues and plan implementation."
+      }
+    ],
+    "process": [
+      "Identify the exact product, account and intended workflow.",
+      "Review access, permissions and setup requirements.",
+      "Install or configure the supported environment.",
+      "Walk through representative tasks and hand over guidance."
+    ],
+    "inputs": "The exact product, authorized account access, devices or workspace and target workflows.",
+    "boundary": "Provider subscriptions and eligibility are separate. Setup means the supported installation or hosted configuration path for the selected product.",
+    "projects": [],
+    "cta": "Set up your AI tools"
+  },
+  {
+    "slug": "brand",
+    "serviceId": "websites",
+    "name": "Brand creation & implementation",
+    "resourceSlug": "brand-creation-and-implementation",
+    "art": "brand",
+    "title": "A clear identity, carried through every detail.",
+    "lead": "We create brand kits and implement them across websites, products and ecommerce. The work covers the identity and the practical assets your team needs to use it consistently.",
+    "audience": "For a new business, product or store, and for teams whose existing brand is inconsistent across their digital experience.",
+    "result": "A usable brand system with the agreed source files, guidelines, templates and implementation scope.",
+    "sections": [
+      {
+        "title": "Direction and identity",
+        "body": "Clarify the audience, positioning and visual direction. Develop the agreed identity assets, including the logo treatment, typography, color and image direction."
+      },
+      {
+        "title": "A working brand kit",
+        "body": "Reusable design assets, practical usage guidance and templates for the channels in scope. The kit should be useful to the people creating your next page, product or campaign."
+      },
+      {
+        "title": "Product labels and packaging",
+        "body": "Label design and packaging artwork using approved product facts, dimensions and printer specifications. Proofing and specialist regulatory requirements are agreed separately."
+      },
+      {
+        "title": "Digital implementation",
+        "body": "Apply the brand to the website, ecommerce store or software interface. We inspect typography, imagery, layout and key customer journeys together."
+      },
+      {
+        "title": "Content and imagery",
+        "body": "Define an image and copy treatment suited to the business. Original asset creation and revisions are scoped against a clear inventory rather than an unlimited creative promise."
+      }
+    ],
+    "packages": [
+      {
+        "id": "B01",
+        "title": "Custom brand kit",
+        "body": "Create the identity assets and guidance needed for a defined launch or refresh."
+      },
+      {
+        "id": "B02",
+        "title": "Brand implementation",
+        "body": "Apply an existing or new system across agreed digital surfaces."
+      },
+      {
+        "id": "E03",
+        "title": "Product and brand launch",
+        "body": "Connect ecommerce identity, product labels and launch assets."
+      }
+    ],
+    "process": [
+      "Review the business, audience and existing assets.",
+      "Agree the direction through representative applications.",
+      "Develop the kit and implement the scoped surfaces.",
+      "Check consistency and hand over the files and usage guidance."
+    ],
+    "inputs": "Business and audience context, existing marks, approved names and copy, required channels, asset inventory and any printer specifications.",
+    "boundary": "Trademark clearance, legal claims review, printing and third-party licenses are separate. Deliverables and revision rounds are agreed before production.",
+    "projects": [],
+    "cta": "Discuss your brand"
+  },
+  {
+    "slug": "unslop",
+    "serviceId": "websites",
+    "name": "Unslop",
+    "resourceSlug": "unslop-websites-and-content",
+    "art": "brand",
+    "title": "Unslop your website. Unslop your content.",
+    "lead": "Bring us the work that is close but does not hold together. We repair the generic design, inconsistent branding, vague copy and broken journeys within a defined scope.",
+    "audience": "For businesses with an AI-generated site, prototype or body of content that needs experienced design, editorial and development attention.",
+    "result": "Revised work that reflects your business, with the agreed functional checks and a clear account of what changed.",
+    "sections": [
+      {
+        "title": "Inspect before replacing",
+        "body": "We review the actual pages, copy, code and customer journeys. The first decision is what to preserve, what to repair and whether any part needs a rebuild."
+      },
+      {
+        "title": "Website repair",
+        "body": "Information structure, typography, spacing, visual hierarchy, brand consistency, mobile layouts, forms and connected journeys. The work is scoped around observable defects and the intended experience."
+      },
+      {
+        "title": "Content repair",
+        "body": "Rewrite generic or repetitive website and business copy for a defined audience. Improve structure, terminology and specificity while preserving your facts, conditions and voice."
+      },
+      {
+        "title": "Claims and factual questions",
+        "body": "Identify statements that need evidence, qualification or removal. We do not invent customer stories, authority signals or results to make the work more persuasive."
+      },
+      {
+        "title": "Representative correction",
+        "body": "Establish the direction on a meaningful part of the work before applying it more widely. Inspect the result in its actual context, then complete the remaining agreed scope."
+      }
+    ],
+    "packages": [
+      {
+        "id": "U01",
+        "title": "Unslop your website",
+        "body": "A scoped design, content and functional repair of an inspected website."
+      },
+      {
+        "id": "U02",
+        "title": "Unslop your content",
+        "body": "Editorial repair of an agreed set of pages or documents, with factual questions retained."
+      }
+    ],
+    "process": [
+      "Inspect the existing work and record what needs attention.",
+      "Agree a repair scope and a representative correction.",
+      "Complete the design, writing and development changes.",
+      "Recheck affected journeys and hand over the revised work."
+    ],
+    "inputs": "The current site or documents, source access where relevant, brand references, approved business facts and one reviewer who can resolve factual questions.",
+    "boundary": "New branding, major backend replacement, original research and additional integrations are separate scopes. We do not promise AI-detector scores, search rankings or revenue outcomes.",
+    "projects": [],
+    "cta": "Discuss a repair"
+  },
+  {
+    "slug": "consultation",
+    "serviceId": "consultation",
+    "name": "Consultation",
+    "resourceSlug": "technical-and-strategic-consultation",
+    "art": "identity",
+    "title": "A clear recommendation for your next decision.",
+    "lead": "Bring a website, store, product or AI system. We help diagnose the problem, compare practical options and turn the decision into a written plan you can use.",
+    "audience": "For founders, business owners and teams deciding what to build, what to fix, which platform to choose or how to implement a new capability.",
+    "result": "A written assessment, relevant tradeoffs and prioritized next steps. You can act on the recommendation with Fortitudo, your own team or another provider.",
+    "sections": [
+      {
+        "title": "Strategy and implementation planning",
+        "body": "Translate a business objective into practical scope, milestones, dependencies and decisions. Consultation spans every service in this catalog."
+      },
+      {
+        "title": "Diagnosis and troubleshooting",
+        "body": "Inspect a website, application, agent or integration that is not behaving as expected. Separate the demonstrated failure from assumptions and recommend the next useful action."
+      },
+      {
+        "title": "Architecture and platform choices",
+        "body": "Compare technical approaches, vendors, data models and operating responsibilities. Explain the implications for cost, delivery, ownership and maintainability."
+      },
+      {
+        "title": "Product and experience review",
+        "body": "Review the structure, interface, content and customer journeys of an existing product or proposed build. Identify specific corrections rather than returning a generic score."
+      },
+      {
+        "title": "AI and workflow enablement",
+        "body": "Plan or review agent platforms, harnesses, teams, context systems, model workflows, MCP and API integrations, including setup guidance for supported tools."
+      },
+      {
+        "title": "Proposal and delivery review",
+        "body": "Assess another supplier's scope or your current delivery plan. Document unanswered questions, dependencies and acceptance criteria before the next commitment."
+      }
+    ],
+    "packages": [
+      {
+        "id": "D01",
+        "title": "A defined consultation engagement",
+        "body": "Choose strategy, diagnosis, architecture, product review, enablement or proposal review. Scope the question and written output before work starts."
+      }
+    ],
+    "process": [
+      "Agree the decision and the questions the engagement must answer.",
+      "Inspect the relevant system, documents and constraints.",
+      "Compare options and discuss the implications with your team.",
+      "Deliver the assessment and an actionable next-step plan."
+    ],
+    "inputs": "The question or problem, relevant links and documents, access needed for inspection, known constraints and the people responsible for the decision.",
+    "boundary": "Detailed reviews are separately scoped work. Implementation, specialist legal advice, formal certification and ongoing operational responsibility are not implied by a consultation.",
+    "projects": [
+      "govern",
+      "tellme"
+    ],
+    "cta": "Discuss the decision"
+  }
+]

@@ -2,16 +2,17 @@
   {
     "slug": "websites",
     "pages": 12,
-    "bytes": 509533,
-    "sha256": "4a3b55319102f1f81cb30ee9f7dc052fe8ebee5ff5767bc29499ab96789670cf",
+    "bytes": 509983,
+    "sha256": "cbe8eab45ec2ff3048aac08f1f71682de4b3d6b186e125e722aa8640b497a6a3",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=websites",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=websites"
     ],
-    "requiredTextChecks": 24,
-    "textBlocks": 96,
+    "requiredTextChecks": 28,
+    "textBlocks": 99,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -32,16 +33,17 @@
   {
     "slug": "ecommerce",
     "pages": 14,
-    "bytes": 1313384,
-    "sha256": "5f5f5786ba6065747f1033d10ab4ead479e05ad9476de8122adae803e1c5b987",
+    "bytes": 1313897,
+    "sha256": "b6bf3e4282e3afb128a68ef0e845592c43565adea2d9495ae0ee6113f2f24aa9",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=ecommerce",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=ecommerce"
     ],
-    "requiredTextChecks": 31,
-    "textBlocks": 116,
+    "requiredTextChecks": 35,
+    "textBlocks": 119,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -64,16 +66,17 @@
   {
     "slug": "software-solutions",
     "pages": 14,
-    "bytes": 1387751,
-    "sha256": "f482d8a1b591b595bd91b640ace1f2113d86a2d78ba315007113247c2d8840d0",
+    "bytes": 1388209,
+    "sha256": "e3702ba0ff3aa16e99b2f7cd1c6c9a93fb5de3ef4963649d3a7897c93b649cea",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=software_solutions&offer=software-solutions",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=software_solutions&offer=software-solutions"
     ],
-    "requiredTextChecks": 31,
-    "textBlocks": 116,
+    "requiredTextChecks": 35,
+    "textBlocks": 119,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -96,16 +99,17 @@
   {
     "slug": "ai-solutions",
     "pages": 13,
-    "bytes": 658877,
-    "sha256": "b52b7b143a67574ae67428dcab0d32f117ca297e11ae59fbafb9ed13f93dcd79",
+    "bytes": 659312,
+    "sha256": "0e590ff06adfd797e89918ae25239e0db5dfe2d005b2762698fb7152428dfa3a",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-solutions",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-solutions"
     ],
-    "requiredTextChecks": 26,
-    "textBlocks": 103,
+    "requiredTextChecks": 30,
+    "textBlocks": 106,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -127,16 +131,17 @@
   {
     "slug": "agent-teams",
     "pages": 11,
-    "bytes": 896142,
-    "sha256": "4acc5b6e6e13269dc0db60d731bc2b6e24f7f56540f637f52a6fef8a97f10f21",
+    "bytes": 896674,
+    "sha256": "f9e8eb1fcc7b399db51868057eb8fd4be34c5d6ab55f584b22abbe1235ebb563",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-teams",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-teams"
     ],
-    "requiredTextChecks": 21,
-    "textBlocks": 88,
+    "requiredTextChecks": 25,
+    "textBlocks": 91,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -156,16 +161,17 @@
   {
     "slug": "agent-infrastructure",
     "pages": 11,
-    "bytes": 1097172,
-    "sha256": "9ecf9ec5059989efa7cb5680189d16c0aec67950aefeb135e37525d7387e2731",
+    "bytes": 1097736,
+    "sha256": "711e282a9b69a6aa605157cb1958b7a201314be3afccf22e2b7490e6c57b4bef",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-infrastructure",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=agent-infrastructure"
     ],
-    "requiredTextChecks": 21,
-    "textBlocks": 88,
+    "requiredTextChecks": 25,
+    "textBlocks": 91,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -185,16 +191,17 @@
   {
     "slug": "jev-implementation",
     "pages": 12,
-    "bytes": 651072,
-    "sha256": "0db2f5a2d60659ba3507d290b5ef485d0d21b75bfc7ca7bda12d902996a8b201",
+    "bytes": 651608,
+    "sha256": "9b8f55a254e93d15b27f3e3a4d35560affbecbdf2b1f2bd2dd69c52fef6d071a",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=jev-implementation",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=jev-implementation"
     ],
-    "requiredTextChecks": 22,
-    "textBlocks": 93,
+    "requiredTextChecks": 26,
+    "textBlocks": 96,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -215,16 +222,17 @@
   {
     "slug": "context-and-memory",
     "pages": 11,
-    "bytes": 788245,
-    "sha256": "bfc399999301b4401f5be8ed00f46174bd36136bba2b85996b8ee1c0c278d498",
+    "bytes": 788757,
+    "sha256": "bcd3d576cbfb9f57fb276701bb8da62780a3ea80b15bb92c562fe0c52ed19f25",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=context-and-memory",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=context-and-memory"
     ],
-    "requiredTextChecks": 21,
-    "textBlocks": 88,
+    "requiredTextChecks": 25,
+    "textBlocks": 91,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -244,16 +252,17 @@
   {
     "slug": "mcp-and-api",
     "pages": 12,
-    "bytes": 680920,
-    "sha256": "de2ee3de8f6ab5663c3d58db7576cbe9ab5db7bb4fccff2c91622fe1c1d48537",
+    "bytes": 681404,
+    "sha256": "b34e168da3375fc6c1608c74da6eab01e4898ce065951d8496b0fc94e1730323",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=mcp-and-api",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=mcp-and-api"
     ],
-    "requiredTextChecks": 25,
-    "textBlocks": 98,
+    "requiredTextChecks": 29,
+    "textBlocks": 101,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -274,16 +283,17 @@
   {
     "slug": "creative-ai-workflows",
     "pages": 12,
-    "bytes": 1097976,
-    "sha256": "3e23f54f5b80463971290606c14e791faca8508bbc45cfef96998a32fac5e31d",
+    "bytes": 1098444,
+    "sha256": "fba58c925e8acb6b3626dc9eef50258602d1d70d4eb3d47337bbcdf4afc80af2",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=creative-ai-workflows",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=creative-ai-workflows"
     ],
-    "requiredTextChecks": 23,
-    "textBlocks": 94,
+    "requiredTextChecks": 27,
+    "textBlocks": 97,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -304,16 +314,17 @@
   {
     "slug": "ai-setup-and-consulting",
     "pages": 12,
-    "bytes": 509757,
-    "sha256": "e424e0d887250c1c4b3bebcc00bde9e9e8d3e7a29472379488987581e38a08ff",
+    "bytes": 510222,
+    "sha256": "36182f13eafbd0f7a54254c8ed8d1f51258e8fafc614bdb44f25f20cab09138b",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-setup-and-consulting",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=ai_solutions&offer=ai-setup-and-consulting"
     ],
-    "requiredTextChecks": 23,
-    "textBlocks": 94,
+    "requiredTextChecks": 27,
+    "textBlocks": 97,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -334,16 +345,17 @@
   {
     "slug": "brand",
     "pages": 12,
-    "bytes": 663320,
-    "sha256": "17cbc640a89fc930b8820528df9e385531596fd3a6ec678e3084359fab167ec9",
+    "bytes": 663818,
+    "sha256": "329d062916c383e5ce08628ccc5c4e3e35dacc5519fd9a2f63bc09c855afd954",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=brand",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=brand"
     ],
-    "requiredTextChecks": 25,
-    "textBlocks": 98,
+    "requiredTextChecks": 29,
+    "textBlocks": 101,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -364,16 +376,17 @@
   {
     "slug": "unslop",
     "pages": 12,
-    "bytes": 599680,
-    "sha256": "d6edb473c6760671be58de230b99d6aa3d44b2db9c73441ca22c4980582879cb",
+    "bytes": 600240,
+    "sha256": "fe9106eb3468f2015096b479c894e4eec4356071023db09e48550daac7db30eb",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=unslop",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=websites&offer=unslop"
     ],
-    "requiredTextChecks": 24,
-    "textBlocks": 96,
+    "requiredTextChecks": 28,
+    "textBlocks": 99,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [
@@ -394,16 +407,17 @@
   {
     "slug": "consultation",
     "pages": 13,
-    "bytes": 883739,
-    "sha256": "97af0a48dd606409f03240abf4715273f86fdba01f8329d566cf5332e23b3473",
+    "bytes": 884246,
+    "sha256": "762fb009238a25a55e2408066dc84b8bd74b53d188f738cddc5b710ab2ca6117",
     "links": [
       "https://www.fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=consultation&offer=consultation",
+      "https://www.fortitudo.agency/work",
       "mailto:hello@fortitudo.agency",
       "https://www.fortitudo.agency/contact?service=consultation&offer=consultation"
     ],
-    "requiredTextChecks": 24,
-    "textBlocks": 100,
+    "requiredTextChecks": 28,
+    "textBlocks": 103,
     "minBodySize": 20,
     "boundsAndOverlap": "passed",
     "sections": [

@@ -1,0 +1,600 @@
+{
+  "version": 1,
+  "kernel": "offers-os",
+  "scope": "Fortitudo all 14 pitch decks; copy refinement only",
+  "revision": "2026-09-22-copy-v1",
+  "environment": "local generated PDFs",
+  "reviewer": "Author review; independent copy review separate",
+  "evidence": [
+    {
+      "id": "e0",
+      "kind": "design",
+      "summary": "Current revision OFFER.md",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "OFFER.md",
+      "sha256": "c44f9ae8b4f961bc9fe5cd0eabf67dbf8c3096e93d2584e013b13e5609c6cd96"
+    },
+    {
+      "id": "e1",
+      "kind": "design",
+      "summary": "Current revision OFFER-BUILDER.md",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "OFFER-BUILDER.md",
+      "sha256": "cfbb0d20fd3f74569873148d492981b19f9d103be5074e325f3204e269976630"
+    },
+    {
+      "id": "e2",
+      "kind": "design",
+      "summary": "Current revision EXPERIMENT.md",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "EXPERIMENT.md",
+      "sha256": "6ac6f1fa91529596d0bf2ffe6877df4b4c37bb805df4f3434e54ebe36c4e2fbf"
+    },
+    {
+      "id": "e3",
+      "kind": "design",
+      "summary": "Current revision service-catalog.json",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "service-catalog.json",
+      "sha256": "03a1537d2f43b5356c64c2502f597f16f3afc8498e111eb5234a16279e9fa008"
+    },
+    {
+      "id": "e4",
+      "kind": "design",
+      "summary": "Current revision service-offers.json",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "service-offers.json",
+      "sha256": "0d9882b1efba44d99d08cee3aafd46edeb2423f60301ca5043d2e515d7c5f17f"
+    },
+    {
+      "id": "e5",
+      "kind": "design",
+      "summary": "Current revision deck-offer-copy.json",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "deck-offer-copy.json",
+      "sha256": "e2ff1a5d7f3741547fa2087a892ff902e5cc8102fab1409e610ae9eb0d4e4b5d"
+    },
+    {
+      "id": "e6",
+      "kind": "design",
+      "summary": "Current revision deck-narratives.json",
+      "observed_at": "2026-09-22T20:00:00Z",
+      "path": "deck-narratives.json",
+      "sha256": "32876751290ee5fc5705ed78313831b8cf978ceb4443895699d09218ece9c518"
+    }
+  ],
+  "results": [
+    {
+      "id": "O01",
+      "status": "pass",
+      "reason": "Existing catalog and user constraints recovered.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O02",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O03",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O04",
+      "status": "pass",
+      "reason": "Benefits tied to delivery mechanisms; smaller alternatives acknowledged.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O05",
+      "status": "pass",
+      "reason": "Service-specific fit and alternative preserved without forced niche.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O06",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O07",
+      "status": "pass",
+      "reason": "Four value drivers explicitly distinguished in builder record.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O08",
+      "status": "pass",
+      "reason": "No quantified outcomes or unsupported prestige proof added.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O09",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O10",
+      "status": "pass",
+      "reason": "Before, during and after obstacles mapped; handover retained.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O11",
+      "status": "pass",
+      "reason": "Pains linked to scope and limitations.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O12",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O13",
+      "status": "pass",
+      "reason": "Mechanisms and project-specific conditions remain visible.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O14",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O15",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O16",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O17",
+      "status": "pass",
+      "reason": "Core scope is offered without essential bonus gating.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O18",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O19",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O20",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O21",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O22",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O23",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O24",
+      "status": "pass",
+      "reason": "No bonuses added or core functionality withheld.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O25",
+      "status": "pass",
+      "reason": "No standalone price anchors.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O26",
+      "status": "pass",
+      "reason": "No quantity limits.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O27",
+      "status": "pass",
+      "reason": "No deadline claims.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O28",
+      "status": "pass",
+      "reason": "Acceptance review replaces unsupported outcome guarantees.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O29",
+      "status": "pass",
+      "reason": "No remedy or refund guarantee offered by this revision.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O30",
+      "status": "pass",
+      "reason": "No new guarantee exposure introduced.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O31",
+      "status": "pass",
+      "reason": "Existing service names retained; no promised durations.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O32",
+      "status": "pass",
+      "reason": "Complete scope and voluntary next step retained; final terms quoted separately.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O33",
+      "status": "pass",
+      "reason": "FAQs and smaller-scope alternatives address fit.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O34",
+      "status": "unknown",
+      "reason": "Not established by a copy revision: project-specific baseline, timing, delivery costs, capacity, operational runbook or buyer evidence requires a separate engagement-level assessment.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O35",
+      "status": "pass",
+      "reason": "Structural evidence explicitly separated from business results.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O36",
+      "status": "pass",
+      "reason": "Comprehension experiment specified, unrun.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O37",
+      "status": "pass",
+      "reason": "Copy only; existing commercial terms unchanged; economics unresolved.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    },
+    {
+      "id": "O38",
+      "status": "pass",
+      "reason": "Local artifacts distinguished from measured outcomes.",
+      "evidence": [
+        "e0",
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6"
+      ]
+    }
+  ]
+}

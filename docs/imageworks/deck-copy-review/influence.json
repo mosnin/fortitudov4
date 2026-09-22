@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "audience": "Prospective Fortitudo service buyers and approvers",
+  "decision": "Choose whether to request a scoped project discussion",
+  "voluntary_exit": true,
+  "material_terms_visible": true,
+  "sensitive_vulnerability_targeting": false,
+  "sources": [
+    {
+      "id": "s0",
+      "artifact": "OFFER.md",
+      "sha256": "c44f9ae8b4f961bc9fe5cd0eabf67dbf8c3096e93d2584e013b13e5609c6cd96",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    },
+    {
+      "id": "s1",
+      "artifact": "OFFER-BUILDER.md",
+      "sha256": "cfbb0d20fd3f74569873148d492981b19f9d103be5074e325f3204e269976630",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    },
+    {
+      "id": "s2",
+      "artifact": "EXPERIMENT.md",
+      "sha256": "6ac6f1fa91529596d0bf2ffe6877df4b4c37bb805df4f3434e54ebe36c4e2fbf",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    },
+    {
+      "id": "s3",
+      "artifact": "service-catalog.json",
+      "sha256": "03a1537d2f43b5356c64c2502f597f16f3afc8498e111eb5234a16279e9fa008",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    },
+    {
+      "id": "s4",
+      "artifact": "service-offers.json",
+      "sha256": "0d9882b1efba44d99d08cee3aafd46edeb2423f60301ca5043d2e515d7c5f17f",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    },
+    {
+      "id": "s5",
+      "artifact": "deck-offer-copy.json",
+      "sha256": "e2ff1a5d7f3741547fa2087a892ff902e5cc8102fab1409e610ae9eb0d4e4b5d",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    },
+    {
+      "id": "s6",
+      "artifact": "deck-narratives.json",
+      "sha256": "32876751290ee5fc5705ed78313831b8cf978ceb4443895699d09218ece9c518",
+      "scope": "Declared public service scope or exact editorial copy; not measured outcome evidence",
+      "permission": "public",
+      "review_by": "2026-12-22"
+    }
+  ],
+  "claims": [
+    {
+      "id": "scope",
+      "text": "Fortitudo offers scoped service work subject to a written proposal.",
+      "status": "observed",
+      "evidence": [
+        "s3",
+        "s4"
+      ],
+      "public": true,
+      "qualified": true,
+      "kind": "other"
+    }
+  ],
+  "tactics": [
+    {
+      "id": "t1",
+      "principle": "authority",
+      "mechanism": "Link to inspectable work and retain concrete acceptance criteria; no prestige claims",
+      "audience_benefit": "Evaluate the work and proposed completion checks before contact",
+      "evidence": [
+        "s3",
+        "s4"
+      ],
+      "claim_ids": [
+        "scope"
+      ],
+      "disclosed": true,
+      "pressure_free": true,
+      "constraint": null
+    }
+  ],
+  "evaluation": {
+    "primary_metric": "Buyer accurately explains scope and next step",
+    "comprehension_check": "Explain inputs, boundaries, milestone and voluntary contact",
+    "guardrails": [
+      "No perceived pressure",
+      "No mistaken guaranteed ROI or time claim"
+    ],
+    "decision_rule": "Revise on any material misunderstanding; commercial outcome unmeasured"
+  }
+}

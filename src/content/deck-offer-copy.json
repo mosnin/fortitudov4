@@ -1,0 +1,156 @@
+{
+  "websites": {
+    "summary": "We plan, write, design and build your website, including the forms, content tools and connections it needs.",
+    "fit": "For a new website, a change in direction, or a site your business has outgrown.",
+    "firstStep": "Send your current URL or the pages you need. We’ll map the work and prepare a quote for the project.",
+    "deliverables": [
+      "Page planning and copy based on your business",
+      "Responsive design and development for the pages in your proposal",
+      "Enquiries, bookings, content management and required connections",
+      "Launch checks, deployment and access to manage the site"
+    ]
+  },
+  "ecommerce": {
+    "summary": "We bring your brand, products and shopping experience into a working store, with the connections your team needs to run it.",
+    "fit": "For a new store, a move to Shopify, or an existing store that needs improvement.",
+    "firstStep": "Share your current store, product catalog and launch requirements. We’ll define the storefront and operating work to include in the proposal.",
+    "deliverables": [
+      "Brand implementation, plus identity or label design when included",
+      "Shopify setup, products, collections and store pages",
+      "Buying journeys, subscriptions, upsells and channels your account supports",
+      "Inventory, email and SMS connections, with guidance for store operations"
+    ]
+  },
+  "software-solutions": {
+    "summary": "We build the product website, customer application and admin tools together, then deploy the frontend and backend and hand over the project.",
+    "fit": "For a new software product or a business workflow that needs its own application.",
+    "firstStep": "Send the product idea or show us the workflow you want to replace. We’ll define a first release, its boundaries and the checks for completion.",
+    "deliverables": [
+      "A branded product website with the pages in your proposal",
+      "Accounts, onboarding and the main customer workflows",
+      "Admin tools, a database, email and required API connections",
+      "Frontend and backend deployment, with code and data handover"
+    ]
+  },
+  "ai-solutions": {
+    "summary": "We build an agent around a specific task, connect the tools and information it needs, and give your team a way to review its work.",
+    "fit": "For a repeated task or product feature that needs an agent connected to real business systems.",
+    "firstStep": "Show us the task, a few example inputs and the systems involved. We’ll define the agent’s job, access and how you’ll judge its output.",
+    "deliverables": [
+      "A defined task, sample inputs and checks for a useful result",
+      "The agent or team, execution environment and required tool connections",
+      "Context, memory, permissions and human review where needed",
+      "Evaluation, deployment, operating guidance and ownership handover"
+    ]
+  },
+  "agent-teams": {
+    "summary": "We build a manager and specialist agents around one workflow, with shared context, clear handoffs and a review of the combined result.",
+    "fit": "For a workflow that needs several kinds of work and someone to check how the results fit together.",
+    "firstStep": "Bring a workflow that moves between people or tools. We’ll map the roles and decide where a coordinated agent team would help.",
+    "deliverables": [
+      "A manager, specialist workers and a way to assign tasks",
+      "Shared context, handoff rules and permissions for each role",
+      "Review of worker outputs before the result is presented",
+      "Deployment, visibility into runs and guidance for the operator"
+    ]
+  },
+  "agent-infrastructure": {
+    "summary": "We build or deploy the environment that runs your agent, connects its tools and gives an operator control over tasks, limits and recovery.",
+    "fit": "For an agent that needs deployment, a custom execution environment, or better operating controls.",
+    "firstStep": "Share the agent or harness you use, where it needs to run and the tools it must access. We’ll define the deployment or build required.",
+    "deliverables": [
+      "An existing harness configured for your use, or a custom harness",
+      "Tool execution, task state and permission controls",
+      "Logs, evaluation hooks, usage limits and recovery paths",
+      "Deployment configuration and documentation for the operator"
+    ]
+  },
+  "jev-implementation": {
+    "summary": "We connect Jev to a specific decision in your application, then define the routes, thresholds and fallback and test them against reviewed examples.",
+    "fit": "For repeated routing, classification or evaluation decisions that need defined outputs and fallback behavior.",
+    "firstStep": "Show us the repeated decision, sample inputs and what should happen next. We’ll define the integration and the examples needed to evaluate it.",
+    "deliverables": [
+      "A decision schema and a set of realistic test examples",
+      "A Jev API or supported LangChain connection in your application or harness",
+      "Thresholds, routing branches and fallback behavior",
+      "Evaluation results and guidance for maintaining the integration"
+    ]
+  },
+  "context-and-memory": {
+    "summary": "We connect your business sources to the agent’s context and memory, with retrieval, updates and access rules built around the information it needs.",
+    "fit": "For agents that miss internal information, lose useful context or need the same briefing repeatedly.",
+    "firstStep": "Bring the sources your agents should use and questions they struggle to answer. We’ll map the context, retrieval and update requirements.",
+    "deliverables": [
+      "An inventory of sources and a process for bringing them in",
+      "A vector database and retrieval where the task needs them",
+      "Context storage, access rules and update behavior",
+      "Retrieval checks, maintenance guidance and data handover"
+    ]
+  },
+  "mcp-and-api": {
+    "summary": "We connect applications and agents to the systems they need through supported integrations, custom MCP servers or APIs.",
+    "fit": "For a missing connection, a private tool that needs an agent interface, or a product that needs an API.",
+    "firstStep": "Send the systems you need to connect and the actions or data that should pass between them. We’ll define the interface and access requirements.",
+    "deliverables": [
+      "The MCP integration, custom server or API in your proposal",
+      "Authentication, permissions and documented inputs and outputs",
+      "Data mapping, error handling and integration tests",
+      "Source or configuration handover with deployment guidance"
+    ]
+  },
+  "creative-ai-workflows": {
+    "summary": "We connect the brief, models, review and file delivery into a workflow your team can operate for the media it produces.",
+    "fit": "For teams repeating creative production across several tools, formats or review steps.",
+    "firstStep": "Share a typical brief, example outputs and the steps your team repeats. We’ll define the generation, review and delivery workflow to build.",
+    "deliverables": [
+      "A workflow for your creative inputs and required formats",
+      "Selected model connections and custom generation agents where needed",
+      "Brand context, reference handling and human review",
+      "File delivery, version tracking and guidance for the operator"
+    ]
+  },
+  "ai-setup-and-consulting": {
+    "summary": "We configure your selected AI tools around the work you want to do, connect the agreed context and tools, and walk your team through using them.",
+    "fit": "For people or teams adopting an AI tool or fixing a setup that does not work as intended.",
+    "firstStep": "Tell us which tools you use or are considering, and what you want the team to do with them. We’ll define the setup or consultation you need.",
+    "deliverables": [
+      "A setup plan for the chosen product and account",
+      "Installation or workspace configuration through the supported route",
+      "The agreed context, tools and workflow connections",
+      "A walkthrough, usage guidance and configuration handover"
+    ]
+  },
+  "brand": {
+    "summary": "We create or apply your visual identity across the agreed channels, with the files, templates and guidance your team needs to use it.",
+    "fit": "For a brand launch, an identity refresh, or applying an existing identity to a website, store or product.",
+    "firstStep": "Share your current assets and where the brand needs to appear. We’ll define the identity work, applications and files to include.",
+    "deliverables": [
+      "Brand direction and the visual identity assets in your proposal",
+      "Typography, color and guidance on using the identity",
+      "Templates and applications for the chosen channels",
+      "Organized source files and an implementation handover"
+    ]
+  },
+  "unslop": {
+    "summary": "We review the site or content you have, agree what to keep and repair the design, writing or functionality that is letting it down.",
+    "fit": "For a website or content that is close, but still feels generic, inconsistent or difficult to use.",
+    "firstStep": "Send the site or content and tell us where it falls short. We’ll inspect it and recommend a repair scope, or explain why it needs a rebuild.",
+    "deliverables": [
+      "A review of what to preserve and what needs attention",
+      "A representative correction to establish the direction",
+      "The design, writing and development repairs in your proposal",
+      "Rechecked pages or content, with revised files or the updated site"
+    ]
+  },
+  "consultation": {
+    "summary": "We inspect the problem or proposal, compare the practical options and give you a written recommendation with the next steps.",
+    "fit": "For a technical decision, an unexplained problem or a proposed build that needs a closer review.",
+    "firstStep": "Tell us the decision you face or the problem you need to understand. We’ll agree the review scope and written output before work begins.",
+    "deliverables": [
+      "The questions to answer and an agreed inspection scope",
+      "A review of the relevant product, system or documents",
+      "Practical options with dependencies and tradeoffs",
+      "A written recommendation and prioritized next steps"
+    ]
+  }
+}

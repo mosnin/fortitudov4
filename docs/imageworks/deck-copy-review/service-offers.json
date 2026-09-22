@@ -1,0 +1,496 @@
+{
+  "websites": {
+    "name": "Website Launch",
+    "summary": "A complete business website, from the page plan to the live site.",
+    "fit": "Launch a new business, reposition an established one, or replace a site you have outgrown.",
+    "deliverables": [
+      "Page structure and copy built around your business",
+      "Responsive design and development across the agreed pages",
+      "Enquiries, bookings, CMS and required integrations",
+      "Launch checks, deployment and an editable handover"
+    ],
+    "acceptance": [
+      "The agreed pages work at desktop and mobile sizes.",
+      "Forms, booking and connected workflows reach the right destination.",
+      "Your team has the access and guidance to manage the site."
+    ],
+    "scopeDrivers": [
+      "Pages and content",
+      "Integrations and CMS",
+      "Migration and launch requirements"
+    ],
+    "firstStep": "Send your current site or page requirements. We will map the build and quote the complete scope.",
+    "faq": [
+      {
+        "q": "Can you work with our existing brand?",
+        "a": "Yes. We can build within your existing identity or include a brand refresh in the proposal."
+      },
+      {
+        "q": "Can you fix our current site instead?",
+        "a": "Yes. We inspect the foundation first. If a focused repair makes sense, the Unslop offer covers design, content and functional improvements without assuming a full rebuild."
+      }
+    ]
+  },
+  "ecommerce": {
+    "name": "Commerce Launch",
+    "summary": "Your brand, catalog and shopping experience, brought together in a working store.",
+    "fit": "Open a new store, move to Shopify, or rebuild an existing buying experience.",
+    "deliverables": [
+      "Brand implementation, with label and identity design when included",
+      "Shopify setup, product catalog, collections and store pages",
+      "Buying journeys, subscriptions, upsells and eligible sales channels",
+      "Inventory, email/SMS connections and a store-operations handover"
+    ],
+    "acceptance": [
+      "The agreed products, variants and collections are ready for sale.",
+      "Purchases, accounts and order notifications pass the agreed checks.",
+      "Your team can manage products, inventory and connected tools."
+    ],
+    "scopeDrivers": [
+      "Catalog size and data quality",
+      "Theme, pages and buying features",
+      "Channels, integrations and migration"
+    ],
+    "firstStep": "Share your products, current store and launch requirements. We will define the storefront and operating scope together.",
+    "faq": [
+      {
+        "q": "Can you handle the brand and product labels too?",
+        "a": "Yes. Brand creation, brand kits and product label design can be included with the store. You supply or approve product information and any required specialist review."
+      },
+      {
+        "q": "Do all integrations work on every Shopify plan?",
+        "a": "No. We check the plan, region and account access before committing to a channel or integration. Third-party app costs are listed separately in the proposal."
+      }
+    ]
+  },
+  "software-solutions": {
+    "name": "Complete Product Build",
+    "summary": "The public website, customer application and admin tools, built and deployed together.",
+    "fit": "Launch a software business or replace fragmented tools with one application built around your operation.",
+    "deliverables": [
+      "A branded marketing website with the agreed product and resource pages",
+      "Accounts, onboarding and the core customer workflows",
+      "Admin tools, data storage, email and required API connections",
+      "Frontend and backend deployment, code and data handover"
+    ],
+    "acceptance": [
+      "A customer can sign up and complete the agreed core journey.",
+      "Authorized owners can manage the agreed users, transactions and operations.",
+      "Data persists correctly and the frontend, backend and integrations work together."
+    ],
+    "scopeDrivers": [
+      "Core workflows and user roles",
+      "Integrations and data migration",
+      "Admin, payment and deployment requirements"
+    ],
+    "firstStep": "Bring the product idea or existing workflow. We will define the first release, its boundaries and how you will review it.",
+    "faq": [
+      {
+        "q": "Who owns the software?",
+        "a": "You own the project code, deployment and data under the agreed terms. We provide the handover and deployment assistance. Third-party services retain their own licensing terms; an ongoing retainer is optional."
+      },
+      {
+        "q": "Can we start with a smaller release?",
+        "a": "Yes. A prototype or one complete workflow can test the important product decision before the wider build. The proposal distinguishes a prototype from production-ready software."
+      }
+    ]
+  },
+  "ai-solutions": {
+    "name": "Applied Agent Build",
+    "summary": "An agent with a defined job, connected tools and a way to check its work.",
+    "fit": "Put AI to work inside a real business process, or repair an agent that is unreliable, disconnected or difficult to operate.",
+    "deliverables": [
+      "A defined task, representative inputs and success criteria",
+      "The agent or team, harness, tools and required MCP/API connections",
+      "Context, memory, permissions and human review where needed",
+      "Evaluation, deployment, operating guidance and ownership handover"
+    ],
+    "acceptance": [
+      "The system is evaluated against representative tasks and agreed failure cases.",
+      "Permissions, review steps and recovery behave as specified.",
+      "Your operator can run the workflow, inspect outputs and manage costs."
+    ],
+    "scopeDrivers": [
+      "Task complexity and number of agents",
+      "Tools, context and data access",
+      "Evaluation, oversight and deployment"
+    ],
+    "firstStep": "Show us the task and the systems it touches. We will define what the agent should do, what it may access and how its output will be judged.",
+    "faq": [
+      {
+        "q": "Can you build teams, harnesses and creative workflows?",
+        "a": "Yes. We scope custom agents, manager-and-worker teams, harnesses, context systems and image, video or audio workflows. Each gets a defined task, tool access and review process."
+      },
+      {
+        "q": "Can you set up tools we already use?",
+        "a": "Yes. Setup and consulting can cover supported Hermes, OpenClaw, ChatGPT, Claude and other agent environments. We verify the exact product, available access and installation or API path before committing."
+      },
+      {
+        "q": "What does anti-slop mean in practice?",
+        "a": "The output has to serve the task, follow your brand and stand up to review. We also offer Unslop engagements for existing websites and content that need design, editorial or functional repair."
+      }
+    ]
+  },
+  "brand": {
+    "name": "Brand Foundation",
+    "summary": "An identity your team can use consistently across the business.",
+    "fit": "Launch a brand, bring consistency to an existing one, or carry a new identity into the website and product.",
+    "deliverables": [
+      "Brand direction and the agreed visual identity assets",
+      "Typography, color and practical usage guidance",
+      "Templates and applications for the agreed channels",
+      "Organized source files and implementation handover"
+    ],
+    "acceptance": [
+      "The agreed identity assets are supplied in usable formats.",
+      "The system holds together across the agreed applications.",
+      "Your team can find and use the files and guidelines."
+    ],
+    "scopeDrivers": [
+      "New identity or implementation",
+      "Number of applications",
+      "Packaging, templates and content"
+    ],
+    "firstStep": "Share your existing assets and where the brand needs to appear. We will define the identity work and its applications.",
+    "faq": [
+      {
+        "q": "Can you apply an identity we already have?",
+        "a": "Yes. Brand implementation can be scoped on its own across your website, software, documents and other agreed materials."
+      },
+      {
+        "q": "Are product labels included?",
+        "a": "They can be. Label design is an explicit part of the scope, based on your production specifications and approved product information."
+      }
+    ]
+  },
+  "unslop": {
+    "name": "Unslop Repair",
+    "summary": "Bring a rough website or AI-generated content up to the standard of your business.",
+    "fit": "You have a starting point, but the design, copy, brand consistency or customer journey falls short.",
+    "deliverables": [
+      "A review of what works and what needs to change",
+      "A representative correction that establishes the direction",
+      "The agreed design, writing and development repairs",
+      "A checked, usable result with the revised files or site"
+    ],
+    "acceptance": [
+      "The agreed design and editorial issues are resolved in context.",
+      "Claims and business facts are preserved or flagged for your review.",
+      "Affected pages and customer journeys are rechecked after the changes."
+    ],
+    "scopeDrivers": [
+      "Condition of the existing work",
+      "Pages or content volume",
+      "Design, writing and functional repairs"
+    ],
+    "firstStep": "Send the site or content. We will inspect it and recommend a focused repair or explain when a rebuild is the better choice.",
+    "faq": [
+      {
+        "q": "Will you keep the parts that already work?",
+        "a": "Yes. The review establishes what is worth keeping before the repair scope is set. A new build is not assumed."
+      },
+      {
+        "q": "Can you work on content without rebuilding the website?",
+        "a": "Yes. Content repair is a separate option for an agreed set of pages or documents, preserving your facts and voice while improving structure and clarity."
+      }
+    ]
+  },
+  "consultation": {
+    "name": "Technical Review & Roadmap",
+    "summary": "A diagnosis, a recommendation and a written plan for the next decision.",
+    "fit": "Decide what to build, diagnose a problem, compare platforms or review a proposed implementation.",
+    "deliverables": [
+      "An agreed set of questions and an inspection scope",
+      "Review of the relevant product, system or documents",
+      "Practical options, dependencies and tradeoffs",
+      "A written recommendation and prioritized next steps"
+    ],
+    "acceptance": [
+      "The agreed questions are answered or the remaining evidence gap is identified.",
+      "The recommendation explains its tradeoffs and assumptions.",
+      "You can take the next steps with us, your team or another provider."
+    ],
+    "scopeDrivers": [
+      "The decision or failure to investigate",
+      "System access and review depth",
+      "Stakeholders and required outputs"
+    ],
+    "firstStep": "Tell us the decision or problem. We will define the review and written output before work begins.",
+    "faq": [
+      {
+        "q": "What can we consult on?",
+        "a": "Every service we offer: websites, ecommerce, software, branding, repairs, AI agents, infrastructure, integrations and creative workflows."
+      },
+      {
+        "q": "Do we have to hire you for the implementation?",
+        "a": "No. The recommendation and written plan are deliverables in their own right. Any follow-on implementation is a separate decision."
+      }
+    ]
+  },
+  "agent-teams": {
+    "name": "Manager & Worker Team",
+    "summary": "A coordinated agent team with assigned roles, shared context and a reviewed result.",
+    "fit": "For product buildouts and business operations that need several kinds of work to happen together.",
+    "deliverables": [
+      "A manager role, specialist workers and a task assignment workflow",
+      "Shared context, handoff rules and tool permissions for each role",
+      "A review step that checks and combines worker outputs",
+      "Deployment, run visibility and an operating handover"
+    ],
+    "acceptance": [
+      "Work reaches the intended specialist with the necessary context.",
+      "The manager reviews and combines outputs before presenting completion.",
+      "Failed and blocked jobs are visible and can be recovered."
+    ],
+    "scopeDrivers": [
+      "Number of roles and workflows",
+      "Tool permissions and shared context",
+      "Review, recovery and operating volume"
+    ],
+    "firstStep": "Bring a workflow that involves several people or tools. We will map where a coordinated team can help.",
+    "faq": [
+      {
+        "q": "Can a team help run business operations?",
+        "a": "Yes. We can build around defined operating workflows, then extend the team as tasks and results are reviewed. Consequential actions retain the approvals you specify."
+      },
+      {
+        "q": "Can we use our existing agents?",
+        "a": "Yes. We review their interfaces and reliability before connecting them to the team."
+      }
+    ],
+    "flow": [
+      "Manager assigns",
+      "Workers execute",
+      "Reviewer checks",
+      "Result delivered"
+    ]
+  },
+  "agent-infrastructure": {
+    "name": "Agent Harness Build",
+    "summary": "An execution environment that connects the model, tools, permissions and operating controls.",
+    "fit": "For a custom agent, an existing harness that needs deployment, or a team moving beyond a local experiment.",
+    "deliverables": [
+      "A configured or custom-built agent harness",
+      "Tool execution, task state and permission boundaries",
+      "Logs, evaluation hooks, usage limits and recovery paths",
+      "Deployment configuration and operator documentation"
+    ],
+    "acceptance": [
+      "The harness executes the agreed tasks and tools.",
+      "Permissions and limits behave as configured.",
+      "An operator can inspect failures and recover a run."
+    ],
+    "scopeDrivers": [
+      "Existing versus custom harness",
+      "Execution environment and tools",
+      "Persistence, monitoring and recovery"
+    ],
+    "firstStep": "Share the agent or harness you have and where it needs to run.",
+    "faq": [
+      {
+        "q": "Can you deploy a harness we already chose?",
+        "a": "Yes. Installation and deployment can be scoped without commissioning a new harness."
+      },
+      {
+        "q": "Can you build the harness from scratch?",
+        "a": "Yes. We define the required execution behavior and interfaces before the custom build."
+      }
+    ],
+    "flow": [
+      "Task enters",
+      "Harness controls",
+      "Tools execute",
+      "Run recorded"
+    ]
+  },
+  "jev-implementation": {
+    "name": "Jev Decision Integration",
+    "summary": "A tested Jev integration for a specific decision in your system.",
+    "fit": "For teams choosing a model, classifying requests, reviewing agent output or deciding when a workflow needs escalation.",
+    "deliverables": [
+      "A defined decision schema and representative test examples",
+      "Jev API or supported LangChain integration in the application or harness",
+      "Thresholds, routing branches and fallback behavior",
+      "Evaluation results and documentation for maintaining the integration"
+    ],
+    "acceptance": [
+      "Responses are parsed into the agreed decision schema.",
+      "Reviewed examples exercise each route and uncertainty path.",
+      "Provider errors and low-confidence outcomes reach the defined fallback."
+    ],
+    "scopeDrivers": [
+      "Number of decisions",
+      "Harness or application integration",
+      "Test data and evaluation depth"
+    ],
+    "firstStep": "Show us where your system makes a repeated decision and what should happen next.",
+    "faq": [
+      {
+        "q": "Is Jev another content generator?",
+        "a": "No. TypeSafe AI’s Jev returns typed decisions and probabilities. It complements the models handling open-ended reasoning or generation."
+      },
+      {
+        "q": "Can this work inside a LangChain harness?",
+        "a": "Yes. We can scope the supported LangChain integration or a direct API connection, then test it against your decision and failure cases."
+      }
+    ],
+    "flow": [
+      "Your context",
+      "Jev decision",
+      "Threshold check",
+      "Route or review"
+    ]
+  },
+  "context-and-memory": {
+    "name": "Agent Context System",
+    "summary": "A connected context and memory system that agents can retrieve from and update as agreed.",
+    "fit": "For agents that lose useful context, cannot find internal information or rely on repeated manual briefings.",
+    "deliverables": [
+      "A source inventory and ingestion workflow",
+      "Vector database and retrieval where the workload needs them",
+      "Agent context storage, access rules and update behavior",
+      "Retrieval checks, maintenance instructions and data handover"
+    ],
+    "acceptance": [
+      "Representative questions retrieve relevant source material.",
+      "Source changes can be reflected through the agreed update process.",
+      "Access and deletion behavior match the agreed rules."
+    ],
+    "scopeDrivers": [
+      "Source formats and volume",
+      "Freshness and access requirements",
+      "Retrieval quality and memory behavior"
+    ],
+    "firstStep": "Bring the sources your agents should use and examples of what they fail to find.",
+    "faq": [
+      {
+        "q": "Do we need a vector database for everything?",
+        "a": "No. We choose structured storage, search, vector retrieval or a combination based on the information and task."
+      },
+      {
+        "q": "Can you connect context to existing agents?",
+        "a": "Yes. The connection can be implemented through the agent’s supported tools, APIs or harness."
+      }
+    ],
+    "flow": [
+      "Business sources",
+      "Ingest & update",
+      "Retrieve context",
+      "Agent uses it"
+    ]
+  },
+  "mcp-and-api": {
+    "name": "Connected Tools Build",
+    "summary": "A working, documented connection between your agent or application and the required system.",
+    "fit": "For a missing integration, a private business tool that needs an agent interface, or a product that needs its own API.",
+    "deliverables": [
+      "The agreed MCP integration, custom server or API",
+      "Authentication, permissions and documented tool contracts",
+      "Data mapping, error handling and integration tests",
+      "Deployment guidance and source/configuration handover"
+    ],
+    "acceptance": [
+      "The intended client can complete the agreed operations.",
+      "Unauthorized requests and invalid inputs are handled correctly.",
+      "The owner receives usable interface documentation and deployment details."
+    ],
+    "scopeDrivers": [
+      "Systems and endpoint count",
+      "Authentication and data mapping",
+      "Deployment and operational requirements"
+    ],
+    "firstStep": "Show us the systems you need to connect and the actions you want to expose.",
+    "faq": [
+      {
+        "q": "Can you build both the MCP server and API?",
+        "a": "Yes. They can be scoped together when an application needs both a conventional API and an agent-facing tool interface."
+      },
+      {
+        "q": "Can you connect a tool that already has an MCP server?",
+        "a": "Yes. We can install, configure and verify the existing integration instead of building a replacement."
+      }
+    ],
+    "flow": [
+      "Agent or app",
+      "Authorized interface",
+      "Business system",
+      "Verified response"
+    ]
+  },
+  "creative-ai-workflows": {
+    "name": "Creative Workflow Build",
+    "summary": "A workflow that takes approved inputs through generation, review and delivery.",
+    "fit": "For teams turning repeated creative production into a controlled process inside their own tools.",
+    "deliverables": [
+      "A workflow designed around the required formats and creative inputs",
+      "Selected model integrations and custom generation agents where needed",
+      "Brand context, reference handling and human review steps",
+      "File delivery, version tracking and an operator handover"
+    ],
+    "acceptance": [
+      "The workflow delivers the agreed file types and dimensions.",
+      "Inputs, versions and review decisions remain traceable.",
+      "Failed jobs can be inspected and retried without losing the brief."
+    ],
+    "scopeDrivers": [
+      "Media types and model access",
+      "Brand context and review workflow",
+      "Volume, application and delivery integrations"
+    ],
+    "firstStep": "Bring examples of the content you produce and the process you repeat.",
+    "faq": [
+      {
+        "q": "Is this only image generation?",
+        "a": "No. We build image, video and audio workflows, standalone or connected together, and custom agents that operate them."
+      },
+      {
+        "q": "How do you avoid generic AI output?",
+        "a": "We are an anti-slop agency. The workflow carries the actual brief, brand context and intended placement into generation, with explicit review before delivery."
+      }
+    ],
+    "flow": [
+      "Approved brief",
+      "Generate options",
+      "Review & refine",
+      "Deliver assets"
+    ]
+  },
+  "ai-setup-and-consulting": {
+    "name": "AI Setup & Enablement",
+    "summary": "A configured environment, connected workflow and practical handover for the people using it.",
+    "fit": "For an individual, team or business adopting an AI tool or repairing a setup that is not working.",
+    "deliverables": [
+      "A defined setup plan for the selected product and account",
+      "Installation or workspace configuration using the supported path",
+      "Agreed context, tools and workflow connections",
+      "Operator walkthrough, usage guidance and configuration handover"
+    ],
+    "acceptance": [
+      "The intended users can access the configured environment.",
+      "Agreed tools and context work in representative tasks.",
+      "The team understands operating controls and ongoing costs."
+    ],
+    "scopeDrivers": [
+      "Products and user count",
+      "Workspace versus local deployment",
+      "Connections and training requirements"
+    ],
+    "firstStep": "Tell us which tools you use or want to use, and what your team needs them to do.",
+    "faq": [
+      {
+        "q": "Can you advise before we choose a platform?",
+        "a": "Yes. Consultation can compare the available options against your workflows and constraints before any setup."
+      },
+      {
+        "q": "Does setup include a custom application?",
+        "a": "Only when explicitly scoped. Product configuration, custom agent development and custom software are different deliverables."
+      }
+    ],
+    "flow": [
+      "Choose workflow",
+      "Configure tools",
+      "Connect context",
+      "Train operator"
+    ]
+  }
+}
