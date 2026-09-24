@@ -1,36 +1,14 @@
 "use client";
 
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { usePathname } from "next/navigation";
+import { useSelectedLayoutSegment } from "next/navigation";
 import type { ReactNode } from "react";
 
-const PUBLIC_PAGES = new Set([
-  "solutions",
-  "approach",
-  "handover",
-  "ongoing-support",
-  "project-planner",
-
-  "",
-  "about",
-  "sign-in",
-  "sign-up",
-  "forgot-password",
-  "contact",
-  "faq",
-  "portfolio",
-  "pricing",
-  "privacy",
-  "terms",
-  "services",
-  "work",
-  "resources",
-  "blog",
-]);
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const marketing = PUBLIC_PAGES.has((pathname ?? "/").split("/")[1]);
+  // Route groups cover every public page, including newly added and nested routes.
+  // Keep the application preference separate from the public site and auth shell.
+  const segment = useSelectedLayoutSegment();
+  const marketing = segment === "(marketing)" || segment === "(auth)";
 
   return (
     <NextThemesProvider
