@@ -15,9 +15,11 @@ import { BrandMark as LogoMark } from "@/components/brand-mark";
 export function Logo({
   className,
   compact = false,
+  iconClassName = "h-5 w-5",
 }: {
   className?: string;
   compact?: boolean;
+  iconClassName?: string;
 }): ReactNode {
   const reducedMotion = useReducedMotion();
   return (
@@ -26,7 +28,7 @@ export function Logo({
       aria-label="Fortitudo home"
       className={`inline-flex items-center rounded-lg text-[15px] font-medium tracking-[-0.01em] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring ${className ?? ""}`}
     >
-      <LogoMark className="h-5 w-5 shrink-0" />
+      <LogoMark className={`${iconClassName} shrink-0`} />
       <AnimatePresence initial={false}>
         {!compact && (
           <motion.span
