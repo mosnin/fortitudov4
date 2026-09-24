@@ -368,7 +368,7 @@ export function Nav(): ReactNode {
             variants={introItem}
             className="flex items-center pr-1 pl-2"
           >
-            <Logo className="h-9 text-background" compact={condensed} />
+            <Logo className="h-9 text-background" compact />
           </motion.div>
 
           <LinkRow active={current} />

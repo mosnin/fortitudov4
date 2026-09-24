@@ -146,7 +146,7 @@ export function MotionShell({ children, controls }: { children: ReactNode; contr
   }, [router, resetNavigation, enter]);
 
   return <div ref={root} data-drawer-navigation data-open={open ? "" : undefined} data-active={active ? "" : undefined}>
-    <header className="premium-header" aria-label="Site"><Logo className="h-9" /><ArrowButton href="/contact" className="header-cta">Get a proposal</ArrowButton></header>
+    <header className="premium-header" aria-label="Site"><Logo className="h-9 w-9 justify-center" compact /><ArrowButton href="/contact" className="header-cta">Get a proposal</ArrowButton></header>
     <button ref={toggle} className="toggle" type="button" data-toggle aria-controls="navigation-06-menu" aria-expanded={open} aria-label={open ? "Close navigation" : "Open navigation"} onClick={() => { setActive(true); setOpen(v => !v); }}>
       <span className="toggle-label" aria-hidden="true"><span className="label-wrap"><span className="label"><span>Menu</span><span>Menu</span></span></span></span>
       <span className="toggle-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg></span>
