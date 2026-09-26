@@ -9,6 +9,7 @@ import { Logo } from "@/components/ui/logo";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { NotificationBell } from "@/components/dashboard/notification-bell";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { ToastProvider } from "@/components/ui/toast-stack";
 import { SoundLayer } from "@/components/sound/sound-layer";
 import { SoundToggle } from "@/components/sound/sound-toggle";
 import { buttonVariants } from "@/components/ui/button";
@@ -258,6 +259,7 @@ export function AppShell({
   };
 
   return (
+    <ToastProvider>
     <div className="flex min-h-screen bg-background">
       {/* ⌘K from anywhere in the product. Mounted once, at the shell, over the
           same nav this surface is already showing. */}
@@ -432,6 +434,7 @@ export function AppShell({
         </nav>
       </div>
     </div>
+    </ToastProvider>
   );
 }
 
