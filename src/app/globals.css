@@ -216,6 +216,47 @@
   50% { box-shadow: 0 0 0 1px var(--pill-ring, #ff94a4); }
 }
 
+/* Product micro-motion (docs/ui-components.md).
+   `.t-text-swap` backs <TextStates>: the transitions.dev "text states swap"
+   recipe — old text exits up with blur, new text enters from below.
+   `su-dot` backs <ThinkingDots>. `su-pop` is the tracker's check pop-in. */
+.t-text-swap {
+  --text-swap-dur: 150ms;
+  display: inline-block;
+  transform: translateY(0);
+  filter: blur(0);
+  opacity: 1;
+  transition:
+    transform var(--text-swap-dur) ease-in-out,
+    filter var(--text-swap-dur) ease-in-out,
+    opacity var(--text-swap-dur) ease-in-out;
+  will-change: transform, filter, opacity;
+}
+.t-text-swap.is-exit {
+  transform: translateY(-4px);
+  filter: blur(2px);
+  opacity: 0;
+}
+.t-text-swap.is-enter-start {
+  transform: translateY(4px);
+  filter: blur(2px);
+  opacity: 0;
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .t-text-swap { transition: none !important; }
+}
+
+@keyframes su-dot {
+  0%, 60%, 100% { opacity: 0.25; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-2px); }
+}
+
+@keyframes su-pop {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: none; }
+}
+
 /* Radix accordion height transitions — the FAQ's <Accordion.Content>. */
 @keyframes slideDown {
   from { height: 0; }

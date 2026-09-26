@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { and, count, desc, eq, gte, inArray, ne, or, type SQL } from "drizzle-orm";
 import { ChevronRight } from "lucide-react";
+import { NumberTicker } from "@/components/ui/number-ticker";
 import { HelixWaitingStrip } from "@/components/admin/helix-waiting-strip";
 import {
   AdminNewProjectsChart,
@@ -15,6 +16,7 @@ import {
   BuildCubes,
   DASH_CARD,
   MiniList,
+  MoneyTicker,
   PaidMeter,
   ProgressBar,
   RecentBuildsCard,
@@ -371,9 +373,10 @@ export default async function AdminOverviewPage() {
           <div className={cn(DASH_CARD, "relative flex flex-col justify-between p-7 sm:p-8")}>
             <BuildCubes className="pointer-events-none absolute -top-14 right-2 hidden h-40 w-44 sm:block" />
             <div className="flex items-center gap-4">
-              <span className="text-6xl font-light leading-none tracking-tight text-foreground tabular-nums">
-                {isVa ? taskRows.length : active.length}
-              </span>
+              <NumberTicker
+                value={isVa ? taskRows.length : active.length}
+                className="text-6xl leading-none font-light tracking-tight text-foreground"
+              />
               <span className="text-lg text-muted-foreground">
                 {isVa
                   ? taskRows.length === 1 ? "task on your plate" : "tasks on your plate"
@@ -456,7 +459,7 @@ export default async function AdminOverviewPage() {
                       href={a.href}
                       className="block rounded-xl bg-white/15 px-4 py-3 transition-colors hover:bg-white/25 dark:bg-black/20 dark:hover:bg-black/30"
                     >
-                      <span className="block text-2xl font-light tabular-nums">{a.value}</span>
+                      <NumberTicker value={a.value} className="text-2xl font-light" />
                       <span className="block text-xs text-white/85">{a.label}</span>
                     </Link>
                   </li>
@@ -493,7 +496,7 @@ export default async function AdminOverviewPage() {
               title="Revenue"
               href="/admin/payments"
               linkLabel="Payments"
-              headline={formatUsd(collectedThisMonth)}
+              headline={<MoneyTicker cents={collectedThisMonth} />}
               headlineMeta="collected this month"
             >
               <div className="space-y-4">

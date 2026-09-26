@@ -1,6 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Search } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import { NumberTicker } from "@/components/ui/number-ticker";
+import { PhaseTracker } from "@/components/ui/phase-tracker";
 import { cn } from "@/lib/utils";
+import { HelixAskForm } from "./helix-ask-form";
 import { projectStatusLabels, serviceLabels } from "./project-list";
 
 /**
@@ -119,9 +122,10 @@ export function BuildHeroCard({
       <BuildCubes className="pointer-events-none absolute -top-14 right-2 hidden h-40 w-44 sm:block" />
 
       <div className="flex items-center gap-4">
-        <span className="text-6xl font-light leading-none tracking-tight text-foreground tabular-nums">
-          {activeCount}
-        </span>
+        <NumberTicker
+          value={activeCount}
+          className="text-6xl leading-none font-light tracking-tight text-foreground"
+        />
         <span className="text-lg text-muted-foreground">
           {activeCount === 1 ? "build in progress" : "builds in progress"}
         </span>
@@ -149,7 +153,12 @@ export function BuildHeroCard({
                 </>
               )}
             </p>
-            {progress.total > 0 && <ProgressBar pct={progress.pct} label={`${progress.done} of ${progress.total} phases`} />}
+            {progress.total > 0 && (
+              <PhaseTracker
+                className="max-w-md"
+                phases={[...lead.phases].sort((a, b) => a.order - b.order)}
+              />
+            )}
           </>
         ) : (
           <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">
@@ -242,29 +251,7 @@ export function HelixPromptCard() {
         <p className="max-w-sm text-xl leading-snug font-medium">
           Ask Helix anything about your build
         </p>
-        <form action="/helix" method="get" className="flex flex-col gap-3 sm:flex-row">
-          <label htmlFor="helix-q" className="sr-only">
-            Your question
-          </label>
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-zinc-400 dark:text-white/50" />
-            <input
-              id="helix-q"
-              name="q"
-              required
-              maxLength={500}
-              placeholder="e.g. What’s left before launch?"
-              className="h-11 w-full rounded-lg border border-transparent bg-white pr-3 pl-10 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/50 dark:bg-black/25 dark:text-white dark:placeholder:text-white/50"
-            />
-          </div>
-          <button
-            type="submit"
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-lg bg-[#7c2d12] px-5 text-sm font-medium text-white transition-colors hover:bg-[#6b260f] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 dark:bg-black/40 dark:hover:bg-black/55"
-          >
-            Ask
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </form>
+        <HelixAskForm />
         <p className="text-xs text-white/75">
           Helix reads your project and answers. To request changes, message the
           team.
@@ -470,7 +457,7 @@ export function WorkspaceCard({
       {headline !== undefined && (
         <div className="mt-4 flex items-baseline gap-2">
           <span className="text-3xl font-light tracking-tight text-foreground tabular-nums">
-            {headline}
+            {typeof headline === "number" ? <NumberTicker value={headline} locale /> : headline}
           </span>
           {headlineMeta && (
             <span className="text-sm text-muted-foreground">{headlineMeta}</span>
@@ -542,6 +529,11 @@ const TONE: Record<string, string> = {
 };
 
 export type Tone = keyof typeof TONE;
+
+/** Whole dollars from integer cents, rolling. Money is always cents (AGENTS.md). */
+export function MoneyTicker({ cents }: { cents: number }) {
+  return <NumberTicker value={Math.round(cents / 100)} prefix="$" locale />;
+}
 
 export function TonePill({ tone, children }: { tone: Tone; children: React.ReactNode }) {
   return (

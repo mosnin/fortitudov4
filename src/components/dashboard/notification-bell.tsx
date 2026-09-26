@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Bell } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useReducedMotionSafe } from "@/hooks/use-reduced-motion-safe";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { RecordList, RecordRow, RowPill } from "@/components/crm";
@@ -39,6 +40,21 @@ export function NotificationBell() {
   const ref = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  // Ring the bell when unread goes UP (Spectrum UI notification-bell): the
+  // dome swings like a released pendulum, the clapper counter-swings in
+  // phase, and the badge count rolls. Never on first load, never on a drop.
+  const reduce = useReducedMotionSafe();
+  const [ringKey, setRingKey] = useState(0);
+  const [prevUnread, setPrevUnread] = useState<number | null>(null);
+  if (prevUnread !== unreadCount) {
+    if (prevUnread !== null && unreadCount > prevUnread) setRingKey((k) => k + 1);
+    setPrevUnread(unreadCount);
+  }
+  const swinging = ringKey > 0 && !reduce;
+  const swing = swinging
+    ? { duration: 0.9, times: [0, 0.1, 0.26, 0.42, 0.58, 0.74, 0.88, 1], ease: "easeInOut" as const }
+    : { duration: 0 };
 
   // Initial fetch + gentle background refresh so the badge stays honest
   // without realtime infrastructure (fused polling pattern).
@@ -108,14 +124,62 @@ export function NotificationBell() {
       <button
         onClick={() => setOpen(!open)}
         className="relative flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground"
-        aria-label="Notifications"
+        aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
       >
-        <Bell className="h-4 w-4" strokeWidth={1.75} />
-        {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-foreground px-1 text-[10px] font-medium tabular-nums text-background">
-            {unreadCount}
-          </span>
-        )}
+        <motion.span
+          key={`bell-${ringKey}`}
+          className="inline-flex"
+          style={{ transformOrigin: "top center" }}
+          initial={{ rotate: 0 }}
+          animate={swinging ? { rotate: [0, 15, -12, 8, -5, 3, -1.5, 0] } : { rotate: 0 }}
+          transition={swing}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            width={16}
+            height={16}
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.75}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
+            <motion.path
+              d="M10.3 21a1.94 1.94 0 0 0 3.4 0"
+              style={{ transformBox: "fill-box", transformOrigin: "top center" }}
+              initial={{ rotate: 0 }}
+              animate={swinging ? { rotate: [0, -17, 14, -10, 6, -3.5, 2, 0] } : { rotate: 0 }}
+              transition={swing}
+            />
+          </svg>
+        </motion.span>
+        <AnimatePresence initial={false}>
+          {unreadCount > 0 && (
+            <motion.span
+              key="badge"
+              aria-hidden="true"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0 }}
+              transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 22 }}
+              className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center overflow-hidden rounded-full bg-brand px-1 text-[10px] font-medium tabular-nums text-white"
+            >
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.span
+                  key={unreadCount}
+                  initial={{ y: 8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -8, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                >
+                  {unreadCount > 99 ? "99+" : unreadCount}
+                </motion.span>
+              </AnimatePresence>
+            </motion.span>
+          )}
+        </AnimatePresence>
       </button>
 
       {open && (

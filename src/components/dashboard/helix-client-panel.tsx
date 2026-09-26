@@ -16,12 +16,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { CrmPageHeader } from "@/components/crm";
+import { MorphButton } from "@/components/ui/morph-button";
 import { Textarea } from "@/components/ui/textarea";
+import { ThinkingDots } from "@/components/ui/thinking-dots";
+import { useToast } from "@/components/ui/toast-stack";
 import { EASE_APPLE } from "@/lib/motion";
 import {
   BODY_MUTED,
   CAPTION,
-  HELIX_PILL,
   META,
   QUIET_LINK,
   SECTION_LABEL,
@@ -48,6 +50,8 @@ export function HelixClientPanel() {
   const [draft, setDraft] = useState("");
   const [thinking, setThinking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [justSent, setJustSent] = useState(false);
+  const toast = useToast();
   const endRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
@@ -83,16 +87,19 @@ export function HelixClientPanel() {
         const body = await response.json();
         if (!response.ok) throw new Error(body?.error ?? "That did not go through.");
         await load();
+        setJustSent(true);
+        window.setTimeout(() => setJustSent(false), 1200);
       } catch (caught) {
-        setError(
-          caught instanceof Error ? caught.message : "That did not go through."
-        );
+        const reason =
+          caught instanceof Error ? caught.message : "That did not go through.";
+        setError(reason);
+        toast({ title: "Helix couldn’t answer", description: reason, status: "error" });
         setDraft(message);
       } finally {
         setThinking(false);
       }
     },
-    [thinking, load]
+    [thinking, load, toast]
   );
 
   const send = useCallback(() => ask(draft.trim()), [ask, draft]);
@@ -162,8 +169,13 @@ export function HelixClientPanel() {
                 "Where is my project up to?",
                 "What is still outstanding?",
                 "What did you finish this week?",
-              ].map((suggestion) => (
-                <li key={suggestion}>
+              ].map((suggestion, i) => (
+                <motion.li
+                  key={suggestion}
+                  initial={{ opacity: 0, y: 6, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  transition={{ duration: 0.35, ease: EASE_APPLE, delay: 0.08 + i * 0.06 }}
+                >
                   <button
                     type="button"
                     onClick={() => setDraft(suggestion)}
@@ -171,7 +183,7 @@ export function HelixClientPanel() {
                   >
                     {suggestion}
                   </button>
-                </li>
+                </motion.li>
               ))}
             </ul>
           </div>
@@ -200,14 +212,13 @@ export function HelixClientPanel() {
 
         <AnimatePresence>
           {thinking && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+            <motion.div
+              initial={{ opacity: 0, y: 4 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className={cn(CAPTION, "animate-pulse")}
             >
-              Looking…
-            </motion.p>
+              <ThinkingPhases />
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -230,20 +241,35 @@ export function HelixClientPanel() {
           />
           <div className="flex items-center justify-between">
             <span className={META}>⌘↵ to send</span>
-            <button
-              type="button"
+            <MorphButton
+              size="sm"
+              tone="neutral"
               onClick={() => void send()}
-              disabled={thinking || draft.trim().length === 0 || !data}
-              className={cn(
-                HELIX_PILL,
-                (thinking || draft.trim().length === 0 || !data) && "opacity-40"
-              )}
+              disabled={!thinking && (draft.trim().length === 0 || !data)}
+              state={thinking ? "loading" : justSent ? "success" : "idle"}
+              loadingLabel="Asking"
+              successLabel="Answered"
             >
               Ask
-            </button>
+            </MorphButton>
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+/**
+ * What Helix is doing while it answers. The label advances on a timer rather
+ * than on real progress events — the endpoint doesn't stream — so the phases
+ * are the honest, generic steps every answer takes.
+ */
+function ThinkingPhases() {
+  const phases = ["Reading your project", "Checking where things stand", "Writing an answer"];
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const t = window.setInterval(() => setI((n) => Math.min(n + 1, phases.length - 1)), 1600);
+    return () => window.clearInterval(t);
+  }, [phases.length]);
+  return <ThinkingDots label={phases[i]} />;
 }

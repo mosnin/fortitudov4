@@ -4,6 +4,7 @@ import {
   BuildHeroCard,
   HelixPromptCard,
   MiniList,
+  MoneyTicker,
   PaidMeter,
   RecentBuildsCard,
   TonePill,
@@ -241,7 +242,7 @@ export default async function DashboardPage() {
             title="Invoices & payments"
             href="/payments"
             linkLabel="Billing"
-            headline={formatUsd(totalPaid)}
+            headline={<MoneyTicker cents={totalPaid} />}
             headlineMeta="paid to date"
           >
             <div className="space-y-4">
