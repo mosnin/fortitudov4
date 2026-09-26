@@ -68,30 +68,49 @@ export function HelixClientPanel() {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [data?.messages.length, thinking]);
 
-  const send = useCallback(async () => {
-    const message = draft.trim();
-    if (!message || thinking) return;
-    setDraft("");
-    setThinking(true);
-    setError(null);
-    try {
-      const response = await fetch("/api/helix/client-thread", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message }),
-      });
-      const body = await response.json();
-      if (!response.ok) throw new Error(body?.error ?? "That did not go through.");
-      await load();
-    } catch (caught) {
-      setError(
-        caught instanceof Error ? caught.message : "That did not go through."
-      );
-      setDraft(message);
-    } finally {
-      setThinking(false);
-    }
-  }, [draft, thinking, load]);
+  const ask = useCallback(
+    async (message: string) => {
+      if (!message || thinking) return;
+      setDraft("");
+      setThinking(true);
+      setError(null);
+      try {
+        const response = await fetch("/api/helix/client-thread", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message }),
+        });
+        const body = await response.json();
+        if (!response.ok) throw new Error(body?.error ?? "That did not go through.");
+        await load();
+      } catch (caught) {
+        setError(
+          caught instanceof Error ? caught.message : "That did not go through."
+        );
+        setDraft(message);
+      } finally {
+        setThinking(false);
+      }
+    },
+    [thinking, load]
+  );
+
+  const send = useCallback(() => ask(draft.trim()), [ask, draft]);
+
+  // A question asked from the dashboard's Helix card arrives as ?q=. Ask it
+  // once the thread is open, then drop it from the URL so a refresh does not
+  // ask it again.
+  const askedFromUrl = useRef(false);
+  useEffect(() => {
+    if (!data || askedFromUrl.current) return;
+    askedFromUrl.current = true;
+    const url = new URL(window.location.href);
+    const question = url.searchParams.get("q")?.trim().slice(0, 500);
+    if (!question) return;
+    url.searchParams.delete("q");
+    window.history.replaceState(null, "", url.pathname + url.search);
+    void ask(question);
+  }, [data, ask]);
 
   return (
     <div className="space-y-8 pb-12">
